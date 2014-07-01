@@ -1,9 +1,0 @@
-# $Id: table_psv.def,v 1.1 2007/02/23 09:44:52 hsiddiqu Exp $
-#
-# Definition table_psv.def
-#
-# Name	| Type	| Mandatory	| Default     | DefaultNull	| Optional 
-#
-f1,	String,	true,	HCSS-MIB-NULL,	true,	false
-f2,	String,	true,	HCSS-MIB-NULL,	true,	false
-f3,	String,	false,	HCSS-MIB-NULL,	true,	false

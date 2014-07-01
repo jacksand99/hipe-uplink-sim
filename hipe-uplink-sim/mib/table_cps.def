@@ -1,9 +1,0 @@
-# $Id: table_cps.def,v 1.1 2007/02/23 09:44:51 hsiddiqu Exp $
-#
-# Definition table_cps.def
-#
-# Name	| Type	| Mandatory	| Default     | DefaultNull	| Optional 
-#
-f1,	String,	false,	HCSS-MIB-NULL,	true,	true
-f2,	String,	false,	HCSS-MIB-NULL,	true,	true
-f3,	Integer,	false,	HCSS-MIB-NULL,	true,	true
