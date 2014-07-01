@@ -142,6 +142,7 @@ public class Mib {
 			}
 			//MIB=new Mib();
 		}
+		if (MIB==null) return new Mib();
 		return MIB;
 	}
 }
