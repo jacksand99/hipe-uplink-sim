@@ -1,0 +1,27 @@
+# $Id: table_ccf.def,v 1.1 2007/02/23 09:44:51 hsiddiqu Exp $
+#
+# Definition table_ccf.def
+#
+# Name	| Type	| Mandatory	| Default     | DefaultNull	| Optional 
+#
+f1,	String,	true,	HCSS-MIB-NULL,	true,	false
+f2,	String,	true,	HCSS-MIB-NULL,	true,	false
+f3,	String,	true,	HCSS-MIB-NULL,	true,	false
+f4,	String,	false,	HCSS-MIB-NULL,	true,	false
+f5,	String,	false,	N,	false,	false
+f6,	String,	true,	HCSS-MIB-NULL,	true,	false
+f7,	Integer,	false,	HCSS-MIB-NULL,	true,	false
+f8,	Integer,	false,	HCSS-MIB-NULL,	true,	false
+f9,	Integer,	false,	HCSS-MIB-NULL,	true,	false
+f10,	Integer,	false,	HCSS-MIB-NULL,	true,	false
+f11,	String,	false,	N,	false,	false
+f12,	String,	false,	Y,	false,	false
+f13,	String,	true,	HCSS-MIB-NULL,	true,	false
+f14,	String,	false,	C,	false,	false
+f15,	Integer,	false,	HCSS-MIB-NULL,	true,	false
+f16,	String,	false,	N,	false,	false
+f17,	Integer,	false,	HCSS-MIB-NULL,	true,	false
+f18,	String,	true,	HCSS-MIB-NULL,	true,	false
+f19,	Integer,	false,	HCSS-MIB-NULL,	true,	false
+f20,	Integer,	false,	HCSS-MIB-NULL,	true,	false
+f21,	Integer,	false,	HCSS-MIB-NULL,	true,	false

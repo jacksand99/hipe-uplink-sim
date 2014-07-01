@@ -1,0 +1,13 @@
+# $Id: table_mcf.def,v 1.1 2007/02/23 09:44:51 hsiddiqu Exp $
+#
+# Definition table_mcf.def
+#
+# Name	| Type	| Mandatory	| Default     | DefaultNull	| Optional 
+#
+f1,	String,	true,	HCSS-MIB-NULL,	true,	false
+f2,	String,	true,	HCSS-MIB-NULL,	true,	false
+f3,	String,	true,	HCSS-MIB-NULL,	true,	false
+f4,	Double,	false,	0,	false,	false
+f5,	Double,	false,	0,	false,	false
+f6,	Double,	false,	0,	false,	false
+f7,	Double,	false,	0,	false,	false

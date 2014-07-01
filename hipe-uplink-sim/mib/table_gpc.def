@@ -1,0 +1,16 @@
+# $Id: table_gpc.def,v 1.1 2007/02/23 09:44:51 hsiddiqu Exp $
+#
+# Definition table_gpc.def
+#
+# Name	| Type	| Mandatory	| Default     | DefaultNull	| Optional 
+#
+f1,	String,	true,	HCSS-MIB-NULL,	true,	false
+f2,	Integer,	true,	HCSS-MIB-NULL,	true,	false
+f3,	String,	true,	HCSS-MIB-NULL,	true,	false
+f4,	String,	true,	HCSS-MIB-NULL,	true,	false
+f5,	String, false,	U,	false,	false,	
+f6,	String,	true,	HCSS-MIB-NULL,	true,	false
+f7,	String,	true,	HCSS-MIB-NULL,	true,	false
+f8,	String,	true,	HCSS-MIB-NULL,	true,	false
+f9,	String,	false,	0,	false,	false
+f10,	String,	false,	0,	false,	false

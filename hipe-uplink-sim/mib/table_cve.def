@@ -1,0 +1,12 @@
+# $Id: table_cve.def,v 1.1 2007/02/23 09:44:51 hsiddiqu Exp $
+#
+# Definition table_cve.def
+#
+# Name	| Type	| Mandatory	| Default     | DefaultNull	| Optional 
+#
+f1,	Integer,	true,	HCSS-MIB-NULL,	true,	false
+f2,	String,	true,	HCSS-MIB-NULL,	true,	false
+f3,	String,	false,	R,	false,	false
+f4,	String,	false,	HCSS-MIB-NULL,	true,	false
+f5,	String,	false,	HCSS-MIB-NULL,	true,	false
+f6,	String,	false,	B,	false,	false

@@ -1,0 +1,12 @@
+vega.help
+vega.ia.gui.apps
+vega.uplink
+vega.uplink.commanding
+vega.uplink.commanding.gui
+vega.uplink.commanding.itl
+vega.uplink.pointing
+vega.uplink.pointing.EvtmEvents
+vega.uplink.pointing.PtrParameters
+vega.uplink.pointing.PtrParameters.Offset
+vega.uplink.pointing.attitudes
+vega.uplink.pointing.gui

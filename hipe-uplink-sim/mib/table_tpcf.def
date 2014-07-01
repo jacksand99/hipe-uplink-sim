@@ -1,0 +1,9 @@
+#  $Id: table_tpcf.def,v 1.1 2007/02/23 09:44:52 hsiddiqu Exp $
+#
+# Definition table_tpcf.def
+#
+# Name	| Type	| Mandatory	| Default     | DefaultNull	| Optional 
+#
+f1,	Long,	true,	HCSS-MIB-NULL,	true,	false
+f2,	String,	false,	HCSS-MIB-NULL,	true,	false
+f3,	Integer,	false,	HCSS-MIB-NULL,	true,	true

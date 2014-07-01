@@ -1,0 +1,22 @@
+# $Id: table_pid.def,v 1.1 2007/02/23 09:44:52 hsiddiqu Exp $
+#
+# Definition table_pid.def
+#
+# Name	| Type	| Mandatory	| Default     | DefaultNull	| Optional 
+#
+f1,	Integer,	true,	HCSS-MIB-NULL,	true,	false
+f2,	Integer,	true,	HCSS-MIB-NULL,	true,	false
+f3,	Integer,	true,	HCSS-MIB-NULL,	true,	false
+f4,	Long,	false,	0,	false,	false
+f5,	Long,	false,	0,	false,	false
+f6,	Long,	true,	HCSS-MIB-NULL,	true,	false
+f7,	String,	false,	HCSS-MIB-NULL,	true,	false
+f8,	String,	false,	HCSS-MIB-NULL,	true,	false
+f9,	Long,	false,	-1,	false,	false
+f10,	Integer,	true,	HCSS-MIB-NULL,	true,	false
+f11,	String,	true,	false,	false,	N
+f12,	Integer,	true,	HCSS-MIB-NULL,	true,	false
+f13,	String,	false,	Y,	false,	false
+f14,	Long,	false,	0,	false,	false
+f15,	String,	false,	N,	false,	false
+f16,	String,	false,	HCSS_MIB_NULL,	true,	false

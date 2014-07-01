@@ -1,0 +1,19 @@
+# $Id: table_cpc.def,v 1.1 2007/02/23 09:44:51 hsiddiqu Exp $
+#
+# Definition table_cpc.def
+#
+# Name	| Type	| Mandatory	| Default     | DefaultNull	| Optional 
+#
+f1,	String,	true,	HCSS-MIB-NULL,	true,	false
+f2,	String,	false,	HCSS-MIB-NULL,	true,	false
+f3,	Integer,	true,	HCSS-MIB-NULL,	true,	false
+f4,	Integer,	true,	HCSS-MIB-NULL,	true,	false
+f5,	String,	false,	R,	false,	false
+f6,	String,	false,	D,	false,	false
+f7,	String,	false,	HCSS-MIB-NULL,	true,	false
+f8,	String,	false,	N,	false,	false
+f9,	String,	false,	HCSS-MIB-NULL,	true,	false
+f10,	String,	false,	HCSS-MIB-NULL,	true,	false
+f11,	String,	false,	HCSS-MIB-NULL,	true,	false
+f12,	String,	false,	R,	false,	false
+f13,	String,	false,	HCSS-MIB-NULL,	true,	false
