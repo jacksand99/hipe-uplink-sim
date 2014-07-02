@@ -1,29 +1,43 @@
 package vega.uplink.commanding;
 
+import herschel.ia.dataset.CompositeDataset;
+//import herschel.ia.dataset.Product;
+
+import herschel.ia.dataset.DoubleParameter;
+
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 
-public class PowerInstrument {
-	java.util.HashMap<String, Float> power;
+public class PowerInstrument extends CompositeDataset{
+	//java.util.HashMap<String, Float> power;
 	
 	public PowerInstrument(){
-		power=new java.util.HashMap<String, Float>();
+		super();
+		//power=new java.util.HashMap<String, Float>();
+		
 	}
 	
 	public void setPower(String instrument,float powerI){
-		power.put(instrument, powerI);
+		getMeta().set(instrument, new DoubleParameter(powerI));
+		//power.put(instrument, powerI);
 	}
 	
 	public float getPower(String instrument){
-		return power.get(instrument).floatValue();
+		return ((Double) getMeta().get(instrument).getValue()).floatValue();
+		//return power.get(instrument).floatValue();
 	}
 	
 	public float getTotalPower(){
+		Set<String> keyset = getMeta().keySet();
 		float result=0;
-		Collection<Float> values=power.values();
-		Iterator<Float> it=values.iterator();
+		Iterator<String> it = keyset.iterator();
+		//Collection<Float> values=power.values();
+		//Iterator<Float> it=values.iterator();
 		while (it.hasNext()){
-			result=result+it.next().floatValue();
+			float value = getPower(it.next());
+			//result=result+it.next().floatValue();
+			result=result+value;
 		}
 		return result;
 		

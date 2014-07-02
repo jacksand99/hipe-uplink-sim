@@ -94,7 +94,7 @@ public class RosettaSsmmSimulator extends SsmmSimulator {
 				priSeq.set(param,new ParameterFloat(param,Parameter.REPRESENTATION_RAW,Parameter.RADIX_DECIMAL,sPrio));
 				sPrio--;
 			}
-			SimulationContext.getInstance().dl_por.addSequence(priSeq);
+			//SimulationContext.getInstance().getDlPor().addSequence(priSeq);
 		}catch (Exception e){
 			e.printStackTrace();
 		}

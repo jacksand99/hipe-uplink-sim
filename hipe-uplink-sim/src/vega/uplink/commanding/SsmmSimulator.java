@@ -1,8 +1,12 @@
 package vega.uplink.commanding;
 
+//import herschel.ia.dataset.CompositeDataset;
+import herschel.ia.dataset.StringParameter;
 import herschel.ia.numeric.Float1d;
 import herschel.ia.numeric.Long1d;
 //import herschel.share.util.Configuration;
+
+
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -170,7 +174,9 @@ public class SsmmSimulator {
 		long packetStoreSize;
 		
 		InstrumentSimulator(String instrumentName){
+			super();
 			instrument=instrumentName;
+			//getMeta().set("instrumentName", new StringParameter(instrumentName));
 			rates=new java.util.TreeMap<Date,Float>();
 			//startDump=new java.util.TreeMap<Date,Float>();
 			//endDump=new java.util.TreeSet<Date>();
@@ -182,11 +188,16 @@ public class SsmmSimulator {
 			}
 		}
 		
+		/*private TreeMap<Date,Float> getMap(){
+			
+		}*/
+		
 		float percentageFull(Date time){
 			return (getValueAt(time)/100)*packetStoreSize;
 		}
 		
 		String getInstrument(){
+			//return (String) getMeta().get("instrumentName").getValue();
 			return instrument;
 		}
 		

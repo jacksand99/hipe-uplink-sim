@@ -138,11 +138,15 @@ public class Mib {
 				MIB=Mib.getMibFromFiles();
 			}
 			catch(IOException ioe){
-					MIB=Mib.getMibFromJar();
+					try{
+						MIB=Mib.getMibFromJar();
+					}catch (Exception e){
+						MIB=new Mib();
+					}
 			}
 			//MIB=new Mib();
 		}
-		if (MIB==null) return new Mib();
+		//if (MIB==null) return new Mib();
 		return MIB;
 	}
 }

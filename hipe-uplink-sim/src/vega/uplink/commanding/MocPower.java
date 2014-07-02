@@ -1,5 +1,11 @@
 package vega.uplink.commanding;
 
+import herschel.ia.dataset.Column;
+import herschel.ia.dataset.TableDataset;
+import herschel.ia.numeric.AbstractOrdered1dData;
+import herschel.ia.numeric.Float1d;
+import herschel.ia.numeric.Long1d;
+import herschel.ia.numeric.String1d;
 import herschel.share.util.ObjectUtil;
 
 import java.io.BufferedReader;
@@ -13,19 +19,38 @@ import java.util.Arrays;
 
 import com.kenai.jffi.Array;
 
-public class MocPower {
+public class MocPower extends TableDataset{
 	MocPower instance;
-	long[] dates;
-	float[] power;
+	//long[] dates;
+	//float[] power;
 	
 	private MocPower(){
-		dates=new long[0];
-		power=new float[0];
+		super();
+		Column time=new Column(new Long1d());
+		Column power=new Column(new Float1d());
+		//Column eddump=new Column(new String1d());
+		//Column tmRate=new Column(new String1d());
+		
+		this.addColumn(time);		
+		this.addColumn(power);
+		//this.addColumn(eddump);
+		//this.addColumn(tmRate);
+		this.setColumnName(0, "Time");
+		this.setColumnName(1, "Power");
+
+		/*dates=new long[0];
+		power=new float[0];*/
 		
 	}
 	
 	private void addRecord(long newDate,float newPower){
-		long[] nArrayDates=new long[dates.length+1];
+		/*AbstractOrdered1dData[] array=new AbstractOrdered1dData[2];
+		array*/
+		Object[] array=new Object[2];
+		array[0]=newDate;
+		array[1]=newPower;
+		this.addRow(array);
+		/*long[] nArrayDates=new long[dates.length+1];
 		float[] nArrayPower=new float[power.length+1];
 		for (int i=0;i<dates.length;i++){
 			nArrayDates[i]=dates[i];
@@ -35,12 +60,21 @@ public class MocPower {
 		nArrayPower[dates.length]=newPower;
 		
 		
-		setRecords(nArrayDates,nArrayPower);
+		setRecords(nArrayDates,nArrayPower);*/
 	}
 	
 	private void setRecords(long[] newDates, float[] newPowers){
-		dates=newDates;
-		power=newPowers;
+		Long1d col1=new Long1d();
+		Float1d col2=new Float1d();
+		for (int i=0;i<newDates.length;i++){
+			col1.append(newDates[i]);
+			col2.append(newPowers[i]);
+		}
+		this.getColumn(0).setData(col1);
+		this.getColumn(1).setData(col2);
+		
+		/*dates=newDates;
+		power=newPowers;*/
 	}
 	
 	public MocPower getInstance(){
@@ -51,8 +85,10 @@ public class MocPower {
 	}
 	
 	public float getPower(java.util.Date index){
+		long[] dates = ((Long1d) this.getColumn(0).getData()).toArray();
 		int ind=Arrays.binarySearch(dates, index.getTime());
-		return power[ind];
+		return ((Float1d) this.getColumn(1).getData()).get(ind);
+		//return power[ind];
 	}
 	public static MocPower ReadFromBuffer(BufferedReader br){
 		MocPower result = new MocPower();
@@ -105,7 +141,7 @@ public class MocPower {
 	}
 	public static MocPower ReadFromJar(){
 		System.out.println("reading from jar");
-		MocPower result = new MocPower();
+		//MocPower result = new MocPower();
 		//try{
 			InputStream is = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/moc/PWPL_14_001_14_365__OPT_01.ROS");
 			InputStreamReader isr = new InputStreamReader(is);
@@ -161,6 +197,7 @@ public class MocPower {
 	
 	private java.util.Date findCloserDate(java.util.Date dateToFind){
 		java.util.Date result=new java.util.Date();
+		long[] dates = ((Long1d) this.getColumn(0).getData()).toArray();
 		long[] orderedDates=dates;
 		Arrays.sort(orderedDates);
 		//System.out.println(dates.length);

@@ -17,17 +17,34 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.naming.ConfigurationException;
 import javax.swing.JFrame;
 public class Simulation {
 	java.text.SimpleDateFormat dateFormat2;
-	
+	SimulationContext context;
 	private Simulation(){
+		context=new SimulationContext();
 		dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
 		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		
 	}
+	private Simulation(SimulationContext context){
+		this.context=context;
+		dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
+		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		
+	}
+
 	public Simulation(Por[] pors){
 		this();
+		//context=new SimulationContext();
+		addPors(pors);
+		
+		
+	}
+	public Simulation(Por[] pors,SimulationContext simContext){
+		this(simContext);
+		//context=new SimulationContext();
 		addPors(pors);
 		
 		
@@ -35,33 +52,34 @@ public class Simulation {
 	
 	private void addPors(Por[] pors){
 		for (int i=0;i<pors.length;i++){
-			SimulationContext.getInstance().sp.addPor(pors[i]);
+			context.getPor().addPor(pors[i]);
 		}
 		
 	}
-	public String run(){
+	public SimulationContext run(){
 		return run(false);
 	}
-	public String run(boolean printStrategy){
+	public SimulationContext run(boolean printStrategy){
 		
-		Sequence[] seqs=SimulationContext.getInstance().sp.getOrderedSequences();
-		SsmmSimulator memorySimulator=SimulationContext.getInstance().ssmm;
-		String messages="";
+		Sequence[] seqs=context.getPor().getOrderedSequences();
+		//SsmmSimulator memorySimulator=context.ssmm;
+		SsmmSimulator memorySimulator=new RosettaSsmmSimulator();
+		//String messages="";
 		for (int i=0;i<seqs.length;i++){
 			//if (seqs[i].getName())
 			if (seqs[i].getInstrument().equals("ANTENNA")){
 				//System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 				memorySimulator.addSequence(seqs[i]);
 			}
-			HashMap<Long,String> newmodes=SimulationContext.getInstance().orcd.getModesAsHistory(seqs[i].getName(),seqs[i].getExecutionDate().getTime());
-			SimulationContext.getInstance().historyModes.putAll(newmodes, seqs[i].getName(), seqs[i].getExecutionDate().getTime());
+			HashMap<Long,String> newmodes=context.getOrcd().getModesAsHistory(seqs[i].getName(),seqs[i].getExecutionDate().getTime());
+			context.getHistoryModes().putAll(newmodes, seqs[i].getName(), seqs[i].getExecutionDate().getTime());
 			SequenceProfile[] profiles=seqs[i].getProfiles();
 			if (profiles!=null){
 				for (int j=0;j<profiles.length;j++){
 					if (profiles[j].getType().equals("PW")){
-						SimulationContext.getInstance().powerInstrument.setPower(seqs[i].getInstrument(), new Float(profiles[j].getValue()));
-						SimulationContext.getInstance().zRecordDates.append(seqs[i].getExecutionDate().getTime()+(profiles[j].getOffSetSeconds()*1000));
-						SimulationContext.getInstance().historyPowerZ.append(SimulationContext.getInstance().powerInstrument.getTotalPower());
+						context.getPowerInstrument().setPower(seqs[i].getInstrument(), new Float(profiles[j].getValue()));
+						context.getZRecordDates().append(seqs[i].getExecutionDate().getTime()+(profiles[j].getOffSetSeconds()*1000));
+						context.getHistoryPowerZ().append(context.getPowerInstrument().getTotalPower());
 					}
 					if (profiles[j].getType().equals("DR")){
 						memorySimulator.addAction(seqs[i].getInstrument(), new Date(seqs[i].getExecutionDate().getTime()+(profiles[j].getOffSetSeconds()*1000)), new Float(profiles[j].getValue()));
@@ -70,10 +88,10 @@ public class Simulation {
 				}
 			}
 		}
-		java.util.Date start=SimulationContext.getInstance().sp.getValidityDates()[0];
-		java.util.Date end=SimulationContext.getInstance().sp.getValidityDates()[1];
+		java.util.Date start=context.getPor().getValidityDates()[0];
+		java.util.Date end=context.getPor().getValidityDates()[1];
 		
-		TreeSet<GsPass> passes=SimulationContext.getInstance().fecs.getPasses();
+		TreeSet<GsPass> passes=context.getFecs().getPasses();
 		Iterator<GsPass> it = passes.iterator();
 		String strategy="";
 		while (it.hasNext()){
@@ -84,12 +102,12 @@ public class Simulation {
 			}
 			//messages=messages+memorySimulator.addGsPass(pass);
 		}
-		if (printStrategy) messages=messages+strategy;
+		if (printStrategy) context.log(strategy);
 		
 		//System.out.println("Run full simulation:");
 		//Synchronize()
-		//boolean r=memorySimulator.runSimulation(SimulationContext.getInstance().sp.getValidityDates()[1]);
-		long[] timess=SimulationContext.getInstance().historyModes.getTimes();
+		//boolean r=memorySimulator.runSimulation(context.sp.getValidityDates()[1]);
+		long[] timess=context.getHistoryModes().getTimes();
 		java.util.Vector<Long> temp=new java.util.Vector<Long>();
 		for (int i=0;i<timess.length;i++){
 			if (timess[i]>=start.getTime() && timess[i]<=end.getTime()){
@@ -101,23 +119,25 @@ public class Simulation {
 		
 		for (int i=0;i<times.length;i++){
 			long j=times[i];
-			String oldmode=SimulationContext.getInstance().ms.getStateForMode(SimulationContext.getInstance().historyModes.get(j));
-			String newmode=SimulationContext.getInstance().historyModes.get(j);
-			if (!SimulationContext.getInstance().orcd.checkTransion(oldmode, newmode)){
-				String mess="Forbidden transition "+oldmode+"--->"+newmode+" at "+dateFormat2.format(new Date(j))+" via "+SimulationContext.getInstance().historyModes.getCommand(j)+" executed at "+dateFormat2.format(new Date(SimulationContext.getInstance().historyModes.getOriginalTime(j)))+"\n";
-				messages=messages+mess;
+			String oldmode=context.getModelState().getStateForMode(context.getHistoryModes().get(j));
+			String newmode=context.getHistoryModes().get(j);
+			if (!context.getOrcd().checkTransion(oldmode, newmode)){
+				String mess="Forbidden transition "+oldmode+"--->"+newmode+" at "+dateFormat2.format(new Date(j))+" via "+context.getHistoryModes().getCommand(j)+" executed at "+dateFormat2.format(new Date(context.getHistoryModes().getOriginalTime(j)));
+				//messages=messages+mess;
+				context.log(mess);
 				Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
 			}
-			SimulationContext.getInstance().ms.setState(newmode);
-			SimulationContext.getInstance().historyModes.addStates(j,SimulationContext.getInstance().ms.clone());
-			SimulationContext.getInstance().executionDates.append(j);
-			float modelPower = SimulationContext.getInstance().orcd.getTotalPowerForModes(SimulationContext.getInstance().ms.getAllStates());
-			SimulationContext.getInstance().historyPower.append(modelPower);
-			float mPower = SimulationContext.getInstance().mocPower.getPowerAt(new Date(j));
-			SimulationContext.getInstance().mocPowerHistory.append(mPower);
+			context.getModelState().setState(newmode);
+			context.getHistoryModes().addStates(j,context.getModelState().clone());
+			context.getExecutionDates().append(j);
+			float modelPower = context.getOrcd().getTotalPowerForModes(context.getModelState().getAllStates());
+			context.getHistoryPower().append(modelPower);
+			float mPower = context.getMocPower().getPowerAt(new Date(j));
+			context.getMocPowerHistory().append(mPower);
 			if (modelPower>mPower){
-				String mess="ALARM: Power over due via sequence "+SimulationContext.getInstance().historyModes.getCommand(j)+" executed at "+dateFormat2.format(new Date(SimulationContext.getInstance().historyModes.getOriginalTime(j)))+"\n";
-				messages=messages+mess;
+				String mess="ALARM: Power over due via sequence "+context.getHistoryModes().getCommand(j)+" executed at "+dateFormat2.format(new Date(context.getHistoryModes().getOriginalTime(j)));
+				//messages=messages+mess;
+				context.log(mess);
 				Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
 
 			}
@@ -126,11 +146,11 @@ public class Simulation {
 		
 		
 		PlotXY plot3=new PlotXY();
-		LayerXY layer6 = new LayerXY(SimulationContext.getInstance().executionDates,SimulationContext.getInstance().historyPower);
+		LayerXY layer6 = new LayerXY(context.getExecutionDates(),context.getHistoryPower());
 		layer6.setColor(java.awt.Color.BLUE);
-		LayerXY layer7 = new LayerXY(SimulationContext.getInstance().zRecordDates,SimulationContext.getInstance().historyPowerZ);
+		LayerXY layer7 = new LayerXY(context.getZRecordDates(),context.getHistoryPowerZ());
 		layer7.setColor(java.awt.Color.GREEN);
-		LayerXY layer8 = new LayerXY(SimulationContext.getInstance().executionDates,SimulationContext.getInstance().mocPowerHistory);
+		LayerXY layer8 = new LayerXY(context.getExecutionDates(),context.getMocPowerHistory());
 		layer8.setColor(java.awt.Color.RED);
 		plot3.addLayer(layer6);
 		plot3.addLayer(layer7);
@@ -145,7 +165,7 @@ public class Simulation {
 		plot3.getLegend().setVisible(true);
 		
 		PlotXY plot4=new PlotXY();
-		//LayerXY layerTotalMemory=new LayerXY(new Long1d(SimulationContext.getInstance().ssmmHistory.getAllTimesAsLongArray()),new Float1d(SimulationContext.getInstance().ssmmHistory.getAllTotalPower()));
+		//LayerXY layerTotalMemory=new LayerXY(new Long1d(context.ssmmHistory.getAllTimesAsLongArray()),new Float1d(context.ssmmHistory.getAllTotalPower()));
 
 		/*LayerXY layerTotalMemory=new LayerXY(memorySimulator.toLong1d(times),memorySimulator.toFloat1d(memorySimulator.getAllMemoryAt(times)));
 
@@ -173,7 +193,7 @@ public class Simulation {
 				packetStoreSize=104857600;
 			}
 
-			//LayerXY tempLayer=new LayerXY(new Long1d(SimulationContext.getInstance().ssmmHistory.getAllTimesAsLongArray()),new Float1d(SimulationContext.getInstance().ssmmHistory.getAllPower(instruments[i])));
+			//LayerXY tempLayer=new LayerXY(new Long1d(context.ssmmHistory.getAllTimesAsLongArray()),new Float1d(context.ssmmHistory.getAllPower(instruments[i])));
 			//LayerXY tempLayer=new LayerXY(memorySimulator.getAllTimesLong1d(instruments[i]),memorySimulator.geatAllMemoryFloat1d(instruments[i]));
 			Float[] array = memorySimulator.getValuesAt(instruments[i], times);
 			Float1d values=new Float1d();
@@ -182,10 +202,11 @@ public class Simulation {
 			for (int j=0;j<array.length;j++){
 				if (array[j]==packetStoreSize){
 					if (!inMemoryFull){
-						String mess2="Packet store for instrument "+instruments[i]+" full at "+dateFormat2.format(new java.util.Date(times[j]))+"\n";
+						String mess2="Packet store for instrument "+instruments[i]+" full at "+dateFormat2.format(new java.util.Date(times[j]));
 						if (!mess.equals(mess2)){
 							mess=mess2;
-							messages=messages+mess;
+							context.log(mess);
+							//messages=messages+mess;
 							Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
 
 						}
@@ -204,7 +225,12 @@ public class Simulation {
 
 			//Float1d values = memorySimulator.toFloat1d(memorySimulator.getValuesAt(instruments[i], times));
 			//System.out.println(values);
-			Color color = Properties.getColor(Properties.SUBINSTRUMENT_COLOR_PROPERTY_PREFIX+instruments[i]);
+			Color color=Color.BLACK;
+			try{
+				color = Properties.getColor(Properties.SUBINSTRUMENT_COLOR_PROPERTY_PREFIX+instruments[i]);
+			}catch (Exception ce){
+				ce.printStackTrace();context.log(ce.getMessage());
+			}
 			LayerXY tempLayer=new LayerXY(memorySimulator.toLong1d(times),values);
 			tempLayer.setColor(color);
 			tempLayer.setName(instruments[i]);
@@ -220,7 +246,7 @@ public class Simulation {
 		plot4.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
 		plot4.getLegend().setVisible(true);
 		
-		HistoryModesPlot plot = new vega.uplink.commanding.gui.HistoryModesPlot("Time line",SimulationContext.getInstance().historyModes);
+		HistoryModesPlot plot = new vega.uplink.commanding.gui.HistoryModesPlot("Time line",context.getHistoryModes());
 		JFrame frame=new JFrame("Time line");
 		frame.setContentPane(plot);
 		plot.setPreferredSize(new java.awt.Dimension(500, 270));
@@ -228,7 +254,7 @@ public class Simulation {
 		RefineryUtilities.centerFrameOnScreen(frame);
 
 		frame.setVisible(true);
-		return messages;
+		return context;
 	}
 	public Simulation(String[] porFiles){
 		this();
@@ -245,9 +271,22 @@ public class Simulation {
 		pors[0]=PorUtils.readPORfromFile(por);
 		addPors((pors));
 	}
+	public Simulation(String por,SimulationContext simContext){
+		this(simContext);
+		Por[] pors=new Por[1];
+		pors[0]=PorUtils.readPORfromFile(por);
+		addPors((pors));
+	}
 	
 	public Simulation(Por por){
 		this();
+		Por[] pors=new Por[1];
+		pors[0]=por;
+		addPors((pors));
+		
+	}
+	public Simulation(Por por,SimulationContext simContext){
+		this(simContext);
 		Por[] pors=new Por[1];
 		pors[0]=por;
 		addPors((pors));

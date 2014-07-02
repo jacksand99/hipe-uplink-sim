@@ -3,10 +3,16 @@ package vega.uplink.commanding;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.Set;
 
+import herschel.ia.dataset.CompositeDataset;
+import herschel.ia.dataset.DoubleParameter;
+import herschel.ia.dataset.MetaData;
+import herschel.ia.dataset.StringParameter;
 import herschel.ia.numeric.String1d;
 
-public class ModelState {
+public class ModelState extends CompositeDataset{
 	static String ALICE ="ALICE";
 	static String CONSERT = "CONSERT";
 	static String COSIMA ="COSIMA";
@@ -20,13 +26,14 @@ public class ModelState {
 	static String SREM="SREM";
 	static String VIRTIS="VIRTIS";
 	static String LANDER="LANDER";
-	java.util.HashMap<String,String> states;
-	java.util.HashMap<String,Float> power;
+	//java.util.HashMap<String,String> states;
+	//java.util.HashMap<String,Float> power;
 	static ModelState model;
 	
-	public ModelState(){
-		states=new java.util.HashMap<String,String>();
-		power=new java.util.HashMap<String,Float>();
+	public ModelState() {
+		super();
+		//states=new java.util.HashMap<String,String>();
+		//power=new java.util.HashMap<String,Float>();
 	}
 	
 	/*public ModelState clone(){
@@ -36,19 +43,31 @@ public class ModelState {
 	}*/
 	
 	
-	private void setStates(java.util.HashMap<String,String> newStates){
-		states=newStates;
+	/*private void setStates(java.util.HashMap<String,String> newStates){
+		Iterator<String> it = newStates.keySet().iterator();
+		while(it.hasNext()){
+			String key=it.next();
+			getMeta().set("state_"+key, new StringParameter(newStates.get(key)));
+		}
+		//states=newStates;
 	}
 	
 	private void setPower(java.util.HashMap<String,Float> newPower){
-		power=newPower;
-	}
+		Iterator<String> it = newPower.keySet().iterator();
+		while(it.hasNext()){
+			String key=it.next();
+			getMeta().set("power_"+key, new DoubleParameter(newPower.get(key)));
+		}
+		
+		//power=newPower;
+	}*/
 	
 	public void setInstrument(String instrument,float newPower){
+		getMeta().set("power_"+instrument, new DoubleParameter(newPower));
 		//System.out.println("Setting subsystem power:"+subsystem);
 		//System.out.println(newPower);
 		
-		power.put(instrument, new Float(newPower));
+		//power.put(instrument, new Float(newPower));
 		//System.out.println(power.get(subsystem));
 	}
 	
@@ -62,31 +81,47 @@ public class ModelState {
 	}*/
 	
 	public float getInstrumentPower(String instrument){
-		if (power.containsKey(instrument)) return power.get(instrument).floatValue();
-		else return 0;
+		if (getMeta().containsKey("power_"+instrument)){
+			return ((Double)getMeta().get("power_"+instrument).getValue()).floatValue();
+		}else{
+			return 0;
+		}
+		/*if (power.containsKey(instrument)) return power.get(instrument).floatValue();
+		else return 0;*/
 		
 	}
 	
 	public float getTotalPower(){
 		float result=0;
-		java.util.Iterator<String> it=power.keySet().iterator();
+		Iterator<String> it = getMeta().keySet().iterator();
+		while (it.hasNext()){
+			String key=it.next();
+			if (key.startsWith("state_")){
+				result=result+((Double)getMeta().get(key).getValue()).floatValue();
+			}
+		}
+		/*java.util.Iterator<String> it=power.keySet().iterator();
 		while (it.hasNext()){
 			String key=it.next();
 			result=result+this.getInstrumentPower(key);
 			
-		}
+		}*/
 		
 		return result;
 	}
 	
 	
 	public String getState(String subSystem){
-		if (states.containsKey(subSystem)) return states.get(subSystem);
-		else return subSystem+"Off";
+		if (getMeta().containsKey("state_"+subSystem)){
+			return (String) getMeta().get("state_"+subSystem).getValue();
+		}else return subSystem+"Off";
+		/*if (states.containsKey(subSystem)) return states.get(subSystem);
+		else return subSystem+"Off";*/
 	}
 	
 	public void setState(String subSystem,String state){
-		states.put(subSystem, state);
+		getMeta().set("state_"+subSystem, new StringParameter(state));
+		//states.put(subSystem, state);
 	}
 	
 	public void setState(String mode){
@@ -101,6 +136,7 @@ public class ModelState {
 	}
 	
 	public String getStateForMode(String mode){
+		//if (mode==null) return null;
 		String[] arr=mode.split("_");
 		String subSystem="";
 		for (int i=0;i<arr.length-1;i++){
@@ -122,14 +158,19 @@ public class ModelState {
 	}
 	
 	public String[] getStateNames(){
+		Iterator<String> it = getMeta().keySet().iterator();
 		java.util.Vector<String> vector=new java.util.Vector<String>();
-		java.util.Iterator<String> it=states.keySet().iterator();
+		while (it.hasNext()){
+			String key=it.next();
+			if (key.startsWith("state_")) vector.add(key.substring(6));
+		}
+		/*java.util.Iterator<String> it=states.keySet().iterator();
 		while (it.hasNext()){
 			String key=it.next();
 			
 				vector.add(key);
 			
-		}
+		}*/
 		String[] result=new String[vector.capacity()];
 		vector.copyInto(result);
 		return result;
@@ -199,10 +240,14 @@ public class ModelState {
 	}
 	
 	public ModelState clone(){
-		ModelState result =new ModelState();
+		MetaData meta = getMeta().copy();
+		ModelState result = new ModelState();
+		result.setMeta(meta);
+		return result;
+		/*ModelState result =new ModelState();
 		result.setStates(new java.util.HashMap<String,String>(states));
 		result.setPower(new java.util.HashMap<String,Float>(power));
-		return result;
+		return result;*/
 	}
 	
 

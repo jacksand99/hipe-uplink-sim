@@ -41,8 +41,8 @@ del(REGISTRY)
 
 del(path)
 from vega.uplink.commanding import SimulationContext 
-por=SimulationContext.getInstance().sp
-ptr=SimulationContext.getInstance().ptr
+#por=SimulationContext.getInstance().sp
+#ptr=SimulationContext.getInstance().ptr
 
 
 

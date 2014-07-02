@@ -44,6 +44,8 @@ import javax.swing.text.BadLocationException;
 
 import herschel.ia.gui.kernel.SiteEvent;
 import herschel.ia.gui.kernel.SiteEventListener;
+import herschel.share.interpreter.InterpreterFactory;
+import herschel.share.interpreter.InterpreterNameSpaceUtil;
 //import herschel.share.util.Configuration;
 import vega.uplink.Properties;
 //import rosetta.uplink.commanding.Simulation;
@@ -79,9 +81,11 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 	JButton runButton;
 	JButton resetButton;
 	String defaultDirectory=Properties.getProperty(Properties.DEFAULT_PLANNING_DIRECTORY);
+	SimulationContext context;
 	
     public SimulationView(){
     	super();
+    	context=new SimulationContext();
     	itlFile=null;
     	evtFile=null;
     	evtmFile=null;
@@ -296,7 +300,7 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 			    	    segmentNames=new String[1];
 			    	    segmentNames[0]="PTR_SEGMENT";
 			    	    refreshLabels();
-			    	    SimulationContext.getInstance().reset();
+			    	    context.reset();
 			        	
 			        }
 			    };
@@ -339,7 +343,7 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 			        				
 			        			}*/
 
-			        			SimulationContext.getInstance().fecs=fecs;
+			        			context.setFecs(fecs);
 			        		}
 			        		if (evtmFile!=null){
 			        			Evtm evtm = PtrUtils.readEvtmFromFile(evtmFile.getAbsolutePath());
@@ -352,27 +356,36 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 			        			 */
 			        			for (int i=0;i<events.length;i++){
 			        				EvtmEvent event = events[i];
-			        				HashMap<Long, String> newmodes = SimulationContext.getInstance().orcd.getModesAsHistory("EVTM_"+event.getId(),event.getTime().getTime());
-			        				SimulationContext.getInstance().historyModes.putAll(newmodes,"EVTM_"+event.getId(),event.getTime().getTime());
+			        				HashMap<Long, String> newmodes = context.getOrcd().getModesAsHistory("EVTM_"+event.getId(),event.getTime().getTime());
+			        				context.getHistoryModes().putAll(newmodes,"EVTM_"+event.getId(),event.getTime().getTime());
 			        			}
 			        		}
 			        		if (ptr!=null){
-			        			SimulationContext.getInstance().ptr=ptr;
+			        			context.setPtr(ptr);
 			        			messages=messages+PtrChecker.checkPtr(ptr);
 			        			PtrSegment segment=ptr.getSegment((String) ptrbox.getSelectedItem());
 			        			PointingBlock[] blocks=segment.getBlocks();
 			        			for (int i=0;i<blocks.length;i++){
-			        				SimulationContext.getInstance().historyModes.add(blocks[i].getStartTime().getTime(), "PTR_"+blocks[i].getType(), "PTR", blocks[i].getStartTime().getTime());
+			        				context.getHistoryModes().add(blocks[i].getStartTime().getTime(), "PTR_"+blocks[i].getType(), "PTR", blocks[i].getStartTime().getTime());
 			        			}
 			        		}
-				        	Simulation sim=new Simulation(spor);
+				        	Simulation sim=new Simulation(spor,context);
 
-
-			        		messages=messages+sim.run();
+				        	SimulationContext resultContext = sim.run();
+				        	try{
+				        		herschel.ia.jconsole.jython.Interpreter.getInterpreter().set(""+new Date().getTime()+"_simulationContext", resultContext);
+				        		//InterpreterFactory.getInterpreter().set(""+new Date().getTime()+"_simulationContext", resultContext);
+				        		//InterpreterNameSpaceUtil.getInstance().getInterpreter().set(""+new Date().getTime()+"_simulationContext", resultContext);
+				        	}catch (Exception e){
+				        		Logger.getLogger(getClass().getName()).log(Level.SEVERE, e.getMessage());
+				        		messages=messages+e.getMessage()+"\n";
+				        	}
+				        	messages=messages+resultContext.getLog();
+			        		//messages=messages+sim.run();
 			        	}
 			        	catch (Exception e){
 			        		Logger.getLogger(getClass().getName()).log(Level.SEVERE, e.getMessage());
-			        		messages=messages+e.getMessage();
+			        		messages=messages+e.getMessage()+"\n";
 			        		e.printStackTrace();
 			        	}
 			        	//if (messages!=null)

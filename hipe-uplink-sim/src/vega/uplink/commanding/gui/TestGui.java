@@ -15,12 +15,12 @@ public class TestGui {
 	public static void main(String[] args) {
 		//herschel.share.util.Configuration.
 		//herschel.share.util.Configuration.lo
-		herschel.share.util.Configuration.setProperty("var.hcss.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
-		herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
-    	herschel.share.util.Configuration.setProperty("vega.default.evtDirectory", "Z:\\MAPPS\\RMOC\\");
-    	herschel.share.util.Configuration.setProperty("vega.orcd.file","Z:\\MAPPS\\MIB\\orcd.csv");
-    	herschel.share.util.Configuration.setProperty("vega.pwpl.file","C:\\ROS_SGS\\PLANNING\\RMOC\\FCT\\PWPL_14_001_14_365__OPT_01.ROS");
-    	herschel.share.util.Configuration.setProperty("vega.mib.location","Z:\\MAPPS\\MIB");
+		herschel.share.util.Configuration.setProperty("var.hcss.dir", "/Users/jarenas 1/Downloads/hcss.dp.core-13.0.2361");
+		herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas 1/Downloads/hcss.dp.core-13.0.2361");
+    	herschel.share.util.Configuration.setProperty("vega.default.evtDirectory", "/Users/jarenas 1/Downloads/MAPPS/RMOC/");
+    	herschel.share.util.Configuration.setProperty("vega.orcd.file","/Users/jarenas 1/Downloads/MAPPS/MIB/orcd.csv");
+    	herschel.share.util.Configuration.setProperty("vega.pwpl.file","/Users/jarenas 1/OPS/ROS_SGS/PLANNING/RMOC/FCT/PWPL_14_001_14_365__OPT_01.ROS");
+    	herschel.share.util.Configuration.setProperty("vega.mib.location","/Users/jarenas 1/Downloads/MAPPS/MIB");
 
 		//herschel.share.util.Configuration.setProperty(Mib.ROSETTA_MIB_LOCATION, "Z:\\MAPPS\\MIB");
 		//herschel.share.util.Configuration.setProperty("rosetta.default.evtDirectory", "Z:\\MAPPS\\RMOC\\");

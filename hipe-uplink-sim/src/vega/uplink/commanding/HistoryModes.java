@@ -1,7 +1,9 @@
 package vega.uplink.commanding;
 
 import herschel.ia.dataset.Column;
+import herschel.ia.dataset.CompositeDataset;
 import herschel.ia.dataset.TableDataset;
+import herschel.ia.numeric.Long1d;
 import herschel.ia.numeric.String1d;
 
 import java.util.Arrays;
@@ -10,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 //import java.util.Map.Entry;
 //import java.util.Set;
+import java.util.List;
 
 /**
  * Class to store the history of a simulation of a planning period
@@ -22,12 +25,12 @@ import java.util.Iterator;
  * @author jarenas
  *
  */
-public class HistoryModes extends TableDataset{
-	java.util.HashMap<Long,String> history;
+public class HistoryModes extends CompositeDataset{
+	/*java.util.HashMap<Long,String> history;
 	java.util.HashMap<Long,String> historyCommands;
 	java.util.HashMap<Long,Long> historyExecution;
-	java.util.HashMap<Long,ModelState> historyStates;
-	java.text.SimpleDateFormat dateFormat2;
+	java.util.HashMap<Long,ModelState> historyStates;*/
+	//java.text.SimpleDateFormat dateFormat2;
 
 	
 	/**
@@ -35,29 +38,30 @@ public class HistoryModes extends TableDataset{
 	 */
 	public HistoryModes(){
 		super();
-		dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		history=new java.util.HashMap<Long,String>();
-		historyCommands=new java.util.HashMap<Long,String>();
-		historyExecution=new java.util.HashMap<Long,Long>();
-		historyStates=new java.util.HashMap<Long,ModelState>();
-		Column time=new Column(new String1d());
+		//dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
+		//dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		//history=new java.util.HashMap<Long,String>();
+		//historyCommands=new java.util.HashMap<Long,String>();
+		//historyExecution=new java.util.HashMap<Long,Long>();
+		//historyStates=new java.util.HashMap<Long,ModelState>();
+		Column time=new Column(new Long1d());
 		Column newmode=new Column(new String1d());
 		Column command=new Column(new String1d());
-		Column orexecution=new Column(new String1d());
+		Column orexecution=new Column(new Long1d());
 		//Column eddump=new Column(new String1d());
 		//Column tmRate=new Column(new String1d());
-		
-		this.addColumn(time);		
-		this.addColumn(newmode);
-		this.addColumn(command);
-		this.addColumn(orexecution);
+		TableDataset table=new TableDataset();
+		table.addColumn(time);		
+		table.addColumn(newmode);
+		table.addColumn(command);
+		table.addColumn(orexecution);
 		//this.addColumn(eddump);
 		//this.addColumn(tmRate);
-		this.setColumnName(0, "Action Time");
-		this.setColumnName(1, "Mode");
-		this.setColumnName(2, "Sequence");
-		this.setColumnName(3, "Original Execution Time");
+		table.setColumnName(0, "Action Time");
+		table.setColumnName(1, "Mode");
+		table.setColumnName(2, "Sequence");
+		table.setColumnName(3, "Original Execution Time");
+		this.set("table", table);
 		//this.setColumnName(4, "End Dump");
 		//this.setColumnName(5, "TM rate");
 
@@ -71,29 +75,62 @@ public class HistoryModes extends TableDataset{
 	 * @param originalTime original execution time of the command that triggered this action
 	 */
 	public void add(long time,String mode,String command,long originalTime){
-		if (history.get(time)!=null){
+		if (getCommand(time)!=null){
 			add(time+1,mode,command,originalTime);
-		} else{
+		}
+		/*if (history.get(time)!=null){
+			add(time+1,mode,command,originalTime);
+		}*/ else{
 			
 		
-			history.put(time, mode);
-			historyCommands.put(time, command);
-			historyExecution.put(time, originalTime);
-			String[] row=new String[4];
-			row[0]=dateFormat2.format(new Date(time));
+			//history.put(time, mode);
+			//historyCommands.put(time, command);
+			//historyExecution.put(time, originalTime);
+			Object[] row=new Object[4];
+			//row[0]=dateFormat2.format(new Date(time));
+			row[0]=new Long(time);
 			row[1]=mode;
 			row[2]=command;
-			row[3]=dateFormat2.format(new Date(originalTime));
-			addRow(row);
+			row[3]=new Long(originalTime);
+			((TableDataset) get("table")).addRow(row);
 		}
 	}
-	
+	private Long[] longToLongArray(long[] data){
+		Long[] result=new Long[data.length];
+		for (int i=0;i<data.length;i++){
+			result[i]=data[i];
+			
+		}
+		return result;
+	}
+	private int findIndex(long time){
+		TableDataset table = (TableDataset)get("table");
+		//System.out.println("tablesize is "+table.getRowCount());
+		long[] times = ((Long1d) table.getColumn(0).getData()).toArray();
+		//System.out.println("times size is "+times.length);
+		
+		List<Long> list = Arrays.asList(longToLongArray(times));
+		/*System.out.println("The list size is "+list.size());
+		System.out.println("The list is "+list);
+		System.out.println("The 1st vale is "+list.get(0));*/
+
+		return list.indexOf(time);
+		//Arrays.sort(times);
+		//return Arrays.binarySearch(times, time);
+
+	}
 	/**
 	 * @param time Time of the action (number of milliseconds since January 1, 1970, 00:00:00 GMT)
 	 * @return the name of the mode where the spacecraft is going by this action
 	 */
 	public String get(long time){
-		return history.get(time);
+		TableDataset table = (TableDataset)get("table");
+		int index = findIndex(time);
+		if (index<0) return null;
+		return ((String1d) table.getColumn(1).getData()).get(index);
+		//Long1d times = (Long1d) table.getColumn(0).getData();
+		
+		//return history.get(time);
 	}
 	
 	/**
@@ -101,14 +138,26 @@ public class HistoryModes extends TableDataset{
 	 * @return command that triggered this action
 	 */
 	public String getCommand(long time){
-		return historyCommands.get(time);
+		TableDataset table = (TableDataset)get("table");
+		int index = findIndex(time);
+		if (index<0) return null;
+
+		return ((String1d) table.getColumn(2).getData()).get(index);
+
+		//return historyCommands.get(time);
 	}
 	/**
 	 * @param time Time of the action (number of milliseconds since January 1, 1970, 00:00:00 GMT)
 	 * @return The original execution time of the command that triggered this action
 	 */
 	public long getOriginalTime(long time){
-		return historyExecution.get(time);
+		TableDataset table = (TableDataset)get("table");
+		int index = findIndex(time);
+		//if (index<0) return null;
+
+		return ((Long1d) table.getColumn(3).getData()).get(index);
+
+		//return historyExecution.get(time);
 	}
 	
 	/**
@@ -116,7 +165,8 @@ public class HistoryModes extends TableDataset{
 	 * @param states The ModelState object with all the states of the spacecraft at this time
 	 */
 	public void addStates(long time,ModelState states){
-		historyStates.put(time, states);
+		set(""+time,states);
+		//historyStates.put(time, states);
 	}
 	
 	/**
@@ -124,7 +174,12 @@ public class HistoryModes extends TableDataset{
 	 * @return The ModelState object with all the states of the spacecraft at this time, or null if the action has not been executed yet over the modelstate.
 	 */
 	public ModelState getStates(long time){
-		return historyStates.get(time);
+		try{
+			return (ModelState) get(""+time);
+		}catch (java.lang.NullPointerException ne){
+			return null;
+		}
+		//return historyStates.get(time);
 	}
 	
 	public void putAll(java.util.HashMap<Long,String> newset,String command,long originalTime){
@@ -138,7 +193,10 @@ public class HistoryModes extends TableDataset{
 	}
 	
 	public long[] getTimes(){
-		long[] result=new long[history.size()];
+		long[] result = ((Long1d) ((TableDataset) get("table")).getColumn(0).getData()).toArray();
+		Arrays.sort(result);
+		return result;
+		/*long[] result=new long[history.size()];
 		Iterator<Long> it=history.keySet().iterator();
 		int locator=0;
 		while (it.hasNext()){
@@ -146,7 +204,7 @@ public class HistoryModes extends TableDataset{
 			locator++;
 		}
 		Arrays.sort(result);
-		return result;
+		return result;*/
 		
 	}
 	
