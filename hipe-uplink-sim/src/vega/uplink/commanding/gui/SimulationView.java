@@ -373,7 +373,7 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 
 				        	SimulationContext resultContext = sim.run();
 				        	try{
-				        		herschel.ia.jconsole.jython.Interpreter.getInterpreter().set(""+new Date().getTime()+"_simulationContext", resultContext);
+				        		herschel.ia.jconsole.jython.Interpreter.getInterpreter().set("simulationContext"+new Date().getTime(), resultContext);
 				        		//InterpreterFactory.getInterpreter().set(""+new Date().getTime()+"_simulationContext", resultContext);
 				        		//InterpreterNameSpaceUtil.getInstance().getInterpreter().set(""+new Date().getTime()+"_simulationContext", resultContext);
 				        	}catch (Exception e){
