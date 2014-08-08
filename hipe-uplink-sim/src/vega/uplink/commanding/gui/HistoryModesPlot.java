@@ -4,10 +4,19 @@ import herschel.ia.gui.kernel.Selection;
 import static herschel.ia.gui.kernel.menus.Insert.MAIN;
 import herschel.ia.gui.kernel.SiteAction;
 import herschel.ia.gui.kernel.menus.ActionBars;
+import herschel.ia.gui.kernel.parts.AbstractVariableEditorComponent;
 import herschel.ia.gui.kernel.parts.EditorArea;
 import herschel.ia.gui.kernel.parts.EditorPart;
 import herschel.share.swing.Components;
 //import herschel.share.util.Configuration;
+
+
+
+
+
+
+
+
 
 import java.awt.Color;
 import java.awt.Component;
@@ -18,6 +27,9 @@ import java.awt.Paint;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,7 +39,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
 
 import org.jfree.chart.ChartFactory;
@@ -53,22 +67,29 @@ import org.jfree.data.gantt.TaskSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
+//import com.oracle.jrockit.jfr.InvalidValueException;
+
+
+
+
+
+
 import vega.uplink.Properties;
 import vega.uplink.commanding.HistoryModes;
 
-public class HistoryModesPlot extends javax.swing.JPanel implements herschel.ia.gui.kernel.parts.EditorComponent {
+public class HistoryModesPlot extends AbstractVariableEditorComponent<HistoryModes> {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4262249051727577295L;
 
-	private Selection selection;
+	//private Selection selection;
 	
-	private String viewerId;
+	//private String viewerId;
     private List<SiteAction> actions;
 
-	EditorPart part;
+	//EditorPart part;
 	
 	private ChartPanel chartPanel;
 	private HashMap<String,String> instrumentsStartString;
@@ -526,7 +547,7 @@ public class HistoryModesPlot extends javax.swing.JPanel implements herschel.ia.
 
         
     }
-	@Override
+	/*@Override
 	public void dispose() {
         if (actions != null && !actions.isEmpty()) {
             ActionBars menus = getArea().getActionBars(MAIN);
@@ -540,7 +561,7 @@ public class HistoryModesPlot extends javax.swing.JPanel implements herschel.ia.
         part = null;
         removeAll();
 		
-	}
+	}*/
 
 	@Override
 	public boolean aboutToClose() {
@@ -548,65 +569,78 @@ public class HistoryModesPlot extends javax.swing.JPanel implements herschel.ia.
 		return true;
 	}
 
-	@Override
-	public boolean addSelection(Selection arg0) {
-		/*HistoryModes hd=(HistoryModes) arg0.getValue();
-		makePlot("Time line",hd);*/
+	/*public boolean addSelection(Selection arg0) {
 		selection=arg0;
 		// TODO Auto-generated method stub
 		return true;
-	}
+	}*/
 
-	@Override
-	public Component asComponent() {
+	/*public Component asComponent() {
 		return this;
 		// TODO Auto-generated method stub
 		//return null;
-	}
+	}*/
 
-	@Override
 	public Icon getComponentIcon() {
-		
-		// TODO Auto-generated method stub
-		return null;
+        try {
+            URL resource = HistoryModesPlot.class.getResource("/vega/vega.gif");
+            BufferedImage imageIcon = ImageIO.read(resource);
+            return new ImageIcon(imageIcon);
+    } catch (IOException e) {
+           
+            e.printStackTrace();
+            return null;
+    }
 	}
 
-	@Override
+	/*@Override
 	public EditorPart getPart() {
 		// TODO Auto-generated method stub
 		return part;
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public Selection getSelection() {
 		return selection;
 		// TODO Auto-generated method stub
 		//return null;
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public String getViewerId() {
 		
 		// TODO Auto-generated method stub
 		return viewerId;
-	}
+	}*/
+    public boolean makeEditorContent() {
+        HistoryModes value = getValue();
+        try {
+                        init(value);
+                        return true;
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                }
+    }
 
-	@Override
-	public boolean init(Selection arg0, EditorPart arg1) {
-		HistoryModes hd=(HistoryModes) arg0.getValue();
+
+	//@Override
+	public void init(HistoryModes value) {
+		HistoryModes hd=value;
 		/*for (int i=0;i<hd.getAllStates().length;i++){
 			System.out.println(hd.getAllStates()[i]);
 		}*/
 		;
 		HistoryModesPlot plot=makePlot("Time line",hd);
-		part=arg1;
-		part.setTitle("Time line");
+		//this.add(plot);
+		//part=arg1;
+		//part.setTitle("Time line");
 		//arg1.getArea().
-		part.setEditorComponent(plot);
+		//part.setEditorComponent(plot);
 		//this.
 		//arg1.getTitle()
 		// TODO Auto-generated method stub
-		return true;
+		//return true;
 	}
 
 	@Override
@@ -634,12 +668,12 @@ public class HistoryModesPlot extends javax.swing.JPanel implements herschel.ia.
 	}
 
 	@Override
-	public void setViewerId(String arg0) {
+	/*public void setViewerId(String arg0) {
 		viewerId=arg0;
 		System.out.println("Setviewerid");
 		// TODO Auto-generated method stub
 		
-	}
+	}*/
 	
 
     public String getName() {
@@ -647,13 +681,19 @@ public class HistoryModesPlot extends javax.swing.JPanel implements herschel.ia.
         return name == null? getViewerId() : name;
     }
     
-    protected final EditorArea getArea() {
+    /*protected final EditorArea getArea() {
         return (part == null)? null : part.getArea();
-    }
+    }*/
     
     public HistoryModesPlot(LayoutManager layout) {
         super(layout);
     }
+
+	@Override
+	protected Class<? extends HistoryModes> getVariableType() {
+		// TODO Auto-generated method stub
+		return HistoryModes.class;
+	}
 
     
 

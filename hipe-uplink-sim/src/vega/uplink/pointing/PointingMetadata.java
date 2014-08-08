@@ -67,6 +67,18 @@ public class PointingMetadata extends CompositeDataset  {
 		}
 		//return result;
 	}
+	public void copyFrom(PointingMetadata org){
+		this.setValue(org.getValue());
+		PointingMetadata[] ch = org.getChildren();
+		for (int i=0;i<ch.length;i++){
+			addChild(ch[i]);
+		}
+		PointingMetadata[] att = org.getAttributes();
+		for (int i=0;i<att.length;i++){
+			addAttribute(att[i]);
+		}
+		
+	}
 
 	@Override
 	public PointingMetadata copy() {
@@ -263,8 +275,13 @@ public class PointingMetadata extends CompositeDataset  {
 	}
 	
 	public PointingMetadata getAttribute(String attributeName){
-		String sp = (String) this.getMeta().get(attributeName).getValue();
-		return new PointingMetadata(attributeName,sp);
+		try{
+			String sp = (String) this.getMeta().get(attributeName).getValue();
+			return new PointingMetadata(attributeName,sp);
+		}catch(java.lang.NullPointerException npe){
+			//npe.printStackTrace();
+			return null;
+		}
 		//TableDataset result=table.select(table.getColumn(columnIndex).getData().where(new herschel.binstruct.util.String1dRegex(search)));
 		/*TableDataset table = attributes.select(attributes.getColumn(0).getData().where(new herschel.binstruct.util.String1dRegex(attributeName)));
 		if (table.getRowCount()==0) return null;

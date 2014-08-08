@@ -2,9 +2,9 @@ package vega.uplink.pointing;
 
 
 import vega.uplink.pointing.PtrParameters.Boresight;
+import vega.uplink.pointing.PtrParameters.OffsetRefAxis;
 import vega.uplink.pointing.PtrParameters.PhaseAngle;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetAngles;
-import vega.uplink.pointing.PtrParameters.Offset.OffsetRefAxis;
 import herschel.ia.dataset.CompositeDataset;
 import herschel.ia.dataset.MetaData;
 import herschel.ia.dataset.StringParameter;
@@ -25,8 +25,8 @@ public class PointingAttitude extends PointingMetadata{
 	public PointingAttitude(String type){
 		super("attitude","");
 		this.addAttribute(new PointingMetadata("ref",type));
-		setBoresight(new Boresight());
-		setPhaseAngle(new PhaseAngle());
+		//setBoresight(new Boresight());
+		//setPhaseAngle(new PhaseAngle());
 	}
 	
 	public String getAttitudeType(){
@@ -38,7 +38,12 @@ public class PointingAttitude extends PointingMetadata{
 	}
 	
 	public Boresight getBoresight(){
-		return (Boresight) this.getChild("boresight");
+		PointingMetadata result = this.getChild("boresight");
+		if (result!=null){
+			return (Boresight) result;
+		}else{
+			return new Boresight();
+		}
 	}
 	
 	public PhaseAngle getPhaseAngle(){
@@ -48,7 +53,12 @@ public class PointingAttitude extends PointingMetadata{
 			//result.addAttribute(new PointingMetadata("ref","powerOptimised"));
 			
 		}
-		return (PhaseAngle) this.getChild("phaseAngle");
+		PointingMetadata result = this.getChild("phaseAngle");
+		if (result!=null){
+			return (PhaseAngle) this.getChild("phaseAngle");
+		}else{
+			return new PhaseAngle();
+		}
 	}
 	
 	public void setPhaseAngle(PhaseAngle phaseAngle){

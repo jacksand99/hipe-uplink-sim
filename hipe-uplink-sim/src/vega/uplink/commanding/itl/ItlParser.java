@@ -54,11 +54,18 @@ public class ItlParser {
 			}
 		}
 		for (int i=0;i<itllines.length;i++){
+			if(itllines[i].startsWith("Comment") || itllines[i].startsWith("comment")){
+				itllines[i]="";
+			}
 			if(itllines[i].contains("COUNT") || itllines[i].contains("count")){
 				String[] parts=itllines[i].split(" ");
 				String evtString=parts[0]+" "+parts[1];
 				String[] oParts=parts[1].split("=");
-				if (oParts.length<2) System.out.println(parts[1]);
+				if (oParts.length<2){
+					System.out.println("DEBUG:"+itllines[i]);
+					
+					System.out.println("DEBUG:"+parts[1]);
+				}
 				int count=Integer.parseInt(oParts[1].replace(")", ""));
 				String key=parts[0]+" "+"(COUNT="+new Integer(count).toString()+")";
 				String val=events.get(key);
@@ -87,77 +94,90 @@ public class ItlParser {
 				}
 				
 			}else{
-				commandLines.add(itllines[i]);
+				if (!itllines[i].equals("")) commandLines.add(itllines[i]);
 			}
 		}
 		try{
 			for (int i=0;i<commandLines.size();i++){
-				String cl=commandLines.get(i);
-				String[] parts=cl.split(Pattern.quote("("));
-				String sComm=parts[0];
-				String[] pComm=sComm.split(" ");
-				String commandName=pComm[pComm.length-1];
-				/*if (commandName==null | commandName.equals("")){
-					System.out.println(cl);
-				}*/
-				/*if (i==0){
-					System.out.println(cl);
-				}*/
-				String commandTime=pComm[0];
-				java.util.Date exTime=parseExDate(commandTime);
-				String commandDelta="";
-				if (pComm.length>4){
-					commandDelta=pComm[1];
-				}
-				String sParam="";
-				if (parts.length>1){
-					sParam=parts[1].replace(")", "");
-				}
-				String[] sParamArr=separateParameters(sParam);
-				DecimalFormat df=new DecimalFormat("000000000");
-				//String uid="P"+new Integer((uIDSed*10000)+(i*100)).toString();
-				String uid="P"+df.format((uIDSed*10000)+(i*100));
-				/*if (uid.equals("P000010000")){
-					System.out.println(sComm);
-					System.out.println("Command name:"+commandName);
-
-				}*/
-
-				Sequence seq=new Sequence(commandName,uid,Sequence.dateToZulu(addDelta(exTime,commandDelta)));
-				int repeat=1;
-				long separation=0;
-
-				for (int j=0;j<sParamArr.length;j++){
-					if (!sParamArr[j].startsWith("DATA_RATE") && !sParamArr[j].startsWith("POWER") && !sParamArr[j].startsWith("REPEAT") && !sParamArr[j].startsWith("SEPARATION")){
-						seq.addParameter(parseParameter(sParamArr[j]));
+				try{
+					String cl=commandLines.get(i);
+					String[] parts=cl.split(Pattern.quote("("));
+					String sComm=parts[0];
+					String[] pComm=sComm.split(" ");
+					String commandName=pComm[pComm.length-1];
+					/*if (commandName==null | commandName.equals("")){
+						System.out.println(cl);
+					}*/
+					/*if (i==0){
+						System.out.println(cl);
+					}*/
+					String commandTime=pComm[0];
+					java.util.Date exTime=parseExDate(commandTime);
+					String commandDelta="";
+					if (pComm.length>4){
+						commandDelta=pComm[1];
 					}
-					if (sParamArr[j].startsWith("DATA_RATE") || sParamArr[j].startsWith("POWER")){
-						SequenceProfile[] profs=parseProfile(sParamArr[j]);
-						for (int k=0;k<profs.length;k++){
-							seq.addProfile(profs[k]);
+					String sParam="";
+					if (parts.length>1){
+						sParam=parts[1].replace(")", "");
+					}
+					String[] sParamArr=separateParameters(sParam);
+					DecimalFormat df=new DecimalFormat("000000000");
+					//String uid="P"+new Integer((uIDSed*10000)+(i*100)).toString();
+					String uid="P"+df.format((uIDSed*10000)+(i*100));
+					/*if (uid.equals("P000010000")){
+						System.out.println(sComm);
+						System.out.println("Command name:"+commandName);
+	
+					}*/
+					if (commandName.equals("")){
+						System.out.println("DEBUG :"+cl);
+					}
+					Sequence seq=new Sequence(commandName,uid,Sequence.dateToZulu(addDelta(exTime,commandDelta)));
+					int repeat=1;
+					long separation=0;
+	
+					for (int j=0;j<sParamArr.length;j++){
+						if (!sParamArr[j].startsWith("DATA_RATE") && !sParamArr[j].startsWith("POWER") && !sParamArr[j].startsWith("REPEAT") && !sParamArr[j].startsWith("SEPARATION")){
+							try{
+								seq.addParameter(parseParameter(sParamArr[j]));
+							}catch (ParseException e){
+								ParseException nex = new ParseException("At line:"+cl+"."+e.getMessage(),0);
+								nex.initCause(e);
+								throw nex;
+							}
+						}
+						if (sParamArr[j].startsWith("DATA_RATE") || sParamArr[j].startsWith("POWER")){
+							SequenceProfile[] profs=parseProfile(sParamArr[j]);
+							for (int k=0;k<profs.length;k++){
+								seq.addProfile(profs[k]);
+							}
+						}
+						if (sParamArr[j].startsWith("REPEAT")){
+							String[] temp=sParamArr[j].split("=");
+							repeat=Integer.parseInt(temp[1].replace(" ", ""));
+							
+	
+						}
+						if (sParamArr[j].startsWith("SEPARATION")){
+							String[] temp=sParamArr[j].split("=");
+							temp[1]=temp[1].replace(" ", "");
+							String temp2[]=temp[1].split(":");
+							separation=((Integer.parseInt(temp2[0])*3600)+(Integer.parseInt(temp2[1])*60)+Integer.parseInt(temp2[2]))*1000;
 						}
 					}
-					if (sParamArr[j].startsWith("REPEAT")){
-						String[] temp=sParamArr[j].split("=");
-						repeat=Integer.parseInt(temp[1].replace(" ", ""));
-						
-
+					for (int k=0;k<repeat;k++){
+						//Sequence newSeq=new Sequence(seq);//=seq.copy();
+						Sequence newSeq=new Sequence(new String(seq.getName()),new String(seq.getUniqueID()),new String(seq.getFlag()),new Character(seq.getSource()),new Character(seq.getDestination()),new String(seq.getExecutionTime()),seq.getParameters(),seq.getProfiles());
+						newSeq.setExecutionDate(new java.util.Date(seq.getExecutionDate().getTime()+(separation*k)));
+						//newSeq.setUniqueID("P"+new Integer((uIDSed*10000)+(i*100)+k).toString());
+						newSeq.setUniqueID("P"+df.format((uIDSed*10000)+(i*100)+k));
+						result.addSequence(newSeq);
+	
 					}
-					if (sParamArr[j].startsWith("SEPARATION")){
-						String[] temp=sParamArr[j].split("=");
-						temp[1]=temp[1].replace(" ", "");
-						String temp2[]=temp[1].split(":");
-						separation=((Integer.parseInt(temp2[0])*3600)+(Integer.parseInt(temp2[1])*60)+Integer.parseInt(temp2[2]))*1000;
-					}
-				}
-				for (int k=0;k<repeat;k++){
-					//Sequence newSeq=new Sequence(seq);//=seq.copy();
-					Sequence newSeq=new Sequence(new String(seq.getName()),new String(seq.getUniqueID()),new String(seq.getFlag()),new Character(seq.getSource()),new Character(seq.getDestination()),new String(seq.getExecutionTime()),seq.getParameters(),seq.getProfiles());
-					newSeq.setExecutionDate(new java.util.Date(seq.getExecutionDate().getTime()+(separation*k)));
-					//newSeq.setUniqueID("P"+new Integer((uIDSed*10000)+(i*100)+k).toString());
-					newSeq.setUniqueID("P"+df.format((uIDSed*10000)+(i*100)+k));
-					result.addSequence(newSeq);
-
+				}catch (ParseException e){
+					System.out.println("Could not parse line");
+					e.printStackTrace();
 				}
 
 				
@@ -241,6 +261,7 @@ public class ItlParser {
 					value=Float.parseFloat(temp2[0]);
 				}catch (java.lang.NumberFormatException e){
 					ParseException e2=new ParseException(e.getMessage(),0);
+					e2.initCause(e);
 					throw e2;
 				}
 
@@ -353,6 +374,7 @@ public class ItlParser {
 		for (int i=0;i<sourceLines.length;i++){
 			String line=sourceLines[i];
 			if (line.startsWith("Include:") || line.startsWith("Include_file")){
+				//line.replaceAll("\\", "/");
 				String relativePath=line.split(":")[1];
 				relativePath=relativePath.replaceAll("\"", "");
 				//relativePath=relativePath.replaceAll("/", File.separator);
@@ -405,7 +427,13 @@ public class ItlParser {
 		result = new String[lines.size()];
 		lines.toArray(result);
 		br.close();
-		return clean(result);
+		try{
+			return clean(result);
+		}catch (java.text.ParseException pex){
+			ParseException nEx = new ParseException("In file "+file+"."+pex.getMessage(),0);
+			nEx.initCause(pex);
+			throw nEx;
+		}
 	}
 	
 	private static String[] removeComments(String[] sourceLines){

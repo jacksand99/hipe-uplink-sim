@@ -6,7 +6,39 @@ import org.w3c.dom.NodeList;
 
 import vega.uplink.pointing.PointingMetadata;
 
-public class Boresight extends PointingMetadata {
+public class Boresight extends DirectionVector{
+	public Boresight(){
+		//super("boresight");
+		this("SC",0,0,1);
+	}
+	public Boresight(String frame,float longitude,float latitude){
+		super("boresight",frame,longitude,latitude);
+	}
+	public Boresight(PointingMetadata pm){
+		super("boresight",pm);
+	}
+	public Boresight(String reference){
+		super("boresight",reference);
+	}
+	public Boresight(String frame,float x,float y, float z){
+		super("boresight",frame,x,y,z);
+	}
+	public Boresight(String frame,String unitLongitude,float longitude,String unitLatitude,float latitude){
+		super("boresight",frame,unitLongitude,longitude,unitLatitude,latitude);
+	}
+	public Boresight(String origin,String target){
+		super("boresight",origin,target);
+	}
+	public Boresight(String axis,String rotationAxis,float rotationAngle){
+		super("boresight",axis,rotationAxis,rotationAngle);
+	}
+	public Boresight(String axis,String rotationAxis,String rotationAngleUnit,float rotationAngle){
+		super("boresight",axis,rotationAxis,rotationAngleUnit,rotationAngle);
+		
+	}
+
+}
+/*public class Boresight extends PointingMetadata {
 	public Boresight(PointingMetadata org){
 		super(org);
 	}
@@ -61,8 +93,8 @@ public class Boresight extends PointingMetadata {
 		
 	}
 	public Boresight(){
-		//this("SC","0,","0.","1.");
-		this("Nadir_Nav_Boresight");
+		this("SC","0.","0.","1.");
+		//this("Nadir_Nav_Boresight");
 	}
 	
 	public String getFrame(){
@@ -119,4 +151,4 @@ public class Boresight extends PointingMetadata {
 	}
 
 
-}
+}*/

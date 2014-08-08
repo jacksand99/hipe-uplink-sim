@@ -383,6 +383,9 @@ public class Sequence extends Product {
 		}
 		char[] acro=new char[2];
 		char[] sName=getName().toCharArray();
+		if (sName.length<1){
+			System.out.println("DEBUG:"+getName());
+		}
 		acro[0]=sName[1];
 		acro[1]=sName[2];
 		String acronim=new String(acro);

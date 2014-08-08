@@ -27,6 +27,9 @@ public class UplinkPathPreferences extends PreferencesPanel {
     private FilePathPanel _fieldD;
     private FilePathPanel _fieldE;
     private FilePathPanel _fieldF;
+    private FilePathPanel _fieldH;
+    private FilePathPanel _fieldI;
+
     private JTextField _fieldG;
 
     // private JTextField    _fieldA;  // text field associated to preference keyA
@@ -45,6 +48,8 @@ public class UplinkPathPreferences extends PreferencesPanel {
        	registerHandler(Properties.DEFAULT_EVT_DIRECTORY,new FilePreferenceHandler(Configuration.getProperty(Properties.DEFAULT_EVT_DIRECTORY, Configuration.getProperty("user.home")),_fieldE,Properties.DEFAULT_EVT_DIRECTORY));
        	registerHandler(Properties.MIB_LOCATION,new FilePreferenceHandler(Configuration.getProperty(Properties.MIB_LOCATION, Configuration.getProperty("user.home")),_fieldF,Properties.MIB_LOCATION));
     	registerHandler(Properties.ANTENNA_PRIORITY_COMMAND,new StringPreferenceHandler(Configuration.getProperty(Properties.ANTENNA_PRIORITY_COMMAND, ""),_fieldG,Properties.ANTENNA_PRIORITY_COMMAND));
+    	registerHandler(Properties.DEFAULT_INIT_SCRIPT,new FilePreferenceHandler(Configuration.getProperty(Properties.DEFAULT_INIT_SCRIPT, ""),_fieldH,Properties.DEFAULT_INIT_SCRIPT));
+    	registerHandler(Properties.DEFAULT_POST_SCRIPT,new FilePreferenceHandler(Configuration.getProperty(Properties.DEFAULT_POST_SCRIPT, ""),_fieldI,Properties.DEFAULT_POST_SCRIPT));
 
     	// Preference IP with type String and default value "text"
         /*registerHandler(PropertyNames.DEFAULT_FECS_FILE, new AbstractPreferenceHandler<String>(Configuration.getProperty(PropertyNames.DEFAULT_FECS_FILE, "")) {
@@ -150,6 +155,22 @@ public class UplinkPathPreferences extends PreferencesPanel {
         vGroup.addGroup(vPropsGroup.addComponent(labelG).addComponent(_fieldG));
         hLabelGroup.addComponent(labelG);
         hComboGroup.addComponent(_fieldG);
+
+        JLabel    labelH = new JLabel("Default Init Script:");
+        _fieldH = new FilePathPanel(FileSelectionMode.ALL);
+        _fieldH.setMaximumSize(new Dimension(400,20));
+        vPropsGroup = layout.createParallelGroup(BASELINE);
+        vGroup.addGroup(vPropsGroup.addComponent(labelH).addComponent(_fieldH));
+        hLabelGroup.addComponent(labelH);
+        hComboGroup.addComponent(_fieldH);
+
+        JLabel    labelI = new JLabel("Default Post Script:");
+        _fieldI = new FilePathPanel(FileSelectionMode.ALL);
+        _fieldI.setMaximumSize(new Dimension(400,20));
+        vPropsGroup = layout.createParallelGroup(BASELINE);
+        vGroup.addGroup(vPropsGroup.addComponent(labelI).addComponent(_fieldI));
+        hLabelGroup.addComponent(labelI);
+        hComboGroup.addComponent(_fieldI);
 
 
         hGroup.addGroup(hLabelGroup);

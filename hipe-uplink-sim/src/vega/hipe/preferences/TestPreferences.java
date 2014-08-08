@@ -11,13 +11,13 @@ public class TestPreferences {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		/*JFrame frame = new JFrame();
-		InstrumentPreferences uPreferences = new InstrumentPreferences();
+		JFrame frame = new JFrame();
+		InstrumentsNamesPreferences uPreferences = new InstrumentsNamesPreferences();
 		//uPreferences.set
 		uPreferences.registerHandlers();
 		uPreferences.makeContent();
 		frame.add(uPreferences);
-		frame.setVisible(true);*/
+		frame.setVisible(true);
 		List<String> instruments = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
 		Iterator<String> it = instruments.iterator();
 		while (it.hasNext()){

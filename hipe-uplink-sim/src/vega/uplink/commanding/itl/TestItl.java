@@ -19,13 +19,13 @@ public class TestItl {
 
     	//ItlParser.parseItl("C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP005A\\STP007\\ITLS_GD_M005_S007_01_A_RSM0PIM0.itl", null);
     	try{
-    		Por por=ItlParser.parseItl("C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP005A\\TLIS_PL_M005______01_A_OPS0001A.itl", "C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP005A\\TLIS_PL_M005______01_A_OPS0001A.evf","Z:\\MAPPS\\RMOC\\",5);
+    		Por por=ItlParser.parseItl("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/TLIS_PL_M007______01_A_OPS0001A.itl", "/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/TLIS_PL_M007______01_A_OPS0001A.evf","/Users/jarenas 1/Downloads/MAPPS/RMOC/",5);
     		Simulation sim=new Simulation(por);
-    		sim.run();
+    		sim.runSimulation();
     		Por por2=por.getPORforInstrument("OSIRIS");
     		PorUtils.porToContext(por);
-    		PorUtils.writePORtofile("z:\\tespor.xml", por);
-    		PorUtils.writePORtofile("z:\\tespor-osiris.xml", por2);
+    		PorUtils.writePORtofile("/Users/jarenas 1/Downloads/tespor.xml", por);
+    		PorUtils.writePORtofile("/Users/jarenas 1/Downloads/tespor-osiris.xml", por2);
 
     	}catch (Exception e){
     		e.printStackTrace();

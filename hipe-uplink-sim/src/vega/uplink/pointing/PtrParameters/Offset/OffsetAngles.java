@@ -2,9 +2,10 @@ package vega.uplink.pointing.PtrParameters.Offset;
 
 import java.util.Date;
 
+import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingMetadata;
 
-public class OffsetAngles extends PointingMetadata {
+public abstract class OffsetAngles extends PointingMetadata {
 	public OffsetAngles(PointingMetadata org){
 		super(org);
 	}
@@ -30,8 +31,12 @@ public class OffsetAngles extends PointingMetadata {
 		//System.out.println( this.getChild("startTime").getValue());
 
 	}
+	public void setStartTime(Date startTime){
+		this.setStartTime(PointingBlock.dateToZulu(startTime));
+	}
 	
-	public OffsetAngles copy() {
+	public abstract OffsetAngles copy();
+	/*{
 		OffsetAngles result = new OffsetAngles();
 		
 		//result.setValue(getValue());
@@ -46,7 +51,7 @@ public class OffsetAngles extends PointingMetadata {
 		//System.out.println(result.toXml(0));
 
 		return result;
-	}
+	}*/
 	
 	protected float[] stringToFloatArray(String data){
 		//System.out.println("%"+data+"%");
@@ -170,6 +175,7 @@ public class OffsetAngles extends PointingMetadata {
 	public boolean isFixed(){
 		return false;
 	}
+	public abstract long getDurationMilliSecs();
 
 	
 

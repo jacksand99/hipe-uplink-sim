@@ -3,6 +3,17 @@ package vega.uplink.pointing;
 import java.io.File;
 import java.io.PrintWriter;
 
+//import javafx.scene.transform.Rotate;
+
+
+
+
+
+
+
+
+
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -17,6 +28,19 @@ import org.w3c.dom.NodeList;
 
 //import rosetta.uplink.Evtm;
 //import rosetta.uplink.EvtmEvent;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -57,6 +81,7 @@ public class PtrUtils {
 			if (item.getAttribute("ref").getValue().startsWith("terminator")) return new Terminator(item);
 			if (item.getAttribute("ref").getValue().startsWith("track")) return new Track(item);
 			if (item.getAttribute("ref").getValue().startsWith("velocity")) return new Velocity(item);
+			if (item.getAttribute("ref").getValue().startsWith("capture")) return new Capture(item);
 			//System.out.println("NOt detected which type of attitude "+item.getAttribute("ref").getValue());
 			return new PointingAttitude(item);
 		}
@@ -64,14 +89,32 @@ public class PtrUtils {
 		if (item.getName().equals("height")) return new Height(item);
 		if (item.getName().equals("phaseAngle")) return new PhaseAngle(item);
 		if (item.getName().equals("surface")) return new Surface(item);
-		if (item.getName().equals("target")) return new Target(item);
-		if (item.getName().equals("targetDir")) return new TargetDir(item);
+		if (item.getName().equals("target")){
+			if (item.getChild("position")!=null) return new TargetTrack(item);
+			else{
+				return new TargetInert(item);
+			}
+			/*if (item.getAttribute("frame")!=null) return new CoordinatesCartesian("target",item);
+			if (item.getChild("lon")!=null) return new CoordinatesSpherical("target",item);
+			if (item.getChild("position")!=null) return new Orbit(item);
+			if (item.getChild("origin")!=null) return new OriginTarget("target",item);
+			if (item.getChild("rotationAxis")!=null) return new Rotate("target",item);
+			return new Reference("target",item);*/
+		}
+		if (item.getName().equals("targetDir")){
+			return new TargetDir(item);
+			/*if (item.getAttribute("frame")!=null) return new CoordinatesCartesian("targetDir",item);
+			if (item.getChild("lon")!=null) return new CoordinatesSpherical("targetDir",item);
+			if (item.getChild("origin")!=null) return new OriginTarget("targetDir",item);
+			if (item.getChild("rotationAxis")!=null) return new Rotate("targetDir",item);
+			return new Reference("targetDir",item);*/
+		}
 		if (item.getName().equals("offsetAngles")){
 			if (item.getAttribute("ref").getValue().equals("custom")) return new OffsetCustom(item);
 			if (item.getAttribute("ref").getValue().equals("fixed")) return new OffsetFixed(item);
 			if (item.getAttribute("ref").getValue().equals("raster")) return new OffsetRaster(item);
 			if (item.getAttribute("ref").getValue().equals("scan")) return new OffsetScan(item);
-			return new OffsetAngles(item);
+			//return new OffsetAngles(item);
 		}
 		if (item.getName().equals("offsetRefAxis")) return new OffsetRefAxis(item);
 
@@ -146,11 +189,14 @@ public class PtrUtils {
 						//block.addChild(PointingMetadata.readFrom(nlBlocks.item(j)));
 					}*/
 					segment.addBlock(block);
+					//System.out.println("Added block"+block.toXml(0));
 				}
+				//System.out.println(segment.toXml(0));
 				result.addSegment(segment);
 			}
 			
 		    } catch (Exception e) {
+		    	//System.out.println("on error");
 		    	e.printStackTrace();
 		    }
 		

@@ -1,22 +1,34 @@
 package vega.uplink.pointing;
+import herschel.ia.dataset.CompositeDataset;
+import herschel.ia.dataset.Product;
+import herschel.ia.dataset.StringParameter;
+import herschel.share.fltdyn.time.FineTime;
+
 import java.util.HashMap;
 import java.util.Date;
 
-public class Evtm {
+public class Evtm extends Product{
 	private HashMap<Date,EvtmEvent> eventsMap;
-	private Date generationTime;
-	private Date validityStart;
-	private Date validityEnd;
-	private String spacecraft;
-	private String icdVersion;
+	//private Date generationTime;
+	//private Date validityStart;
+	//private Date validityEnd;
+	//private String spacecraft;
+	//private String icdVersion;
 	
 	public Evtm(Date evtmGenerationTime,Date evtmValidityStart,Date evtmValidityEnd,String evtmSpacecraft,String evtmIcdVersion){
-		eventsMap=new HashMap<Date,EvtmEvent>();
-		generationTime=evtmGenerationTime;
-		validityStart=evtmValidityStart;
-		validityEnd=evtmValidityEnd;
-		spacecraft=evtmSpacecraft;
-		icdVersion=evtmIcdVersion;
+		super();
+		//eventsMap=new HashMap<Date,EvtmEvent>();
+		this.setCreationDate(new FineTime(evtmGenerationTime));
+		//generationTime=evtmGenerationTime;
+		this.setStartDate(new FineTime(evtmValidityStart));
+		//validityStart=evtmValidityStart;
+		this.setEndDate(new FineTime(evtmValidityEnd));
+		getMeta().set("spacecraft", new StringParameter(evtmSpacecraft));
+		getMeta().set("icdVersion", new StringParameter(evtmIcdVersion));
+
+		//validityEnd=evtmValidityEnd;
+		//spacecraft=evtmSpacecraft;
+		//icdVersion=evtmIcdVersion;
 	}
 	
 	public Evtm(Date evtmGenerationTime,Date evtmValidityStart,Date evtmValidityEnd,String evtmIcdVersion){
@@ -36,56 +48,77 @@ public class Evtm {
 	}
 	
 	public Date getGenerationTime(){
-		return generationTime;
+		return this.getCreationDate().toDate();
+		//return generationTime;
 	}
 	
 	public void setGenerationTime(Date evtmGenerationTime){
-		generationTime=evtmGenerationTime;
+		this.setCreationDate(new FineTime(evtmGenerationTime));
+
+		//generationTime=evtmGenerationTime;
 	}
 	
 	public Date getValidityStart(){
-		return validityStart;
+		return this.getStartDate().toDate();
+		//return validityStart;
 	}
 	
 	public void setValidityStart(Date evtmValidityStart){
-		validityStart=evtmValidityStart;
+		this.setStartDate(new FineTime(evtmValidityStart));
+
+		//validityStart=evtmValidityStart;
 	}
 	
 	public void setValidityEnd(Date evtmValidityEnd){
-		validityEnd=evtmValidityEnd;
+		//return this.getEndDate().toDate();
+		this.setEndDate(new FineTime(evtmValidityEnd));
+
+		//validityEnd=evtmValidityEnd;
 	}
 	
 	public void setSpacecraft(String evtmSpacecraft){
-		spacecraft=evtmSpacecraft;
+		getMeta().set("spacecraft", new StringParameter(evtmSpacecraft));
+
+		//spacecraft=evtmSpacecraft;
 	}
 	
 	public void setIcdVersion(String evtmIcdVersion){
-		icdVersion=evtmIcdVersion;
+		getMeta().set("icdVersion", new StringParameter(evtmIcdVersion));
+
+		//icdVersion=evtmIcdVersion;
 	}
 	
 	public Date getValidityEnd(){
-		return validityEnd;
+		return this.getEndDate().toDate();
+		//return validityEnd;
 	}
 	
 	public String getSpacecraft(){
-		return spacecraft;
+		return (String) getMeta().get("spacecraft").getValue();
+		//return spacecraft;
 	}
 	
 	public String getIcdVersion(){
-		return icdVersion;
+		return (String) getMeta().get("icdVersion").getValue();
+
+		//return icdVersion;
 	}
 	
 	public void addEvent(EvtmEvent event){
-		eventsMap.put(event.getTime(), event);
+		this.set(EvtmEvent.dateToZulu(event.getTime()), event);
+		//eventsMap.put(event.getTime(), event);
 	}
 	
 	public EvtmEvent getEvent(Date time){
-		return eventsMap.get(time);
+		return (EvtmEvent)get(EvtmEvent.dateToZulu(time));
+		//return eventsMap.get(time);
 	}
 	
 	public EvtmEvent[] getAllEvents(){
-		EvtmEvent[] result=new EvtmEvent[eventsMap.size()];
-		eventsMap.values().toArray(result);
+		EvtmEvent[] result=new EvtmEvent[this.getSets().size()];
+		this.getSets().values().toArray(result);
+		//EvtmEvent[] result=new EvtmEvent[eventsMap.size()];
+		//eventsMap.values().toArray(result);
 		java.util.Arrays.sort(result);
 		return result;
 	}

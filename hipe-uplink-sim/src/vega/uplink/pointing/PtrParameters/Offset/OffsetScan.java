@@ -35,6 +35,40 @@ public class OffsetScan extends OffsetAngles {
 	public OffsetScan(PointingMetadata org){
 		super(org);
 	}
+	private OffsetScan(){
+		super("scan");
+	}
+	public OffsetScan(Date startTime,int numberOfLines,int numberOfScansPerLine,String xStartUnit,float xStart,String yStartUnit,float yStart,String scanDeltaUnit,float scanDelta,String lineDeltaUnit,float lineDelta,String scanTimeUnit,Float scanTime,String scanSpeedUnit,Float scanSpeed,String scanSlewTimeUnit,float scanSlewTime,String lineSlewTimeUnit,float lineSlewTime,String borderSlewTimeUnit,float borderSlewTime,String lineAxis,boolean keepLineDir,boolean keepScanDir){
+		super("scan");
+		setStartDate(startTime);
+		setIntegerField(NUMBEROFLINES_FIELD,numberOfLines);
+		setIntegerField(NUMBEROFSCANSPERLINE_FIELD,numberOfScansPerLine);
+		setFloatField(XSTART_FIELD,xStart);
+		setUnit(XSTART_FIELD,xStartUnit);
+		setFloatField(YSTART_FIELD,yStart);
+		setUnit(YSTART_FIELD,yStartUnit);
+		setFloatField(SCANDELTA_FIELD,scanDelta);
+		setUnit(SCANDELTA_FIELD,scanDeltaUnit);
+		setFloatField(LINEDELTA_FIELD,lineDelta);
+		setUnit(LINEDELTA_FIELD,lineDeltaUnit);
+		if (scanTime!=null){
+			setFloatField(SCANTIME_FIELD,scanTime);
+			setUnit(SCANTIME_FIELD,scanTimeUnit);
+		}else{
+			setFloatField(SCANSPEED_FIELD,scanSpeed);
+			setUnit(SCANSPEED_FIELD,scanSpeedUnit);
+
+		}
+		setFloatField(SCANSLEWTIME_FIELD,scanSlewTime);
+		setUnit(SCANSLEWTIME_FIELD,scanSlewTimeUnit);
+		setFloatField(LINESLEWTIME_FIELD,lineSlewTime);
+		setUnit(LINESLEWTIME_FIELD,lineSlewTimeUnit);
+		setFloatField(BORDERSLEWTIME_FIELD,lineSlewTime);
+		setUnit(BORDERSLEWTIME_FIELD,borderSlewTimeUnit);
+		setStringField(LINEAXIS_FIELD,lineAxis);
+		setBooleanField(KEEPLINEDIR_FIELD,keepLineDir);
+		setBooleanField(KEEPSCANDIR_FIELD,keepScanDir);		
+	}
 
 	public OffsetScan(Date startTime,int numberOfLines,int numberOfScansPerLine,float xStart,float yStart,float scanDelta,float lineDelta,Float scanTime,Float scanSpeed,float scanSlewTime,float lineSlewTime,float borderSlewTime,String lineAxis,boolean keepLineDir,boolean keepScanDir){
 		super("scan");
@@ -141,17 +175,19 @@ public class OffsetScan extends OffsetAngles {
 	}
 
 	public long getDurationMilliSecs(){
+		
 		float scanTime=0.0f;
 		if (getChild(SCANSPEED_FIELD)!=null){
-			scanTime = getScanDelta()/getScanSpeed();
+			scanTime = Math.abs(getScanDelta()/getScanSpeed());
 		}
 		else{
 			scanTime = getScanTime();
 		}
-		float lineTime=(scanTime*getNumberOfScansPerLine())+(getScanSlewTime()*(getNumberOfScansPerLine()-1));
+		return new Float(2 * getBorderSlewTime() + getNumberOfLines() * (getNumberOfScansPerLine() * scanTime + (getNumberOfScansPerLine() - 1) * getScanSlewTime()) + (getNumberOfLines() - 1) * getLineSlewTime()).longValue()*60*1000;
+		/*float lineTime=(scanTime*getNumberOfScansPerLine())+(getScanSlewTime()*(getNumberOfScansPerLine()-1));
 		float result = ((lineTime*getNumberOfLines())+((getNumberOfLines()-1)*getLineSlewTime()))*60*1000;
 		if (result>=0) return new Float(result).longValue();
-		else return new Float(result*-1).longValue();
+		else return new Float(result*-1).longValue();*/
 
 	}
 	
@@ -184,6 +220,24 @@ public class OffsetScan extends OffsetAngles {
 	public boolean isScan(){
 		return true;
 	}
+	
+	public OffsetScan copy() {
+		OffsetScan result = new OffsetScan();
+		
+		//result.setValue(getValue());
+		PointingMetadata[] ch = getChildren();
+		for (int i=0;i<ch.length;i++){
+			result.addChild(ch[i]);
+		}
+		PointingMetadata[] att = getAttributes();
+		for (int i=0;i<att.length;i++){
+			result.addAttribute(att[i]);
+		}
+		//System.out.println(result.toXml(0));
+
+		return result;
+	}
+
 
 	
 	/*public int getScanDuration(){

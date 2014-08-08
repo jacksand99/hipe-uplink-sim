@@ -1,23 +1,17 @@
 package vega.uplink.commanding;
 
-import herschel.ia.dataset.Dataset;
-import herschel.ia.dataset.Product;
+//import herschel.ia.dataset.Product;
 import herschel.ia.dataset.StringParameter;
 import herschel.ia.pal.MapContext;
-import herschel.ia.pal.ProductRef;
 import herschel.share.fltdyn.time.FineTime;
-import herschel.share.interpreter.InterpreterUtil;
-import herschel.share.predicate.Predicate;
+//import herschel.share.interpreter.InterpreterUtil;
+//import herschel.share.predicate.Predicate;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -31,27 +25,15 @@ import org.w3c.dom.Element;
 
 	
 public class Por extends MapContext {
-	//java.util.Date generationTime;
-	//java.util.Date[] validityRange;
 	static private String AUTHOR="Rosetta Testing Team";
 	TreeMap<String,Sequence> sequenceMap;
-	
-	//private MapContext context;
-	//Sequence[] sequences;
 	
 	public Por (){
 		super();
 		setCreator(AUTHOR);
 		setName(""+new java.util.Date().getTime());
-		//this.addRule(new SequenceRule());
 		this.setCreationDate(new FineTime(new java.util.Date()));
-		//generationTime=new java.util.Date();
-		//validityRange=new java.util.Date[2];
-		//validityRange[0]=generationTime;
-		//validityRange[1]=generationTime;
 		sequenceMap=new TreeMap<String,Sequence>();
-		//MapContext sequenceMap=new MapContext();
-		//sequences=null;
 	}
 	
 	public void setName(String name){
@@ -66,40 +48,9 @@ public class Por extends MapContext {
 		setProduct(sequence.getUniqueID(),sequence);
 		sequenceMap.put(sequence.getUniqueID(), sequence);
 		calculateValidity();
-		/*if (sequences==null){
-			sequences = new Sequence[1];
-			sequences[0]=sequence;
-			this.calculateValidity();
-		}else{
-			int oldSize=sequences.length;
-			Sequence[] newSequences=new Sequence[oldSize+1];
-			for (int i=0;i<oldSize;i++){
-				newSequences[i]=sequences[i];
-			}
-			newSequences[oldSize]=sequence;
-			setSequences(newSequences);
-		}*/
 	}
-	/*Product getProduct(String key) {
-		
-	}*/
-	
-	/*public void set(String name,Dataset newDataset){
-		if(!InterpreterUtil.isInstance(Sequence.class, newDataset)) return;
-		addSequence((Sequence) newDataset);
-	}*/
-	
-	/*public Dataset get(String name){
-		Dataset p=sequenceMap.get(name);
-		return p;
-	}*/
-	
-	/*public Product getProduct(String key) {
-		return sequenceMap.get(key);
-	}*/
 	
 	protected void calculateValidity(){
-		//validityRange[0]=Tree
 		Sequence[] seqs=getSequences();
 		int size=seqs.length;
 		java.util.Date lower=null;
@@ -112,15 +63,13 @@ public class Por extends MapContext {
 			if (exDate.before(lower)) lower=exDate;
 			if (exDate.after(higher)) higher=exDate;
 		}
-		this.setStartDate(new FineTime(lower));
-		this.setEndDate(new FineTime(higher));
+		if (lower!=null)  this.setStartDate(new FineTime(lower));
 
-		//validityRange[0]=lower;
-		//validityRange[1]=higher;
+		if (higher!=null) this.setEndDate(new FineTime(higher));
+
 	}
 	
 	public Sequence[] getSequencesForDate(java.util.Date date){
-		//sequenceMap.ge
 		Vector<Sequence> vector= new Vector<Sequence>();
 		
 		Sequence[] seqs=getSequences();
@@ -134,7 +83,6 @@ public class Por extends MapContext {
 	
 	public void setGenerationDate(java.util.Date date){
 		this.setCreationDate(new FineTime(date));
-		//generationTime=date;
 	}
 	
 	public void setGenerationTime(String time) throws ParseException{
@@ -142,12 +90,10 @@ public class Por extends MapContext {
 	}
 	public java.util.Date getGenerationDate(){
 		return getCreationDate().toDate();
-		//return generationTime;
 	}
 	
 	public String getGenerationTime(){
 		return Sequence.dateToZulu(getCreationDate().toDate());
-		//return Sequence.dateToZulu(generationTime);
 	}
 	
 	public java.util.Date[] getValidityDates(){
@@ -161,14 +107,11 @@ public class Por extends MapContext {
 		setStartDate(new FineTime(dates[0]));
 		setEndDate(new FineTime(dates[1]));
 
-		//validityRange=dates;
 	}
 	
 	public void setValidityTimes(String[] times) throws ParseException{
 		setStartDate(new FineTime(Sequence.zuluToDate(times[0])));
 		setEndDate(new FineTime(Sequence.zuluToDate(times[1])));
-		//validityRange[1]=Sequence.zuluToDate(times[1]);
-		
 	}
 	
 	public String[] getValidityTimes(){
@@ -182,38 +125,12 @@ public class Por extends MapContext {
 		for (int i=0;i<porSequences.length;i++){
 			addSequence(porSequences[i]);
 		}
-		//sequences=porSequences;
 		calculateValidity();
 	}
-	/*public PgetAllProducts(){
-		
-	}*/
 	
 	public Sequence[] getSequences(){
-		//Set<ProductRef> res = getAllRefs();
 		int size=sequenceMap.size();
 		Sequence[] result=new  Sequence[size];
-		//Set<ProductRef> res = getAllRefs();
-		/*Iterator<ProductRef> it = res.iterator();
-		int i=0;
-		while(it.hasNext()){
-			
-				try {
-					result[i]=(Sequence) it.next().getProduct();
-				} catch (Exception e) {
-					try {
-						result[i]=new Sequence("null","null"+i,Sequence.dateToZulu(new Date()));
-					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-		
-			i++;
-		}*/
-		//this.
 		sequenceMap.values().toArray(result);
 		return result;
 	}
@@ -297,7 +214,6 @@ public class Por extends MapContext {
 		Long newTime;
 		for (int i=0;i<arraySeq.length;i++){
 			newTime=new Long(arraySeq[i].getExecutionDate().getTime());
-			//if (i!=0 && newTime!=times[i-1]) times[i]=newTime;
 			set.add(newTime);
 		}
 		times=new long[set.size()];
@@ -375,7 +291,7 @@ public class Por extends MapContext {
 		return result;
 	}
 	
-	private class SequenceRule implements herschel.share.predicate.Predicate<Product> {
+	/*private class SequenceRule implements herschel.share.predicate.Predicate<Product> {
 
 		@Override
 		public Predicate<Product> and(Predicate<Product> arg0) {
@@ -399,7 +315,7 @@ public class Por extends MapContext {
 			//return null;
 		}
 		
-	}
+	}*/
 	
 
 	

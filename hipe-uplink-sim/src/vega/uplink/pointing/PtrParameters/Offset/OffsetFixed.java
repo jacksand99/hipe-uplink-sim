@@ -17,6 +17,14 @@ public class OffsetFixed extends OffsetAngles{
 		setYAngleUnit("deg");
 
 	}
+	public OffsetFixed(String xAngleUnit,float xAngle,String yAngleUnit,float yAngle){
+		super("fixed");
+		setXAngle(xAngle);
+		setXAngleUnit(xAngleUnit);
+		setYAngle(yAngle);
+		setYAngleUnit(yAngleUnit);
+		
+	}
 	
 	public OffsetFixed(float xAngle,float yAngle){
 		super("fixed");
@@ -60,5 +68,30 @@ public class OffsetFixed extends OffsetAngles{
 	public boolean isFixed(){
 		return true;
 	}
+
+
+	@Override
+	public long getDurationMilliSecs() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	public OffsetFixed copy() {
+		OffsetFixed result = new OffsetFixed();
+		
+		//result.setValue(getValue());
+		PointingMetadata[] ch = getChildren();
+		for (int i=0;i<ch.length;i++){
+			result.addChild(ch[i]);
+		}
+		PointingMetadata[] att = getAttributes();
+		for (int i=0;i<att.length;i++){
+			result.addAttribute(att[i]);
+		}
+		//System.out.println(result.toXml(0));
+
+		return result;
+	}
+
 
 }

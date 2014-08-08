@@ -53,11 +53,14 @@ import vega.uplink.commanding.*;
 import vega.uplink.commanding.itl.ItlParser;
 import vega.uplink.pointing.Evtm;
 import vega.uplink.pointing.EvtmEvent;
+import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
 import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
+import java.lang.Runnable;
+import javax.swing.*; 
 
 
 public class SimulationView extends JPanel implements Viewable, ActionMaker, SiteEventListener {
@@ -68,19 +71,29 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 	private File evtmFile;
 	private File[] porFiles;
 	private File ptrFile;
+	private File pdfmFile;
+
 	private File fecsFile;
+	private File initScript;
+	private File postScript;
+	
 	private Ptr ptr;
 	JLabel itlbar;
 	JLabel evfbar;
 	JLabel porbar;
 	JLabel ptrbar;
+	JLabel pdfmbar;
 	JLabel evtmbar;
 	JLabel fecsbar;
+	JLabel initbar;
+	JLabel postbar;
 	JComboBox<String> ptrbox;
 	String[] segmentNames;
 	JButton runButton;
 	JButton resetButton;
 	String defaultDirectory=Properties.getProperty(Properties.DEFAULT_PLANNING_DIRECTORY);
+	String defaultScriptsDirectory=Properties.getProperty("user.home");
+
 	SimulationContext context;
 	
     public SimulationView(){
@@ -90,11 +103,24 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
     	evtFile=null;
     	evtmFile=null;
     	fecsFile=null;
+    	pdfmFile=null;
+    	initScript=null;
+    	postScript=null;
 		try{
 			fecsFile=new File(Properties.getProperty(Properties.DEFAULT_FECS_FILE));
 		}catch (herschel.share.util.ConfigurationException e){
 			//e.printStackTrace();
 			fecsFile=null;
+		}
+		try{
+			initScript=new File(Properties.getProperty(Properties.DEFAULT_INIT_SCRIPT));
+		}catch (Exception e){
+			initScript=null;
+		}
+		try{
+			postScript=new File(Properties.getProperty(Properties.DEFAULT_POST_SCRIPT));
+		}catch (Exception e){
+			postScript=null;
 		}
 
     	
@@ -112,8 +138,11 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 	    JButton evfButton = new JButton("Select EVT file:");
 	    JButton porButton = new JButton("Select POR files:");
 	    JButton ptrButton = new JButton("Select PTR/PTSL file:");
+	    JButton pdfmButton = new JButton("Select PDFM file:");
 	    JButton evtmButton = new JButton("Select EVTM file:");
 	    JButton fecsButton = new JButton("Select FECS file:");
+	    JButton initButton = new JButton("Select Init script:");
+	    JButton postButton = new JButton("Select Post script:");
 
 	    JLabel ptrLabel = new JLabel("Select PTR/PTSL Segment:");
 	    
@@ -132,9 +161,16 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
                 new JLabel("Output of your selection will go here");
 	    ptrbar = 
                 new JLabel("Output of your selection will go here");
+	    pdfmbar = 
+                new JLabel("Output of your selection will go here");
+
 	    evtmbar = 
                 new JLabel("Output of your selection will go here");
 	    fecsbar = 
+                new JLabel("Output of your selection will go here");
+	    initbar = 
+                new JLabel("Output of your selection will go here");
+	    postbar = 
                 new JLabel("Output of your selection will go here");
 
 	    segmentNames=new String[1];
@@ -168,6 +204,31 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 
 	      };
 	      ptrButton.addActionListener(ptral);
+	      
+		    ActionListener pdfmal=new ActionListener() {
+		        public void actionPerformed(ActionEvent ae) {
+		          JFileChooser chooser = new JFileChooser();
+		          chooser.setMultiSelectionEnabled(false);
+		          chooser.setCurrentDirectory(new File(defaultDirectory));
+		          int option = chooser.showOpenDialog(SimulationView.this);
+		          if (option == JFileChooser.APPROVE_OPTION) {
+		            File sf = chooser.getSelectedFile();
+		            pdfmFile=sf;
+		            defaultDirectory=pdfmFile.getParent();
+		            refreshLabels();
+		            //String filelist="Nothing";
+		            //filelist=sf.getName();
+		            //itlbar.setText("ITL file: " + filelist);
+		          }
+		          else {
+		            //itlbar.setText("You canceled.");
+		          }
+		        }
+
+		      };
+		      
+		      pdfmButton.addActionListener(pdfmal);
+
 
 	    ActionListener poral=new ActionListener() {
 	        public void actionPerformed(ActionEvent ae) {
@@ -215,6 +276,55 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 		      };
 		      
 		      fecsButton.addActionListener(fecsal);
+		      
+			    ActionListener inital=new ActionListener() {
+			        public void actionPerformed(ActionEvent ae) {
+			          JFileChooser chooser = new JFileChooser();
+			          chooser.setMultiSelectionEnabled(false);
+			          chooser.setCurrentDirectory(new File(defaultScriptsDirectory));
+			          int option = chooser.showOpenDialog(SimulationView.this);
+			          if (option == JFileChooser.APPROVE_OPTION) {
+			            File sf = chooser.getSelectedFile();
+			            initScript=sf;
+			            defaultScriptsDirectory=initScript.getParent();
+			            refreshLabels();
+			            //String filelist="Nothing";
+			            //filelist=sf.getName();
+			            //itlbar.setText("ITL file: " + filelist);
+			          }
+			          else {
+			            //itlbar.setText("You canceled.");
+			          }
+			        }
+
+			      };
+			      
+			      initButton.addActionListener(inital);
+			      
+				    ActionListener postal=new ActionListener() {
+				        public void actionPerformed(ActionEvent ae) {
+				          JFileChooser chooser = new JFileChooser();
+				          chooser.setMultiSelectionEnabled(false);
+				          chooser.setCurrentDirectory(new File(defaultScriptsDirectory));
+				          int option = chooser.showOpenDialog(SimulationView.this);
+				          if (option == JFileChooser.APPROVE_OPTION) {
+				            File sf = chooser.getSelectedFile();
+				            postScript=sf;
+				            defaultScriptsDirectory=postScript.getParent();
+				            refreshLabels();
+				            //String filelist="Nothing";
+				            //filelist=sf.getName();
+				            //itlbar.setText("ITL file: " + filelist);
+				          }
+				          else {
+				            //itlbar.setText("You canceled.");
+				          }
+				        }
+
+				      };
+				      
+				      postButton.addActionListener(postal);
+
 
 	      ActionListener evtmal=new ActionListener() {
 		        public void actionPerformed(ActionEvent ae) {
@@ -297,6 +407,7 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 			        	porFiles=null;
 			        	ptrFile=null;
 			        	ptr=null;
+			        	pdfmFile=null;
 			    	    segmentNames=new String[1];
 			    	    segmentNames[0]="PTR_SEGMENT";
 			    	    refreshLabels();
@@ -307,12 +418,26 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 			    
 			    resetButton.addActionListener(resetal);
 			    
-			    ActionListener runal=new ActionListener() {
+			    ActionListener runal=new ActionRunnable() {
 			        public void actionPerformed(ActionEvent ae) {
+			        	   Thread thread = new Thread(this);
+			        	   thread.start(); 
+			        }
+			        public void run(){
 			        	String messages="";
 			        	SuperPor spor=new SuperPor();
 			        	//Simulation sim=new Simulation(por);
 			        	try{
+			        		if (initScript!=null){
+			        			context.setInitScript(initScript.getAbsolutePath());
+			        			//System.out.println("intit script is NOT null:"+context.getInitScript());
+			        		}else {
+			        			//System.out.println("intit script is null");
+			        		}
+			        		if (postScript!=null){
+			        			context.setPostScript(postScript.getAbsolutePath());
+			        		}
+
 			        		if (itlFile!=null && evtFile!=null){
 			        			String defaultDirectory=Properties.getProperty(Properties.DEFAULT_EVT_DIRECTORY);
 
@@ -328,6 +453,7 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 			        				spor.addPor(por);
 			        			}
 			        			if (!((String)ptrbox.getSelectedItem()).equals("PTR_SEGMENT")) spor.setName((String)ptrbox.getSelectedItem());
+			        			
 			        		}
 			        		if (fecsFile!=null){
 			        			Fecs fecs=PorUtils.readFecsFromFile(fecsFile.getAbsolutePath());
@@ -345,6 +471,23 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 
 			        			context.setFecs(fecs);
 			        		}
+			        		if (pdfmFile!=null){
+			        			Pdfm pdfm=PtrUtils.readPdfmfromFile(pdfmFile.getAbsolutePath());
+			        			//SimulationContext.getInstance().ptr=ptr;
+			        			//PtrSegment segment=ptr.getSegment((String) ptrbox.getSelectedItem());
+			        			/*Iterator<GsPass> it = fecs.getPasses().iterator();
+			        			while (it.hasNext()){
+			        				GsPass pass = it.next();
+			        				Date sDump = pass.getStartDump();
+			        				Date eDump=pass.getEndDump();
+			        				SimulationContext.getInstance().historyModes.add(sDump.getTime(), "GS_Dump_Possible", "FECS",sDump.getTime());
+			        				SimulationContext.getInstance().historyModes.add(eDump.getTime(), "GS_Dump_Off", "FECS",eDump.getTime());
+			        				
+			        			}*/
+
+			        			context.setPdfm(pdfm);
+			        		}
+
 			        		if (evtmFile!=null){
 			        			Evtm evtm = PtrUtils.readEvtmFromFile(evtmFile.getAbsolutePath());
 			        			EvtmEvent[] events = evtm.getEventsByType(EvtmEvent.EVENT_TYPE_BDI);
@@ -362,29 +505,35 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 			        		}
 			        		if (ptr!=null){
 			        			context.setPtr(ptr);
+			        			String segmentName=(String) ptrbox.getSelectedItem();
+			        			context.setPlanningPeriod(segmentName);
 			        			messages=messages+PtrChecker.checkPtr(ptr);
-			        			PtrSegment segment=ptr.getSegment((String) ptrbox.getSelectedItem());
+			        			PtrSegment segment=ptr.getSegment(segmentName);
 			        			PointingBlock[] blocks=segment.getBlocks();
 			        			for (int i=0;i<blocks.length;i++){
-			        				context.getHistoryModes().add(blocks[i].getStartTime().getTime(), "PTR_"+blocks[i].getType(), "PTR", blocks[i].getStartTime().getTime());
+			        					context.getHistoryModes().add(blocks[i].getStartTime().getTime(), "PTR_"+blocks[i].getType(), "PTR", blocks[i].getStartTime().getTime());
 			        			}
 			        		}
+			        		context.setStartDate(spor.getStartDate());
+			        		context.setEndDate(spor.getEndDate());
 				        	Simulation sim=new Simulation(spor,context);
 
-				        	SimulationContext resultContext = sim.run();
+				        	SimulationContext resultContext = sim.runSimulation();
 				        	try{
-				        		herschel.ia.jconsole.jython.Interpreter.getInterpreter().set("simulationContext"+new Date().getTime(), resultContext);
+				        		herschel.ia.gui.kernel.util.VariablesUtil.addVariable("simulationContext"+new Date().getTime(), resultContext);
+				        		//herschel.ia.jconsole.jython.Interpreter.getInterpreter().set("simulationContext"+new Date().getTime(), resultContext);
+				        		//herschel.ia.jconsole.jython.Interpreter.getInterpreter().
 				        		//InterpreterFactory.getInterpreter().set(""+new Date().getTime()+"_simulationContext", resultContext);
 				        		//InterpreterNameSpaceUtil.getInstance().getInterpreter().set(""+new Date().getTime()+"_simulationContext", resultContext);
 				        	}catch (Exception e){
-				        		Logger.getLogger(getClass().getName()).log(Level.SEVERE, e.getMessage());
+				        		Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception:"+e.getMessage(),e);
 				        		messages=messages+e.getMessage()+"\n";
 				        	}
 				        	messages=messages+resultContext.getLog();
 			        		//messages=messages+sim.run();
 			        	}
 			        	catch (Exception e){
-			        		Logger.getLogger(getClass().getName()).log(Level.SEVERE, e.getMessage());
+			        		Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception:"+e.getMessage(),e.getMessage());
 			        		messages=messages+e.getMessage()+"\n";
 			        		e.printStackTrace();
 			        	}
@@ -405,21 +554,50 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 			      porButton.setMaximumSize(new Dimension(200, 30));
 			      ptrButton.setMaximumSize(new Dimension(200, 30));
 			      ptrLabel.setMaximumSize(new Dimension(200, 30));
+			      pdfmButton.setMaximumSize(new Dimension(200, 30));
+
 			      evtmButton.setMaximumSize(new Dimension(200, 30));
 			      fecsButton.setMaximumSize(new Dimension(200, 30));
+			      initButton.setMaximumSize(new Dimension(200, 30));
+			      postButton.setMaximumSize(new Dimension(200, 30));
 			      
 			      itlbar.setMaximumSize(new Dimension(400,20));
 			      evfbar.setMaximumSize(new Dimension(400,20));
 			      evfbar.setMaximumSize(new Dimension(400,20));
 			      ptrbar.setMaximumSize(new Dimension(400,20));
 			      ptrbox.setMaximumSize(new Dimension(400,20));
+			      pdfmbar.setMaximumSize(new Dimension(400,20));
+
 			      evtmbar.setMaximumSize(new Dimension(400,20));
 			      fecsbar.setMaximumSize(new Dimension(400,20));
+			      initbar.setMaximumSize(new Dimension(400,20));
+			      postbar.setMaximumSize(new Dimension(400,20));
 			      
 			        GridLayout gl=new GridLayout(0,2);
 			        
 			        JPanel panel1=new JPanel();
 			        panel1.setLayout(gl);
+			        
+			        JPanel initButtonPanel=new JPanel();
+			        initButtonPanel.setLayout(new BoxLayout(initButtonPanel,BoxLayout.LINE_AXIS));
+			        initButtonPanel.add(initButton);
+			        panel1.add(initButtonPanel);
+			        
+			        JPanel initBarPanel=new JPanel();
+			        initBarPanel.setLayout(new BoxLayout(initBarPanel,BoxLayout.LINE_AXIS));
+			        initBarPanel.add(initbar);
+			        panel1.add(initBarPanel);
+
+			        JPanel postButtonPanel=new JPanel();
+			        postButtonPanel.setLayout(new BoxLayout(postButtonPanel,BoxLayout.LINE_AXIS));
+			        postButtonPanel.add(postButton);
+			        panel1.add(postButtonPanel);
+			        
+			        JPanel postBarPanel=new JPanel();
+			        postBarPanel.setLayout(new BoxLayout(postBarPanel,BoxLayout.LINE_AXIS));
+			        postBarPanel.add(postbar);
+			        panel1.add(postBarPanel);
+
 			        
 			        JPanel itlButtonPanel=new JPanel();
 			        itlButtonPanel.setLayout(new BoxLayout(itlButtonPanel,BoxLayout.LINE_AXIS));
@@ -472,6 +650,17 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 			        ptrBoxComboPanel.add(ptrbox);
 			        panel1.add(ptrBoxComboPanel);
 			        
+			        JPanel pdfmButtonPanel=new JPanel();
+			        pdfmButtonPanel.setLayout(new BoxLayout(pdfmButtonPanel,BoxLayout.LINE_AXIS));
+			        pdfmButtonPanel.add(pdfmButton);
+			        panel1.add(pdfmButtonPanel);
+
+			        JPanel pdfmBarPanel=new JPanel();
+			        pdfmBarPanel.setLayout(new BoxLayout(pdfmBarPanel,BoxLayout.LINE_AXIS));
+			        pdfmBarPanel.add(pdfmbar);
+			        panel1.add(pdfmBarPanel);
+
+			        
 			        JPanel evtmButtonPanel=new JPanel();
 			        evtmButtonPanel.setLayout(new BoxLayout(evtmButtonPanel,BoxLayout.LINE_AXIS));
 			        evtmButtonPanel.add(evtmButton);
@@ -519,7 +708,26 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 	
     private void refreshLabels(){
     	runButton.setEnabled(false);
-		if (fecsFile==null){
+    	if (initScript==null){
+    		initbar.setText("Select an init jython script");
+    	}else{
+    		initbar.setText(initScript.getName());
+    	}
+       	if (postScript==null){
+    		postbar.setText("Select an post jython script");
+    	}else{
+    		postbar.setText(postScript.getName());
+    	}
+
+		if (pdfmFile==null){
+			pdfmbar.setText("Select a PDFM file");
+			//ptrbox.setEnabled(false);
+		}
+		else{
+			pdfmbar.setText(pdfmFile.getName());
+		}
+
+       	if (fecsFile==null){
 			fecsbar.setText("Select a FECS file");
 			//ptrbox.setEnabled(false);
 		}
@@ -664,6 +872,10 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 	public void init(ViewPart arg0) {
 		_part=arg0;
 
+	}
+	
+	private interface ActionRunnable extends ActionListener,Runnable{
+		
 	}
 
 }

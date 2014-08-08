@@ -12,6 +12,13 @@ public class Height extends PointingMetadata {
 			this.addAttribute(new PointingMetadata("units",units));
 			
 		}
+		public Height(String units,float value){
+			this(units,value+"");
+		}
+		public Height(){
+			this("km",0);
+		}
+
 		
 		public void setHeight(float h){
 			setValue(""+h);

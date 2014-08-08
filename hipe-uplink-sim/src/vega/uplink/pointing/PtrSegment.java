@@ -63,6 +63,10 @@ public class PtrSegment extends Product{
 	private void hardInsertBlock(PointingBlock block){
 		set(getBlockName(block),block);
 		blMap.put(block.getStartTime(), block);
+		//System.out.println("inserted "+block.toXml(0));
+		if (!blMap.lastEntry().getValue().getType().equals(PointingBlock.TYPE_SLEW)){
+			this.setValidityDates(blMap.firstKey(), blMap.lastEntry().getValue().getEndTime());
+		}
 	}
 	
 	/**
@@ -133,12 +137,21 @@ public class PtrSegment extends Product{
 	 * Check if there is any gap before a MOCM, MWOL or MSLW block (which have) internal slews and extend the observation before to end at the beginning of the maintenance block
 	 */
 	public void repairMocm(){
-		Iterator<Entry<Date, PointingBlock>> it = blMap.entrySet().iterator();
+		Iterator<Entry<Date, PointingBlock>> it = ((TreeMap<Date,PointingBlock>)blMap.clone()).entrySet().iterator();
 		while (it.hasNext()){
 			PointingBlock block = it.next().getValue();
 			if (block.getType().equals("MOCM") || block.getType().equals("MWOL") || block.getType().equals("MSLW")){
 				PointingBlock before = blockBefore(block);
-				if (before!=null) before.setEndTime(block.getStartTime());
+				if (before!=null){
+					if (before.getType().equals("SLEW")){
+						PointingBlock beforeSlew=blockBefore(before);
+						this.removeBlock(before);
+						beforeSlew.setEndTime(block.getStartTime());
+					}else{
+						before.setEndTime(block.getStartTime());
+					}
+					//before.setEndTime(block.getStartTime());
+				}
 
 			}
 
@@ -421,6 +434,11 @@ public class PtrSegment extends Product{
 	
 	public PointingBlock getBlockAt(String startTime,String endTime) throws ParseException{
 		return getBlockAt(PointingBlock.zuluToDate(startTime),PointingBlock.zuluToDate(endTime));
+	}
+	
+	private void setValidityDates(Date startDate,Date endDate){
+		setStartDate(new FineTime(startDate));
+		setEndDate(new FineTime(endDate));
 	}
 	
 	

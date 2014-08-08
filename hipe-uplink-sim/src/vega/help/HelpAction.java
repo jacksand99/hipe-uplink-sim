@@ -74,7 +74,7 @@ public final class HelpAction extends AbstractSiteAction {
         		Desktop.getDesktop().browse(uri);
         	}*/
             try {
-            	URL helpurl = ObjectUtil.getClass("vega.uplink.commanding.Por").getResource("/vega/doc/index.html");
+            	URL helpurl = ObjectUtil.getClass("vega.uplink.commanding.Por").getResource("/doc/index.html");
             	SimpleSwingBrowser browser=new SimpleSwingBrowser();
         		browser.run();
         		browser.loadURL(helpurl.toString());

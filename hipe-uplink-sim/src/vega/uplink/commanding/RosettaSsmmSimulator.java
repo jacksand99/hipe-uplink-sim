@@ -22,8 +22,8 @@ public class RosettaSsmmSimulator extends SsmmSimulator {
 	public TreeMap<Date,HashMap<String,Integer>> priorities;
 	
 	public String priorityCommand;
-	public RosettaSsmmSimulator(){
-		super();
+	public RosettaSsmmSimulator(SimulationContext context){
+		super(context);
 		HashMap<String,Integer> prio=new HashMap<String,Integer>();
 		priorities=new TreeMap<Date,HashMap<String,Integer>>();
 		priorityParameter=new HashMap<String,String>();

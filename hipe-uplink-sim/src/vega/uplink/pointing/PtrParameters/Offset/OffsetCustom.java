@@ -11,7 +11,26 @@ public class OffsetCustom extends OffsetAngles {
 	public OffsetCustom(PointingMetadata org){
 		super(org);
 	}
+	
+	private OffsetCustom(){
+		super("custom");
+	}
 
+	public OffsetCustom (Date startTime,String deltaTimesUnits,float[] deltaTimes,String xAnglesUnits,float[] xAngles,String xRatesUnits,float[] xRates,String yAnglesUnits,float[] yAngles,String yRatesUnits,float[] yRates) throws ParseException{
+		super("custom");
+		setStartDate(startTime);
+		setDeltaTimesUnit(deltaTimesUnits);
+		setDeltaTimes(deltaTimes);
+		setXAngles(xAngles);
+		setXAnglesUnit(xAnglesUnits);
+		setXRates(xRates);
+		setXRatesUnit(xRatesUnits);
+		setYAngles(yAngles);
+		setYAnglesUnit(yAnglesUnits);
+		setYRates(yRates);
+		setYRatesUnit(yRatesUnits);
+		
+	}
 
 	public OffsetCustom (Date startTime,float[] deltaTimes,float[] xAngles,float[] xRates,float[] yAngles,float[] yRates) throws ParseException{
 		super("custom");
@@ -180,6 +199,24 @@ public class OffsetCustom extends OffsetAngles {
 	public boolean isCustom(){
 		return true;
 	}
+	
+	public OffsetCustom copy() {
+		OffsetCustom result = new OffsetCustom();
+		
+		//result.setValue(getValue());
+		PointingMetadata[] ch = getChildren();
+		for (int i=0;i<ch.length;i++){
+			result.addChild(ch[i]);
+		}
+		PointingMetadata[] att = getAttributes();
+		for (int i=0;i<att.length;i++){
+			result.addAttribute(att[i]);
+		}
+		//System.out.println(result.toXml(0));
+
+		return result;
+	}
+
 
 
 	

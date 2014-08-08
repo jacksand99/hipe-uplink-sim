@@ -3,46 +3,42 @@ package vega.uplink.pointing;
 import herschel.ia.pal.MapContext;
 import herschel.share.fltdyn.time.FineTime;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+//import java.sql.Date;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
-//import rosetta.uplink.commanding.Por;
-//import rosetta.uplink.commanding.Sequence;
 
 
 public class Ptr extends MapContext{
-	java.util.HashMap<String, PtrSegment> segments;
-	//PtrSegment[] segments;
+	//java.util.HashMap<String, PtrSegment> segments;
 	
 	public Ptr(){
 		super();
-		segments=new java.util.HashMap<String, PtrSegment>();
+		this.setStartDate(new FineTime(new Date()));
+		this.setEndDate(new FineTime(new Date(63072000000l)));
+		
+		//segments=new java.util.HashMap<String, PtrSegment>();
 	}
 	public herschel.ia.pal.MapContext asContext(){
-		/*herschel.ia.pal.MapContext result = new herschel.ia.pal.MapContext();
-		Iterator<Entry<String, PtrSegment>> it = segments.entrySet().iterator();
-		while(it.hasNext()){
-			PtrSegment seg = it.next().getValue();
-			result.setProduct(seg.getName(), seg.asProduct());
-		}
-		/*for (int i=0;i<seqs.length;i++){
-			result.setProduct(seqs[i].getUniqueID(), sequenceToProduct(seqs[i]));
-		}*/
 		return this;
 	}
 	
 	public PtrSegment[] getSegments(){
-		Set<String> keys=segments.keySet();
+		Set<String> keys=this.getRefs().keySet();
 		PtrSegment[] result=new PtrSegment[keys.size()];
 		String[] sKeys=new String[keys.size()];
 		keys.toArray(sKeys);
 		Arrays.sort(sKeys);
 		for (int i=0;i<sKeys.length;i++){
-			result[i]=segments.get(sKeys[i]);
+			result[i]=getSegment(sKeys[i]);
+			//result[i]=segments.get(sKeys[i]);
 		}
 		return result;
 		
@@ -50,24 +46,36 @@ public class Ptr extends MapContext{
 	
 	public void setSegments(PtrSegment[] newSegments){
 		for (int i=0;i<newSegments.length;i++){
-			segments.put(newSegments[i].getName(), newSegments[i]);
+			//segments.put(newSegments[i].getName(), newSegments[i]);
+			addSegment(newSegments[i]);
 		}
 		
 	}
 	
 	public void addSegment(PtrSegment newSegment){
 		setProduct(newSegment.getName(),newSegment);
-		segments.put(newSegment.getName(), newSegment);
+		//System.out.println("added "+newSegment.getName());
+		if (this.getStartDate().after(newSegment.getStartDate())) this.setStartDate(newSegment.getStartDate());
+		if (this.getEndDate().before(newSegment.getEndDate())) this.setEndDate(newSegment.getEndDate());
+		
+		//segments.put(newSegment.getName(), newSegment);
 	}
 	
 	public PtrSegment getSegment(String segmentName){
-		//getProduct(segmentName);
-		return segments.get(segmentName);
+		try {
+			return (PtrSegment) getProduct(segmentName);
+		} catch (IOException | GeneralSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		//return segments.get(segmentName);
 	}
 	
 	public String[] getPtrSegmentNames(){
-		String[] result=new String[this.segments.size()];
-		segments.keySet().toArray(result);
+		
+		String[] result=new String[this.getRefs().keySet().size()];
+		this.getRefs().keySet().toArray(result);
 		return result;
 	}
 	

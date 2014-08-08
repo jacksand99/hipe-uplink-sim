@@ -2,92 +2,67 @@ package vega.uplink.commanding;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Date;
 
 import vega.uplink.Properties;
+import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.Ptr;
 import herschel.ia.dataset.ArrayDataset;
+import herschel.ia.dataset.StringParameter;
 import herschel.ia.numeric.Float1d;
 import herschel.ia.numeric.Long1d;
 import herschel.ia.numeric.String1d;
 import herschel.ia.pal.MapContext;
-//import herschel.share.util.Configuration;
+import herschel.share.fltdyn.time.FineTime;
 
 public class SimulationContext extends MapContext{
-	//public HistoryModes historyModes;
-	//public PowerInstrument powerInstrument;
-	//java.text.SimpleDateFormat dateFormat2;
-	//public Long1d executionDates;
-	//public Long1d zRecordDates;
-	//public Float1d historyPower;
-	//public Float1d mocPowerHistory;
-	//public Float1d historyPowerZ;
-	//public Fecs fecs;
-	//public SuperPor sp;
-	//public Orcd orcd;
-	//public MocPower mocPower;
-	//public ModelState ms;
-	//public SsmmSimulator ssmm;
-	//public Ptr ptr;
-	//public Por dl_por;
 	private static SimulationContext context;
-	//public SsmmHistory ssmmHistory;
+	
+	public SimulationContext(Date startDate,Date endDate){
+		this();
+		setStartDate(new FineTime(startDate));
+		setEndDate(new FineTime(endDate));
+	}
 	public SimulationContext() {
 		super();
 		init();
 	}
 	
 	private void init(){
-		set("historyModes",new HistoryModes());
-		//historyModes=new HistoryModes(); //Composite dataset
-		set("powerInstrument",new PowerInstrument());
-		//powerInstrument=new PowerInstrument(); //Composite Dataset
-		//dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
-		set("executionDates",new ArrayDataset(new Long1d()));
-		//executionDates = new Long1d(); 
-		set("zRecordDates",new ArrayDataset(new Long1d()));
-		//zRecordDates=new Long1d();
-		set("historyPower",new ArrayDataset(new Float1d()));
-		//historyPower =new Float1d(); 
-		set("mocPowerHistory",new ArrayDataset(new Float1d()));
-		//mocPowerHistory= new Float1d(); 
-		set("historyPowerZ",new ArrayDataset(new Float1d()));
-		//historyPowerZ=new Float1d();
-		setProduct("por",new SuperPor());
-		//sp=new SuperPor(); //MapContext
-		setProduct("dl_por",new Por());
+		getMeta().set("initScript", new StringParameter(Properties.getProperty(Properties.DEFAULT_INIT_SCRIPT)));
+		getMeta().set("postScript", new StringParameter(Properties.getProperty(Properties.DEFAULT_POST_SCRIPT)));
+		getMeta().set("planningPeriod", new StringParameter("unknownPlanningPeriod"));
 		
-		//dl_por=new Por(); //MapContext
-		//ssmmHistory=new SsmmHistory();
-		//ssmm=new SsmmSimulator();
-		//ssmm=new RosettaSsmmSimulator();
-		//orcd TableDataset
+		set("historyModes",new HistoryModes());
+		set("powerInstrument",new PowerInstrument());
+		set("executionDates",new ArrayDataset(new Long1d()));
+		set("zRecordDates",new ArrayDataset(new Long1d()));
+		set("historyPower",new ArrayDataset(new Float1d()));
+		set("mocPowerHistory",new ArrayDataset(new Float1d()));
+		set("historyPowerZ",new ArrayDataset(new Float1d()));
+		setProduct("por",new SuperPor());
+		setProduct("dl_por",new Por());		
 		try{
 			set("orcd",Orcd.readORCDfile(Properties.getProperty(Properties.ORCD_FILE)));
-			//orcd=Orcd.readORCDfile(Properties.getProperty(Properties.ORCD_FILE));
 		}catch(Exception e){
 			set("orcd",Orcd.readORCDfromJar());
 
-			//orcd=Orcd.readORCDfromJar();
 		}
-		//MocPower TableDataset
 		try{
 			set("mocPower",MocPower.ReadFromFile(Properties.getProperty(Properties.PWPL_FILE)));
-			//mocPower=MocPower.ReadFromFile(Properties.getProperty(Properties.PWPL_FILE));
 		}catch (Exception e){
 			set("mocPower",MocPower.ReadFromJar());
 
-			//mocPower=MocPower.ReadFromJar();
 		}
 		set("modelState",ModelState.getModelState());
-		//ms=ModelState.getModelState(); //CompositeDataset
 		set("fecs",new Fecs());
-		//fecs=new Fecs(); //TableDataset
 		setProduct("ptr",new Ptr());
+		setProduct("pdfm",new Pdfm());
 		set("log",new ArrayDataset(new String1d()));
-		//ptr=new Ptr(); //MapContext
 		
 
 	}
+	
 	
 	public HistoryModes getHistoryModes(){
 		return (HistoryModes) get("historyModes");
@@ -124,12 +99,9 @@ public class SimulationContext extends MapContext{
 		try {
 			return (SuperPor) getProduct("por");
 		} catch (IOException e) {
-			//return null;
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		} catch (GeneralSecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -139,12 +111,9 @@ public class SimulationContext extends MapContext{
 		try {
 			return (Por) getProduct("dl_por");
 		} catch (IOException e) {
-			//return null;
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		} catch (GeneralSecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -175,7 +144,14 @@ public class SimulationContext extends MapContext{
 		try {
 			return (Ptr) getProduct("ptr");
 		} catch (IOException | GeneralSecurityException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	public Pdfm getPdfm(){
+		try {
+			return (Pdfm) getProduct("pdfm");
+		} catch (IOException | GeneralSecurityException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -183,6 +159,32 @@ public class SimulationContext extends MapContext{
 	
 	public void setPtr(Ptr ptr){
 		setProduct("ptr",ptr);
+	}
+	public void setPdfm(Pdfm pdfm){
+		setProduct("pdfm",pdfm);
+	}
+
+	public void setPlanningPeriod(String period){
+		getMeta().set("planningPeriod", new StringParameter(period));
+	}
+	
+	public String getPlanningPeriod(){
+		return (String) getMeta().get("planningPeriod").getValue();
+	}
+
+	
+	public void setInitScript(String script){
+		getMeta().set("initScript", new StringParameter(script));
+	}
+	public void setPostScript(String script){
+		getMeta().set("postScript", new StringParameter(script));
+	}
+	
+	public String getInitScript(){
+		return (String) getMeta().get("initScript").getValue();
+	}
+	public String getPostScript(){
+		return (String) getMeta().get("postScript").getValue();
 	}
 	
 	public void log(String message){
@@ -195,26 +197,17 @@ public class SimulationContext extends MapContext{
 		int size = log.getSize();
 		//String[] lines=log.toArray();
 		for (int i=0;i<size;i++){
-			result=log.get(i)+"\n";
+			result=result+log.get(i)+"\n";
 		}
 		return result;
 	}
 	
-	/*public void setPor(SuperPor por){
-		setProduct("por",por);
-	}*/
 	
 	public void reset(){
 		init();
 		getModelState().reset();
 	}
 	
-	/*public static SimulationContext getInstance(){
-		if (context==null){
-			context=new SimulationContext();
-		}
-		return context;
-	}*/
 	
 	public SimulationContext copy(){
 		return (SimulationContext) super.copy();

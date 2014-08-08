@@ -23,6 +23,9 @@ public class Properties {
 	public static String ANTENNA_PRIORITY_COMMAND="vega.antenna.priorities.command";
 	public static String ANTENNA_PRIORITY_PARAMETER_PREFIX="vega.antenna.priorities.parameter.";
 	public static String SSMM_PACKETSTORE_PREFIX="vega.packetstoresize.";
+	public static String DEFAULT_INIT_SCRIPT="vega.default.initScript";
+	public static String DEFAULT_POST_SCRIPT="vega.default.postScript";
+	
 	public static List<String> getList(String property) {
 			StringTokenizer tokenizer=new StringTokenizer(property,".");
 			String path="";
@@ -99,6 +102,7 @@ public class Properties {
 		return color;
 		//return ColorPreferenceHandler.color2int(color);
 	}
+	
 
 
 

@@ -31,18 +31,15 @@ REGISTRY.register(REGISTRY.COMPONENT,Extension("vega.uplink.commanding.gui.Other
 REGISTRY.register(REGISTRY.COMPONENT,Extension("vega.uplink.pointing.gui.PtrOutline","vega.uplink.pointing.gui.PtrOutline","factory.outline.variable","vega.uplink.pointing.Ptr"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("vega.uplink.commanding.gui.ModelStateOutline","vega.uplink.commanding.gui.ModelStateOutline","factory.outline.variable","vega.uplink.commanding.ModelState"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("HistoryModes Viewer","vega.uplink.commanding.gui.HistoryModesPlot","factory.editor.variable","vega.uplink.commanding.HistoryModes"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("Power Plot Viewer","vega.uplink.commanding.gui.PowerPlotViewer","factory.editor.variable","vega.uplink.commanding.SimulationContext"))
 REGISTRY.register(UserPreferences.CATEGORY, Extension("Mission Planning","vega.hipe.preferences.UplinkPathPreferences",None,None))  # unused
+REGISTRY.register(UserPreferences.CATEGORY, Extension("Mission Planning/Instruments","vega.hipe.preferences.InstrumentsNamesPreferences",None,None))  # unused
+
 instruments=Configuration.getList("vega.instrument.names")
 for ins in instruments:
-	REGISTRY.register(UserPreferences.CATEGORY, Extension("Mission Planning/"+ins,"vega.hipe.preferences.InstrumentPreferences",None,None))  # unused
+	REGISTRY.register(UserPreferences.CATEGORY, Extension("Mission Planning/Instruments/"+ins,"vega.hipe.preferences.InstrumentPreferences",None,None))  # unused
 
-del(REGISTRY)
-
-
-del(path)
-from vega.uplink.commanding import SimulationContext 
-#por=SimulationContext.getInstance().sp
-#ptr=SimulationContext.getInstance().ptr
+del(REGISTRY, pluginsDir, rspDir, file, ins, instruments)
 
 
 

@@ -30,6 +30,33 @@ public class OffsetRaster extends OffsetAngles {
 	public OffsetRaster(PointingMetadata org){
 		super(org);
 	}
+	
+	private OffsetRaster(){
+		super("raster");
+	}
+	public OffsetRaster(Date startTime,int xPoints,int yPoints,String xStartUnit,float xStart,String yStartUnit,float yStart,String xDeltaUnit,float xDelta,String yDeltaUnit,float yDelta,String pointSlewTimeUnit,float pointSlewTime,String lineSlewTimeUnit,float lineSlewTime,String dwellTimeUnit,float dwellTime,String lineAxis,boolean keepLineDir) {
+		super("raster");
+		setStartDate(startTime);
+		setIntegerField(XPOINTS_FIELD,xPoints);
+		setIntegerField(YPOINTS_FIELD,yPoints);
+		setFloatField(XSTART_FIELD,xStart);
+		setUnit(XSTART_FIELD,xStartUnit);
+		setFloatField(YSTART_FIELD,yStart);
+		setUnit(YSTART_FIELD,yStartUnit);
+		setFloatField(XDELTA_FIELD,xDelta);
+		setUnit(XDELTA_FIELD,xDeltaUnit);
+		setFloatField(YDELTA_FIELD,yDelta);
+		setUnit(YDELTA_FIELD,yDeltaUnit);
+		setFloatField(POINTSLEWTIME_FIELD,pointSlewTime);
+		setUnit(POINTSLEWTIME_FIELD,pointSlewTimeUnit);
+		setFloatField(LINESLEWTIME_FIELD,lineSlewTime);
+		setUnit(LINESLEWTIME_FIELD,lineSlewTimeUnit);
+		setFloatField(DWELLTIME_FIELD,dwellTime);
+		setUnit(DWELLTIME_FIELD,dwellTimeUnit);
+		setStringField(LINEAXIS_FIELD,lineAxis);
+		setBooleanField(KEEPLINEDIR_FIELD,keepLineDir);
+		
+	}
 
 	public OffsetRaster(Date startTime,int xPoints,int yPoints,float xStart,float yStart,float xDelta,float yDelta,float pointSlewTime,float lineSlewTime,float dwellTime,String lineAxis,boolean keepLineDir) {
 		super("raster");
@@ -100,6 +127,10 @@ public class OffsetRaster extends OffsetAngles {
 
 	}
 	
+	public String getLineAxis(){
+		return getChild(LINEAXIS_FIELD).getValue();
+	}
+	
 	public float getLineSlewTime(){
 		if (getChild(POINTSLEWTIME_FIELD)!=null){
 			return Float.parseFloat(getChild(POINTSLEWTIME_FIELD).getValue().trim());
@@ -110,9 +141,17 @@ public class OffsetRaster extends OffsetAngles {
 	}
 	
 	public long getDurationMilliSecs(){
-		float linetime=((getXPoints()-1)*getPointSlewTime())+(getXPoints()*getDwellTime());
-		float result=(linetime*getYPoints())+((getYPoints()-1)*getLineSlewTime());
-		return new Float(result*1000*60).longValue();
+		if (getLineAxis().equals("x") || getLineAxis().equals("X")){
+			
+			return new Float(getXPoints() * (getYPoints() * getDwellTime() + (getYPoints() - 1) * getPointSlewTime()) + (getXPoints() - 1) * getLineSlewTime()).longValue()*60*1000;
+		}
+		if (getLineAxis().equals("y") || getLineAxis().equals("Y")){
+			
+			return new Float(getYPoints() * (getXPoints() * getDwellTime() + (getXPoints() - 1) * getPointSlewTime()) + (getYPoints() - 1) * getLineSlewTime()).longValue()*60*1000;
+		}
+		
+
+		return 0;
 	}
 
 	public OffsetRaster(String startTime) throws ParseException{
@@ -163,6 +202,24 @@ public class OffsetRaster extends OffsetAngles {
 		long result=getStartDate().getTime()+getDurationMilliSecs();
 		return new Date(result);
 	}
+	
+	public OffsetRaster copy() {
+		OffsetRaster result = new OffsetRaster();
+		
+		//result.setValue(getValue());
+		PointingMetadata[] ch = getChildren();
+		for (int i=0;i<ch.length;i++){
+			result.addChild(ch[i]);
+		}
+		PointingMetadata[] att = getAttributes();
+		for (int i=0;i<att.length;i++){
+			result.addAttribute(att[i]);
+		}
+		//System.out.println(result.toXml(0));
+
+		return result;
+	}
+
 
 
 

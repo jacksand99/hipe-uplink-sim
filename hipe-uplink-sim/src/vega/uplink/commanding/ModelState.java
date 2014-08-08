@@ -215,6 +215,20 @@ public class ModelState extends CompositeDataset{
 			e.printStackTrace();
 		}
 	}
+	public void saveStateAsInitScript(String file){
+		try{
+			PrintWriter writer = new PrintWriter(file, "UTF-8");
+			String[] statesN=getAllStates();
+			for (int i=0;i<statesN.length;i++){
+				if (!statesN[i].equals("nullOff"))
+					writer.print("simulationContext.getModelState().setState(\""+statesN[i]+"\")\n");
+			}
+			//writer.print(PORtoITL(POR));
+			writer.close();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
 	
 	public void initFromFile(String file){
 		this.reset();

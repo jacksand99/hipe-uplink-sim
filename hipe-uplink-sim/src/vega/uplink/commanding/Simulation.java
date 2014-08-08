@@ -17,8 +17,9 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.naming.ConfigurationException;
+//import javax.naming.ConfigurationException;
 import javax.swing.JFrame;
+//import java.lang.Runnable ;
 public class Simulation {
 	java.text.SimpleDateFormat dateFormat2;
 	SimulationContext context;
@@ -30,6 +31,7 @@ public class Simulation {
 	}
 	private Simulation(SimulationContext context){
 		this.context=context;
+		//System.out.println("Init script:"+this.context.getInitScript());
 		dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
 		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		
@@ -56,14 +58,23 @@ public class Simulation {
 		}
 		
 	}
-	public SimulationContext run(){
+	public SimulationContext runSimulation(){
 		return run(false);
 	}
 	public SimulationContext run(boolean printStrategy){
-		
+		if (!context.getInitScript().equals("")){
+			try{
+				herschel.ia.jconsole.jython.Interpreter.getInterpreter().set("simulationContext", context);
+				herschel.ia.jconsole.jython.Interpreter.getInterpreter().getPythonInterpreter().execfile(context.getInitScript());
+				context=herschel.ia.jconsole.jython.Interpreter.getInterpreter().getPythonInterpreter().get("simulationContext", SimulationContext.class);
+			}catch (Exception e){
+				e.printStackTrace();
+				context.log(e.getMessage());
+			}
+		}
 		Sequence[] seqs=context.getPor().getOrderedSequences();
 		//SsmmSimulator memorySimulator=context.ssmm;
-		SsmmSimulator memorySimulator=new RosettaSsmmSimulator();
+		SsmmSimulator memorySimulator=new RosettaSsmmSimulator(context);
 		//String messages="";
 		for (int i=0;i<seqs.length;i++){
 			//if (seqs[i].getName())
@@ -242,7 +253,7 @@ public class Simulation {
 		//plot4.addLayer(layerLimitMemory);
 
 		plot4.getXaxis().setTitleText("Time");
-		plot4.getYaxis().setTitleText("Date (bits)");
+		plot4.getYaxis().setTitleText("Data (bits)");
 		plot4.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
 		plot4.getLegend().setVisible(true);
 		
@@ -254,6 +265,17 @@ public class Simulation {
 		RefineryUtilities.centerFrameOnScreen(frame);
 
 		frame.setVisible(true);
+		if (!context.getPostScript().equals("")){
+			try{
+				herschel.ia.jconsole.jython.Interpreter.getInterpreter().set("simulationContext", context);
+				herschel.ia.jconsole.jython.Interpreter.getInterpreter().getPythonInterpreter().execfile(context.getPostScript());
+				context=herschel.ia.jconsole.jython.Interpreter.getInterpreter().getPythonInterpreter().get("simulationContext", SimulationContext.class);
+				herschel.ia.jconsole.jython.Interpreter.getInterpreter().exec("del(simulationContext)");
+			}catch (Exception e){
+				e.printStackTrace();
+				context.log(e.getMessage());
+			}
+		}
 		return context;
 	}
 	public Simulation(String[] porFiles){
@@ -307,6 +329,11 @@ public class Simulation {
 		//}
 		addPors(pors);
 	}
+	/*@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		runSimulation();
+	}*/
 	
 	//Public Simulation(String[] itlFiles)
 }

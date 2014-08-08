@@ -13,6 +13,7 @@ import java.io.File;
 
 
 
+
 import herschel.ia.pal.MapContext;
 
 /*import org.apache.commons.httpclient.HttpClient;
@@ -38,9 +39,20 @@ public class TestPointing {
 		//Pdfm pdfm=PtrUtils.readPdfmfromFile("C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP004A\\PTR\\PDFM_DM_004_01____A__00005.ROS");
 		//Ptr ptr=PtrUtils.readPTRfromFile("C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP004A\\PTR\\PTRM_DM_004_01____A__00005.ROS");
 		//Ptr ptr=PtrUtils.readPTRfromFile("Z:\\PTRM_DM_006_01____A__00008.ROS");
-		Ptr ptr=PtrUtils.readPTRfromFile("Z:\\testptrall-007.xml");
+		Ptr ptr=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PTRM_DM_008_01____Ab_00014.ROS");
+		String[] segmentNames = ptr.getPtrSegmentNames();
+		//ptrbox.removeAllItems();
+		for (int i=0;i<segmentNames.length;i++){
+			System.out.println(segmentNames[i]);
+			//ptrbox.addItem(segmentNames[i]);
+		}
+		System.out.println("..");
+		//System.out.println(ptr.getSegment("MTP_007").toXml(0));
+		//System.out.println(ptr.toXml());
+		
 
-		Pdfm pdfm=PtrUtils.readPdfmfromFile("Z:\\PDFM_DM_006_01____A__00006.ROS");
+		Pdfm pdfm=PtrUtils.readPdfmfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PDFM_DM_007_01____A__00014.ROS");
+		System.out.println(pdfm.toXml());
 		System.out.println(PtrChecker.checkPtr(ptr));
 		/*PtrSegment seg = ptr.getSegments()[0];
 		PointingBlock[] allObs = seg.getAllBlocksOfType("OBS");

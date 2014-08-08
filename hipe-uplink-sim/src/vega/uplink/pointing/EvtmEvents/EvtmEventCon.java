@@ -1,24 +1,28 @@
 package vega.uplink.pointing.EvtmEvents;
 
 import vega.uplink.pointing.EvtmEvent;
+import herschel.ia.dataset.LongParameter;
 
 import java.util.Date;
 
 //import rosetta.uplink.EvtmEvent;
 
 public class EvtmEventCon extends EvtmEvent {
-	private int angle;
+	//private int angle;
 	public EvtmEventCon(String eventId,Date eventTime,long eventDuration,int eventAngle){
 		super(EvtmEvent.EVENT_TYPE_CON,eventId,eventTime,eventDuration);
-		angle=eventAngle;
+		setAngle(eventAngle);
+		//angle=eventAngle;
 	}
 	
 	public int getAngle(){
-		return angle;
+		return ((Long)getMeta().get("angle").getValue()).intValue();
+		//return angle;
 	}
 	
 	public void setAngle(int eventAngle){
-		angle=eventAngle;
+		getMeta().set("angle", new LongParameter(eventAngle));
+		//angle=eventAngle;
 	}
 	
 	public String toString(){

@@ -21,13 +21,14 @@ import vega.uplink.Properties;
 
 public class SsmmSimulator {
 	java.util.HashMap<String,InstrumentSimulator> instrumentSimulators;
+	SimulationContext simulationContext;
 	
 	private void init(){
 		instrumentSimulators=new java.util.HashMap<String,InstrumentSimulator>();
 		
 	}
 	
-	protected InstrumentSimulator getSimulator(String instrument){
+	public InstrumentSimulator getSimulator(String instrument){
 		InstrumentSimulator simulator = instrumentSimulators.get(instrument);
 		if (simulator==null){
 			simulator=new InstrumentSimulator(instrument);
@@ -36,7 +37,8 @@ public class SsmmSimulator {
 		
 		return simulator;
 	}
-	public SsmmSimulator(){
+	public SsmmSimulator(SimulationContext context){
+		simulationContext=context;
 		init();
 	}
 	
@@ -166,12 +168,21 @@ public class SsmmSimulator {
 
 	
 	
-	protected class InstrumentSimulator{
+	public class InstrumentSimulator{
 		String instrument;
 		java.util.TreeMap<Date,Float> rates;
 		/*java.util.TreeMap<Date,Float> startDump;
 		java.util.TreeSet<Date> endDump;*/
 		long packetStoreSize;
+		/*Float initialValue=0f;
+		Float initialRate=0f;*/
+		InstrumentSimulator(Date startDate,String instrumentName,Float initialValue, Float initialRate){
+			this(instrumentName);
+			add(startDate,initialValue);
+			add(new Date(startDate.getTime()+1000),initialRate);
+			/*this.initialRate=initialRate;
+			this.initialValue=initialValue;*/
+		}
 		
 		InstrumentSimulator(String instrumentName){
 			super();
@@ -188,15 +199,19 @@ public class SsmmSimulator {
 			}
 		}
 		
+		public long getPacketStoreSize(){
+			return packetStoreSize;
+		}
+		
 		/*private TreeMap<Date,Float> getMap(){
 			
 		}*/
 		
-		float percentageFull(Date time){
+		public float percentageFull(Date time){
 			return (getValueAt(time)/100)*packetStoreSize;
 		}
 		
-		String getInstrument(){
+		public String getInstrument(){
 			//return (String) getMeta().get("instrumentName").getValue();
 			return instrument;
 		}

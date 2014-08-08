@@ -9,7 +9,8 @@ import vega.uplink.pointing.PtrParameters.Offset.OffsetScan;
 
 public class PtrChecker {
 	public static String checkPtr(Ptr ptr){
-		return checkSlewDuration(ptr)+checkGaps(ptr)+checkOffsetDuration(ptr);
+		//return checkSlewDuration(ptr)+checkGaps(ptr)+checkOffsetDuration(ptr);
+		return checkSlewDuration(ptr)+checkGaps(ptr);
 	}
 	
 	public static String checkSlewDuration(Ptr ptr){

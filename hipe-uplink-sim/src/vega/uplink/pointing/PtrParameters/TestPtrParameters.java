@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import vega.uplink.pointing.*;
 import vega.uplink.pointing.PtrParameters.Offset.*;
+//import vega.uplink.pointing.PtrParameters.dirvector.Reference;
 import vega.uplink.pointing.attitudes.*;
 
 public class TestPtrParameters {
@@ -20,6 +21,8 @@ public class TestPtrParameters {
 		// TODO Auto-generated method stub
 		herschel.share.util.Configuration.setProperty("var.hcss.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
 		herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
+		Surface sur = new Surface("CG_Lamy","CG","m",2398.0f,"m",1887f,"m",1532f,"CG",0.9f,-0.3f,0.0f,"CG",0.9f,-0.3f,0.0f,"CG",0.9f,-0.3f,0.0f);
+		System.out.println(sur.toXml(0));
 		//Ptr orPtr=PtrUtils.readPTRfromFile("C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP004A\\PTR\\PTRM_DM_004_01____A__00005.ROS");
 		//PtrSegment orSeg = orPtr.getSegment("MTP_004");
 		//PointingBlock[] orBlocks = orSeg.getAllBlocksOfType("OBS");
@@ -41,8 +44,8 @@ public class TestPtrParameters {
 		
 		Inertial inertial=new Inertial();
 		vector.add(inertial);
-		vector.add(new Inertial(new Boresight(),new PhaseAngle(),new Target("CG","5.5","5.5","5.5")));
-		vector.add(new Inertial(new Boresight(),pa1,new Target("CG","5.5","5.5","5.5")));
+		vector.add(new Inertial(new Boresight(),new PhaseAngle(),new TargetInert("CG",5.5f,5.5f,5.5f)));
+		vector.add(new Inertial(new Boresight(),pa1,new TargetInert("CG",5.5f,5.5f,5.5f)));
 
 		//print(inertial.toXml(0));
 		Limb limb=new Limb();
@@ -51,12 +54,12 @@ public class TestPtrParameters {
 		vector.add(new Limb(new Boresight(),new PhaseAngle(),new TargetDir("SC2Sun"),new Height("km","0"),new Surface("CG")));
 		vector.add(new Limb(new Boresight(),pa1,new TargetDir("SC2Sun"),new Height("km","5."),new Surface("CG")));
 		vector.add(new Limb(new Boresight("SC",1.1f,2.2f,3.3f),new PhaseAngle(),new TargetDir("SC2Earth"),new Height("km","8.5"),new Surface("CG")));
-		vector.add(new Limb(new Boresight(),new PhaseAngle(),new TargetDir("Sun2CG"),new Height("m","1000."),new Surface("CG")));
+		vector.add(new Limb(new Boresight(),new PhaseAngle(),new TargetDir("SC2Sun"),new Height("m","1000."),new Surface("CG")));
 		vector.add(new Limb(new Boresight(),pa1,new TargetDir("Sun2CG"),new Height("m","1000."),new Surface("CG")));
 		vector.add(new Limb(new Boresight(),pa1,new TargetDir("Sun2CG"),new Height("km","0."),new Surface("CG")));
-		vector.add(new Limb(new Boresight(),new PhaseAngle(),new TargetDir("CG_ROT_Pol"),new Height("km","0."),new Surface("CG")));
-		vector.add(new Limb(new Boresight(),new PhaseAngle(),new TargetDir("CG_ROT_Pol"),new Height("km","10."),new Surface("CG")));
-		vector.add(new Limb(new Boresight(),new PhaseAngle(),new TargetDir("CG_ROT_Pol"),new Height("km","10000."),new Surface("CG")));
+		vector.add(new Limb(new Boresight(),new PhaseAngle(),new TargetDir("targetDir","CG_ROT_Pol"),new Height("km","0."),new Surface("CG")));
+		vector.add(new Limb(new Boresight(),new PhaseAngle(),new TargetDir("targetDir","CG_ROT_Pol"),new Height("km","10."),new Surface("CG")));
+		vector.add(new Limb(new Boresight(),new PhaseAngle(),new TargetDir("targetDir","CG_ROT_Pol"),new Height("km","10000."),new Surface("CG")));
 
 
 		//print(limb.toXml(0));
@@ -70,9 +73,9 @@ public class TestPtrParameters {
 		//print(terminator.toXml(0));
 		Track track=new Track();
 		vector.add(track);
-		vector.add(new Track(new Boresight(),new PhaseAngle("SC",1.0f,1.0f,1.0f,"EME2000",1.0f,1.0f,1.0f),new Target("CG")));
-		vector.add(new Track(new Boresight("SC",1.1f,2.2f,3.3f),new PhaseAngle(),new Target("CG")));
-		vector.add(new Track(new Boresight("SC",1.1f,2.2f,3.3f),new PhaseAngle("SC",1.0f,1.0f,1.0f,"EME2000",1.0f,1.0f,1.0f),new Target("CG")));
+		vector.add(new Track(new Boresight(),new PhaseAngle("SC",1.0f,1.0f,1.0f,"EME2000",1.0f,1.0f,1.0f),new TargetTrack("CG")));
+		vector.add(new Track(new Boresight("SC",1.1f,2.2f,3.3f),new PhaseAngle(),new TargetTrack("CG")));
+		vector.add(new Track(new Boresight("SC",1.1f,2.2f,3.3f),new PhaseAngle("SC",1.0f,1.0f,1.0f,"EME2000",1.0f,1.0f,1.0f),new TargetTrack("CG")));
 		
 
 
@@ -173,7 +176,7 @@ public class TestPtrParameters {
 	}
 	
 	public static void insertInPTSL(Vector<PointingAttitude> vector,Vector<OffsetAngles> vOffSet){
-		Ptr orPtr=PtrUtils.readPTRfromFile("C:\\ROS_SGS\\PLANNING\\RMOC\\FD\\PTSL_DL_001_02____A__00002.ROS");
+		Ptr orPtr=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PTRM_DM_008_01____Ab_00014.ROS");
 		PtrSegment orSeg = orPtr.getSegment("MTP_007");
 		//System.out.println(orSeg.toXml(0));
 		PointingBlock[] orBlocks = orSeg.getAllBlocksOfType("OBS");
@@ -264,7 +267,7 @@ public class TestPtrParameters {
 		writer.println(string);
 		System.out.println(string);
 	}
-	public static PointingAttitude[] getAllBasicPointings(){
+	/*public static PointingAttitude[] getAllBasicPointings(){
 		Vector<PointingAttitude> vResult=new Vector<PointingAttitude>();
 
 		PointingAttitude[] patt = getAllTrackAttitude();
@@ -286,9 +289,9 @@ public class TestPtrParameters {
 		return result;
 
 
-	}
+	}*/
 	
-	public static Boresight[] getAllCombinationsBoresight(){
+	/*public static Boresight[] getAllCombinationsBoresight(){
 		Vector<Boresight> vResult=new Vector<Boresight>();
 		String[] frames={"SC"};
 		String[] refs={"Nadir_Nav_Boresight","SC_Zaxis","SC_Xaxis","SC_Yaxis"};
@@ -314,7 +317,7 @@ public class TestPtrParameters {
 		Boresight[] result=new Boresight[vResult.size()];
 		vResult.toArray(result);
 		return result;
-	}
+	}*/
 	
 	public static PhaseAngle[] getAllCombinationsPhaseAngle(){
 		Vector<PhaseAngle> vResult=new Vector<PhaseAngle>();
@@ -335,21 +338,21 @@ public class TestPtrParameters {
 		
 	}
 	
-	public static Target[] getAllCombinationsTarget(){
-		Vector<Target> vResult=new Vector<Target>();
+	/*public static TargetInert[] getAllCombinationsTarget(){
+		Vector<DirVector> vResult=new Vector<TargetInert>();
 		String[] frames={"EME2000"};
-		String[] values={"0.","1."};
+		float[] values={0.0f,1.0f};
 		String[] refs={"CG"};
 		for (int i=0;i<frames.length;i++){
 			String ref=frames[i];
 			for (int x=0;x<values.length;x++){
 				//System.out.println(x);
-				String xV=values[x];
+				//String xV=values[x];
 				for (int y=0;y<values.length;y++){
-					String yV=values[y];
+					//String yV=values[y];
 					for (int z=0;z<values.length;z++){
-						String zV=values[z];
-						vResult.add(new Target(ref,xV,yV,zV));
+						//String zV=values[z];
+						vResult.add(new PointedAxis("target",ref,values[x],values[y],values[z]));
 					}
 				}
 			}
@@ -357,17 +360,17 @@ public class TestPtrParameters {
 		
 		for (int i=0;i<refs.length;i++){
 			//System.out.println("here");
-			Target ta = new Target(refs[i]);
+			Reference ta = new Reference("target",refs[i]);
 			//System.out.println("here"+ta.toXml(0));
 			//System.out.println(vResult.size());
 			vResult.add(ta);
 			//System.out.println(vResult.size());
 
 		}
-		Target[] result=new Target[vResult.size()];
+		StateVector[] result=new StateVector[vResult.size()];
 		vResult.toArray(result);
 		return result;
-	}
+	}*/
 	
 	public static TargetDir[] getAllCombinationsTargetDir(){
 		String[] refs={"CG2Sun"};
@@ -426,11 +429,11 @@ public class TestPtrParameters {
 		
 	}
 	
-	public static PointingAttitude[] getAllTrackAttitude(){
+	/*public static PointingAttitude[] getAllTrackAttitude(){
 		Vector<PointingAttitude> vResult=new Vector<PointingAttitude>();
 		Boresight[] brs = getAllCombinationsBoresight();
 		PhaseAngle[] ph = getAllCombinationsPhaseAngle();
-		Target[] ta = getAllCombinationsTarget();
+		StateVector[] ta = getAllCombinationsTarget();
 		for (int i=0;i<=brs.length;i++){
 			Boresight b=null;
 			if (i<brs.length) b=brs[i];
@@ -438,7 +441,7 @@ public class TestPtrParameters {
 				PhaseAngle p=null;
 				if (j<ph.length) p=ph[j];
 				for (int y=0;y<=ta.length;y++){
-					Target t=null;
+					StateVector t=null;
 					if (y<ta.length) t=ta[y];
 					PointingAttitude patt=new PointingAttitude("track");
 					//System.out.println(b);
@@ -447,7 +450,7 @@ public class TestPtrParameters {
 					if (t!=null) patt.addChild(t);
 					/*patt.setBoresight(b);
 					patt.setPhaseAngle(p);
-					patt.setTarget(t);*/
+					patt.setTarget(t);
 					vResult.add(patt);
 				}
 			}
@@ -456,13 +459,13 @@ public class TestPtrParameters {
 		vResult.toArray(result);
 		return result;
 
-	}
+	}*/
 
-	public static PointingAttitude[] getAllInertialAttitude(){
+	/*public static PointingAttitude[] getAllInertialAttitude(){
 		Vector<PointingAttitude> vResult=new Vector<PointingAttitude>();
 		Boresight[] brs = getAllCombinationsBoresight();
 		PhaseAngle[] ph = getAllCombinationsPhaseAngle();
-		Target[] ta = getAllCombinationsTarget();
+		StateVector[] ta = getAllCombinationsTarget();
 		for (int i=0;i<=brs.length;i++){
 			Boresight b=null;
 			if (i<brs.length) b=brs[i];
@@ -470,7 +473,7 @@ public class TestPtrParameters {
 				PhaseAngle p=null;
 				if (j<ph.length) p=ph[j];
 				for (int y=0;y<=ta.length;y++){
-					Target t=null;
+					StateVector t=null;
 					if (y<ta.length) t=ta[y];
 					PointingAttitude patt=new PointingAttitude("inertial");
 					//System.out.println(b);
@@ -479,7 +482,7 @@ public class TestPtrParameters {
 					if (t!=null) patt.addChild(t);
 					/*patt.setBoresight(b);
 					patt.setPhaseAngle(p);
-					patt.setTarget(t);*/
+					patt.setTarget(t);
 					vResult.add(patt);
 				}
 			}
@@ -488,9 +491,9 @@ public class TestPtrParameters {
 		vResult.toArray(result);
 		return result;
 
-	}
+	}*/
 
-	public static PointingAttitude[] getAllLimbAttitude(){
+	/*public static PointingAttitude[] getAllLimbAttitude(){
 		Vector<PointingAttitude> vResult=new Vector<PointingAttitude>();
 		Boresight[] brs = getAllCombinationsBoresight();
 		PhaseAngle[] ph = getAllCombinationsPhaseAngle();
@@ -525,7 +528,7 @@ public class TestPtrParameters {
 
 					/*patt.setBoresight(b);
 					patt.setPhaseAngle(p);
-					patt.setTarget(t);*/
+					patt.setTarget(t);
 					
 				}
 			}
@@ -534,7 +537,7 @@ public class TestPtrParameters {
 		vResult.toArray(result);
 		return result;
 
-	}
+	}*/
 	
 	public static OffsetRefAxis[] getAllCombinationsOffsetAxis(){
 		String[] refAxis={"SC_Xaxis","SC_Yaxis","SC_Yaxis"};
