@@ -16,9 +16,18 @@ import java.util.Set;
 
 
 
+/**
+ * Class to represent both PTR and PTSL
+ * PTRs can contain only one segment, PTSLs may contain several segments
+ * @author jarenas
+ *
+ */
 public class Ptr extends MapContext{
 	//java.util.HashMap<String, PtrSegment> segments;
 	
+	/**
+	 * Creates a new, empty PTR/PTSL
+	 */
 	public Ptr(){
 		super();
 		this.setStartDate(new FineTime(new Date()));
@@ -30,6 +39,10 @@ public class Ptr extends MapContext{
 		return this;
 	}
 	
+	/**
+	 * Get all segments contained in this PTR/PTSL
+	 * @return
+	 */
 	public PtrSegment[] getSegments(){
 		Set<String> keys=this.getRefs().keySet();
 		PtrSegment[] result=new PtrSegment[keys.size()];
@@ -44,6 +57,10 @@ public class Ptr extends MapContext{
 		
 	}
 	
+	/**
+	 * Add all segments contained in the array given
+	 * @param newSegments
+	 */
 	public void setSegments(PtrSegment[] newSegments){
 		for (int i=0;i<newSegments.length;i++){
 			//segments.put(newSegments[i].getName(), newSegments[i]);
@@ -52,6 +69,10 @@ public class Ptr extends MapContext{
 		
 	}
 	
+	/**
+	 * Add a new segment to this PTR/PTSL
+	 * @param newSegment
+	 */
 	public void addSegment(PtrSegment newSegment){
 		setProduct(newSegment.getName(),newSegment);
 		//System.out.println("added "+newSegment.getName());
@@ -61,6 +82,11 @@ public class Ptr extends MapContext{
 		//segments.put(newSegment.getName(), newSegment);
 	}
 	
+	/**
+	 * Get the segment with the given name
+	 * @param segmentName
+	 * @return
+	 */
 	public PtrSegment getSegment(String segmentName){
 		try {
 			return (PtrSegment) getProduct(segmentName);
@@ -72,6 +98,10 @@ public class Ptr extends MapContext{
 		//return segments.get(segmentName);
 	}
 	
+	/**
+	 * Get the names of the segments contained in this PTR/PTSL
+	 * @return
+	 */
 	public String[] getPtrSegmentNames(){
 		
 		String[] result=new String[this.getRefs().keySet().size()];
@@ -79,6 +109,10 @@ public class Ptr extends MapContext{
 		return result;
 	}
 	
+	/**
+	 * Get all pointing blocks contained in all segments of this PTR/PTSL
+	 * @return
+	 */
 	public PointingBlock[] getAllBlocks(){
 		PointingBlock[] result= new PointingBlock[0];
 		PtrSegment[] segs=this.getSegments();
@@ -87,28 +121,43 @@ public class Ptr extends MapContext{
 		}
 		return result;
 	}
-	
+	/**
+	 * Get a block at a given time
+	 * @param time the time to search
+	 * @return the pointing block at the given time
+	 */	
 	public PointingBlock getBlockAt(java.util.Date time){
 		PtrSegment temp=new PtrSegment("temp");
 		temp.setBlocks(getAllBlocks());
 		return temp.getBlockAt(time);
 	}
 	
+	/**
+	 * Get a block at a given time
+	 * @param time the time to search
+	 * @return the pointing block at the given time
+	 * @throws ParseException if the string can not converted to a date
+	 */
 	public PointingBlock getBlockAt(String time) throws ParseException{
 			return this.getBlockAt(PointingBlock.zuluToDate(time));
 	}
 	
-	public PointingBlock getBlockAt(String startTime,String endTime) throws ParseException{
+	/*public PointingBlock getBlockAt(String startTime,String endTime) throws ParseException{
 		PtrSegment temp=new PtrSegment("temp");
 		temp.setBlocks(getAllBlocks());
-		return temp.getBlockAt(startTime, endTime);
-	}
-	public PointingBlock getBlockAt(java.util.Date startTime,java.util.Date endTime){
+		return temp.getBlockAt(PointingBlock.zuluToDate(startTime));
+	}*/
+	/*public PointingBlock getBlockAt(java.util.Date startTime,java.util.Date endTime){
 		PtrSegment temp=new PtrSegment("temp");
 		temp.setBlocks(getAllBlocks());
-		return temp.getBlockAt(startTime, endTime);
+		return temp.getBlockAt(startTime);
 
-	}
+	}*/
+	
+	/**
+	 * get a xml representation of this PTR or PTSL
+	 * @return
+	 */
 	public String toXml(){
 		String result="<prm>\n";
 		result=result+"\t<header/>\n";				

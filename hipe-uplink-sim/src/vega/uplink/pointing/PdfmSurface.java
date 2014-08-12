@@ -6,6 +6,13 @@ import org.w3c.dom.NodeList;
 
 import vega.uplink.pointing.PtrParameters.DirectionVector;
 
+/**
+ * Within the PDFM it is possible to define the surfaces. 
+ * One surface with name CG is predefined and represents a
+ * spherical comet with 2km radius. This is the default surface used in Limb pointings.
+ * @author jarenas
+ *
+ */
 public class PdfmSurface extends PointingMetadata {
 	public PdfmSurface(PointingMetadata org){
 		
@@ -18,6 +25,33 @@ public class PdfmSurface extends PointingMetadata {
 		super("surface","");
 		setSurfaceName(surfaceName);
 	}
+	/**
+	 * Creates a ellipsoid surface.
+	 * This representation allows to define a reference ellipsoid, defined by the semi axes a, b and c and
+	 * the corresponding axes. The axes are defined
+	 * relative to a frame (for example CG). The specified axes shall be mutually orthogonal.
+	 * @param name Name of the surface, that will be used to refer to it.
+	 * @param frame Frame that this surface is relative to
+	 * @param origin Origin of the surface
+	 * @param unitsA Units where the semi axe A is expressed
+	 * @param a semi axe A
+	 * @param unitsB Units where the semi axe B is expressed
+	 * @param b semi axe B
+	 * @param unitsC Units where the semi axe C is expressed
+	 * @param c semi axe C
+	 * @param axisAFrame Frame of the axe A
+	 * @param axisAX X Component of the axe A
+	 * @param axisAY Y Component of the axe A
+	 * @param axisAZ Z Component of the axe A
+	 * @param axisBFrame Frame of the axe B
+	 * @param axisBX X Component of the axe B
+	 * @param axisBY Y Component of the axe B
+	 * @param axisBZ Z Component of the axe B
+	 * @param axisCFrame Frame of the axe C
+	 * @param axisCX X Component of the axe C
+	 * @param axisCY Y Component of the axe C
+	 * @param axisCZ Z Component of the axe C
+	 */
 	public PdfmSurface(String name,String frame,String origin,String unitsA,float a,String unitsB,float b,String unitsC,float c,String axisAFrame,float axisAX,float axisAY,float axisAZ,String axisBFrame,float axisBX,float axisBY,float axisBZ,String axisCFrame,float axisCX,float axisCY,float axisCZ){
 		this();
 		setSurfaceName(name);
@@ -31,49 +65,130 @@ public class PdfmSurface extends PointingMetadata {
 		this.setCAxis(axisCFrame, axisCX, axisCY, axisCZ);
 		
 	}
+	/**
+	 * Creates a ellipsoid surface.
+	 * This representation allows to define a reference ellipsoid, defined by the semi axes a, b and c and
+	 * the corresponding axes. The axes are defined
+	 * relative to a frame (for example CG). The specified axes shall be mutually orthogonal.
+	 * @param name Name of the surface, that will be used to refer to it.
+	 * @param frame Frame that this surface is relative to (And the axis A, B and C)
+	 * @param origin Origin of the surface
+	 * @param units Units where the semi axes A,B and C is expressed
+	 * @param a semi axe A
+	 * @param b semi axe B
+	 * @param c semi axe C
+	 * @param axisAX X Component of the axe A
+	 * @param axisAY Y Component of the axe A
+	 * @param axisAZ Z Component of the axe A
+	 * @param axisBX X Component of the axe B
+	 * @param axisBY Y Component of the axe B
+	 * @param axisBZ Z Component of the axe B
+	 * @param axisCX X Component of the axe C
+	 * @param axisCY Y Component of the axe C
+	 * @param axisCZ Z Component of the axe C
+	 */
 	public PdfmSurface(String name,String frame,String origin,String units,float a,float b,float c,float axisAX,float axisAY,float axisAZ,float axisBX,float axisBY,float axisBZ,float axisCX,float axisCY,float axisCZ){
 		this(name,frame,origin,units,a,units,b,units,c,frame,axisAX,axisAY,axisAZ,frame,axisBX,axisBY,axisBZ,frame,axisCX,axisCY,axisCZ);
 	}
 	
+	/**
+	 * Set the name of the surface, that will be used to refer to it.
+	 * @param name
+	 */
 	public void setSurfaceName(String name){
 		//System.out.println("Set surface name:"+name);
 		if (name!=null) this.addChild(new PointingMetadata("surfacename",name));
 	}
+	
+	/**
+	 * Set the frame that this surface is relative to.
+	 * @param frame
+	 */
 	public void setFrame(String frame){
 		addAttribute(new PointingMetadata("frame",frame));
 	}
+	
+	/**
+	 * Set the origin component of this surface
+	 * @param origin
+	 */
 	public void setOrigin(String origin){
 		PointingMetadata originChild = new PointingMetadata("origin","");
 		originChild.addAttribute(new PointingMetadata("ref",origin));
 		this.addChild(originChild);
 	}
+	/**
+	 * Get the origin component of this surface
+	 * @param origin
+	 */
 	public String getOrigin(){
 		return this.getChild("origin").getAttribute("ref").getValue();
 	}
+	/**
+	 * Set the A semi axe component of this surface with units
+	 * @param origin
+	 */
 	public void setA(String units,float value){
 		//this.addChild(new PointingMetadata("lat",""+latitude));
 		this.setFloatField("a", value);
 		this.setUnit("a", units);
 	}
+	/**
+	 * Set the B semi axe component of this surface with units
+	 * @param origin
+	 */
 	public void setB(String units,float value){
 		//this.addChild(new PointingMetadata("lat",""+latitude));
 		this.setFloatField("b", value);
 		this.setUnit("b", units);
 	}
+	/**
+	 * Set the C semi axe component of this surface with units
+	 * @param origin
+	 */
 	public void setC(String units,float value){
 		//this.addChild(new PointingMetadata("lat",""+latitude));
 		this.setFloatField("c", value);
 		this.setUnit("c", units);
 	}
+	/**
+	 * Set the a axis of this surface, with the frame it refers to
+	 * @param name
+	 * @param frame
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
 	public void setAxis(String name,String frame,float x,float y, float z){
 		this.addChild(new DirectionVector(name,frame,x,y,z));
 	}
+	/**
+	 * Set the A axis of this surface, with the frame it refers to
+	 * @param frame
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
 	public void setAAxis(String frame,float x,float y, float z){
 		setAxis("axisA",frame,x,y,z);
 	}
+	/**
+	 * Set the B axis of this surface, with the frame it refers to
+	 * @param frame
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
 	public void setBAxis(String frame,float x,float y, float z){
 		setAxis("axisB",frame,x,y,z);
 	}
+	/**
+	 * Set the C axis of this surface, with the frame it refers to
+	 * @param frame
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
 	public void setCAxis(String frame,float x,float y, float z){
 		setAxis("axisC",frame,x,y,z);
 	}
@@ -116,11 +231,20 @@ public class PdfmSurface extends PointingMetadata {
 		return getAttribute("frame").getValue();
 	}
 
+	/**
+	 * Get the name of this surface, that will be used to refer to it.
+	 * @return
+	 */
 	public String getSurfaceName(){
 		//System.out.println(this.getChild(childName))
 		if (this.getChild("surfacename")==null) return null;
 		return this.getChild("surfacename").getValue();
 	}
+	
+	/**
+	 * 
+	 * @return True if this surface has name that will be used to refer to it or false if it is an inline definition
+	 */
 	public boolean hasSurfaceName(){
 		if (this.getChild("surfacename")==null){
 			System.out.println("false");

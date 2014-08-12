@@ -10,18 +10,66 @@ import herschel.ia.dataset.MetaData;
 import herschel.ia.dataset.StringParameter;
 import herschel.share.interpreter.InterpreterUtil;
 
+/**
+ * Basic pointing. For each basic pointing a boresight is aligned with a target defined relative to inertial frame.
+ * @author jarenas
+ *
+ */
 public class PointingAttitude extends PointingMetadata{
-	
+	/**
+	 * fixed attitude type that was implemented in the same PTR at an earlier time.
+	 */
+	public static String POINTING_ATTITUDE_TYPE_CAPTURE="capture";
+	//public static String POINTING_ATTITUDE_TYPE_DERIVEDPHASEANGLE="capture";
+	/**
+	 * attitude type pointing the boresight to an illuminated point of the comet
+	 */
+	public static String POINTING_ATTITUDE_TYPE_ILLUMINATEDPOINT="illuminatedPoint";
+	/**
+	 * Attitude type where the boresight is aligned with a fixed vector given relative to inertial frame.
+	 */
+	public static String POINTING_ATTITUDE_TYPE_INERTIAL="inertial";
+	/**
+	 * Attitude type that points the boresight to an user-selected point relative to the limb of CG.
+	 */
+	public static String POINTING_ATTITUDE_TYPE_LIMB="limb";
+	/**
+	 * attitude type that points the boresight to the specular point wrt. Earth on an elliptical surface defined relative to the centre of CG.
+	 */
+	public static String POINTING_ATTITUDE_TYPE_SPECULAR="specular";
+	/**
+	 * attitude type that points the boresight to the point on the terminator that is in the comet-sun-SC plane and visible from the SC.
+	 */
+	public static String POINTING_ATTITUDE_TYPE_TERMINATOR="terminator";
+	/**
+	 * Attitude type where the target is given by a solar system object or landmark.
+	 */
+	public static String POINTING_ATTITUDE_TYPE_TRACK="track";
+	/**
+	 * Attitude type pointing the boresight along the velocity vector of the SC relative to CG
+	 */
+	public static String POINTING_ATTITUDE_TYPE_VELOCITY="velocity";
+
 	public PointingAttitude(PointingMetadata org){
 		super(org);
 	}
 
+	/**
+	 * Creates a pointing attitude of the given type
+	 * @param type type of this attitude
+	 * @param boresight Vector defined in SC frame that shall be pointed to the target
+	 * @param phaseAngle Rule that fixes the degree of freedom around the boresight.
+	 */
 	public PointingAttitude(String type,Boresight boresight,PhaseAngle phaseAngle){
 		super("attitude","");
 		this.addAttribute(new PointingMetadata("ref",type));
 		setBoresight(boresight);
 		setPhaseAngle(phaseAngle);
 	}
+	/**
+	 * Creates a pointing attitude of the given type
+	 * @param type type of this attitude
+	 */
 	public PointingAttitude(String type){
 		super("attitude","");
 		this.addAttribute(new PointingMetadata("ref",type));
@@ -29,14 +77,26 @@ public class PointingAttitude extends PointingMetadata{
 		//setPhaseAngle(new PhaseAngle());
 	}
 	
+	/**
+	 * Get the type of this attitude
+	 * @return
+	 */
 	public String getAttitudeType(){
 		return this.getAttribute("ref").getValue();
 	}
 	
+	/**
+	 * Set the Vector defined in SC frame that shall be pointed to the target
+	 * @param boresight
+	 */
 	public void setBoresight(Boresight boresight){
 		this.addChild(boresight);
 	}
 	
+	/**
+	 * Get the Vector defined in SC frame that shall be pointed to the target
+	 * @return
+	 */
 	public Boresight getBoresight(){
 		PointingMetadata result = this.getChild("boresight");
 		if (result!=null){
@@ -46,6 +106,11 @@ public class PointingAttitude extends PointingMetadata{
 		}
 	}
 	
+	/**
+	 * Get the rule that fixes the degree of freedom around the boresight.
+	 * if the attitude type ends with _pwropt (power optimized) it return the default phase angle
+	 * @return
+	 */
 	public PhaseAngle getPhaseAngle(){
 		if (getAttitudeType().endsWith("_pwropt")){
 			PhaseAngle result = new PhaseAngle();
@@ -60,18 +125,31 @@ public class PointingAttitude extends PointingMetadata{
 			return new PhaseAngle();
 		}
 	}
-	
+	/**
+	 * Set the rule that fixes the degree of freedom around the boresight.
+	 * if the attitude type ends with _pwropt (power optimized) it will not set the phase angle
+	 * @param phaseAngle
+	 */	
 	public void setPhaseAngle(PhaseAngle phaseAngle){
 		if (getAttitudeType().endsWith("_pwropt")) return; //If it is power optimised, then do not add attitude
 		
 		this.addChild(phaseAngle);
 	}
 	
+	/**
+	 * Set the offset reference axis and the offset angles
+	 * @param refAxis
+	 * @param angles
+	 */
 	public void SetOffset(OffsetRefAxis refAxis,OffsetAngles angles ){
 		this.addChild(refAxis);
 		this.addChild(angles);
 	}
 	
+	/**
+	 * Get the off set reference axis
+	 * @return
+	 */
 	public OffsetRefAxis getOffsetRefAxis(){
 		PointingMetadata child = this.getChild("offsetRefAxis");
 		if (child==null) return null;
@@ -80,6 +158,10 @@ public class PointingAttitude extends PointingMetadata{
 		}else return null;
 	}
 	
+	/**
+	 * Get the offset angles
+	 * @return
+	 */
 	public OffsetAngles getOffsetAngles(){
 		PointingMetadata child = this.getChild("offsetAngles");
 		if (child==null) return null;

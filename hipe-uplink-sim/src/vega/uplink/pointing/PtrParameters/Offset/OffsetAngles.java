@@ -10,6 +10,10 @@ public abstract class OffsetAngles extends PointingMetadata {
 		super(org);
 	}
 
+	/**
+	 * Creates an offset rotation referenced to another offset rotation
+	 * @param ref
+	 */
 	public OffsetAngles(String ref){
 		super("offsetAngles","");
 		this.addAttribute(new PointingMetadata("ref",ref));
@@ -19,11 +23,18 @@ public abstract class OffsetAngles extends PointingMetadata {
 		super("offsetAngles","");
 	}
 	
+	/**
+	 * Get the start time of the offset rotation
+	 * @return
+	 */
 	public String getStartTime(){
 		//System.out.println( this.getChild("startTime").getValue());
 		return this.getChild("startTime").getValue();
 	}
-	
+	/**
+	 * Set the start time of the offset rotation
+	 * @return
+	 */	
 	public void setStartTime(String startTime){
 		//System.out.println(startTime);
 		PointingMetadata startTimeCh = new PointingMetadata("startTime",startTime);
@@ -31,6 +42,10 @@ public abstract class OffsetAngles extends PointingMetadata {
 		//System.out.println( this.getChild("startTime").getValue());
 
 	}
+	/**
+	 * Set the start time of the offset rotation
+	 * @return
+	 */	
 	public void setStartTime(Date startTime){
 		this.setStartTime(PointingBlock.dateToZulu(startTime));
 	}
@@ -162,19 +177,38 @@ public abstract class OffsetAngles extends PointingMetadata {
 		return 0L;
 	}*/
 
+	/**
+	 * True if this offset rotation is of the type custom. False otherwise
+	 * @return
+	 */
 	public boolean isCustom(){
 		return false;
 	}
-
+	/**
+	 * True if this offset rotation is of the type raster. False otherwise
+	 * @return
+	 */
 	public boolean isRaster(){
 		return false;
 	}
+	/**
+	 * True if this offset rotation is of the type scan. False otherwise
+	 * @return
+	 */
 	public boolean isScan(){
 		return false;
 	}
+	/**
+	 * True if this offset rotation is of the type fixed. False otherwise
+	 * @return
+	 */
 	public boolean isFixed(){
 		return false;
 	}
+	/**
+	 * Get the duration in milliseconds of this offset rotation
+	 * @return
+	 */
 	public abstract long getDurationMilliSecs();
 
 	

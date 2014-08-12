@@ -3,7 +3,7 @@ package vega.uplink.pointing.PtrParameters;
 import vega.uplink.pointing.PointingMetadata;
 
 /**
- * Fixed vector defined relative to inertial frame, solar system object or landmarks defined in the PDFM
+ * 
  * @author jarenas
  *
  */
@@ -13,7 +13,8 @@ public class StateVector extends PointingMetadata {
 	}
 
 	/**
-	 * Creates a new Target refereed to a solar system object or landmarks defined in the PDFM
+	 * Creates a new StateVector refereed to a solar system object or landmarks defined in the PDFM
+	 * @param type Type of the stateVector
 	 * @param ref solar system object or landmarks defined in the PDFM
 	 */
 	public StateVector(String type,String ref){
@@ -37,6 +38,17 @@ public class StateVector extends PointingMetadata {
 	public String getRef(){
 		return this.getAttribute("ref").getValue();
 	}
+	
+	/**
+	 * Definition of a state vector that represents a landmark
+	 * @param type The type of state vector. Subclasses will harcode this type
+	 * @param landmark The name of the landmark
+	 * @param origin The origin
+	 * @param frame The frame where the landmark is defined
+	 * @param x The X component of the position of the landmark. It must be expressed in km.
+	 * @param y The Y component of the position of the landmark. It must be expressed in km.
+	 * @param z The Z component of the position of the landmark. It must be expressed in km.
+	 */
 	public StateVector(String type,String landmark,String origin,String frame,String x,String y,String z){
 		this(type,origin,frame,x,y,z);
 		/*super(type,"");
@@ -51,6 +63,15 @@ public class StateVector extends PointingMetadata {
 		this.setLandMark(landmark);
 
 	}
+	/**
+	 * Definition of a state vector that represents a landmark
+	 * @param type The type of state vector. Subclasses will harcode this type
+	 * @param origin The origin
+	 * @param frame The frame where the landmark is defined
+	 * @param x The X component of the position of the landmark. It must be expressed in km.
+	 * @param y The Y component of the position of the landmark. It must be expressed in km.
+	 * @param z The Z component of the position of the landmark. It must be expressed in km.
+	 */
 	public StateVector(String type,String origin,String frame,String x,String y,String z){
 		super(type,"");
 		//setLandMark(landmark);
@@ -63,7 +84,16 @@ public class StateVector extends PointingMetadata {
 		setZ("km",Float.parseFloat(z));
 
 	}
-
+	/**
+	 * Definition of a state vector that represents a landmark
+	 * @param type The type of state vector. Subclasses will harcode this type
+	 * @param landmark The name of the landmark
+	 * @param origin The origin
+	 * @param frame The frame where the landmark is defined
+	 * @param x The X component of the position of the landmark. It must be expressed in km.
+	 * @param y The Y component of the position of the landmark. It must be expressed in km.
+	 * @param z The Z component of the position of the landmark. It must be expressed in km.
+	 */
 	public StateVector(String type,String landmark,String origin,String frame,float x,float y,float z){
 		this(type,origin,frame,x,y,z);
 		/*super(type,"");
@@ -78,6 +108,18 @@ public class StateVector extends PointingMetadata {
 		setLandMark(landmark);
 
 	}
+	/**
+	 * Definition of a state vector that represents a landmark
+	 * @param type The type of state vector. Subclasses will harcode this type
+	 * @param origin The origin
+	 * @param frame The frame where the landmark is defined
+	 * @param xUnit The unit that the X component of the landmark is expressed
+	 * @param x The X component of the position of the landmark.
+	 * @param yUnit The unit that the Y component of the landmark is expressed
+	 * @param y The Y component of the position of the landmark. 
+	 * @param zUnit The unit that the Z component of the landmark is expressed
+	 * @param z The Z component of the position of the landmark. 
+	 */
 	public StateVector(String type,String origin,String frame,String xUnit,float x,String yUnit,float y,String zUnit,float z){
 		super(type,"");
 		//setLandMark(landmark);
@@ -90,7 +132,15 @@ public class StateVector extends PointingMetadata {
 		setZ(zUnit,z);
 		
 	}
-
+	/**
+	 * Definition of a state vector that represents a landmark
+	 * @param type The type of state vector. Subclasses will harcode this type
+	 * @param origin The origin
+	 * @param frame The frame where the landmark is defined
+	 * @param x The X component of the position of the landmark. It must be expressed in km.
+	 * @param y The Y component of the position of the landmark. It must be expressed in km.
+	 * @param z The Z component of the position of the landmark. It must be expressed in km.
+	 */
 	public StateVector(String type,String origin,String frame,float x,float y,float z){
 		super(type,"");
 		//setLandMark(landmark);
@@ -104,12 +154,20 @@ public class StateVector extends PointingMetadata {
 
 	}
 
+	/**
+	 * Set the origin component of the landmark
+	 * @param origin
+	 */
 	public void setOrigin(String origin){
 		PointingMetadata org = new PointingMetadata("origin","");
 		org.addAttribute(new PointingMetadata("ref",origin));
 		this.addChild(org);
 	}
 	
+	/**
+	 * Get the origin component of the landmark
+	 * @return
+	 */
 	public String getOrigin(){
 		return this.getChild("origin").getAttribute("ref").getValue();
 	}
@@ -118,42 +176,80 @@ public class StateVector extends PointingMetadata {
 	}
 	
 	
+	/**
+	 * Set the X component of the position of the landmark
+	 * @param unit The unit that the X component of the position of the landmark is expressed
+	 * @param x the X component of the position of the landmark
+	 */
 	public void setX(String unit,float x){
 		getPosition().addChild(new PointingMetadata("x",""+x));
 		setUnit("x",unit);
 	}
-
+	/**
+	 * Set the Y component of the position of the landmark
+	 * @param unit The unit that the Y component of the position of the landmark is expressed
+	 * @param y the Y component of the position of the landmark
+	 */
 	public void setY(String unit,float y){
 		getPosition().addChild(new PointingMetadata("y",""+y));
 		setUnit("y",unit);
 	}
-
+	/**
+	 * Set the Z component of the position of the landmark
+	 * @param unit The unit that the Z component of the position of the landmark is expressed
+	 * @param z the Z component of the position of the landmark
+	 */
 	public void setZ(String unit,float z){
 		getPosition().addChild(new PointingMetadata("z",""+z));
 		setUnit("z",unit);
 	}
 	
+	/**
+	 * Get the X component of the position of the landmark
+	 * @return X component of the position of the landmark
+	 */
 	public float getX(){
 		return Float.parseFloat(getPosition().getChild("x").getValue());
 	}
-
+	/**
+	 * Get the Y component of the position of the landmark
+	 * @return Y component of the position of the landmark
+	 */
 	public float getY(){
 		return Float.parseFloat(getPosition().getChild("y").getValue());
 	}
-
+	/**
+	 * Get the Y component of the position of the landmark
+	 * @return Y component of the position of the landmark
+	 */
 	public float getZ(){
 		return Float.parseFloat(getPosition().getChild("z").getValue());
 	}
+	/**
+	 * Get the unit where X component of the position of the landmark is expressed
+	 * @return the unit where X component of the position of the landmark is expressed
+	 */
 	public String getUnitX(){
 		return getUnit("x");
 	}
+	/**
+	 * Get the unit where Y component of the position of the landmark is expressed
+	 * @return the unit where Y component of the position of the landmark is expressed
+	 */
 	public String getUnitY(){
 		return getUnit("y");
 	}
+	/**
+	 * Get the unit where Z component of the position of the landmark is expressed
+	 * @return the unit where Z component of the position of the landmark is expressed
+	 */
 	public String getUnitZ(){
 		return getUnit("z");
 	}
-
+	/**
+	 * Get the name of the landmark
+	 * @return the name of the landmark
+	 */
 	public String getLandMark(){
 		return getAttribute("landmark").getValue();
 	}

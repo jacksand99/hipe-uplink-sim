@@ -6,6 +6,10 @@ import java.util.Date;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingMetadata;
 
+/**
+ * @author jarenas
+ *
+ */
 public class OffsetScan extends OffsetAngles {
 	public static String STARTTIME_FIELD="startTime";
 	public static String NUMBEROFLINES_FIELD="numberOfLines";
@@ -38,6 +42,36 @@ public class OffsetScan extends OffsetAngles {
 	private OffsetScan(){
 		super("scan");
 	}
+	/**
+	 * A scan is defined if the element offsetAngles contains the attribute ref=scan.
+	 * Before the scan start-time and after the last scan a slew is performed with duration
+	 * borderSlewTime. Before the initial slew and after the final slew the offset angles are fixed
+	 * to the angles at start of the first and the end of the last scan respectively.
+	 * @param startTime Scan start time 
+	 * @param numberOfLines Number of lines along which a scan is performed
+	 * @param numberOfScansPerLine Number of scans that are performed per line
+	 * @param xStartUnit Unit used to express xStart. For example deg.
+	 * @param xStart rotation angle of start point of first line towards offset-x-axis
+	 * @param yStartUnit Unit used to express yStart. For example deg.
+	 * @param yStart rotation angle of start point of first line towards offset-y-axis
+	 * @param scanDeltaUnit Unit used to express scanDelta. For example deg.
+	 * @param scanDelta Delta angle of one scan
+	 * @param lineDeltaUnit Unit used to express lineDelta. For example deg.
+	 * @param lineDelta Angular offset between two lines of the scan.
+	 * @param scanTimeUnit Unit used to express scanTime. For example min.
+	 * @param scanTime Duration of one scan. If this parameter is not null the parameter scanSpeed must be null.
+	 * @param scanSpeedUnit Unit used to express scanSpeed. For example deg/min.
+	 * @param scanSpeed Angular Speed of a scan.If this parameter is not null the parameter scanTime must be null.
+	 * @param scanSlewTimeUnit Unit used to express scanSlewTime. For example min.
+	 * @param scanSlewTime Slew time between two scans in the same line.
+	 * @param lineSlewTimeUnit Unit used to express lineSlewTime. For example min.
+	 * @param lineSlewTime Slew time between two scans in different lines.
+	 * @param borderSlewTimeUnit Unit used to express borderSlewTime. For example min.
+	 * @param borderSlewTime Slew time before first and after last scan to reach start angles of fisrts scan and final angles of last scan
+	 * @param lineAxis Name of offset-axis along which the scans are performed
+	 * @param keepLineDir Flag indicating whether the direction of the first scan line is kept for other lines (=true) or alternated (=false)
+	 * @param keepScanDir Flag indicating whether the direction of the scan performed in one line is kept (=true) or alternated (=false)
+	 */
 	public OffsetScan(Date startTime,int numberOfLines,int numberOfScansPerLine,String xStartUnit,float xStart,String yStartUnit,float yStart,String scanDeltaUnit,float scanDelta,String lineDeltaUnit,float lineDelta,String scanTimeUnit,Float scanTime,String scanSpeedUnit,Float scanSpeed,String scanSlewTimeUnit,float scanSlewTime,String lineSlewTimeUnit,float lineSlewTime,String borderSlewTimeUnit,float borderSlewTime,String lineAxis,boolean keepLineDir,boolean keepScanDir){
 		super("scan");
 		setStartDate(startTime);
@@ -69,7 +103,28 @@ public class OffsetScan extends OffsetAngles {
 		setBooleanField(KEEPLINEDIR_FIELD,keepLineDir);
 		setBooleanField(KEEPSCANDIR_FIELD,keepScanDir);		
 	}
-
+	/**
+	 * A scan is defined if the element offsetAngles contains the attribute ref=scan.
+	 * Before the scan start-time and after the last scan a slew is performed with duration
+	 * borderSlewTime. Before the initial slew and after the final slew the offset angles are fixed
+	 * to the angles at start of the first and the end of the last scan respectively.
+	 * Times are expressed in min, angles in deg and angular speed in deg/min.
+	 * @param startTime Scan start time 
+	 * @param numberOfLines Number of lines along which a scan is performed
+	 * @param numberOfScansPerLine Number of scans that are performed per line
+	 * @param xStart rotation angle of start point of first line towards offset-x-axis
+	 * @param yStart rotation angle of start point of first line towards offset-y-axis
+	 * @param scanDelta Delta angle of one scan
+	 * @param lineDelta Angular offset between two lines of the scan.
+	 * @param scanTime Duration of one scan. If this parameter is not null the parameter scanSpeed must be null.
+	 * @param scanSpeed Angular Speed of a scan.If this parameter is not null the parameter scanTime must be null.
+	 * @param scanSlewTime Slew time between two scans in the same line.
+	 * @param lineSlewTime Slew time between two scans in different lines.
+	 * @param borderSlewTime Slew time before first and after last scan to reach start angles of fisrts scan and final angles of last scan
+	 * @param lineAxis Name of offset-axis along which the scans are performed
+	 * @param keepLineDir Flag indicating whether the direction of the first scan line is kept for other lines (=true) or alternated (=false)
+	 * @param keepScanDir Flag indicating whether the direction of the scan performed in one line is kept (=true) or alternated (=false)
+	 */
 	public OffsetScan(Date startTime,int numberOfLines,int numberOfScansPerLine,float xStart,float yStart,float scanDelta,float lineDelta,Float scanTime,Float scanSpeed,float scanSlewTime,float lineSlewTime,float borderSlewTime,String lineAxis,boolean keepLineDir,boolean keepScanDir){
 		super("scan");
 		setStartDate(startTime);
@@ -101,6 +156,28 @@ public class OffsetScan extends OffsetAngles {
 		setBooleanField(KEEPLINEDIR_FIELD,keepLineDir);
 		setBooleanField(KEEPSCANDIR_FIELD,keepScanDir);		
 	}
+	/**
+	 * A scan is defined if the element offsetAngles contains the attribute ref=scan.
+	 * Before the scan start-time and after the last scan a slew is performed with duration
+	 * borderSlewTime. Before the initial slew and after the final slew the offset angles are fixed
+	 * to the angles at start of the first and the end of the last scan respectively.
+	 * Times are expressed in min, angles in deg and angular speed in deg/min.
+	 * @param startTime Scan start time 
+	 * @param numberOfLines Number of lines along which a scan is performed
+	 * @param numberOfScansPerLine Number of scans that are performed per line
+	 * @param xStart rotation angle of start point of first line towards offset-x-axis
+	 * @param yStart rotation angle of start point of first line towards offset-y-axis
+	 * @param scanDelta Delta angle of one scan
+	 * @param lineDelta Angular offset between two lines of the scan.
+	 * @param scanTime Duration of one scan. If this parameter is not null the parameter scanSpeed must be null.
+	 * @param scanSpeed Angular Speed of a scan.If this parameter is not null the parameter scanTime must be null.
+	 * @param scanSlewTime Slew time between two scans in the same line.
+	 * @param lineSlewTime Slew time between two scans in different lines.
+	 * @param borderSlewTime Slew time before first and after last scan to reach start angles of fisrts scan and final angles of last scan
+	 * @param lineAxis Name of offset-axis along which the scans are performed
+	 * @param keepLineDir Flag indicating whether the direction of the first scan line is kept for other lines (=true) or alternated (=false)
+	 * @param keepScanDir Flag indicating whether the direction of the scan performed in one line is kept (=true) or alternated (=false)
+	 */
 	public OffsetScan(String startTime,String numberOfLines,String numberOfScansPerLine,String xStart,String yStart,String scanDelta,String lineDelta,String scanTime,String scanSpeed,String scanSlewTime,String lineSlewTime,String borderSlewTime,String lineAxis,String keepLineDir,String keepScanDir) throws ParseException{
 		super("scan");
 		setStartDate(PointingBlock.zuluToDate(startTime));
@@ -192,6 +269,25 @@ public class OffsetScan extends OffsetAngles {
 	}
 	
 
+	/**
+	 * Scan crated with
+	 * numberOfLines set to
+	 * numberOfScansPerLine set to 1
+	 * xStart set to 0.0 deg
+	 * yStart set to 0.0 deg
+	 * scanDelta set to 0.0 deg
+	 * lineDelta set to 0.0 deg
+	 * scanTime set to 1 min.
+	 * scanSpeed set to null
+	 * scanSlewTime set to 1 min.
+	 * lineSlewTime set to 1.0 min.
+	 * borderSlewTime set to 1.0 min.
+	 * lineAxis set to y
+	 * keepLIneDir set to false
+	 * keepScanDir set to false
+	 * @param startTime
+	 * @throws ParseException
+	 */
 	public OffsetScan(String startTime) throws ParseException{
 		this(startTime,"1","1","0.","0.","0.","0.","1.",null,"1.","1.","1.","y","false","false");
 	}

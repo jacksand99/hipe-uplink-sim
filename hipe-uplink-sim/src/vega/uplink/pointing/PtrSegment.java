@@ -16,6 +16,11 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 
+/**
+ * Contains the pointing request for a certain MTP period
+ * @author jarenas
+ *
+ */
 public class PtrSegment extends Product{
 	private String name;
 	private String[] includes;
@@ -44,6 +49,10 @@ public class PtrSegment extends Product{
 		return this;
 
 	}
+	/**
+	 * Get all blocks of this segment as an array
+	 * @return
+	 */
 	private PointingBlock[] getBlocksasArry(){
 		PointingBlock[] result=new PointingBlock[blMap.size()];
 		Iterator<Entry<Date, PointingBlock>> it = blMap.entrySet().iterator();
@@ -114,6 +123,11 @@ public class PtrSegment extends Product{
 		
 	}
 	
+	/**
+	 * Get the block before the one given (before the start time the block), or null if there is no block before this one
+	 * @param block
+	 * @return
+	 */
 	private PointingBlock blockBefore(PointingBlock block){
 		if (block==null) return null;
 
@@ -140,10 +154,10 @@ public class PtrSegment extends Product{
 		Iterator<Entry<Date, PointingBlock>> it = ((TreeMap<Date,PointingBlock>)blMap.clone()).entrySet().iterator();
 		while (it.hasNext()){
 			PointingBlock block = it.next().getValue();
-			if (block.getType().equals("MOCM") || block.getType().equals("MWOL") || block.getType().equals("MSLW")){
+			if (block.getType().equals(PointingBlock.TYPE_MOCM) || block.getType().equals(PointingBlock.TYPE_MWOL) || block.getType().equals(PointingBlock.TYPE_MSLW)){
 				PointingBlock before = blockBefore(block);
 				if (before!=null){
-					if (before.getType().equals("SLEW")){
+					if (before.getType().equals(PointingBlock.TYPE_SLEW)){
 						PointingBlock beforeSlew=blockBefore(before);
 						this.removeBlock(before);
 						beforeSlew.setEndTime(block.getStartTime());
@@ -400,12 +414,6 @@ public class PtrSegment extends Product{
 		return result;
 	}
 	
-	/**
-	 * DO nothing. Do not use
-	 */
-	public void recalculateTimesSlews(){
-		
-	}
 	
 	/**
 	 * Get the block with a start time equal to the given one or the greates value before the given date
@@ -416,10 +424,15 @@ public class PtrSegment extends Product{
 		return blMap.floorEntry(time).getValue();
 	}
 	
-	public PointingBlock getBlockAt(java.util.Date startTime,java.util.Date endTime){
+	/*public PointingBlock getBlockAt(java.util.Date startTime,java.util.Date endTime){
 		return getBlockAt(startTime);
-	}
+	}*/
 	
+	/**
+	 * Get all blocks of a given type
+	 * @param blockType type of blocks to search for
+	 * @return an array of blocks of the given type
+	 */
 	public PointingBlock[] getAllBlocksOfType(String blockType){
 		java.util.Vector<PointingBlock> result=new java.util.Vector<PointingBlock>();
 		PointingBlock[] blocks = getBlocks();
@@ -432,10 +445,15 @@ public class PtrSegment extends Product{
 		return resultArray;
 	}
 	
-	public PointingBlock getBlockAt(String startTime,String endTime) throws ParseException{
-		return getBlockAt(PointingBlock.zuluToDate(startTime),PointingBlock.zuluToDate(endTime));
-	}
+	/*public PointingBlock getBlockAt(String startTime,String endTime) throws ParseException{
+		return getBlockAt(PointingBlock.zuluToDate(startTime));
+	}*/
 	
+	/**
+	 * Set the validity boundaries of this segment 
+	 * @param startDate
+	 * @param endDate
+	 */
 	private void setValidityDates(Date startDate,Date endDate){
 		setStartDate(new FineTime(startDate));
 		setEndDate(new FineTime(endDate));
