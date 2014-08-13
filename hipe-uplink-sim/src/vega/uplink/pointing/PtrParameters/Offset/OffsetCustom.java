@@ -7,13 +7,24 @@ import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingMetadata;
 
 public class OffsetCustom extends OffsetAngles {
-	
+	public static String XRATES_FIELD="xRates";
+	public static String YRATES_FIELD="yRates";
+	public static String XANGLES_FIELD="xAngles";
+	public static String YANGLES_FIELD="yAngles";
+	public static String DELTATIMES_FIELD="deltaTimes";
+	public static String STARTTIME_FIELD="startTime";
+	public static String DELTATIMES_DEFAULT_UNIT="min";
+	public static String XANGLES_DEFAULT_UNIT="deg";
+	public static String YANGLES_DEFAULT_UNIT="deg";
+	public static String XRATES_DEFAULT_UNIT="deg/sec";
+	public static String YRATES_DEFAULT_UNIT="deg/sec";
+
 	public OffsetCustom(PointingMetadata org){
 		super(org);
 	}
 	
 	private OffsetCustom(){
-		super("custom");
+		super(OffsetAngles.OFFSETANGLES_TYPE_CUSTOM);
 	}
 
 	/**
@@ -45,7 +56,7 @@ public class OffsetCustom extends OffsetAngles {
 	 * @throws ParseException
 	 */
 	public OffsetCustom (Date startTime,String deltaTimesUnits,float[] deltaTimes,String xAnglesUnits,float[] xAngles,String xRatesUnits,float[] xRates,String yAnglesUnits,float[] yAngles,String yRatesUnits,float[] yRates) throws ParseException{
-		super("custom");
+		super(OffsetAngles.OFFSETANGLES_TYPE_CUSTOM);
 		setStartDate(startTime);
 		setDeltaTimesUnit(deltaTimesUnits);
 		setDeltaTimes(deltaTimes);
@@ -84,18 +95,18 @@ public class OffsetCustom extends OffsetAngles {
 	 */
 
 	public OffsetCustom (Date startTime,float[] deltaTimes,float[] xAngles,float[] xRates,float[] yAngles,float[] yRates) throws ParseException{
-		super("custom");
+		super(OffsetAngles.OFFSETANGLES_TYPE_CUSTOM);
 		setStartDate(startTime);
-		setDeltaTimesUnit("min");
+		setDeltaTimesUnit(DELTATIMES_DEFAULT_UNIT);
 		setDeltaTimes(deltaTimes);
 		setXAngles(xAngles);
-		setXAnglesUnit("deg");
+		setXAnglesUnit(XANGLES_DEFAULT_UNIT);
 		setXRates(xRates);
-		setXRatesUnit("deg/sec");
+		setXRatesUnit(XRATES_DEFAULT_UNIT);
 		setYAngles(yAngles);
-		setYAnglesUnit("deg");
+		setYAnglesUnit(YANGLES_DEFAULT_UNIT);
 		setYRates(yRates);
-		setYRatesUnit("deg/sec");
+		setYRatesUnit(YRATES_DEFAULT_UNIT);
 	}
 	/**
 	 * If offsetAngles contains the attribute ref=custom a customised path of offset
@@ -121,100 +132,100 @@ public class OffsetCustom extends OffsetAngles {
 	 * @throws ParseException
 	 */
 	public OffsetCustom (String startTime,String deltaTimes,String xAngles,String xRates,String yAngles,String yRates) throws ParseException{
-		super("custom");
+		super(OffsetAngles.OFFSETANGLES_TYPE_CUSTOM);
 		setStartDate(PointingBlock.zuluToDate(startTime));
-		setDeltaTimesUnit("min");
+		setDeltaTimesUnit(DELTATIMES_DEFAULT_UNIT);
 		setDeltaTimes(stringToFloatArray(deltaTimes));
-		setXAnglesUnit("deg");
+		setXAnglesUnit(XANGLES_DEFAULT_UNIT);
 		setXAngles(stringToFloatArray(xAngles));
 		setXRates(stringToFloatArray(xRates));
-		setXRatesUnit("deg/sec");
+		setXRatesUnit(XRATES_DEFAULT_UNIT);
 		setYAngles(stringToFloatArray(yAngles));
-		setYAnglesUnit("deg");
+		setYAnglesUnit(YANGLES_DEFAULT_UNIT);
 		setYRates(stringToFloatArray(yRates));
-		setYRatesUnit("deg/sec");
+		setYRatesUnit(YRATES_DEFAULT_UNIT);
 	}
 	
 	public float[] getXRates(){
-		return stringToFloatArray(getChild("xRates").getValue());
+		return stringToFloatArray(getChild(XRATES_FIELD).getValue());
 	}
 
 	public float[] getYRates(){
-		return stringToFloatArray(getChild("yRates").getValue());
+		return stringToFloatArray(getChild(YRATES_FIELD).getValue());
 	}
 	
 	public void setXRates(float[] xRates){
-		setFloatArrayField("xRates",xRates);
+		setFloatArrayField(XRATES_FIELD,xRates);
 
 	}
 	public void setYRates(float[] xAngles){
-		setFloatArrayField("yRates",xAngles);
+		setFloatArrayField(YRATES_FIELD,xAngles);
 
 	}
 
 	public String getXRatesUnit(){
-		return getUnit("xRates");
+		return getUnit(XRATES_FIELD);
 		
 	}
 	
 	public void setXRatesUnit(String unit){
-		setUnit("xRates",unit);
+		setUnit(XRATES_FIELD,unit);
 		
 	}
 
 	public void setYRatesUnit(String unit){
-		setUnit("yRates",unit);
+		setUnit(YRATES_FIELD,unit);
 		
 	}
 
 	public String getYRatesUnit(){
-		return getUnit("yRates");
+		return getUnit(YRATES_FIELD);
 		
 	}
 
 	public void setXAngles(float[] xAngles){
-		setFloatArrayField("xAngles",xAngles);
+		setFloatArrayField(XANGLES_FIELD,xAngles);
 
 	}
 
 	public void setYAngles(float[] yAngles){
-		setFloatArrayField("yAngles",yAngles);
+		setFloatArrayField(YANGLES_FIELD,yAngles);
 
 	}
 
 	public float[] getXAngles(){
-		return stringToFloatArray(getChild("xAngles").getValue());
+		return stringToFloatArray(getChild(XANGLES_FIELD).getValue());
 	}
 
 	public float[] getYAngles(){
-		return stringToFloatArray(getChild("yAngles").getValue());
+		return stringToFloatArray(getChild(YANGLES_FIELD).getValue());
 	}
 
 	public String getXAnglesUnit(){
-		return getUnit("xAngles");
+		return getUnit(XANGLES_FIELD);
 		
 	}
 
 	public String getYAnglesUnit(){
-		return getUnit("yAngles");
+		return getUnit(YANGLES_FIELD);
 		
 	}
 	
 	public void setXAnglesUnit(String unit){
-		setUnit("xAngles",unit);
+		setUnit(XANGLES_FIELD,unit);
 		
 	}
 	public void setYAnglesUnit(String unit){
-		setUnit("yAngles",unit);
+		setUnit(YANGLES_FIELD,unit);
 		
 	}
 
 	public void setDeltaTimes(float[] deltaTimes){
-		setFloatArrayField("deltaTimes",deltaTimes);
+		setFloatArrayField(DELTATIMES_FIELD,deltaTimes);
 	}
 	public float[] getDeltaTimes(){
 		float[] def={0.0f,1.0f};
-		PointingMetadata child = getChild("deltaTimes");
+		PointingMetadata child = getChild(DELTATIMES_FIELD);
 		if (child==null){
 			return def;
 		}
@@ -225,26 +236,26 @@ public class OffsetCustom extends OffsetAngles {
 	
 	
 	public void setDeltaTimesUnit(String unit){
-		setUnit("deltaTimes",unit);
+		setUnit(DELTATIMES_FIELD,unit);
 
 		
 	}
 	
 	public String getDeltaTimesUnit(){
-		return getUnit("deltaTimes");
+		return getUnit(DELTATIMES_FIELD);
 		
 	}
 	
 	
 	public void setStartDate(Date date){
-		PointingMetadata startTimeCh = new PointingMetadata("startTime",PointingBlock.dateToZulu(date));
+		PointingMetadata startTimeCh = new PointingMetadata(STARTTIME_FIELD,PointingBlock.dateToZulu(date));
 		this.addChild(startTimeCh);
 
 	}
 	
 	public Date getStartDate(){
 		try {
-			return PointingBlock.zuluToDate(getChild("startTime").getValue());
+			return PointingBlock.zuluToDate(getChild(STARTTIME_FIELD).getValue());
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

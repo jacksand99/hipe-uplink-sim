@@ -14,6 +14,8 @@ import java.io.PrintWriter;
 
 
 
+
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -22,27 +24,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-
-
-
-//import rosetta.uplink.Evtm;
-//import rosetta.uplink.EvtmEvent;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 import vega.uplink.pointing.EvtmEvents.EvtmEventAnt;
 import vega.uplink.pointing.EvtmEvents.EvtmEventAos;
@@ -71,52 +52,38 @@ public class PtrUtils {
 		return item;
 	}
 	private static PointingMetadata translateChild(PointingMetadata item){
-		if (item.getName().equals("block")) return new PointingBlock(item);
-		if (item.getName().equals("attitude")){
-			//System.out.println("attitude detected");
-			if (item.getAttribute("ref").getValue().startsWith("illuminatedPoint")) return new IlluminatedPoint(item);
-			if (item.getAttribute("ref").getValue().startsWith("inertial")) return new Inertial(item);
-			if (item.getAttribute("ref").getValue().startsWith("limb")) return new Limb(item);
-			if (item.getAttribute("ref").getValue().startsWith("specular")) return new Specular(item);
-			if (item.getAttribute("ref").getValue().startsWith("terminator")) return new Terminator(item);
-			if (item.getAttribute("ref").getValue().startsWith("track")) return new Track(item);
-			if (item.getAttribute("ref").getValue().startsWith("velocity")) return new Velocity(item);
-			if (item.getAttribute("ref").getValue().startsWith("capture")) return new Capture(item);
-			//System.out.println("NOt detected which type of attitude "+item.getAttribute("ref").getValue());
+		if (item.getName().equals(PointingBlock.BLOCK_TAG)) return new PointingBlock(item);
+		if (item.getName().equals(PointingAttitude.ATTITUDE_TAG)){
+			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_ILLUMINATEDPOINT)) return new IlluminatedPoint(item);
+			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_INERTIAL)) return new Inertial(item);
+			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_LIMB)) return new Limb(item);
+			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_SPECULAR)) return new Specular(item);
+			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_TERMINATOR)) return new Terminator(item);
+			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_TRACK)) return new Track(item);
+			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_VELOCITY)) return new Velocity(item);
+			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_CAPTURE)) return new Capture(item);
 			return new PointingAttitude(item);
 		}
-		if (item.getName().equals("boresight")) return new Boresight(item);
-		if (item.getName().equals("height")) return new Height(item);
-		if (item.getName().equals("phaseAngle")) return new PhaseAngle(item);
-		if (item.getName().equals("surface")) return new Surface(item);
-		if (item.getName().equals("target")){
-			if (item.getChild("position")!=null) return new TargetTrack(item);
+		if (item.getName().equals(Boresight.BORESIGHT_TAG)) return new Boresight(item);
+		if (item.getName().equals(Height.HEIGHT_TAG)) return new Height(item);
+		if (item.getName().equals(PhaseAngle.PHASEANGLE_TAG)) return new PhaseAngle(item);
+		if (item.getName().equals(Surface.SURFACE_TAG)) return new Surface(item);
+		if (item.getName().equals(TargetTrack.TARGET_TAG)){
+			if (item.getChild(TargetTrack.POSITION_FIELD)!=null) return new TargetTrack(item);
 			else{
 				return new TargetInert(item);
 			}
-			/*if (item.getAttribute("frame")!=null) return new CoordinatesCartesian("target",item);
-			if (item.getChild("lon")!=null) return new CoordinatesSpherical("target",item);
-			if (item.getChild("position")!=null) return new Orbit(item);
-			if (item.getChild("origin")!=null) return new OriginTarget("target",item);
-			if (item.getChild("rotationAxis")!=null) return new Rotate("target",item);
-			return new Reference("target",item);*/
 		}
-		if (item.getName().equals("targetDir")){
+		if (item.getName().equals(TargetDir.TARGETDIR_TAG)){
 			return new TargetDir(item);
-			/*if (item.getAttribute("frame")!=null) return new CoordinatesCartesian("targetDir",item);
-			if (item.getChild("lon")!=null) return new CoordinatesSpherical("targetDir",item);
-			if (item.getChild("origin")!=null) return new OriginTarget("targetDir",item);
-			if (item.getChild("rotationAxis")!=null) return new Rotate("targetDir",item);
-			return new Reference("targetDir",item);*/
 		}
-		if (item.getName().equals("offsetAngles")){
-			if (item.getAttribute("ref").getValue().equals("custom")) return new OffsetCustom(item);
-			if (item.getAttribute("ref").getValue().equals("fixed")) return new OffsetFixed(item);
-			if (item.getAttribute("ref").getValue().equals("raster")) return new OffsetRaster(item);
-			if (item.getAttribute("ref").getValue().equals("scan")) return new OffsetScan(item);
-			//return new OffsetAngles(item);
+		if (item.getName().equals(OffsetAngles.OFFSETANGLES_TAG)){
+			if (item.getAttribute(OffsetAngles.REF_TAG).getValue().equals(OffsetAngles.OFFSETANGLES_TYPE_CUSTOM)) return new OffsetCustom(item);
+			if (item.getAttribute(OffsetAngles.REF_TAG).getValue().equals(OffsetAngles.OFFSETANGLES_TYPE_FIXED)) return new OffsetFixed(item);
+			if (item.getAttribute(OffsetAngles.REF_TAG).getValue().equals(OffsetAngles.OFFSETANGLES_TYPE_RASTER)) return new OffsetRaster(item);
+			if (item.getAttribute(OffsetAngles.REF_TAG).getValue().equals(OffsetAngles.OFFSETANGLES_TYPE_SCAN)) return new OffsetScan(item);
 		}
-		if (item.getName().equals("offsetRefAxis")) return new OffsetRefAxis(item);
+		if (item.getName().equals(OffsetRefAxis.OFFSETREFAXIS_TAG)) return new OffsetRefAxis(item);
 
 		
 		return item;
@@ -132,31 +99,26 @@ public class PtrUtils {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
 		 
-			//optional, but recommended
-			//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
 			doc.getDocumentElement().normalize();
 		 
-			//System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-			NodeList nListHeader = doc.getElementsByTagName("body");
+			NodeList nListHeader = doc.getElementsByTagName(Ptr.BODY_TAG);
 			Node nBody =nListHeader.item(0);
 			Element elBody = (Element) nBody;
-			NodeList nlSegments=elBody.getElementsByTagName("segment");
+			NodeList nlSegments=elBody.getElementsByTagName(PtrSegment.SEGMENT_TAG);
 			for (int i=0;i<nlSegments.getLength();i++){
 				Node nSegment=nlSegments.item(i);
-				String pName=((Element) nSegment).getAttribute("name");
-				//System.out.println("name:"+pName);
+				String pName=((Element) nSegment).getAttribute(PtrSegment.NAME_TAG);
 				PtrSegment segment=new PtrSegment(pName);
-				Node nMetadata=((Element) nSegment).getElementsByTagName("metadata").item(0);
-				NodeList nlIncludes=((Element) nMetadata).getElementsByTagName("include");
+				Node nMetadata=((Element) nSegment).getElementsByTagName(PtrSegment.METADATA_TAG).item(0);
+				NodeList nlIncludes=((Element) nMetadata).getElementsByTagName(PtrSegment.INCLUDE_TAG);
 				for (int j=0;j<nlIncludes.getLength();j++){
-					segment.addInclude(((Element)nlIncludes.item(j)).getAttribute("href"));
+					segment.addInclude(((Element)nlIncludes.item(j)).getAttribute(PtrSegment.HREF_TAG));
 				}
-				Node nData=((Element) nSegment).getElementsByTagName("data").item(0);
-				Node nTimeline=((Element) nData).getElementsByTagName("timeline").item(0);
-				String tlframe=((Element) nTimeline).getAttribute("frame");
+				Node nData=((Element) nSegment).getElementsByTagName(PtrSegment.DATA_TAG).item(0);
+				Node nTimeline=((Element) nData).getElementsByTagName(PtrSegment.TIMELINE_TAG).item(0);
+				String tlframe=((Element) nTimeline).getAttribute(PtrSegment.FRAME_TAG);
 				segment.setTimeLineFrame(tlframe);
-				NodeList nlBlocks=((Element) nTimeline).getElementsByTagName("block");
-				//PointingBlock oldBlock=null;
+				NodeList nlBlocks=((Element) nTimeline).getElementsByTagName(PointingBlock.BLOCK_TAG);
 				for (int j=0;j<nlBlocks.getLength();j++){
 					//String type=
 					PointingBlock block=PointingBlock.readFrom(nlBlocks.item(j));
@@ -167,36 +129,13 @@ public class PtrUtils {
 							 block.addChild(children[h]);
 						}
 					}
-					//block=recursiveTranslation(block);
-					if (block.getType().equals("SLEW")) block=new PointingBlockSlew();
-					/*
-					String type=((Element)nlBlocks.item(j)).getAttribute("ref");
-					java.util.Date sDate=new java.util.Date();
-					java.util.Date eDate=new java.util.Date();
-					NodeList nlsd=((Element)nlBlocks.item(j)).getElementsByTagName("startTime");
-					if (nlsd.getLength()>0) sDate=PointingBlock.zuluToDate(nlsd.item(0).getTextContent());
-					NodeList nled=((Element)nlBlocks.item(j)).getElementsByTagName("endTime");
-					if (nled.getLength()>0) eDate=PointingBlock.zuluToDate(nled.item(0).getTextContent());
-					PointingBlock block;
-					if (type.equals("SLEW")) block=new PointingBlockSlew();
-					else block=new PointingBlock(type,sDate,eDate);
-					if (nlBlocks.item(j).hasChildNodes()){
-						NodeList nlBLocksChMd = nlBlocks.item(j).getChildNodes();
-						int ssi = nlBLocksChMd.getLength();
-						for (int h=0;h<ssi;h++){
-							block.addChild(PointingMetadata.readFrom(nlBLocksChMd.item(h)));
-						}
-						//block.addChild(PointingMetadata.readFrom(nlBlocks.item(j)));
-					}*/
+					if (block.getType().equals(PointingBlock.TYPE_SLEW)) block=new PointingBlockSlew();
 					segment.addBlock(block);
-					//System.out.println("Added block"+block.toXml(0));
 				}
-				//System.out.println(segment.toXml(0));
 				result.addSegment(segment);
 			}
 			
 		    } catch (Exception e) {
-		    	//System.out.println("on error");
 		    	e.printStackTrace();
 		    }
 		
@@ -234,42 +173,38 @@ public class PtrUtils {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
 		 
-			//optional, but recommended
-			//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
 			doc.getDocumentElement().normalize();
 		 
-			//System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-			NodeList nListHeader = doc.getElementsByTagName("header");
+			NodeList nListHeader = doc.getElementsByTagName(Evtm.HEADER_TAG);
 			NamedNodeMap headerAttributes = nListHeader.item(0).getAttributes();
-			result.setSpacecraft(headerAttributes.getNamedItem("spacecraft").getNodeValue());
-			result.setIcdVersion(headerAttributes.getNamedItem("icd_version").getNodeValue());
-			result.setGenerationTime(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("gen_time").getNodeValue()));
-			result.setValidityStart(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("validity_start").getNodeValue()));
-			result.setValidityEnd(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("validity_end").getNodeValue()));
-			NodeList nListEvents = doc.getElementsByTagName("events");
+			result.setSpacecraft(headerAttributes.getNamedItem(Evtm.SPACECRAFT_TAG).getNodeValue());
+			result.setIcdVersion(headerAttributes.getNamedItem(Evtm.ICDVERION_TAG).getNodeValue());
+			result.setGenerationTime(EvtmEvent.zuluToDate(headerAttributes.getNamedItem(Evtm.GENTIME_TAG).getNodeValue()));
+			result.setValidityStart(EvtmEvent.zuluToDate(headerAttributes.getNamedItem(Evtm.VALIDITY_START_TAG).getNodeValue()));
+			result.setValidityEnd(EvtmEvent.zuluToDate(headerAttributes.getNamedItem(Evtm.VALIDITY_END_TAG).getNodeValue()));
+			NodeList nListEvents = doc.getElementsByTagName(Evtm.EVENTS_TAG);
 			NodeList eventNodes = nListEvents.item(0).getChildNodes();
-			//System.out.println(eventNodes.item(1));
 			for (int i=0;i<eventNodes.getLength();i++){
 				if(eventNodes.item(i).hasAttributes()){
 					String eventType=eventNodes.item(i).getNodeName();
 					NamedNodeMap eventAttributes = eventNodes.item(i).getAttributes();
-					String eventId=eventAttributes.getNamedItem("id").getTextContent();
-					java.util.Date eventTime=EvtmEvent.zuluToDate(eventAttributes.getNamedItem("time").getNodeValue());
-					long eventDuration=Long.parseLong(eventAttributes.getNamedItem("duration").getNodeValue().replace(" ", ""));
+					String eventId=eventAttributes.getNamedItem(EvtmEvent.ID_TAG).getTextContent();
+					java.util.Date eventTime=EvtmEvent.zuluToDate(eventAttributes.getNamedItem(EvtmEvent.TIME_TAG).getNodeValue());
+					long eventDuration=Long.parseLong(eventAttributes.getNamedItem(EvtmEvent.DURATION_TAG).getNodeValue().replace(" ", ""));
 					boolean created=false;
 					if (eventType.equals(EvtmEvent.EVENT_TYPE_BDI)){
-						float eventSundistance=Float.parseFloat(eventAttributes.getNamedItem("sundistance").getNodeValue().replace(" ", ""));
+						float eventSundistance=Float.parseFloat(eventAttributes.getNamedItem(EvtmEventBdi.SUNDISTANCE_TAG).getNodeValue().replace(" ", ""));
 						result.addEvent(new EvtmEventBdi(eventId,eventTime,eventDuration,eventSundistance));
 						created=true;
 					}
 					if (eventType.equals(EvtmEvent.EVENT_TYPE_CON)){
-						int eventAngle=Integer.parseInt(eventAttributes.getNamedItem("angle").getNodeValue().replace(" ", ""));
+						int eventAngle=Integer.parseInt(eventAttributes.getNamedItem(EvtmEventCon.ANGLE_TAG).getNodeValue().replace(" ", ""));
 						result.addEvent(new EvtmEventCon(eventId,eventTime,eventDuration,eventAngle));
 						created=true;
 					}
 
 					if (eventType.equals(EvtmEvent.EVENT_TYPE_ORB)){
-						float eventDistance=Float.parseFloat(eventAttributes.getNamedItem("distance").getNodeValue().replace(" ", ""));
+						float eventDistance=Float.parseFloat(eventAttributes.getNamedItem(EvtmEventOrb.DISTANCE_TAG).getNodeValue().replace(" ", ""));
 						result.addEvent(new EvtmEventOrb(eventId,eventTime,eventDuration,eventDistance));
 						created=true;
 					}
@@ -279,9 +214,9 @@ public class PtrUtils {
 					}
 
 					if (eventType.equals(EvtmEvent.EVENT_TYPE_ANT)){
-						Node item = eventAttributes.getNamedItem("ems:station");
+						Node item = eventAttributes.getNamedItem(EvtmEventAnt.EMS_STATION_TAG);
 						if (item!=null){
-							String eventStation=eventAttributes.getNamedItem("ems:station").getNodeValue();
+							String eventStation=eventAttributes.getNamedItem(EvtmEventAnt.EMS_STATION_TAG).getNodeValue();
 							result.addEvent(new EvtmEventAnt(eventId,eventTime,eventDuration,eventStation));
 							created=true;
 						}else{
@@ -291,10 +226,10 @@ public class PtrUtils {
 					}
 					
 					if (eventType.equals(EvtmEvent.EVENT_TYPE_AOS) || eventType.equals(EvtmEvent.EVENT_TYPE_LOS)){
-						String eventStation=eventAttributes.getNamedItem("ems:station").getNodeValue();
-						String eventcriteria=eventAttributes.getNamedItem("criteria").getNodeValue();
-						int eventElevation=Integer.parseInt(eventAttributes.getNamedItem("elevation").getNodeValue());
-						long eventRtlt=Long.parseLong(eventAttributes.getNamedItem("ems:rtlt").getNodeValue());
+						String eventStation=eventAttributes.getNamedItem(EvtmEventAos.EMS_STATION_TAG).getNodeValue();
+						String eventcriteria=eventAttributes.getNamedItem(EvtmEventAos.CRITERIA_TAG).getNodeValue();
+						int eventElevation=Integer.parseInt(eventAttributes.getNamedItem(EvtmEventAos.ELEVATION_TAG).getNodeValue());
+						long eventRtlt=Long.parseLong(eventAttributes.getNamedItem(EvtmEventAos.EMS_RTLT_TAG).getNodeValue());
 						if (eventType.equals(EvtmEvent.EVENT_TYPE_AOS)){
 							result.addEvent(new EvtmEventAos(eventId,eventTime,eventDuration,eventStation,eventcriteria,eventElevation,eventRtlt));
 							created=true;

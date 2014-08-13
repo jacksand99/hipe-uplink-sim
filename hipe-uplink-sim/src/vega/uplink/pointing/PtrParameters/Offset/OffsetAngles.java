@@ -6,6 +6,12 @@ import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingMetadata;
 
 public abstract class OffsetAngles extends PointingMetadata {
+	public static String OFFSETANGLES_TAG="offsetAngles";
+	public static String OFFSETANGLES_TYPE_CUSTOM="custom";
+	public static String OFFSETANGLES_TYPE_FIXED="fixed";
+	public static String OFFSETANGLES_TYPE_RASTER="raster";
+	public static String OFFSETANGLES_TYPE_SCAN="scan";
+	public static String REF_TAG="ref";
 	public OffsetAngles(PointingMetadata org){
 		super(org);
 	}
@@ -15,12 +21,12 @@ public abstract class OffsetAngles extends PointingMetadata {
 	 * @param ref
 	 */
 	public OffsetAngles(String ref){
-		super("offsetAngles","");
-		this.addAttribute(new PointingMetadata("ref",ref));
+		super(OFFSETANGLES_TAG,"");
+		this.addAttribute(new PointingMetadata(REF_TAG,ref));
 
 	}
 	private OffsetAngles(){
-		super("offsetAngles","");
+		super(OFFSETANGLES_TAG,"");
 	}
 	
 	/**

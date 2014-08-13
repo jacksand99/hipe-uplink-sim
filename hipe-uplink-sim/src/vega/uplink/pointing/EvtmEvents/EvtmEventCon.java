@@ -9,6 +9,7 @@ import java.util.Date;
 
 public class EvtmEventCon extends EvtmEvent {
 	//private int angle;
+	public static String ANGLE_TAG="angle";
 	public EvtmEventCon(String eventId,Date eventTime,long eventDuration,int eventAngle){
 		super(EvtmEvent.EVENT_TYPE_CON,eventId,eventTime,eventDuration);
 		setAngle(eventAngle);
@@ -16,12 +17,12 @@ public class EvtmEventCon extends EvtmEvent {
 	}
 	
 	public int getAngle(){
-		return ((Long)getMeta().get("angle").getValue()).intValue();
+		return ((Long)getMeta().get(ANGLE_TAG).getValue()).intValue();
 		//return angle;
 	}
 	
 	public void setAngle(int eventAngle){
-		getMeta().set("angle", new LongParameter(eventAngle));
+		getMeta().set(ANGLE_TAG, new LongParameter(eventAngle));
 		//angle=eventAngle;
 	}
 	
@@ -29,7 +30,7 @@ public class EvtmEventCon extends EvtmEvent {
 		return toString(0);
 	}
 	public String toString(int count){
-		return "<"+this.getType()+" id=\""+this.getId()+"\" time=\""+dateToZulu(this.getTime())+"\" count=\""+count+"\" duration=\""+this.getDuration()+"\" angle=\""+this.getAngle()+"\"/>\n";
+		return "<"+this.getType()+" "+ID_TAG+"=\""+this.getId()+"\" "+TIME_TAG+"=\""+dateToZulu(this.getTime())+"\" "+COUNT_TAG+"=\""+count+"\" "+DURATION_TAG+"=\""+this.getDuration()+"\" "+ANGLE_TAG+"=\""+this.getAngle()+"\"/>\n";
 	}
 
 	

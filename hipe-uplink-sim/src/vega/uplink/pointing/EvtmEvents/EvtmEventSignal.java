@@ -10,6 +10,9 @@ public class EvtmEventSignal extends EvtmEventAnt {
 	//private String criteria;
 	//private int elevation;
 	//private long ems_rtlt;
+	public static String CRITERIA_TAG="criteria";
+	public static String ELEVATION_TAG="elevation";
+	public static String EMS_RTLT_TAG="ems:rtlt";
 	
 	public EvtmEventSignal(String eventType,String eventId,java.util.Date eventTime,long eventDuration,String eventEms_station,String eventCriteria,int eventElevation,long eventEms_rtlt){
 		super(eventId,eventTime,eventDuration,eventEms_station);
@@ -23,23 +26,23 @@ public class EvtmEventSignal extends EvtmEventAnt {
 	}
 	
 	public String getCriteria(){
-		return (String) getMeta().get("criteria").getValue();
+		return (String) getMeta().get(CRITERIA_TAG).getValue();
 		//return criteria;
 	}
 	
 	public void setCriteria(String eventCriteria){
-		getMeta().set("criteria", new StringParameter(eventCriteria));
+		getMeta().set(CRITERIA_TAG, new StringParameter(eventCriteria));
 		//criteria=eventCriteria;
 	}
 	
 	public int getElevation(){
-		return ((Long) getMeta().get("elevation").getValue()).intValue();
+		return ((Long) getMeta().get(ELEVATION_TAG).getValue()).intValue();
 
 		//return elevation;
 	}
 	
 	public void setElevation(int eventElevation){
-		getMeta().set("elevation", new LongParameter(eventElevation));
+		getMeta().set(ELEVATION_TAG, new LongParameter(eventElevation));
 		//elevation=eventElevation;
 	}
 	
@@ -58,6 +61,6 @@ public class EvtmEventSignal extends EvtmEventAnt {
 		return toString(0);
 	}
 	public String toString(int count){
-		return "<"+this.getType()+" id=\""+this.getId()+"\" time=\""+dateToZulu(this.getTime())+"\" count=\""+count+"\" duration=\""+this.getDuration()+"\" ems:station=\""+this.getEms_station()+"\" criteria=\""+this.getCriteria()+"\" elevation=\""+this.getElevation()+"\" ems:rtlt=\""+this.getEms_rtlt()+"\"/>\n";
+		return "<"+this.getType()+" "+ID_TAG+"=\""+this.getId()+"\" "+TIME_TAG+"=\""+dateToZulu(this.getTime())+"\" "+COUNT_TAG+"=\""+count+"\" "+DURATION_TAG+"=\""+this.getDuration()+"\" "+EMS_STATION_TAG+"=\""+this.getEms_station()+"\" "+CRITERIA_TAG+"=\""+this.getCriteria()+"\" "+ELEVATION_TAG+"=\""+this.getElevation()+"\" "+EMS_RTLT_TAG+"=\""+this.getEms_rtlt()+"\"/>\n";
 	}
 }

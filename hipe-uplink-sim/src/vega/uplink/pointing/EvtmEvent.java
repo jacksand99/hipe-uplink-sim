@@ -18,6 +18,10 @@ public class EvtmEvent  extends CompositeDataset implements Comparable<EvtmEvent
 	public static String EVENT_TYPE_ORB="orb";
 	public static String EVENT_TYPE_CON="con";
 	public static String EVENT_TYPE_BDI="bdi";
+	public static String ID_TAG="id";
+	public static String TIME_TAG="time";
+	public static String DURATION_TAG="duration";
+	public static String COUNT_TAG="count";
 	//private String type;
 	//private String id;
 	//private int count;
@@ -33,9 +37,9 @@ public class EvtmEvent  extends CompositeDataset implements Comparable<EvtmEvent
 	public EvtmEvent(String eventType,String eventId,Date eventTime,long eventDuration){
 		getMeta().set("type", new StringParameter(eventType));
 		//type=eventType;
-		getMeta().set("id", new StringParameter(eventId));
-		getMeta().set("time", new DateParameter(new FineTime(eventTime)));
-		getMeta().set("duration", new LongParameter(eventDuration));
+		getMeta().set(ID_TAG, new StringParameter(eventId));
+		getMeta().set(TIME_TAG, new DateParameter(new FineTime(eventTime)));
+		getMeta().set(DURATION_TAG, new LongParameter(eventDuration));
 
 		//id=eventId;
 		//time=eventTime;
@@ -56,17 +60,17 @@ public class EvtmEvent  extends CompositeDataset implements Comparable<EvtmEvent
 		//type=eventType;
 	}
 	public String getId(){
-		return (String) getMeta().get("id").getValue();
+		return (String) getMeta().get(ID_TAG).getValue();
 
 		//return id;
 	}
 	public Date getTime(){
-		return ((FineTime) getMeta().get("time").getValue()).toDate();
+		return ((FineTime) getMeta().get(TIME_TAG).getValue()).toDate();
 
 		//return time;
 	}
 	public long getDuration(){
-		return ((Long) getMeta().get("duration").getValue());
+		return ((Long) getMeta().get(DURATION_TAG).getValue());
 		//return duration;
 	}
 	
@@ -86,7 +90,7 @@ public class EvtmEvent  extends CompositeDataset implements Comparable<EvtmEvent
 		return toString(0);
 	}
 	public String toString(int count){
-		return "<"+this.getType()+" id=\""+this.getId()+"\" time=\""+dateToZulu(this.getTime())+"\" count=\""+count+"\" duration=\""+this.getDuration()+"\"/>\n";
+		return "<"+this.getType()+" "+ID_TAG+"=\""+this.getId()+"\" "+TIME_TAG+"=\""+dateToZulu(this.getTime())+"\" "+COUNT_TAG+"=\""+count+"\" "+DURATION_TAG+"=\""+this.getDuration()+"\"/>\n";
 	}
 
 	@Override

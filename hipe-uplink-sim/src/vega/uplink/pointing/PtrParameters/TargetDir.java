@@ -3,6 +3,7 @@ package vega.uplink.pointing.PtrParameters;
 import vega.uplink.pointing.PointingMetadata;
 
 public class TargetDir extends DirectionVector {
+	public static String TARGETDIR_TAG="targetDir";
 	/**
 	 * Creates a targetDir Direction vector referenced to CG2Sun
 	 * Direction vectors can be defined by referencing to
@@ -28,10 +29,10 @@ public class TargetDir extends DirectionVector {
 	 * @param latitude Latitude expressed in deg.
 	 */
 	public TargetDir(String frame,float longitude,float latitude){
-		super("targetDir",frame,longitude,latitude);
+		super(TARGETDIR_TAG,frame,longitude,latitude);
 	}
 	public TargetDir(PointingMetadata pm){
-		super("targetDir",pm);
+		super(TARGETDIR_TAG,pm);
 	}
 	/**
 	 * Creates a targetDir Direction vector referenced to another direction vector
@@ -41,7 +42,7 @@ public class TargetDir extends DirectionVector {
 	 * @param reference Name of the referenced direction vector
 	 */
 	public TargetDir(String reference){
-		super("targetDir",reference);
+		super(TARGETDIR_TAG,reference);
 	}
 	/**
 	 * Creates a fixed targetDir direction vector expressed in cartesian coordinates
@@ -57,7 +58,7 @@ public class TargetDir extends DirectionVector {
 	 * @param z The z component of this vector
 	 */
 	public TargetDir(String frame,float x,float y, float z){
-		super("targetDir",frame,x,y,z);
+		super(TARGETDIR_TAG,frame,x,y,z);
 	}
 	/**
 	 * Creates a fixed targetDir direction vector expressed in spherical coordinates
@@ -78,7 +79,7 @@ public class TargetDir extends DirectionVector {
 	 * @param latitude Latitude
 	 */
 	public TargetDir(String frame,String unitLongitude,float longitude,String unitLatitude,float latitude){
-		super("targetDir",frame,unitLongitude,longitude,unitLatitude,latitude);
+		super(TARGETDIR_TAG,frame,unitLongitude,longitude,unitLatitude,latitude);
 	}
 	/**
 	 * Creates a targetDir direction vector based in Origin and Target
@@ -91,7 +92,7 @@ public class TargetDir extends DirectionVector {
 	 * @param target Target State vector
 	 */
 	public TargetDir(String origin,String target){
-		super("targetDir",origin,target);
+		super(TARGETDIR_TAG,origin,target);
 	}
 	/**
 	 * Creates a targetDir rotated Direction Vector
@@ -106,7 +107,7 @@ public class TargetDir extends DirectionVector {
 	 * @param rotationAngle Rotation angle. It must be expressed in deg.
 	 */
 	public TargetDir(String axis,String rotationAxis,float rotationAngle){
-		super("targetDir",axis,rotationAxis,rotationAngle);
+		super(TARGETDIR_TAG,axis,rotationAxis,rotationAngle);
 	}
 	/**
 	 * Creates a targetDir rotated Direction Vector
@@ -122,7 +123,7 @@ public class TargetDir extends DirectionVector {
 	 * @param rotationAngle Rotation angle
 	 */
 	public TargetDir(String axis,String rotationAxis,String rotationAngleUnit,float rotationAngle){
-		super("targetDir",axis,rotationAxis,rotationAngleUnit,rotationAngle);
+		super(TARGETDIR_TAG,axis,rotationAxis,rotationAngleUnit,rotationAngle);
 		
 	}
 

@@ -25,6 +25,14 @@ public class PtrSegment extends Product{
 	private String name;
 	private String[] includes;
 	private TreeMap<Date,PointingBlock> blMap;
+	public static String SEGMENT_TAG="segment";
+	public static String METADATA_TAG="metadata";
+	public static String NAME_TAG="name";
+	public static String INCLUDE_TAG="include";
+	public static String HREF_TAG="href";
+	public static String DATA_TAG="data";
+	public static String TIMELINE_TAG="timeline";
+	public static String FRAME_TAG="frame";
 	
 	private String getBlockName(PointingBlock block){
 		String result=block.getType()+" "+PointingBlock.dateToZulu(block.getStartTime());
@@ -88,7 +96,7 @@ public class PtrSegment extends Product{
 		PointingBlock before = blockBefore(block);
 		PointingBlock after = blockAfter(block);
 		if (before!=null && after!=null){
-			if (before.getValue().equals("SLEW") && after.getType().equals("SLEW")){
+			if (before.getValue().equals(PointingBlock.TYPE_SLEW) && after.getType().equals(PointingBlock.TYPE_SLEW)){
 				PointingBlockSlew slewBefore=(PointingBlockSlew) before;
 				PointingBlockSlew slewAfter=(PointingBlockSlew) after;				
 				hardRemoveBlock(slewBefore);
@@ -98,23 +106,23 @@ public class PtrSegment extends Product{
 				newSlew.setBlockAfter(slewAfter.getBlockAfter());
 				hardInsertBlock(newSlew);				
 			}
-			if (before.getValue().equals("SLEW") && !after.getType().equals("SLEW")){
+			if (before.getValue().equals(PointingBlock.TYPE_SLEW) && !after.getType().equals(PointingBlock.TYPE_SLEW)){
 				PointingBlockSlew slewBefore=(PointingBlockSlew) before;
 				slewBefore.setBlockAfter(after);				
 			}
-			if (!before.getValue().equals("SLEW") && after.getType().equals("SLEW")){
+			if (!before.getValue().equals(PointingBlock.TYPE_SLEW) && after.getType().equals(PointingBlock.TYPE_SLEW)){
 				PointingBlockSlew slewAfter=(PointingBlockSlew) after;				
 				slewAfter.setBlockBefore(before);
 			}
 		}
 		if (before==null && after!=null){
-			if (after.getType().equals("SLEW")){
+			if (after.getType().equals(PointingBlock.TYPE_SLEW)){
 				PointingBlockSlew slewAfter=(PointingBlockSlew) after;				
 				hardRemoveBlock(slewAfter);
 			}
 		}
 		if (before!=null && after==null){
-			if (before.getType().equals("SLEW")){
+			if (before.getType().equals(PointingBlock.TYPE_SLEW)){
 				PointingBlockSlew slewBefore=(PointingBlockSlew) before;
 				slewBefore.setBlockAfter(null);
 			}
@@ -182,7 +190,7 @@ public class PtrSegment extends Product{
 			PointingBlock block = blocks[i];
 			PointingBlock before = blockBefore(block);
 			PointingBlock after = blockAfter(block);
-			if (before!=null && !before.getType().equals("SLEW") && !before.getEndTime().equals(block.getStartTime())){
+			if (before!=null && !before.getType().equals(PointingBlock.TYPE_SLEW) && !before.getEndTime().equals(block.getStartTime())){
 				PointingBlockSlew newSlew=new PointingBlockSlew();
 				newSlew.setBlockBefore(before);
 				newSlew.setBlockAfter(block);
@@ -197,7 +205,7 @@ public class PtrSegment extends Product{
 	 * @param newBlock Block to be added
 	 */
 	public void addBlock(PointingBlock newBlock){
-		boolean new_is_slew = newBlock.getType().equals("SLEW");
+		boolean new_is_slew = newBlock.getType().equals(PointingBlock.TYPE_SLEW);
 		Entry<Date, PointingBlock> lastEntry = blMap.lastEntry();
 		PointingBlock before;
 		if (new_is_slew &&((PointingBlockSlew) newBlock).getBlockBefore()==null){
@@ -209,8 +217,8 @@ public class PtrSegment extends Product{
 			after=null;
 		}
 		else after= blockAfter(newBlock);
-		boolean before_is_slew=(before!=null && before.getType().equals("SLEW"));
-		boolean after_is_slew=(after!=null && after.getType().equals("SLEW"));
+		boolean before_is_slew=(before!=null && before.getType().equals(PointingBlock.TYPE_SLEW));
+		boolean after_is_slew=(after!=null && after.getType().equals(PointingBlock.TYPE_SLEW));
 		if (lastEntry==null){
 			//The block list empty
 			if (new_is_slew) return; //Can not insert slew in an empty list;
@@ -390,24 +398,24 @@ public class PtrSegment extends Product{
 			iString=iString+"\t";
 		}
 		
-		result=result+iString+"<segment name='"+getName()+"'>\n";
-		result=result+iString+"\t"+"<metadata>\n";
+		result=result+iString+"<"+SEGMENT_TAG+" "+NAME_TAG+"='"+getName()+"'>\n";
+		result=result+iString+"\t"+"<"+METADATA_TAG+">\n";
 		for (int i=0;i<includes.length;i++){
-			result=result+iString+"\t\t"+"<include href='"+includes[i]+"'/>\n";
+			result=result+iString+"\t\t"+"<"+INCLUDE_TAG+" "+HREF_TAG+"='"+includes[i]+"'/>\n";
 		}
-		result=result+iString+"\t"+"</metadata>\n";
-		result=result+iString+"\t"+"<data>\n";
-		result=result+iString+"\t\t"+"<timeline frame='"+getTimeLineFrame()+"'>\n";
+		result=result+iString+"\t"+"</"+METADATA_TAG+">\n";
+		result=result+iString+"\t"+"<"+DATA_TAG+">\n";
+		result=result+iString+"\t\t"+"<"+TIMELINE_TAG+" "+FRAME_TAG+"='"+getTimeLineFrame()+"'>\n";
 		PointingBlock[] blocks = getBlocks();
 		for (int i=0;i<blocks.length;i++){
 			int blocknumber=i+1;
 			result=result+"<!-- BLOCK #"+blocknumber+"-->\n";
 			result=result+blocks[i].toXml(indent+3);
 		}
-		result=result+iString+"\t\t"+"</timeline>\n";
+		result=result+iString+"\t\t"+"</"+TIMELINE_TAG+">\n";
 
-		result=result+iString+"\t"+"</data>\n";
-		result=result+iString+"</segment>\n";
+		result=result+iString+"\t"+"</"+DATA_TAG+">\n";
+		result=result+iString+"</"+SEGMENT_TAG+">\n";
 
 		
 		

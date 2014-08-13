@@ -49,6 +49,10 @@ public class PointingAttitude extends PointingMetadata{
 	 * Attitude type pointing the boresight along the velocity vector of the SC relative to CG
 	 */
 	public static String POINTING_ATTITUDE_TYPE_VELOCITY="velocity";
+	
+	public static String ATTITUDE_TAG="attitude";
+	public static String REF_TAG="ref";
+	public static String POWEROPTIMIZED_TAG="_pwropt";
 
 	public PointingAttitude(PointingMetadata org){
 		super(org);
@@ -61,8 +65,8 @@ public class PointingAttitude extends PointingMetadata{
 	 * @param phaseAngle Rule that fixes the degree of freedom around the boresight.
 	 */
 	public PointingAttitude(String type,Boresight boresight,PhaseAngle phaseAngle){
-		super("attitude","");
-		this.addAttribute(new PointingMetadata("ref",type));
+		super(ATTITUDE_TAG,"");
+		this.addAttribute(new PointingMetadata(REF_TAG,type));
 		setBoresight(boresight);
 		setPhaseAngle(phaseAngle);
 	}
@@ -71,8 +75,8 @@ public class PointingAttitude extends PointingMetadata{
 	 * @param type type of this attitude
 	 */
 	public PointingAttitude(String type){
-		super("attitude","");
-		this.addAttribute(new PointingMetadata("ref",type));
+		super(ATTITUDE_TAG,"");
+		this.addAttribute(new PointingMetadata(REF_TAG,type));
 		//setBoresight(new Boresight());
 		//setPhaseAngle(new PhaseAngle());
 	}
@@ -82,7 +86,7 @@ public class PointingAttitude extends PointingMetadata{
 	 * @return
 	 */
 	public String getAttitudeType(){
-		return this.getAttribute("ref").getValue();
+		return this.getAttribute(REF_TAG).getValue();
 	}
 	
 	/**
@@ -98,7 +102,7 @@ public class PointingAttitude extends PointingMetadata{
 	 * @return
 	 */
 	public Boresight getBoresight(){
-		PointingMetadata result = this.getChild("boresight");
+		PointingMetadata result = this.getChild(Boresight.BORESIGHT_TAG);
 		if (result!=null){
 			return (Boresight) result;
 		}else{
@@ -112,15 +116,15 @@ public class PointingAttitude extends PointingMetadata{
 	 * @return
 	 */
 	public PhaseAngle getPhaseAngle(){
-		if (getAttitudeType().endsWith("_pwropt")){
+		if (getAttitudeType().endsWith(POWEROPTIMIZED_TAG)){
 			PhaseAngle result = new PhaseAngle();
 			return result;
 			//result.addAttribute(new PointingMetadata("ref","powerOptimised"));
 			
 		}
-		PointingMetadata result = this.getChild("phaseAngle");
+		PointingMetadata result = this.getChild(PhaseAngle.PHASEANGLE_TAG);
 		if (result!=null){
-			return (PhaseAngle) this.getChild("phaseAngle");
+			return (PhaseAngle) this.getChild(PhaseAngle.PHASEANGLE_TAG);
 		}else{
 			return new PhaseAngle();
 		}
@@ -131,7 +135,7 @@ public class PointingAttitude extends PointingMetadata{
 	 * @param phaseAngle
 	 */	
 	public void setPhaseAngle(PhaseAngle phaseAngle){
-		if (getAttitudeType().endsWith("_pwropt")) return; //If it is power optimised, then do not add attitude
+		if (getAttitudeType().endsWith(POWEROPTIMIZED_TAG)) return; //If it is power optimised, then do not add attitude
 		
 		this.addChild(phaseAngle);
 	}
@@ -151,7 +155,7 @@ public class PointingAttitude extends PointingMetadata{
 	 * @return
 	 */
 	public OffsetRefAxis getOffsetRefAxis(){
-		PointingMetadata child = this.getChild("offsetRefAxis");
+		PointingMetadata child = this.getChild(OffsetRefAxis.OFFSETREFAXIS_TAG);
 		if (child==null) return null;
 		if (InterpreterUtil.isInstance(OffsetRefAxis.class, child)){
 			return (OffsetRefAxis) child;
@@ -163,7 +167,7 @@ public class PointingAttitude extends PointingMetadata{
 	 * @return
 	 */
 	public OffsetAngles getOffsetAngles(){
-		PointingMetadata child = this.getChild("offsetAngles");
+		PointingMetadata child = this.getChild(OffsetAngles.OFFSETANGLES_TAG);
 		if (child==null) return null;
 		if (InterpreterUtil.isInstance(OffsetAngles.class, child)){
 			return (OffsetAngles) child;

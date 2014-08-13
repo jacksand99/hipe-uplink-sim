@@ -40,7 +40,7 @@ public class OffsetScan extends OffsetAngles {
 		super(org);
 	}
 	private OffsetScan(){
-		super("scan");
+		super(OffsetAngles.OFFSETANGLES_TYPE_SCAN);
 	}
 	/**
 	 * A scan is defined if the element offsetAngles contains the attribute ref=scan.
@@ -73,7 +73,7 @@ public class OffsetScan extends OffsetAngles {
 	 * @param keepScanDir Flag indicating whether the direction of the scan performed in one line is kept (=true) or alternated (=false)
 	 */
 	public OffsetScan(Date startTime,int numberOfLines,int numberOfScansPerLine,String xStartUnit,float xStart,String yStartUnit,float yStart,String scanDeltaUnit,float scanDelta,String lineDeltaUnit,float lineDelta,String scanTimeUnit,Float scanTime,String scanSpeedUnit,Float scanSpeed,String scanSlewTimeUnit,float scanSlewTime,String lineSlewTimeUnit,float lineSlewTime,String borderSlewTimeUnit,float borderSlewTime,String lineAxis,boolean keepLineDir,boolean keepScanDir){
-		super("scan");
+		super(OffsetAngles.OFFSETANGLES_TYPE_SCAN);
 		setStartDate(startTime);
 		setIntegerField(NUMBEROFLINES_FIELD,numberOfLines);
 		setIntegerField(NUMBEROFSCANSPERLINE_FIELD,numberOfScansPerLine);
@@ -126,7 +126,7 @@ public class OffsetScan extends OffsetAngles {
 	 * @param keepScanDir Flag indicating whether the direction of the scan performed in one line is kept (=true) or alternated (=false)
 	 */
 	public OffsetScan(Date startTime,int numberOfLines,int numberOfScansPerLine,float xStart,float yStart,float scanDelta,float lineDelta,Float scanTime,Float scanSpeed,float scanSlewTime,float lineSlewTime,float borderSlewTime,String lineAxis,boolean keepLineDir,boolean keepScanDir){
-		super("scan");
+		super(OffsetAngles.OFFSETANGLES_TYPE_SCAN);
 		setStartDate(startTime);
 		setIntegerField(NUMBEROFLINES_FIELD,numberOfLines);
 		setIntegerField(NUMBEROFSCANSPERLINE_FIELD,numberOfScansPerLine);
@@ -179,7 +179,7 @@ public class OffsetScan extends OffsetAngles {
 	 * @param keepScanDir Flag indicating whether the direction of the scan performed in one line is kept (=true) or alternated (=false)
 	 */
 	public OffsetScan(String startTime,String numberOfLines,String numberOfScansPerLine,String xStart,String yStart,String scanDelta,String lineDelta,String scanTime,String scanSpeed,String scanSlewTime,String lineSlewTime,String borderSlewTime,String lineAxis,String keepLineDir,String keepScanDir) throws ParseException{
-		super("scan");
+		super(OffsetAngles.OFFSETANGLES_TYPE_SCAN);
 		setStartDate(PointingBlock.zuluToDate(startTime));
 		setIntegerField(NUMBEROFLINES_FIELD,Integer.parseInt(numberOfLines));
 		setIntegerField(NUMBEROFSCANSPERLINE_FIELD,Integer.parseInt(numberOfScansPerLine));
@@ -293,14 +293,14 @@ public class OffsetScan extends OffsetAngles {
 	}
 	
 	public void setStartDate(Date date){
-		PointingMetadata startTimeCh = new PointingMetadata("startTime",PointingBlock.dateToZulu(date));
+		PointingMetadata startTimeCh = new PointingMetadata(STARTTIME_FIELD,PointingBlock.dateToZulu(date));
 		this.addChild(startTimeCh);
 
 	}
 	
 	public Date getStartDate(){
 		try {
-			return PointingBlock.zuluToDate(getChild("startTime").getValue());
+			return PointingBlock.zuluToDate(getChild(STARTTIME_FIELD).getValue());
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

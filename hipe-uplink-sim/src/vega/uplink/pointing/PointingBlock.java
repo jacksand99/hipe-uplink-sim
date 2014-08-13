@@ -60,6 +60,7 @@ public class PointingBlock extends PointingMetadata{
 		 * Pointing block type for on-board implemented autonomous guidance attitude
 		 */
 		public static String TYPE_GSEP="GSEP";
+		public static String BLOCK_TAG="block";
 		private java.util.HashMap<String, PointingMetadata> metadata;
 		//private String id;
 		
@@ -80,7 +81,7 @@ public class PointingBlock extends PointingMetadata{
 		 * @param endDate start date of the time interval during which the pointing block is valid
 		 */
 		public PointingBlock(String blockType,java.util.Date startDate,java.util.Date endDate){
-			super("block","");
+			super(BLOCK_TAG,"");
 			
 			this.addAttribute(new PointingMetadata("ref",blockType));
 			this.addChild(new PointingMetadata("startTime",dateToZulu(startDate)));
@@ -90,7 +91,7 @@ public class PointingBlock extends PointingMetadata{
 		}
 		
 		private PointingBlock(){
-			super("block","");
+			super(BLOCK_TAG,"");
 		}
 		
 		/**
@@ -293,7 +294,7 @@ public class PointingBlock extends PointingMetadata{
 		 */
 		public static PointingBlock readFrom(Node node){
 			String name=node.getNodeName();
-			if (!name.equals("block")) return null;
+			if (!name.equals(BLOCK_TAG)) return null;
 			//if (name.equals("#comment")) return null;
 
 			//String name=node.getNodeName();

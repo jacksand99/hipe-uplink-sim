@@ -3,6 +3,7 @@ package vega.uplink.pointing.PtrParameters;
 import vega.uplink.pointing.PointingMetadata;
 
 public class TargetInert extends DirectionVector {
+	public static String TARGET_TAG="target";
 	/**
 	 * Creates a target Direction vector referenced to EME2000 direction vector
 	 * Direction vectors can be defined by referencing to
@@ -28,10 +29,10 @@ public class TargetInert extends DirectionVector {
 	 * @param latitude Latitude expressed in deg.
 	 */
 	public TargetInert(String frame,float longitude,float latitude){
-		super("target",frame,longitude,latitude);
+		super(TARGET_TAG,frame,longitude,latitude);
 	}
 	public TargetInert(PointingMetadata pm){
-		super("target",pm);
+		super(TARGET_TAG,pm);
 	}
 	/**
 	 * Creates a target Direction vector referenced to another direction vector
@@ -41,7 +42,7 @@ public class TargetInert extends DirectionVector {
 	 * @param reference Name of the referenced direction vector
 	 */
 	public TargetInert(String reference){
-		super("target",reference);
+		super(TARGET_TAG,reference);
 	}
 	/**
 	 * Creates a fixed target direction vector expressed in cartesian coordinates
@@ -57,7 +58,7 @@ public class TargetInert extends DirectionVector {
 	 * @param z The z component of this vector
 	 */
 	public TargetInert(String frame,float x,float y, float z){
-		super("target",frame,x,y,z);
+		super(TARGET_TAG,frame,x,y,z);
 	}
 	/**
 	 * Creates a fixed target direction vector expressed in spherical coordinates
@@ -78,7 +79,7 @@ public class TargetInert extends DirectionVector {
 	 * @param latitude Latitude
 	 */
 	public TargetInert(String frame,String unitLongitude,float longitude,String unitLatitude,float latitude){
-		super("target",frame,unitLongitude,longitude,unitLatitude,latitude);
+		super(TARGET_TAG,frame,unitLongitude,longitude,unitLatitude,latitude);
 	}
 	/**
 	 * Creates a target direction vector based in Origin and Target
@@ -91,7 +92,7 @@ public class TargetInert extends DirectionVector {
 	 * @param target Target State vector
 	 */
 	public TargetInert(String origin,String target){
-		super("target",origin,target);
+		super(TARGET_TAG,origin,target);
 	}
 	/**
 	 * Creates a target rotated Direction Vector
@@ -106,7 +107,7 @@ public class TargetInert extends DirectionVector {
 	 * @param rotationAngle Rotation angle. It must be expressed in deg.
 	 */
 	public TargetInert(String axis,String rotationAxis,float rotationAngle){
-		super("target",axis,rotationAxis,rotationAngle);
+		super(TARGET_TAG,axis,rotationAxis,rotationAngle);
 	}
 	/**
 	 * Creates a target rotated Direction Vector
@@ -122,7 +123,7 @@ public class TargetInert extends DirectionVector {
 	 * @param rotationAngle Rotation angle
 	 */
 	public TargetInert(String axis,String rotationAxis,String rotationAngleUnit,float rotationAngle){
-		super("target",axis,rotationAxis,rotationAngleUnit,rotationAngle);
+		super(TARGET_TAG,axis,rotationAxis,rotationAngleUnit,rotationAngle);
 		
 	}
 }

@@ -14,15 +14,16 @@ import vega.uplink.pointing.PtrParameters.DirectionVector;
  *
  */
 public class PdfmSurface extends PointingMetadata {
+	public static String SURFACE_TAG="surface";
 	public PdfmSurface(PointingMetadata org){
 		
 		super(org);
 	}
 	public PdfmSurface(){
-		super("surface","");
+		super(SURFACE_TAG,"");
 	}
 	public PdfmSurface(String surfaceName){
-		super("surface","");
+		super(SURFACE_TAG,"");
 		setSurfaceName(surfaceName);
 	}
 	/**

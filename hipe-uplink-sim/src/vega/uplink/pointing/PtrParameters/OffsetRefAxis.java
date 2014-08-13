@@ -4,6 +4,7 @@ import vega.uplink.pointing.PointingMetadata;
 
 //public class OffsetRefAxis extends PointingMetadata {
 public class OffsetRefAxis extends DirectionVector {
+	public static String OFFSETREFAXIS_TAG="offsetRefAxis";
 	/**
 	 * Creates a offsetRefAxis Direction vector referenced to SC_Xaxis direction vector
 	 * Direction vectors can be defined by referencing to
@@ -30,10 +31,10 @@ public class OffsetRefAxis extends DirectionVector {
 	 * @param latitude Latitude expressed in deg.
 	 */
 	public OffsetRefAxis(String frame,float longitude,float latitude){
-		super("offsetRefAxis",frame,longitude,latitude);
+		super(OFFSETREFAXIS_TAG,frame,longitude,latitude);
 	}
 	public OffsetRefAxis(PointingMetadata pm){
-		super("offsetRefAxis",pm);
+		super(OFFSETREFAXIS_TAG,pm);
 	}
 	/**
 	 * Creates a offsetRefAxis Direction vector referenced to another direction vector
@@ -43,7 +44,7 @@ public class OffsetRefAxis extends DirectionVector {
 	 * @param reference Name of the referenced direction vector
 	 */
 	public OffsetRefAxis(String reference){
-		super("offsetRefAxis",reference);
+		super(OFFSETREFAXIS_TAG,reference);
 	}
 	/**
 	 * Creates a fixed offsetRefAxis direction vector expressed in cartesian coordinates
@@ -59,7 +60,7 @@ public class OffsetRefAxis extends DirectionVector {
 	 * @param z The z component of this vector
 	 */
 	public OffsetRefAxis(String frame,float x,float y, float z){
-		super("offsetRefAxis",frame,x,y,z);
+		super(OFFSETREFAXIS_TAG,frame,x,y,z);
 	}
 	/**
 	 * Creates a fixed offsetRefAxis direction vector expressed in spherical coordinates
@@ -80,7 +81,7 @@ public class OffsetRefAxis extends DirectionVector {
 	 * @param latitude Latitude
 	 */
 	public OffsetRefAxis(String frame,String unitLongitude,float longitude,String unitLatitude,float latitude){
-		super("offsetRefAxis",frame,unitLongitude,longitude,unitLatitude,latitude);
+		super(OFFSETREFAXIS_TAG,frame,unitLongitude,longitude,unitLatitude,latitude);
 	}
 	/**
 	 * Creates a offsetRefAxis direction vector based in Origin and Target
@@ -93,7 +94,7 @@ public class OffsetRefAxis extends DirectionVector {
 	 * @param target Target State vector
 	 */
 	public OffsetRefAxis(String origin,String target){
-		super("offsetRefAxis",origin,target);
+		super(OFFSETREFAXIS_TAG,origin,target);
 	}
 	/**
 	 * Creates a offsetRefAxis rotated Direction Vector
@@ -108,7 +109,7 @@ public class OffsetRefAxis extends DirectionVector {
 	 * @param rotationAngle Rotation angle. It must be expressed in deg.
 	 */
 	public OffsetRefAxis(String axis,String rotationAxis,float rotationAngle){
-		super("offsetRefAxis",axis,rotationAxis,rotationAngle);
+		super(OFFSETREFAXIS_TAG,axis,rotationAxis,rotationAngle);
 	}
 	/**
 	 * Creates a offsetRefAxis rotated Direction Vector
@@ -124,7 +125,7 @@ public class OffsetRefAxis extends DirectionVector {
 	 * @param rotationAngle Rotation angle
 	 */
 	public OffsetRefAxis(String axis,String rotationAxis,String rotationAngleUnit,float rotationAngle){
-		super("offsetRefAxis",axis,rotationAxis,rotationAngleUnit,rotationAngle);
+		super(OFFSETREFAXIS_TAG,axis,rotationAxis,rotationAngleUnit,rotationAngle);
 		
 	}
 

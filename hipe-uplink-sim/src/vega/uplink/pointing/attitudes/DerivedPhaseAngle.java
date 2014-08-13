@@ -24,7 +24,7 @@ public class DerivedPhaseAngle extends PointingAttitude {
 	 * @param att Contains the definition of the attitude profile i.e. a basic pointing and optionally offset angles
 	 */
 	public DerivedPhaseAngle(PointingAttitude att){
-		super(att.getAttitudeType()+"_pwropt");
+		super(att.getAttitudeType()+PointingAttitude.POWEROPTIMIZED_TAG);
 	}
 	/**
 	 * The derived pointing phaseAngle allows to modify the phaseAngle of an attitude. This is
@@ -33,7 +33,7 @@ public class DerivedPhaseAngle extends PointingAttitude {
 	 * @param phaseAngle PhaseAngle to be applied
 	 */
 	public DerivedPhaseAngle(PointingAttitude att,PhaseAngle phaseAngle){
-		super("phaseAngle",att.getBoresight(),phaseAngle);
+		super(PhaseAngle.PHASEANGLE_TAG,att.getBoresight(),phaseAngle);
 		//att.setBoresight(boresight);
 		setAttitude(att);
 	}
@@ -49,7 +49,7 @@ public class DerivedPhaseAngle extends PointingAttitude {
 	 * Get the definition of the attitude profile i.e. a basic pointing and optionally offset angles
 	 */	
 	public PointingAttitude getAttitude(){
-		return (PointingAttitude) this.getChild("attitude");
+		return (PointingAttitude) this.getChild(PointingAttitude.ATTITUDE_TAG);
 	}
 
 

@@ -14,6 +14,7 @@ public class PhaseAngle extends PointingMetadata {
 	static String YDIR="yDir";
 	static String XDIR="xDir";
 	static String ZDIR="xDir";
+	public static String PHASEANGLE_TAG="phaseAngle";
 
 	public PhaseAngle(PointingMetadata org){
 		super(org);
@@ -54,7 +55,7 @@ public class PhaseAngle extends PointingMetadata {
 	 * @param yRot Flip type (pyPosRot,pyNegRot,myPosRot or myNegRot)
 	 */
 	public PhaseAngle(java.lang.String tRef, java.lang.String yRot){
-		super("phaseAngle","");
+		super(PHASEANGLE_TAG,"");
 		this.addAttribute(new PointingMetadata("ref","flip"));
 		this.addChild(new PointingMetadata("flipStartTime",tRef));
 		PointingMetadata flipType = new PointingMetadata("flipType",yRot);
@@ -85,7 +86,7 @@ public class PhaseAngle extends PointingMetadata {
 	 * @param angle Angle
 	 */
 	public PhaseAngle(java.lang.Boolean yDir, String units,float angle){
-		super("phaseAngle","");
+		super(PHASEANGLE_TAG,"");
 		this.addAttribute(new PointingMetadata("ref","powerOptimised"));
 		setYDir(yDir);
 		setAngle(units,angle);
@@ -110,7 +111,7 @@ public class PhaseAngle extends PointingMetadata {
 	 * @param angle Angle
 	 */
 	public PhaseAngle(java.lang.Boolean yDir, float angle){
-		super("phaseAngle","");
+		super(PHASEANGLE_TAG,"");
 		this.addAttribute(new PointingMetadata("ref","powerOptimised"));
 		setYDir(yDir);
 		setAngle("deg",angle);
@@ -194,7 +195,7 @@ public class PhaseAngle extends PointingMetadata {
 	 * @param inertialAxysz Z Inertial axis
 	 */
 	public PhaseAngle(String sCAxysFrame,float sCAxysx,float sCAxysy,float sCAxysz,String inertialAxysFrame,float inertialAxysx,float inertialAxysy,float inertialAxysz){
-		super("phaseAngle","");
+		super(PHASEANGLE_TAG,"");
 		this.addAttribute(new PointingMetadata("ref","align"));
 		PointingMetadata child = new PointingMetadata("SCAxis","");
 		child.addAttribute(new PointingMetadata("frame",sCAxysFrame));

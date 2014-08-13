@@ -9,6 +9,7 @@ import vega.uplink.pointing.PointingMetadata;
  *
  */
 public class Height extends PointingMetadata {
+	public static String HEIGHT_TAG="height";
 	public Height(PointingMetadata org){
 		super(org);
 	}
@@ -19,7 +20,7 @@ public class Height extends PointingMetadata {
 		 * @param value
 		 */
 		public Height(String units,String value){
-			super("height",value);
+			super(HEIGHT_TAG,value);
 			this.addAttribute(new PointingMetadata("units",units));
 			
 		}

@@ -23,6 +23,9 @@ import java.util.Set;
  *
  */
 public class Ptr extends MapContext{
+	public static String PRM_TAG="prm";
+	public static String HEADER_TAG="header";
+	public static String BODY_TAG="body";
 	//java.util.HashMap<String, PtrSegment> segments;
 	
 	/**
@@ -142,32 +145,21 @@ public class Ptr extends MapContext{
 			return this.getBlockAt(PointingBlock.zuluToDate(time));
 	}
 	
-	/*public PointingBlock getBlockAt(String startTime,String endTime) throws ParseException{
-		PtrSegment temp=new PtrSegment("temp");
-		temp.setBlocks(getAllBlocks());
-		return temp.getBlockAt(PointingBlock.zuluToDate(startTime));
-	}*/
-	/*public PointingBlock getBlockAt(java.util.Date startTime,java.util.Date endTime){
-		PtrSegment temp=new PtrSegment("temp");
-		temp.setBlocks(getAllBlocks());
-		return temp.getBlockAt(startTime);
-
-	}*/
 	
 	/**
 	 * get a xml representation of this PTR or PTSL
 	 * @return
 	 */
 	public String toXml(){
-		String result="<prm>\n";
-		result=result+"\t<header/>\n";				
-		result=result+"\t<body>\n";
+		String result="<"+PRM_TAG+">\n";
+		result=result+"\t<"+HEADER_TAG+"/>\n";				
+		result=result+"\t<"+BODY_TAG+">\n";
 		PtrSegment[] seg=getSegments();
 		for (int i=0;i<seg.length;i++){
 			result=result+seg[i].toXml(2);
 		}
-		result=result+"\t</body>\n";
-		result=result+"</prm>\n";
+		result=result+"\t</"+BODY_TAG+">\n";
+		result=result+"</"+PRM_TAG+">\n";
 		return result;
 	}
 	

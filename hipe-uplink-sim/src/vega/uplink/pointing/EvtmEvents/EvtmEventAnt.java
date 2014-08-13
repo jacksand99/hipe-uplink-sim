@@ -5,6 +5,7 @@ import vega.uplink.pointing.EvtmEvent;
 
 public class EvtmEventAnt extends EvtmEvent {
 	//private String ems_station;
+	public static String EMS_STATION_TAG="ems:station";
 	public EvtmEventAnt(String eventId,java.util.Date eventTime,long eventDuration,String eventEms_station){
 		super(EvtmEvent.EVENT_TYPE_ANT,eventId,eventTime,eventDuration);
 		if (eventEms_station.equals(null)) eventEms_station="None";
@@ -31,7 +32,7 @@ public class EvtmEventAnt extends EvtmEvent {
 			return super.toString(count);
 		}
 		else{
-			return "<"+this.getType()+" id=\""+this.getId()+"\" time=\""+dateToZulu(this.getTime())+"\" count=\""+count+"\" duration=\""+this.getDuration()+"\" ems:station=\""+this.getEms_station()+"\"/>\n";
+			return "<"+this.getType()+" "+ID_TAG+"=\""+this.getId()+"\" "+TIME_TAG+"=\""+dateToZulu(this.getTime())+"\" "+COUNT_TAG+"=\""+count+"\" "+DURATION_TAG+"=\""+this.getDuration()+"\" "+EMS_STATION_TAG+"=\""+this.getEms_station()+"\"/>\n";
 		}
 	}
 

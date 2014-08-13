@@ -9,6 +9,14 @@ import java.util.Date;
 
 public class Evtm extends Product{
 	private HashMap<Date,EvtmEvent> eventsMap;
+	public static String EVENTFILE_TAG="eventfile";
+	public static String EVENTS_TAG="events";
+	public static String HEADER_TAG="header";
+	public static String SPACECRAFT_TAG="spacecraft";
+	public static String ICDVERION_TAG="icd_version";
+	public static String GENTIME_TAG="gen_time";
+	public static String VALIDITY_START_TAG="validity_start";
+	public static String VALIDITY_END_TAG="validity_end";
 	//private Date generationTime;
 	//private Date validityStart;
 	//private Date validityEnd;
@@ -23,7 +31,7 @@ public class Evtm extends Product{
 		this.setStartDate(new FineTime(evtmValidityStart));
 		//validityStart=evtmValidityStart;
 		this.setEndDate(new FineTime(evtmValidityEnd));
-		getMeta().set("spacecraft", new StringParameter(evtmSpacecraft));
+		getMeta().set(SPACECRAFT_TAG, new StringParameter(evtmSpacecraft));
 		getMeta().set("icdVersion", new StringParameter(evtmIcdVersion));
 
 		//validityEnd=evtmValidityEnd;
@@ -77,7 +85,7 @@ public class Evtm extends Product{
 	}
 	
 	public void setSpacecraft(String evtmSpacecraft){
-		getMeta().set("spacecraft", new StringParameter(evtmSpacecraft));
+		getMeta().set(SPACECRAFT_TAG, new StringParameter(evtmSpacecraft));
 
 		//spacecraft=evtmSpacecraft;
 	}
@@ -94,7 +102,7 @@ public class Evtm extends Product{
 	}
 	
 	public String getSpacecraft(){
-		return (String) getMeta().get("spacecraft").getValue();
+		return (String) getMeta().get(SPACECRAFT_TAG).getValue();
 		//return spacecraft;
 	}
 	
@@ -138,9 +146,9 @@ public class Evtm extends Product{
 		java.util.HashMap<String,Integer> counters=new java.util.HashMap<String,Integer>();
 		String result="";
 		result=result+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-		result=result+"<eventfile xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://esa.esoc.events rosetta_event_definitions.xsd\" xmlns=\"http://esa.esoc.events\" xmlns:ems=\"http://esa.esoc.ems\">\n";
-		result=result+"\t<header format_version=\"1\" spacecraft=\""+this.getSpacecraft()+"\" icd_version=\""+this.getIcdVersion()+"\" gen_time=\""+EvtmEvent.dateToZulu(this.getGenerationTime())+"\" validity_start=\""+EvtmEvent.dateToZulu(this.getValidityStart())+"\" validity_end=\""+EvtmEvent.dateToZulu(this.getValidityEnd())+"\"/>\n";
-		result=result+"\t<events>\n";
+		result=result+"<"+EVENTFILE_TAG+" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://esa.esoc.events rosetta_event_definitions.xsd\" xmlns=\"http://esa.esoc.events\" xmlns:ems=\"http://esa.esoc.ems\">\n";
+		result=result+"\t<"+HEADER_TAG+" format_version=\"1\" "+SPACECRAFT_TAG+"=\""+this.getSpacecraft()+"\" "+ICDVERION_TAG+"=\""+this.getIcdVersion()+"\" "+GENTIME_TAG+"=\""+EvtmEvent.dateToZulu(this.getGenerationTime())+"\" "+VALIDITY_START_TAG+"=\""+EvtmEvent.dateToZulu(this.getValidityStart())+"\" "+VALIDITY_END_TAG+"=\""+EvtmEvent.dateToZulu(this.getValidityEnd())+"\"/>\n";
+		result=result+"\t<"+EVENTS_TAG+">\n";
 		EvtmEvent[] allEvents=this.getAllEvents();
 		for (int i=0;i<allEvents.length;i++){
 			String key=allEvents[i].getId();
@@ -150,8 +158,8 @@ public class Evtm extends Product{
 			result=result+"\t\t"+allEvents[i].toString(temp);
 			counters.put(key, temp+1);
 		}
-		result=result+"\t</events>\n";
-		result=result+"</eventfile>";
+		result=result+"\t</"+EVENTS_TAG+">\n";
+		result=result+"</"+EVENTFILE_TAG+">";
 		return result;
 		
 	}

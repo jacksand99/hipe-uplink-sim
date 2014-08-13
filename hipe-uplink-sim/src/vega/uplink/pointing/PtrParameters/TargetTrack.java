@@ -3,6 +3,7 @@ package vega.uplink.pointing.PtrParameters;
 import vega.uplink.pointing.PointingMetadata;
 
 public class TargetTrack extends StateVector {
+	public static String TARGET_TAG="target";
 	public TargetTrack(PointingMetadata org){
 		super(org);
 	}
@@ -11,7 +12,7 @@ public class TargetTrack extends StateVector {
 	 * @param ref solar system object or landmarks defined in the PDFM
 	 */
 	public TargetTrack(String ref){
-		super("target",ref);
+		super(TARGET_TAG,ref);
 	}
 	/**
 	 * Creates a new target refereed to CG
@@ -30,7 +31,7 @@ public class TargetTrack extends StateVector {
 	 * @param z The Z component of the position of the landmark. It must be expressed in km.
 	 */
 	public TargetTrack(String landmark,String origin,String frame,float x,float y,float z){
-		super("target",landmark,origin,frame,x,y,z);
+		super(TARGET_TAG,landmark,origin,frame,x,y,z);
 	}
 	/**
 	 * Definition of a target that represents a landmark
@@ -44,7 +45,7 @@ public class TargetTrack extends StateVector {
 	 * @param z The Z component of the position of the landmark. 
 	 */
 	public TargetTrack(String origin,String frame,String xUnit,float x,String yUnit,float y,String zUnit,float z){
-		super("target",origin,frame,xUnit,x,yUnit,y,zUnit,z);
+		super(TARGET_TAG,origin,frame,xUnit,x,yUnit,y,zUnit,z);
 	}
 	/**
 	 * Definition of a target that represents a landmark
@@ -55,7 +56,7 @@ public class TargetTrack extends StateVector {
 	 * @param z The Z component of the position of the landmark. It must be expressed in km.
 	 */
 	public TargetTrack(String origin,String frame,float x,float y,float z){
-		super("target",origin,frame,x,y,z);
+		super(TARGET_TAG,origin,frame,x,y,z);
 	}
 	/**
 	 * Definition of a target that represents a landmark
@@ -67,7 +68,7 @@ public class TargetTrack extends StateVector {
 	 * @param z The Z component of the position of the landmark. It must be expressed in km.
 	 */
 	public TargetTrack(String landmark,String origin,String frame,String x,String y,String z){
-		super("target",landmark,origin,frame,x,y,z);
+		super(TARGET_TAG,landmark,origin,frame,x,y,z);
 	}
 	/**
 	 * Definition of a target that represents a landmark
@@ -78,7 +79,7 @@ public class TargetTrack extends StateVector {
 	 * @param z The Z component of the position of the landmark. It must be expressed in km.
 	 */
 	public TargetTrack(String origin,String frame,String x,String y,String z){
-		super("target",origin,frame,x,y,z);
+		super(TARGET_TAG,origin,frame,x,y,z);
 	}
 
 }

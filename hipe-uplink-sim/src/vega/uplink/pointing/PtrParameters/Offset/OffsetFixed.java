@@ -3,6 +3,10 @@ package vega.uplink.pointing.PtrParameters.Offset;
 import vega.uplink.pointing.PointingMetadata;
 
 public class OffsetFixed extends OffsetAngles{
+	public static String XANGLE_FIELD="xAngle";
+	public static String YANGLE_FIELD="yAngle";
+	public static String XANGLE_DEFAULT_UNIT="deg";
+	public static String YANGLE_DEFAULT_UNIT="deg";
 	
 	public OffsetFixed(PointingMetadata org){
 		super(org);
@@ -14,11 +18,11 @@ public class OffsetFixed extends OffsetAngles{
 	 * @param yAngle Rotation angle of the boresight towards the offset-y-axis (rotation around minus offset-xaxis) expressed in deg.
 	 */	
 	public OffsetFixed(String xAngle,String yAngle){
-		super("fixed");
+		super(OffsetAngles.OFFSETANGLES_TYPE_FIXED);
 		setXAngle(Float.parseFloat(xAngle));
-		setXAngleUnit("deg");
+		setXAngleUnit(XANGLE_DEFAULT_UNIT);
 		setYAngle(Float.parseFloat(yAngle));
-		setYAngleUnit("deg");
+		setYAngleUnit(YANGLE_DEFAULT_UNIT);
 
 	}
 	/**
@@ -29,7 +33,7 @@ public class OffsetFixed extends OffsetAngles{
 	 * @param yAngle Rotation angle of the boresight towards the offset-y-axis (rotation around minus offset-xaxis)
 	 */
 	public OffsetFixed(String xAngleUnit,float xAngle,String yAngleUnit,float yAngle){
-		super("fixed");
+		super(OffsetAngles.OFFSETANGLES_TYPE_FIXED);
 		setXAngle(xAngle);
 		setXAngleUnit(xAngleUnit);
 		setYAngle(yAngle);
@@ -42,11 +46,11 @@ public class OffsetFixed extends OffsetAngles{
 	 * @param yAngle Rotation angle of the boresight towards the offset-y-axis (rotation around minus offset-xaxis) expressed in deg.
 	 */		
 	public OffsetFixed(float xAngle,float yAngle){
-		super("fixed");
+		super(OffsetAngles.OFFSETANGLES_TYPE_FIXED);
 		setXAngle(xAngle);
-		setXAngleUnit("deg");
+		setXAngleUnit(XANGLE_DEFAULT_UNIT);
 		setYAngle(yAngle);
-		setYAngleUnit("deg");
+		setYAngleUnit(YANGLE_DEFAULT_UNIT);
 	}
 	
 	/**
@@ -54,13 +58,13 @@ public class OffsetFixed extends OffsetAngles{
 	 * @param xAngle
 	 */
 	public void setXAngle(float xAngle){
-		setFloatField("xAngle",xAngle);
+		setFloatField(XANGLE_FIELD,xAngle);
 	}
 	/**
 	 * Get the Rotation angle of the boresight towards the offset-x-axis (rotation around plus offset-yaxis)
 	 */	
 	public float getXAngle(){
-		return Float.parseFloat(getChild("xAngle").getValue());
+		return Float.parseFloat(getChild(XANGLE_FIELD).getValue());
 	}
 	
 	/**
@@ -68,7 +72,7 @@ public class OffsetFixed extends OffsetAngles{
 	 * @param unit
 	 */
 	public void setXAngleUnit(String unit){
-		setUnit("xAngle",unit);
+		setUnit(XANGLE_FIELD,unit);
 	}
 	
 	/**
@@ -76,21 +80,21 @@ public class OffsetFixed extends OffsetAngles{
 	 * @param yAngle
 	 */
 	public void setYAngle(float yAngle){
-		setFloatField("yAngle",yAngle);
+		setFloatField(YANGLE_FIELD,yAngle);
 	}
 	/**
 	 * Set the unit used to express the rotation angle of the boresight towards the offset-y-axis (rotation around minus offset-xaxis)
 	 * @param unit
 	 */	
 	public void setYAngleUnit(String unit){
-		setUnit("yAngle",unit);
+		setUnit(YANGLE_FIELD,unit);
 	}
 
 	/**
 	 * Get the rotation angle of the boresight towards the offset-y-axis (rotation around minus offset-xaxis)
 	 */
 	public float getYAngle(){
-		return Float.parseFloat(getChild("yAngle").getValue());
+		return Float.parseFloat(getChild(YANGLE_FIELD).getValue());
 	}
 
 

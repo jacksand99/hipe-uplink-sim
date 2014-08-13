@@ -32,7 +32,7 @@ public class OffsetRaster extends OffsetAngles {
 	}
 	
 	private OffsetRaster(){
-		super("raster");
+		super(OffsetAngles.OFFSETANGLES_TYPE_RASTER);
 	}
 	/**
 	 * A raster is defined if the element offsetAngles contains the attribute ref=raster.
@@ -58,7 +58,7 @@ public class OffsetRaster extends OffsetAngles {
 	 * @param keepLineDir Flag indicating whether the direction of the first raster-row is kept (=true) or alternated (=false)
 	 */
 	public OffsetRaster(Date startTime,int xPoints,int yPoints,String xStartUnit,float xStart,String yStartUnit,float yStart,String xDeltaUnit,float xDelta,String yDeltaUnit,float yDelta,String pointSlewTimeUnit,float pointSlewTime,String lineSlewTimeUnit,float lineSlewTime,String dwellTimeUnit,float dwellTime,String lineAxis,boolean keepLineDir) {
-		super("raster");
+		super(OffsetAngles.OFFSETANGLES_TYPE_RASTER);
 		setStartDate(startTime);
 		setIntegerField(XPOINTS_FIELD,xPoints);
 		setIntegerField(YPOINTS_FIELD,yPoints);
@@ -98,7 +98,7 @@ public class OffsetRaster extends OffsetAngles {
 	 * @param keepLineDir Flag indicating whether the direction of the first raster-row is kept (=true) or alternated (=false)
 	 */
 	public OffsetRaster(Date startTime,int xPoints,int yPoints,float xStart,float yStart,float xDelta,float yDelta,float pointSlewTime,float lineSlewTime,float dwellTime,String lineAxis,boolean keepLineDir) {
-		super("raster");
+		super(OffsetAngles.OFFSETANGLES_TYPE_RASTER);
 		setStartDate(startTime);
 		setIntegerField(XPOINTS_FIELD,xPoints);
 		setIntegerField(YPOINTS_FIELD,yPoints);
@@ -138,7 +138,7 @@ public class OffsetRaster extends OffsetAngles {
 	 * @param keepLineDir Flag indicating whether the direction of the first raster-row is kept (=true) or alternated (=false)
 	 */
 	public OffsetRaster(String startTime,String xPoints,String yPoints,String xStart,String yStart,String xDelta,String yDelta,String pointSlewTime,String lineSlewTime,String dwellTime,String lineAxis,String keepLineDir) throws ParseException{
-		super("raster");
+		super(OffsetAngles.OFFSETANGLES_TYPE_RASTER);
 		
 		setStartDate(PointingBlock.zuluToDate(startTime));
 		setIntegerField(XPOINTS_FIELD,Integer.parseInt(xPoints));
