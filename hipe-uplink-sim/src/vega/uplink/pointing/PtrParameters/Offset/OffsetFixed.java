@@ -1,12 +1,13 @@
 package vega.uplink.pointing.PtrParameters.Offset;
 
 import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.Units;
 
 public class OffsetFixed extends OffsetAngles{
 	public static String XANGLE_FIELD="xAngle";
 	public static String YANGLE_FIELD="yAngle";
-	public static String XANGLE_DEFAULT_UNIT="deg";
-	public static String YANGLE_DEFAULT_UNIT="deg";
+	public static String XANGLE_DEFAULT_UNIT=Units.DEGREE;
+	public static String YANGLE_DEFAULT_UNIT=Units.DEGREE;
 	
 	public OffsetFixed(PointingMetadata org){
 		super(org);
@@ -66,6 +67,12 @@ public class OffsetFixed extends OffsetAngles{
 	public float getXAngle(){
 		return Float.parseFloat(getChild(XANGLE_FIELD).getValue());
 	}
+	public float getXAngle(String unit){
+		return Units.convertUnit(getXAngle(),getXAngleUnit(),unit);
+	}
+	public String getXAngleUnit(){
+		return getUnit(XANGLE_FIELD);
+	}
 	
 	/**
 	 * Set the unit used to express the rotation angle of the boresight towards the offset-x-axis (rotation around plus offset-yaxis)
@@ -95,6 +102,12 @@ public class OffsetFixed extends OffsetAngles{
 	 */
 	public float getYAngle(){
 		return Float.parseFloat(getChild(YANGLE_FIELD).getValue());
+	}
+	public String getYAngleUnit(){
+		return getUnit(YANGLE_FIELD);
+	}
+	public float getYAngle(String unit){
+		return Units.convertUnit(getYAngle(),getYAngleUnit(),unit);
 	}
 
 

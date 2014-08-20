@@ -1,27 +1,30 @@
 package vega.uplink.pointing.PtrParameters;
 
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import vega.uplink.pointing.PdfmSurface;
 import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.Units;
 
-public class Surface extends PdfmSurface {
+public class Surface extends PointingMetadata {
+	public static String SURFACE_TAG="surface";
 	public Surface(PointingMetadata org){
+		
 		super(org);
-	}
-
-	/**
-	 * Creates a surface referenced to another surface
-	 * @param ref Name of the other surface
-	 */
-	public Surface(String ref){
-		super();
-		super.addAttribute(new PointingMetadata("ref",ref));
 	}
 	/**
 	 * Creates a surface referenced to the CG surface
 	 */
 	public Surface(){
-		this("CG");
+		super(SURFACE_TAG,"");
+		this.setRef("CG");
 	}
+	/*public Surface(String surfaceName){
+		super(SURFACE_TAG,"");
+		setSurfaceName(surfaceName);
+	}*/
 	/**
 	 * Creates a ellipsoid surface.
 	 * This representation allows to define a reference ellipsoid, defined by the semi axes a, b and c and
@@ -49,7 +52,17 @@ public class Surface extends PdfmSurface {
 	 * @param axisCZ Z Component of the axe C
 	 */
 	public Surface(String frame,String origin,String unitsA,float a,String unitsB,float b,String unitsC,float c,String axisAFrame,float axisAX,float axisAY,float axisAZ,String axisBFrame,float axisBX,float axisBY,float axisBZ,String axisCFrame,float axisCX,float axisCY,float axisCZ){
-		super(null,frame,origin,unitsA,a,unitsB,b,unitsC,c,axisAFrame,axisAX,axisAY,axisAZ,axisBFrame,axisBX,axisBY,axisBZ,axisCFrame,axisCX,axisCY,axisCZ);
+		super(SURFACE_TAG,"");
+		//setSurfaceName(name);
+		this.setFrame(frame);
+		this.setOrigin(origin);
+		this.setA(unitsA, a);
+		this.setB(unitsB, b);
+		this.setC(unitsC, c);
+		this.setAAxis(axisAFrame, axisAX, axisAY, axisAZ);
+		this.setBAxis(axisBFrame, axisBX, axisBY, axisBZ);
+		this.setCAxis(axisCFrame, axisCX, axisCY, axisCZ);
+		
 	}
 	/**
 	 * Creates a ellipsoid surface.
@@ -75,6 +88,189 @@ public class Surface extends PdfmSurface {
 	public Surface(String frame,String origin,String units,float a,float b,float c,float axisAX,float axisAY,float axisAZ,float axisBX,float axisBY,float axisBZ,float axisCX,float axisCY,float axisCZ){
 		this(frame,origin,units,a,units,b,units,c,frame,axisAX,axisAY,axisAZ,frame,axisBX,axisBY,axisBZ,frame,axisCX,axisCY,axisCZ);
 	}
+	
+	
+	/**
+	 * Set the frame that this surface is relative to.
+	 * @param frame
+	 */
+	public void setFrame(String frame){
+		addAttribute(new PointingMetadata("frame",frame));
+	}
+	
+	/**
+	 * Set the origin component of this surface
+	 * @param origin
+	 */
+	public void setOrigin(String origin){
+		PointingMetadata originChild = new PointingMetadata("origin","");
+		originChild.addAttribute(new PointingMetadata("ref",origin));
+		this.addChild(originChild);
+	}
+	/**
+	 * Get the origin component of this surface
+	 * @param origin
+	 */
+	public String getOrigin(){
+		return this.getChild("origin").getAttribute("ref").getValue();
+	}
+	/**
+	 * Set the A semi axe component of this surface with units
+	 * @param origin
+	 */
+	public void setA(String units,float value){
+		//this.addChild(new PointingMetadata("lat",""+latitude));
+		this.setFloatField("a", value);
+		this.setUnit("a", units);
+	}
+	public float getA(){
+		return getFloatField("a");
+	}
+	public float getA(String unit){
+		return Units.convertUnit(getA(), getUnitA(), unit);
+	}
+	public String getUnitA(){
+		return getUnit("a");
+	}
+	/**
+	 * Set the B semi axe component of this surface with units
+	 * @param origin
+	 */
+	public void setB(String units,float value){
+		//this.addChild(new PointingMetadata("lat",""+latitude));
+		this.setFloatField("b", value);
+		this.setUnit("b", units);
+	}
+	public float getB(){
+		return getFloatField("b");
+	}
+	public float getB(String unit){
+		return Units.convertUnit(getB(), getUnitB(), unit);
+	}
+	public String getUnitB(){
+		return getUnit("b");
+	}
+	/**
+	 * Set the C semi axe component of this surface with units
+	 * @param origin
+	 */
+	public void setC(String units,float value){
+		//this.addChild(new PointingMetadata("lat",""+latitude));
+		this.setFloatField("c", value);
+		this.setUnit("c", units);
+	}
+	public float getC(){
+		return getFloatField("c");
+	}
+	public float getC(String unit){
+		return Units.convertUnit(getC(), getUnitC(), unit);
+	}
+	public String getUnitC(){
+		return getUnit("c");
+	}
+	/**
+	 * Set the a axis of this surface, with the frame it refers to
+	 * @param name
+	 * @param frame
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void setAxis(String name,String frame,float x,float y, float z){
+		this.addChild(new DirectionVector(name,frame,x,y,z));
+	}
+	/**
+	 * Set the A axis of this surface, with the frame it refers to
+	 * @param frame
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void setAAxis(String frame,float x,float y, float z){
+		setAxis("axisA",frame,x,y,z);
+	}
+	/**
+	 * Set the B axis of this surface, with the frame it refers to
+	 * @param frame
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void setBAxis(String frame,float x,float y, float z){
+		setAxis("axisB",frame,x,y,z);
+	}
+	/**
+	 * Set the C axis of this surface, with the frame it refers to
+	 * @param frame
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void setCAxis(String frame,float x,float y, float z){
+		setAxis("axisC",frame,x,y,z);
+	}
+
+	public void setFloatField(String field,float value){
+		String sDT=""+value;
+		PointingMetadata deltaTimesCh;
+		deltaTimesCh=getChild(field);
+		if (deltaTimesCh==null){
+			deltaTimesCh = new PointingMetadata(field,sDT);
+		}else{
+			deltaTimesCh.setValue(sDT);
+		}
+		//PointingMetadata deltaTimesCh = new PointingMetadata("xRates",sDT);
+		addChild(deltaTimesCh);
+		
+	}
+	
+	public float getFloatField(String field){
+		return Float.parseFloat(getChild(field).getValue());
+	}
+	public String getUnit(String field){
+		PointingMetadata deltaTimesCh = getChild(field);
+		if (deltaTimesCh==null) return null;
+		if (deltaTimesCh.getAttribute("units")==null) return null;
+		return deltaTimesCh.getAttribute("units").getValue();
+		
+	}
+	
+	public void setUnit(String field,String unit){
+		PointingMetadata deltaTimesCh = getChild(field);
+		//System.out.println(deltaTimesCh);
+		if (deltaTimesCh==null) deltaTimesCh=new PointingMetadata(field,"");
+		deltaTimesCh.addAttribute(new PointingMetadata("units",unit));
+		addChild(deltaTimesCh);
+		
+	}
+	/*public String getUnit(String field){
+		return getChild(field).getAttribute("units").getValue();
+	}*/
+
+	/**
+	 * Return the frame to which the Surface is relative
+	 * @return Frame to which the vector is relative
+	 */
+	public String getFrame(){
+		return getAttribute("frame").getValue();
+	}
+
+	
+
+	/**
+	 * Creates a surface referenced to another surface
+	 * @param ref Name of the other surface
+	 */
+	public Surface(String ref){
+		this();
+		addAttribute(new PointingMetadata("ref",ref));
+	}
+	/**
+	 * Creates a surface referenced to the CG surface
+	 */
+	/*public Surface(){
+		this("CG");
+	}*/
 
 	
 	/**

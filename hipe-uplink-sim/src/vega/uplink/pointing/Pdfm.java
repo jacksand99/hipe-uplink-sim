@@ -16,12 +16,18 @@ public class Pdfm extends Product {
 	public Pdfm(){
 		super();
 	}
-	
-	public void addChild(PointingMetadata child){
-		set(child.getName(),child);
+	public void addDefinition(PdfmDirVector dirVector){
+		set(dirVector.getDirVectorName(),dirVector);
 	}
+	public void addDefinition(PdfmSurface surface){
+		set(surface.getSurfaceName(),surface);
+	}
+
+	/*public void addChild(PointingMetadata child){
+		set(child.getName(),child);
+	}*/
 	
-	public PointingMetadata getChild(String name){
+	public PointingMetadata getDefinition(String name){
 		Dataset result = get(name);
 		if (InterpreterUtil.isInstance(PointingMetadata.class, result)) return (PointingMetadata) result;
 		else return null;
@@ -34,7 +40,7 @@ public class Pdfm extends Product {
 		Iterator<String> it = sets.keySet().iterator();
 		while (it.hasNext()){
 			String key = it.next();
-			PointingMetadata bore=getChild(key);
+			PointingMetadata bore=getDefinition(key);
 			if (bore!=null) rVector.add(bore);
 		}
 		PointingMetadata[] result=new PointingMetadata[rVector.size()];
@@ -52,7 +58,7 @@ public class Pdfm extends Product {
 		Iterator<String> it = sets.keySet().iterator();
 		while (it.hasNext()){
 			String key = it.next();
-			PointingMetadata bore=getChild(key);
+			PointingMetadata bore=getDefinition(key);
 			if (bore!=null){
 				result=result+bore.toXml(1);
 				//rVector.add(bore);

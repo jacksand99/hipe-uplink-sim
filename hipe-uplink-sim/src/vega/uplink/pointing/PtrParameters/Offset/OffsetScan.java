@@ -1,10 +1,13 @@
 package vega.uplink.pointing.PtrParameters.Offset;
 
+import herschel.ia.gui.plot.renderer.tick.ArcDmsInterval.Unit;
+
 import java.text.ParseException;
 import java.util.Date;
 
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.Units;
 
 /**
  * @author jarenas
@@ -15,23 +18,23 @@ public class OffsetScan extends OffsetAngles {
 	public static String NUMBEROFLINES_FIELD="numberOfLines";
 	public static String NUMBEROFSCANSPERLINE_FIELD="numberOfScansPerLine";
 	public static String XSTART_FIELD="xStart";
-	public static String XSTART_DEFAULT_UNIT="deg";
+	public static String XSTART_DEFAULT_UNIT=Units.DEGREE;
 	public static String YSTART_FIELD="yStart";
-	public static String YSTART_DEFAULT_UNIT="deg";
+	public static String YSTART_DEFAULT_UNIT=Units.DEGREE;
 	public static String SCANDELTA_FIELD="scanDelta";
-	public static String SCANDELTA_DEFAULT_UNIT="deg";
+	public static String SCANDELTA_DEFAULT_UNIT=Units.DEGREE;
 	public static String LINEDELTA_FIELD="lineDelta";
-	public static String LINEDELTA_DEFAULT_UNIT="deg";
+	public static String LINEDELTA_DEFAULT_UNIT=Units.DEGREE;
 	public static String SCANTIME_FIELD="scanTime";
-	public static String SCANTIME_DEFAULT_UNIT="min";
+	public static String SCANTIME_DEFAULT_UNIT=Units.MINUTES;
 	public static String SCANSPEED_FIELD="scanSpeed";
-	public static String SCANSPEED_DEFAULT_UNIT="deg/min";
+	public static String SCANSPEED_DEFAULT_UNIT=Units.DEGREES_PER_MINUTE;
 	public static String SCANSLEWTIME_FIELD="scanSlewTime";
-	public static String SCANSLEWTIME_DEFAULT_UNIT="min";
+	public static String SCANSLEWTIME_DEFAULT_UNIT=Units.MINUTES;
 	public static String LINESLEWTIME_FIELD="lineSlewTime";
-	public static String LINESLEWTIME_DEFAULT_UNIT="min";
+	public static String LINESLEWTIME_DEFAULT_UNIT=Units.MINUTES;
 	public static String BORDERSLEWTIME_FIELD="borderSlewTime";
-	public static String BORDERSLEWTIME_DEFAULT_UNIT="min";
+	public static String BORDERSLEWTIME_DEFAULT_UNIT=Units.MINUTES;
 	public static String LINEAXIS_FIELD="lineAxis";
 	public static String KEEPLINEDIR_FIELD="keepLineDir";
 	public static String KEEPSCANDIR_FIELD="keepScanDir";
@@ -150,7 +153,7 @@ public class OffsetScan extends OffsetAngles {
 		setUnit(SCANSLEWTIME_FIELD,SCANSLEWTIME_DEFAULT_UNIT);
 		setFloatField(LINESLEWTIME_FIELD,lineSlewTime);
 		setUnit(LINESLEWTIME_FIELD,LINESLEWTIME_DEFAULT_UNIT);
-		setFloatField(BORDERSLEWTIME_FIELD,lineSlewTime);
+		setFloatField(BORDERSLEWTIME_FIELD,borderSlewTime);
 		setUnit(BORDERSLEWTIME_FIELD,BORDERSLEWTIME_DEFAULT_UNIT);
 		setStringField(LINEAXIS_FIELD,lineAxis);
 		setBooleanField(KEEPLINEDIR_FIELD,keepLineDir);
@@ -203,7 +206,7 @@ public class OffsetScan extends OffsetAngles {
 		setUnit(SCANSLEWTIME_FIELD,SCANSLEWTIME_DEFAULT_UNIT);
 		setFloatField(LINESLEWTIME_FIELD,Float.parseFloat(lineSlewTime));
 		setUnit(LINESLEWTIME_FIELD,LINESLEWTIME_DEFAULT_UNIT);
-		setFloatField(BORDERSLEWTIME_FIELD,Float.parseFloat(lineSlewTime));
+		setFloatField(BORDERSLEWTIME_FIELD,Float.parseFloat(borderSlewTime));
 		setUnit(BORDERSLEWTIME_FIELD,BORDERSLEWTIME_DEFAULT_UNIT);
 		setStringField(LINEAXIS_FIELD,lineAxis);
 		setBooleanField(KEEPLINEDIR_FIELD,Boolean.parseBoolean(keepLineDir));
@@ -223,17 +226,41 @@ public class OffsetScan extends OffsetAngles {
 	public float getScanDelta(){
 		return Float.parseFloat(getChild(SCANDELTA_FIELD).getValue());
 	}
+	public String getScanDeltaUnit(){
+		return getUnit(SCANDELTA_FIELD);
+	}
+	public float getScanDelta(String unit){
+		return Units.convertUnit(getScanDelta(),getScanDeltaUnit(),unit);
+	}
 
 	public float getBorderSlewTime(){
 		return Float.parseFloat(getChild(BORDERSLEWTIME_FIELD).getValue());
+	}
+	public String getBorderSlewTimeUnit(){
+		return getUnit(BORDERSLEWTIME_FIELD);
+	}
+	public float getBorderSlewTime(String unit){
+		return Units.convertUnit(getBorderSlewTime(),getBorderSlewTimeUnit(),unit);
 	}
 
 	public float getScanSpeed(){
 		return Float.parseFloat(getChild(SCANSPEED_FIELD).getValue());
 	}
+	public String getScanSpeedUnit(){
+		return getUnit(SCANSPEED_FIELD);
+	}
+	public float getScanSpeed(String unit){
+		return Units.convertUnit(getScanSpeed(),getScanSpeedUnit(),unit);
+	}
 
 	public float getScanTime(){
 		return Float.parseFloat(getChild(SCANTIME_FIELD).getValue());
+	}
+	public String getScanTimeUnit(){
+		return getUnit(SCANTIME_FIELD);
+	}
+	public float getScanTime(String unit){
+		return Units.convertUnit(getScanTime(),getScanTimeUnit(),unit);
 	}
 	
 	public float getScanSlewTime(){
@@ -243,6 +270,12 @@ public class OffsetScan extends OffsetAngles {
 			return 1.0f;
 		}
 	}
+	public String getScanSlewTimeUnit(){
+		return getUnit(SCANSLEWTIME_FIELD);
+	}
+	public float getScanSlewTime(String unit){
+		return Units.convertUnit(getScanSlewTime(),getScanSlewTimeUnit(),unit);
+	}
 	public float getLineSlewTime(){
 		if (getChild(LINESLEWTIME_FIELD)!=null){
 			return Float.parseFloat(getChild(LINESLEWTIME_FIELD).getValue());
@@ -250,17 +283,23 @@ public class OffsetScan extends OffsetAngles {
 			return 1.0f;
 		}
 	}
+	public String getLineSlewTimeUnit(){
+		return getUnit(LINESLEWTIME_FIELD);
+	}
+	public float getLineSlewTime(String unit){
+		return Units.convertUnit(getLineSlewTime(),getLineSlewTimeUnit(),unit);
+	}
 
 	public long getDurationMilliSecs(){
 		
 		float scanTime=0.0f;
 		if (getChild(SCANSPEED_FIELD)!=null){
-			scanTime = Math.abs(getScanDelta()/getScanSpeed());
+			scanTime = Math.abs(getScanDelta(SCANDELTA_DEFAULT_UNIT)/getScanSpeed(SCANSPEED_DEFAULT_UNIT));
 		}
 		else{
-			scanTime = getScanTime();
+			scanTime = getScanTime(SCANTIME_DEFAULT_UNIT);
 		}
-		return new Float(2 * getBorderSlewTime() + getNumberOfLines() * (getNumberOfScansPerLine() * scanTime + (getNumberOfScansPerLine() - 1) * getScanSlewTime()) + (getNumberOfLines() - 1) * getLineSlewTime()).longValue()*60*1000;
+		return new Float(2 * getBorderSlewTime(BORDERSLEWTIME_DEFAULT_UNIT) + getNumberOfLines() * (getNumberOfScansPerLine() * scanTime + (getNumberOfScansPerLine() - 1) * getScanSlewTime(SCANSLEWTIME_DEFAULT_UNIT)) + (getNumberOfLines() - 1) * getLineSlewTime(LINESLEWTIME_DEFAULT_UNIT)).longValue()*60*1000;
 		/*float lineTime=(scanTime*getNumberOfScansPerLine())+(getScanSlewTime()*(getNumberOfScansPerLine()-1));
 		float result = ((lineTime*getNumberOfLines())+((getNumberOfLines()-1)*getLineSlewTime()))*60*1000;
 		if (result>=0) return new Float(result).longValue();

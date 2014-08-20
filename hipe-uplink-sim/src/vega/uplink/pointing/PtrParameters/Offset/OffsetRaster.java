@@ -5,25 +5,26 @@ import java.util.Date;
 
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.Units;
 
 public class OffsetRaster extends OffsetAngles {
 	public static String STARTTIME_FIELD="startTime";
 	public static String XPOINTS_FIELD="xPoints";
 	public static String YPOINTS_FIELD="yPoints";
 	public static String XSTART_FIELD="xStart";
-	public static String XSTART_DEFAULT_UNIT="deg";
+	public static String XSTART_DEFAULT_UNIT=Units.DEGREE;
 	public static String YSTART_FIELD="yStart";
-	public static String YSTART_DEFAULT_UNIT="deg";
+	public static String YSTART_DEFAULT_UNIT=Units.DEGREE;
 	public static String XDELTA_FIELD="xDelta";
-	public static String XDELTA_DEFAULT_UNIT="deg";
+	public static String XDELTA_DEFAULT_UNIT=Units.DEGREE;
 	public static String YDELTA_FIELD="yDelta";
-	public static String YDELTA_DEFAULT_UNIT="deg";
+	public static String YDELTA_DEFAULT_UNIT=Units.DEGREE;
 	public static String POINTSLEWTIME_FIELD="pointSlewTime";
-	public static String POINTSLEWTIME_DEFAULT_UNIT="min";
+	public static String POINTSLEWTIME_DEFAULT_UNIT=Units.MINUTES;
 	public static String LINESLEWTIME_FIELD="lineSlewTime";
-	public static String LINESLEWTIME_DEFAULT_UNIT="min";
+	public static String LINESLEWTIME_DEFAULT_UNIT=Units.MINUTES;
 	public static String DWELLTIME_FIELD="dwellTime";
-	public static String DWELLTIME_DEFAULT_UNIT="min";
+	public static String DWELLTIME_DEFAULT_UNIT=Units.MINUTES;
 	public static String LINEAXIS_FIELD="lineAxis";
 	public static String KEEPLINEDIR_FIELD="keepLineDir";
 	
@@ -176,6 +177,12 @@ public class OffsetRaster extends OffsetAngles {
 		}
 
 	}
+	public String getPointSlewTimeUnit(){
+		return getUnit(LINESLEWTIME_FIELD);
+	}
+	public float getPointSlewTime(String unit){
+		return Units.convertUnit(getPointSlewTime(),getPointSlewTimeUnit(),unit);
+	}
 	
 	/**
 	 * Get time spent at one raster point
@@ -189,7 +196,12 @@ public class OffsetRaster extends OffsetAngles {
 		}
 
 	}
-	
+	public String getDwellTimeUnit(){
+		return getUnit(DWELLTIME_FIELD);
+	}
+	public float getDwellTime(String unit){
+		return Units.convertUnit(getDwellTime(),getDwellTimeUnit(),unit);
+	}
 	/**
 	 * Get Name of offset-axis along which the raster-points are connected in a line.
 	 * @return
@@ -210,15 +222,22 @@ public class OffsetRaster extends OffsetAngles {
 		}
 
 	}
+	public String getLineSlewTimeUnit(){
+		return getUnit(POINTSLEWTIME_FIELD);
+	}
+	public float getLineSlewTime(String unit){
+		return Units.convertUnit(getLineSlewTime(),getLineSlewTimeUnit(),unit);
+	}
+	
 	
 	public long getDurationMilliSecs(){
 		if (getLineAxis().equals("x") || getLineAxis().equals("X")){
 			
-			return new Float(getXPoints() * (getYPoints() * getDwellTime() + (getYPoints() - 1) * getPointSlewTime()) + (getXPoints() - 1) * getLineSlewTime()).longValue()*60*1000;
+			return new Float(getXPoints() * (getYPoints() * getDwellTime(DWELLTIME_DEFAULT_UNIT) + (getYPoints() - 1) * getPointSlewTime(POINTSLEWTIME_DEFAULT_UNIT)) + (getXPoints() - 1) * getLineSlewTime(LINESLEWTIME_DEFAULT_UNIT)).longValue()*60*1000;
 		}
 		if (getLineAxis().equals("y") || getLineAxis().equals("Y")){
 			
-			return new Float(getYPoints() * (getXPoints() * getDwellTime() + (getXPoints() - 1) * getPointSlewTime()) + (getYPoints() - 1) * getLineSlewTime()).longValue()*60*1000;
+			return new Float(getYPoints() * (getXPoints() * getDwellTime(DWELLTIME_DEFAULT_UNIT) + (getXPoints() - 1) * getPointSlewTime(POINTSLEWTIME_DEFAULT_UNIT)) + (getYPoints() - 1) * getLineSlewTime(LINESLEWTIME_DEFAULT_UNIT)).longValue()*60*1000;
 		}
 		
 

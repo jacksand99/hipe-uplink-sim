@@ -1,6 +1,7 @@
 package vega.uplink.pointing.PtrParameters;
 
 import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.Units;
 
 /**
  * 
@@ -52,7 +53,7 @@ public class StateVector extends PointingMetadata {
 	
 	/**
 	 * Definition of a state vector that represents a landmark
-	 * @param type The type of state vector. Subclasses will harcode this type
+	 * @param type The type of state vector. Subclasses will hardcode this type
 	 * @param landmark The name of the landmark
 	 * @param origin The origin
 	 * @param frame The frame where the landmark is defined
@@ -202,6 +203,9 @@ public class StateVector extends PointingMetadata {
 	public float getX(){
 		return Float.parseFloat(getPosition().getChild(X_FIELD).getValue());
 	}
+	public float getX(String unit){
+		return Units.convertUnit(getX(), getUnitX(), unit);
+	}
 	/**
 	 * Get the Y component of the position of the landmark
 	 * @return Y component of the position of the landmark
@@ -209,12 +213,18 @@ public class StateVector extends PointingMetadata {
 	public float getY(){
 		return Float.parseFloat(getPosition().getChild(Y_FIELD).getValue());
 	}
+	public float getY(String unit){
+		return Units.convertUnit(getY(), getUnitY(), unit);
+	}
 	/**
 	 * Get the Y component of the position of the landmark
 	 * @return Y component of the position of the landmark
 	 */
 	public float getZ(){
 		return Float.parseFloat(getPosition().getChild(Z_FIELD).getValue());
+	}
+	public float getZ(String unit){
+		return Units.convertUnit(getZ(), getUnitZ(), unit);
 	}
 	/**
 	 * Get the unit where X component of the position of the landmark is expressed

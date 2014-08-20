@@ -179,6 +179,8 @@ public abstract class OffsetAngles extends PointingMetadata {
 
 	}
 	
+	
+	
 	/*public long getDurationMilliSecs(){
 		return 0L;
 	}*/

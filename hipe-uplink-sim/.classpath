@@ -31,5 +31,6 @@
 	<classpathentry kind="lib" path="/Users/jarenas 1/git/hipe-uplink-sim/hipe-uplink-sim/jars/jfreechart-1.0.17.jar"/>
 	<classpathentry kind="lib" path="/Users/jarenas 1/git/hipe-uplink-sim/hipe-uplink-sim/jars/jfxrt.jar"/>
 	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_jconsole/13.19/ia_jconsole_13.19.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/share_unit/13.6/share_unit_13.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

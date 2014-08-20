@@ -1,6 +1,7 @@
 package vega.uplink.pointing.PtrParameters;
 
 import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.Units;
 
 /**
  * @author jarenas
@@ -290,12 +291,30 @@ public class DirectionVector extends PointingMetadata{
 		return Float.parseFloat(getChild("lat").getValue());
 	}
 	/**
+	 * For a direction vector expressed in spherical coordinates, get the latitude in the given unit
+	 * @param unit the desired unit
+	 * @return Latitude
+	 */
+	public float getLatitude(String unit){
+		return Units.convertUnit(Float.parseFloat(getChild("lat").getValue()),getLatitudeUnit(),unit);
+	}
+
+	/**
 	 * For a direction vector expressed in spherical coordinates, get the longitude
 	 * @return Longitude
 	 */
 	public float getLongitude(){
 		return Float.parseFloat(getChild("lon").getValue());
 	}
+	/**
+	 * For a direction vector expressed in spherical coordinates, get the longitude in the given unit
+	 * @parm unit The desired unit
+	 * @return Longitude
+	 */
+	public float getLongitude(String unit){
+		return Units.convertUnit(Float.parseFloat(getChild("lon").getValue()),getLongitudeUnit(),unit);
+	}
+
 	/**
 	 * For a direction vector expressed in spherical coordinates, get the unit where the longitude is expressed.
 	 * @return unit where the longitude is expressed
@@ -501,6 +520,15 @@ public class DirectionVector extends PointingMetadata{
 	public float getRotationAngle(){
 		return Float.parseFloat(this.getChild("rotationAngle").getValue());
 	}
+	/**
+	 * For rotated direction vector, get the rotation angle in the given unit
+	 * @param unit The desired unit
+	 * @return Rotation angle
+	 */
+	public float getRotationAngle(String unit){
+		return Units.convertUnit(Float.parseFloat(this.getChild("rotationAngle").getValue()),getRotationAngleUnit(),unit);
+	}
+
 	
 	/**
 	 * For rotated direction vector, get the units where the rotation angle is expressed.

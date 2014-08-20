@@ -277,14 +277,14 @@ public class PtrUtils {
 				Node nSegment=nlSegments.item(i);
 				String pName=((Element) nSegment).getAttribute("name");
 				PdfmDirVector bore=PdfmDirVector.readFrom(nSegment);
-				result.addChild(bore);
+				result.addDefinition(bore);
 			}
 			NodeList nlSurface=elBody.getElementsByTagName("surface");
 			for (int i=0;i<nlSurface.getLength();i++){
 				Node nSegment=nlSurface.item(i);
 				String pName=((Element) nSegment).getAttribute("name");
 				PdfmSurface bore=PdfmSurface.readFrom(nSegment);
-				result.addChild(bore);
+				result.addDefinition(bore);
 			}
 
 			

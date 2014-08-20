@@ -1,6 +1,7 @@
 package vega.uplink.pointing.PtrParameters;
 
 import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.Units;
 
 /**
  * The boresight is pointed towards the point that lies the
@@ -38,7 +39,7 @@ public class Height extends PointingMetadata {
 		 * @param value
 		 */
 		public Height(){
-			this("km",0);
+			this(Units.KILOMETER,0);
 		}
 
 		
@@ -56,6 +57,9 @@ public class Height extends PointingMetadata {
 		 */
 		public float getHeight(){
 			return Float.parseFloat(getValue());
+		}
+		public float getHeight(String unit){
+			return Units.convertUnit(getHeight(), getUnit(), unit);
 		}
 		
 		/**

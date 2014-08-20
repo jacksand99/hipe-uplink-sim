@@ -4,6 +4,7 @@ import java.util.Date;
 
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.Units;
 
 /**
  * Rule that fixes the degree of freedom around the boresight.
@@ -236,6 +237,15 @@ public class PhaseAngle extends PointingMetadata {
 		PointingMetadata an = (new PointingMetadata("angle",angle+""));
 		an.addAttribute(new PointingMetadata("units",units));
 		this.addChild(an);
+	}
+	public float getAngle(){
+		return Float.parseFloat(getChild("angle").getValue());
+	}
+	public String getAngleUnit(){
+		return getChild("angle").getChild("units").getValue();
+	}
+	public float getAngle(String unit){
+		return Units.convertUnit(getAngle(), getAngleUnit(), unit);
 	}
 	
 	/**

@@ -16,6 +16,7 @@ import java.util.Vector;
 
 
 
+
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -25,6 +26,8 @@ import vega.uplink.pointing.PtrParameters.Boresight;
 import herschel.ia.dataset.*;
 import herschel.ia.numeric.String1d;
 import herschel.share.interpreter.InterpreterUtil;
+import herschel.share.unit.Unit;
+import herschel.share.unit.impl.UnitFactory;
 
 public class PointingMetadata extends CompositeDataset  {
 	private String description;
@@ -117,6 +120,17 @@ public class PointingMetadata extends CompositeDataset  {
 	public void addAttribute(PointingMetadata attribute){
 		this.getMeta().set(attribute.getName(), toStringParameter(attribute));
 		
+	}
+	
+	/**
+	 * Remove an attribute from this pointing metadata.
+	 * @param attribute
+	 */
+	public void removeAttribute(PointingMetadata attribute){
+		this.getMeta().remove(attribute.getName());
+	}
+	public void removeAttribute(String key){
+		this.getMeta().remove(key);
 	}
 	
 	/**
@@ -385,7 +399,87 @@ public class PointingMetadata extends CompositeDataset  {
 		}
 		return result;
 	}
+	
+	/*public long convertUnit(long orgValue,String orgUnit,String targetUnit){
+		Unit<?> unit1 = UnitFactory.getUnit(this.translateUnit(orgUnit));
+		Unit<?> unit2 = UnitFactory.getUnit(this.translateUnit(targetUnit));
+		double value = unit1.getValue(orgValue, unit2);
+		return new Double(value).longValue();
+	}
 
+	public int convertUnit(int orgValue,String orgUnit,String targetUnit){
+		Unit<?> unit1 = UnitFactory.getUnit(this.translateUnit(orgUnit));
+		Unit<?> unit2 = UnitFactory.getUnit(this.translateUnit(targetUnit));
+		double value = unit1.getValue(orgValue, unit2);
+		return new Double(value).intValue();
+	}
+	public double convertUnit(double orgValue,String orgUnit,String targetUnit){
+		Unit<?> unit1 = UnitFactory.getUnit(this.translateUnit(orgUnit));
+		Unit<?> unit2 = UnitFactory.getUnit(this.translateUnit(targetUnit));
+		double value = unit1.getValue(orgValue, unit2);
+		return new Double(value);
+	}
+	public float convertUnit(float orgValue,String orgUnit,String targetUnit){
+		Unit<?> unit1 = UnitFactory.getUnit(this.translateUnit(orgUnit));
+		Unit<?> unit2 = UnitFactory.getUnit(this.translateUnit(targetUnit));
+		double value = unit1.getValue(orgValue, unit2);
+		return new Double(value).floatValue();
+	}
 
+	public float[] convertUnit(float[] orgValue,String orgUnit,String targetUnit){
+		int lenght = orgValue.length;
+		float[] result=new float[lenght];
+		for (int i=0;i<lenght;i++){
+			result[i]=convertUnit(orgValue[i],orgUnit,targetUnit);
+		}
+		return result;
+	}
+	public int[] convertUnit(int[] orgValue,String orgUnit,String targetUnit){
+		int lenght = orgValue.length;
+		int[] result=new int[lenght];
+		for (int i=0;i<lenght;i++){
+			result[i]=convertUnit(orgValue[i],orgUnit,targetUnit);
+		}
+		return result;
+	}
+	public long[] convertUnit(long[] orgValue,String orgUnit,String targetUnit){
+		int lenght = orgValue.length;
+		long[] result=new long[lenght];
+		for (int i=0;i<lenght;i++){
+			result[i]=convertUnit(orgValue[i],orgUnit,targetUnit);
+		}
+		return result;
+	}
+	public double[] convertUnit(double[] orgValue,String orgUnit,String targetUnit){
+		int lenght = orgValue.length;
+		double[] result=new double[lenght];
+		for (int i=0;i<lenght;i++){
+			result[i]=convertUnit(orgValue[i],orgUnit,targetUnit);
+		}
+		return result;
+	}
+	
+	private String translateUnit(String unit){
+		String result=unit;
+		if (unit.equals("sec")) result="s";
+		if (unit.equals("hour")) result="h";
+		if (unit.equals("day")) result="d";
+		if (unit.equals("day")) result="d";
+		if (unit.equals("deg/sec")) result="deg s-1";
+		if (unit.equals("rad/sec")) result="rad s-1";
+		if (unit.equals("arcMin/sec")) result="arcmin s-1";
+		if (unit.equals("arcSec/sec")) result="arcsec s-1";
+		if (unit.equals("deg/min")) result="deg min-1";
+		if (unit.equals("rad/min")) result="rad min-1";
+		if (unit.equals("arcMin/min")) result="arcmin min-1";
+		if (unit.equals("arcSec/min")) result="arcsec min-1";
+		if (unit.equals("deg/hour")) result="deg h-1";
+		if (unit.equals("rad/hour")) result="rad h-1";
+		if (unit.equals("arcMin/hour")) result="arcmin h-1";
+		if (unit.equals("arcSec/hour")) result="arcsec h-1";
+		if (unit.equals("arcMin")) result="arcmin";
+		if (unit.equals("arcSec")) result="arcsec";		
+		return result;
+	}*/
 
 }

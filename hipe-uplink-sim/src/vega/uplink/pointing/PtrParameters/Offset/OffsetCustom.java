@@ -5,6 +5,7 @@ import java.util.Date;
 
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.Units;
 
 public class OffsetCustom extends OffsetAngles {
 	public static String XRATES_FIELD="xRates";
@@ -13,11 +14,11 @@ public class OffsetCustom extends OffsetAngles {
 	public static String YANGLES_FIELD="yAngles";
 	public static String DELTATIMES_FIELD="deltaTimes";
 	public static String STARTTIME_FIELD="startTime";
-	public static String DELTATIMES_DEFAULT_UNIT="min";
-	public static String XANGLES_DEFAULT_UNIT="deg";
-	public static String YANGLES_DEFAULT_UNIT="deg";
-	public static String XRATES_DEFAULT_UNIT="deg/sec";
-	public static String YRATES_DEFAULT_UNIT="deg/sec";
+	public static String DELTATIMES_DEFAULT_UNIT=Units.MINUTES;
+	public static String XANGLES_DEFAULT_UNIT=Units.DEGREE;
+	public static String YANGLES_DEFAULT_UNIT=Units.DEGREE;
+	public static String XRATES_DEFAULT_UNIT=Units.DEGREES_PER_SECOND;
+	public static String YRATES_DEFAULT_UNIT=Units.DEGREES_PER_SECOND;
 
 	public OffsetCustom(PointingMetadata org){
 		super(org);
@@ -149,10 +150,18 @@ public class OffsetCustom extends OffsetAngles {
 	public float[] getXRates(){
 		return stringToFloatArray(getChild(XRATES_FIELD).getValue());
 	}
+	public float[] getXRates(String unit){
+		return Units.convertUnit(getXRates(),getXRatesUnit(),unit);
+	}
+
 
 	public float[] getYRates(){
 		return stringToFloatArray(getChild(YRATES_FIELD).getValue());
 	}
+	public float[] getYRates(String unit){
+		return Units.convertUnit(getYRates(),getYRatesUnit(),unit);
+	}
+
 	
 	public void setXRates(float[] xRates){
 		setFloatArrayField(XRATES_FIELD,xRates);
@@ -196,9 +205,17 @@ public class OffsetCustom extends OffsetAngles {
 	public float[] getXAngles(){
 		return stringToFloatArray(getChild(XANGLES_FIELD).getValue());
 	}
+	
+	public float[] getXAngles(String unit){
+		return Units.convertUnit(getXAngles(),getXAnglesUnit(),unit);
+	}
+
 
 	public float[] getYAngles(){
 		return stringToFloatArray(getChild(YANGLES_FIELD).getValue());
+	}
+	public float[] getYAngles(String unit){
+		return Units.convertUnit(getYAngles(),getYAnglesUnit(),unit);
 	}
 
 	public String getXAnglesUnit(){
@@ -230,6 +247,9 @@ public class OffsetCustom extends OffsetAngles {
 			return def;
 		}
 		else return stringToFloatArray(child.getValue());
+	}
+	public float[] getDeltaTimes(String unit){
+		return Units.convertUnit(getDeltaTimes(),getDeltaTimesUnit(),unit);
 	}
 
 	
@@ -290,7 +310,7 @@ public class OffsetCustom extends OffsetAngles {
 	}
 	
 	public long getDurationMilliSecs(){
-		float[] deltaTimes=getDeltaTimes();
+		float[] deltaTimes=getDeltaTimes(DELTATIMES_DEFAULT_UNIT);
 		float result=0;
 		for (int i=0;i<deltaTimes.length;i++){
 			result=result+deltaTimes[i];
