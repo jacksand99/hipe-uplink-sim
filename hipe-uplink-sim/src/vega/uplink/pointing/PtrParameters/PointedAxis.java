@@ -1,12 +1,13 @@
 package vega.uplink.pointing.PtrParameters;
 import vega.uplink.pointing.PointingMetadata;
 public class PointedAxis extends DirectionVector{
+		/**
+		 * pointedAxis
+		 */
+		public static String POINTED_AXIS_TAG="pointedAxis";
         public PointedAxis(PointingMetadata pm){
-                super("pointedAxis",pm);
+                super(POINTED_AXIS_TAG,pm);
         }
-        /*public PointedAxis(String frame,float x,float y, float z){
-                super("pointedAxis",frame,x,y,z);
-        }*/
     	/**
     	 * Creates a pointedAxis fixed direction vector expressed in spherical coordinates
     	 * For spherical coordinates the element must
@@ -22,7 +23,7 @@ public class PointedAxis extends DirectionVector{
     	 * @param latitude Latitude expressed in deg.
     	 */
     	public PointedAxis(String frame,float longitude,float latitude){
-    		super("pointedAxis",frame,longitude,latitude);
+    		super(POINTED_AXIS_TAG,frame,longitude,latitude);
     	}
     	/**
     	 * Creates a pointedAxis Direction vector referenced to another direction vector
@@ -32,7 +33,7 @@ public class PointedAxis extends DirectionVector{
     	 * @param reference Name of the referenced direction vector
     	 */
     	public PointedAxis(String reference){
-    		super("pointedAxis",reference);
+    		super(POINTED_AXIS_TAG,reference);
     	}
     	/**
     	 * Creates a fixed pointedAxis direction vector expressed in cartesian coordinates
@@ -48,7 +49,7 @@ public class PointedAxis extends DirectionVector{
     	 * @param z The z component of this vector
     	 */
     	public PointedAxis(String frame,float x,float y, float z){
-    		super("pointedAxis",frame,x,y,z);
+    		super(POINTED_AXIS_TAG,frame,x,y,z);
     	}
     	/**
     	 * Creates a fixed pointedAxis direction vector expressed in spherical coordinates
@@ -69,7 +70,7 @@ public class PointedAxis extends DirectionVector{
     	 * @param latitude Latitude
     	 */
     	public PointedAxis(String frame,String unitLongitude,float longitude,String unitLatitude,float latitude){
-    		super("pointedAxis",frame,unitLongitude,longitude,unitLatitude,latitude);
+    		super(POINTED_AXIS_TAG,frame,unitLongitude,longitude,unitLatitude,latitude);
     	}
     	/**
     	 * Creates a pointedAxis direction vector based in Origin and Target
@@ -82,7 +83,7 @@ public class PointedAxis extends DirectionVector{
     	 * @param target Target State vector
     	 */
     	public PointedAxis(String origin,String target){
-    		super("pointedAxis",origin,target);
+    		super(POINTED_AXIS_TAG,origin,target);
     	}
     	/**
     	 * Creates a pointedAxis rotated Direction Vector
@@ -97,7 +98,7 @@ public class PointedAxis extends DirectionVector{
     	 * @param rotationAngle Rotation angle. It must be expressed in deg.
     	 */
     	public PointedAxis(String axis,String rotationAxis,float rotationAngle){
-    		super("pointedAxis",axis,rotationAxis,rotationAngle);
+    		super(POINTED_AXIS_TAG,axis,rotationAxis,rotationAngle);
     	}
     	/**
     	 * Creates a pointedAxis rotated Direction Vector
@@ -113,7 +114,7 @@ public class PointedAxis extends DirectionVector{
     	 * @param rotationAngle Rotation angle
     	 */
     	public PointedAxis(String axis,String rotationAxis,String rotationAngleUnit,float rotationAngle){
-    		super("pointedAxis",axis,rotationAxis,rotationAngleUnit,rotationAngle);
+    		super(POINTED_AXIS_TAG,axis,rotationAxis,rotationAngleUnit,rotationAngle);
     		
     	}
 

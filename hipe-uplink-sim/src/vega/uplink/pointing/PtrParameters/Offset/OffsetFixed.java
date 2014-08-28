@@ -4,9 +4,21 @@ import vega.uplink.pointing.PointingMetadata;
 import vega.uplink.pointing.Units;
 
 public class OffsetFixed extends OffsetAngles{
+	/**
+	 * xAngle
+	 */
 	public static String XANGLE_FIELD="xAngle";
+	/**
+	 * yAngle
+	 */
 	public static String YANGLE_FIELD="yAngle";
+	/**
+	 * deg
+	 */
 	public static String XANGLE_DEFAULT_UNIT=Units.DEGREE;
+	/**
+	 * deg
+	 */
 	public static String YANGLE_DEFAULT_UNIT=Units.DEGREE;
 	
 	public OffsetFixed(PointingMetadata org){

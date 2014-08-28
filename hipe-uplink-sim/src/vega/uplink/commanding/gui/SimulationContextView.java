@@ -1,6 +1,9 @@
 package vega.uplink.commanding.gui;
 
+import vega.uplink.pointing.Ptr;
 import herschel.ia.gui.apps.views.variables.VariablesView;
+import herschel.share.interpreter.InterpreterUtil;
+import herschel.share.interpreter.InterpreterNameSpaceUtil.Condition;
 
 /*
  * This file is part of Herschel Common Science System (HCSS).
@@ -33,7 +36,14 @@ public class SimulationContextView extends VariablesView {
 
 	public SimulationContextView(){
 		super();
+		//super
 		super.registerCondition("Simulation Context", new CommandingCondition());
+	}
+	public static void registerCondition(String title,Condition condition){
+		/*if (InterpreterUtil.isInstance(CommandingCondition.class, condition)){
+			super.registerCondition("Simulation Context", condition);
+		}*/
+		//Do nothing
 	}
 }
 

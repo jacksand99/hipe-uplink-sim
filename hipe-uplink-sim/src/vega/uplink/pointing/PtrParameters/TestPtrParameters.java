@@ -21,6 +21,18 @@ public class TestPtrParameters {
 		// TODO Auto-generated method stub
 		herschel.share.util.Configuration.setProperty("var.hcss.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
 		herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
+		Ptr ptr=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PTRM_DM_007_01____A__00015.ROS");
+		PtrSegment seg = ptr.getSegment("MTP_007");
+		try {
+			PointingBlock block = seg.getBlockAt(PointingBlock.zuluToDate("2014-09-03T18:30:00"));
+			OffsetAngles os = block.getAttitude().getOffsetAngles();
+			System.out.println(os.getDurationMilliSecs());
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*
 		Surface sur = new Surface("CG_Lamy","CG","m",2398.0f,"m",1887f,"m",1532f,"CG",0.9f,-0.3f,0.0f,"CG",0.9f,-0.3f,0.0f,"CG",0.9f,-0.3f,0.0f);
 		System.out.println(sur.toXml(0));
 		//Ptr orPtr=PtrUtils.readPTRfromFile("C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP004A\\PTR\\PTRM_DM_004_01____A__00005.ROS");
@@ -123,7 +135,7 @@ public class TestPtrParameters {
 		//scan.set
 		//vOffSet.add(scan);
 		//createNewFakePTR(vector,vOffSet);
-		insertInPTSL(vector,vOffSet);
+		insertInPTSL(vector,vOffSet);*/
 	}
 	
 	public static void createNewFakePTR(Vector<PointingAttitude> vector,Vector<OffsetAngles> vOffSet){

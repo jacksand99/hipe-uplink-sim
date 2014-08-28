@@ -110,7 +110,7 @@ public class GsPass implements Comparable<GsPass>{
 	}
 
 	public int compareTo(GsPass o) {
-		return this.startPass.compareTo(o.startPass);
+		return this.startDump.compareTo(o.startDump);
 	}
 	
 	/**

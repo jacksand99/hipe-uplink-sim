@@ -9,13 +9,30 @@ import herschel.ia.dataset.StringParameter;
 import herschel.ia.dataset.TableDataset;
 import herschel.ia.numeric.String1d;
 import herschel.share.fltdyn.time.FineTime;
+import herschel.share.io.FileUtil;
+
+
+import herschel.share.io.archive.ArchiveReader;
+import herschel.share.io.archive.FileArchive;
+import herschel.share.io.archive.ZipReader;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.Vector;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,10 +48,96 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import vega.uplink.pointing.Evtm;
+
+
+
+
+
+
+
+
+
+
+
+
+
+//import vega.uplink.pointing.Evtm;
 import vega.uplink.pointing.EvtmEvent;
 
 public class PorUtils {
+	private static final Logger LOG = Logger.getLogger(PorUtils.class.getName());
+	public static void writePORGtofile(String file,SuperPor por){
+		File porg = new File(file);
+		File tdir = null;
+		try {
+            tdir = FileUtil.createTempDir(porg.getName()+"_temp_porg", "zip");
+            Por[] pors = por.getPors();
+            for (int i=0;i<pors.length;i++){
+            	writePORtofile(tdir.getAbsolutePath()+"/"+pors[i].getName(),pors[i]);
+            }
+            zipIt(file,tdir.getAbsolutePath());
+            LOG.info("Deleting temp zip of " + file + " in " + tdir);
+            FileUtil.delete(tdir);
+
+		}catch (Exception e){
+			LOG.throwing("PorUtils", "writePORGtofile", e);
+			e.printStackTrace();
+		}
+		finally {
+        if (tdir != null) {
+            LOG.info("Deleting temp unzip of " + file + " in " + tdir);
+            FileUtil.delete(tdir);
+        }
+    }
+	}
+	public static SuperPor readPORGfromFile(String fileName) throws IOException{
+		File file=new File(fileName);
+        File tdir = null;
+        boolean error = true;
+        SuperPor result=new SuperPor();
+        result.setName(file.getName());
+        result.setPath(file.getParent());
+        try {
+            try {
+                tdir = FileUtil.createTempDir(file.getName()+"_temp_porg", "unzip");
+                //java.util.zip.ZipFile zipfile=new java.util.zip.ZipFile(file);
+                //zipfile.
+                //FileArchive fa = new FileArchive(file);
+                ZipReader ar= new ZipReader(file);
+                //ArchiveReader ar = fa.createReader();
+                ar.extract(tdir);
+                for (String name : tdir.list()) {
+                    if (!name.startsWith("."))  {
+                        error = false;
+                        String porFile = new File(tdir, name).getAbsolutePath();
+                        //por.setName(name);
+                        //String porName = name.toLowerCase();
+                        //porName = porName.replaceAll("[.]ROS$", "");
+                        //porName = porName.replaceAll("[.]xml$", "");
+                        Por por = readPORfromFile(porFile);
+                        por.setName(name);
+                        
+                        result.addPor(por);
+                    }
+                }
+                LOG.info("Deleting temp unzip of " + file + " in " + tdir);
+                FileUtil.delete(tdir);
+                result.setType("PORG");
+                
+                return result;
+                //throw new IOException("No PORG file found in " + file);
+            } catch (ZipException e) {
+                throw new IOException("Could not unzip " + file + " in " + tdir, e);
+            } catch (IOException e) {
+                throw new IOException("Problems with temp unzipping " + file, e);
+            }
+        } finally {
+            if (error && tdir != null) {
+                LOG.info("Deleting temp unzip of " + file + " in " + tdir);
+                FileUtil.delete(tdir);
+            }
+        }
+	}
 	public static Por readPORfromFile(String file){
 
 		Por result = new Por();
@@ -61,6 +164,8 @@ public class PorUtils {
 			result.setGenerationTime(pGenTime);
 			String[] vTimes={pStartTime,pEndTime};
 			result.setValidityTimes(vTimes);
+			result.setName(fXmlFile.getName());
+			result.setPath(fXmlFile.getParent());
 			
 		    } catch (Exception e) {
 		    	e.printStackTrace();
@@ -187,7 +292,9 @@ public class PorUtils {
 
 		return result;
 	}
-	
+	public static void savePor(Por POR){
+		writePORtofile(POR.getPath()+"/"+POR.getName(),POR);
+	}
 	public static void writePORtofile(String file,Por POR){
 		try{
 			/*PrintWriter writer = new PrintWriter(file, "UTF-8");
@@ -204,9 +311,12 @@ public class PorUtils {
 			// StreamResult result = new StreamResult(System.out);
 	 
 			transformer.transform(source, result);
+			LOG.info("Writted POR to file " + file );
 	 
 			//System.out.println("File saved!");
 		}catch (Exception e){
+			LOG.severe(e.getMessage());
+			LOG.throwing("PorUtils", "writePORtofile", e);
 			e.printStackTrace();
 		}
 		
@@ -353,12 +463,13 @@ public class PorUtils {
 		}
 		return result;*/
 	}
-	
-	public static Fecs readFecsFromFile(String file){
+	public static Fecs readFecsFromFile(String file) throws Exception{
 		Fecs result=new Fecs();
 		try {
 			 
 			File fXmlFile = new File(file);
+			result.setName(fXmlFile.getName());
+			result.setPath(fXmlFile.getParent());
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
@@ -377,10 +488,10 @@ public class PorUtils {
 			result.setValidityEnd(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("validity_end").getNodeValue()));
 			Node nodeEvents = doc.getElementsByTagName("events").item(0);
 			NodeList fcsNodeList = nodeEvents.getChildNodes();
-			Vector<Node> botNodes=new Vector<Node>();
-			Vector<Node> stadNodes=new Vector<Node>();
-			Vector<Node> stodNodes=new Vector<Node>();
-			Vector<Node> eotNodes=new Vector<Node>();
+			TreeMap<Date,Node> botNodes=new TreeMap<Date,Node>();
+			TreeMap<Date,Node> stadNodes=new TreeMap<Date,Node>();
+			TreeMap<Date,Node> stodNodes=new TreeMap<Date,Node>();
+			TreeMap<Date,Node> eotNodes=new TreeMap<Date,Node>();
 			int size=fcsNodeList.getLength();
 			for (int i=0;i<size;i++){
 				Node item = fcsNodeList.item(i);
@@ -390,6 +501,79 @@ public class PorUtils {
 				for (int j=0;j<s;j++){
 					System.out.println(attributes.item(j).getNodeName());
 				}*/
+				if (attributes!=null){
+					Date time=GsPass.zuluToDate(item.getAttributes().getNamedItem("time").getTextContent());
+					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOT_")){
+						botNodes.put(time,item);
+						
+					}
+					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("STAD")){
+						stadNodes.put(time,item);
+					}
+					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("STOD")){
+						stodNodes.put(time,item);
+					}
+					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOT_")){
+						eotNodes.put(time,item);
+					}
+				}
+			}
+			Iterator<Date> it = botNodes.keySet().iterator();
+			while (it.hasNext()){
+				Date passStart=it.next();
+				Date passEnd=eotNodes.ceilingKey(passStart);
+				SortedMap<Date, Node> subStadMap = stadNodes.subMap(passStart, passEnd);
+				Iterator<Date> it2 = subStadMap.keySet().iterator();
+				while(it2.hasNext()){
+					Date dumpStart=it2.next();
+					Date dumpEnd=stodNodes.ceilingKey(dumpStart);
+					String station=botNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
+					float tmRate=Float.parseFloat(stadNodes.get(dumpStart).getAttributes().getNamedItem("tm_rate").getTextContent());
+					GsPass pass=new GsPass(passStart,passEnd,dumpStart,dumpEnd,station,tmRate);
+					result.addPass(pass);
+				}
+			}
+			
+		}catch (Exception e){
+			LOG.throwing("PORUtils", "readFecsFromFile", e);
+			e.printStackTrace();
+			throw(e);
+		}
+		
+		return result;
+	}
+
+	
+	/*public static Fecs readFecsFromFile(String file){
+		Fecs result=new Fecs();
+		try {
+			 
+			File fXmlFile = new File(file);
+			result.setName(fXmlFile.getName());
+			result.setPath(fXmlFile.getParent());
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+		 
+			doc.getDocumentElement().normalize();
+		 
+			NodeList nListHeader = doc.getElementsByTagName("header");
+			NamedNodeMap headerAttributes = nListHeader.item(0).getAttributes();
+			result.setSpacecraft(headerAttributes.getNamedItem("spacecraft").getNodeValue());
+			result.setIcdVersion(headerAttributes.getNamedItem("icd_version").getNodeValue());
+			result.setGenerationTime(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("gen_time").getNodeValue()));
+			result.setValidityStart(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("validity_start").getNodeValue()));
+			result.setValidityEnd(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("validity_end").getNodeValue()));
+			Node nodeEvents = doc.getElementsByTagName("events").item(0);
+			NodeList fcsNodeList = nodeEvents.getChildNodes();
+			Vector<Node> botNodes=new Vector<Node>();
+			Vector<Node> stadNodes=new Vector<Node>();
+			Vector<Node> stodNodes=new Vector<Node>();
+			Vector<Node> eotNodes=new Vector<Node>();
+			int size=fcsNodeList.getLength();
+			for (int i=0;i<size;i++){
+				Node item = fcsNodeList.item(i);
+				NamedNodeMap attributes = item.getAttributes();
 				if (attributes!=null){
 					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOT_")) botNodes.add(item);
 					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("STAD")) stadNodes.add(item);
@@ -418,6 +602,58 @@ public class PorUtils {
 		}
 		
 		return result;
-	}
+	}*/
+	
+ 
+    /**
+     * Format the file path for zip
+     * @param file file path
+     * @return Formatted file path
+     */
+    /*private static String generateZipEntry(String sourceFolder,String file){
+    	//System.out.println(sourceFolder);
+    	//System.out.println(file);
+    	if (!sourceFolder.equals(file)) return file.substring(sourceFolder.length()+1, file.length());
+    	else return file;
+    }*/
+    public static void zipIt(String zipFile,String sourceFolder){
+    	 
+        byte[] buffer = new byte[1024];
+    
+        try{
+    
+       	FileOutputStream fos = new FileOutputStream(zipFile);
+       	ZipOutputStream zos = new ZipOutputStream(fos);
+    
+       	LOG.info("Output to Zip : " + zipFile);
+       	//List<String> fileList = generateFileList(new File(sourceFolder));
+       	String[] fileList=new File(sourceFolder).list();
+       	for(String file : fileList){
+    
+       		LOG.info("File Added : " + file);
+       		ZipEntry ze= new ZipEntry(file);
+           	zos.putNextEntry(ze);
+    
+           	FileInputStream in = 
+                          new FileInputStream(sourceFolder + File.separator + file);
+    
+           	int len;
+           	while ((len = in.read(buffer)) > 0) {
+           		zos.write(buffer, 0, len);
+           	}
+    
+           	in.close();
+       	}
+    
+       	zos.closeEntry();
+       	//remember close it
+       	zos.close();
+    
+       	LOG.info("Zip file Done");
+       }catch(IOException ex){
+    	   LOG.throwing("PorUtils", "zipIt", ex);
+          ex.printStackTrace();   
+       }
+      }
 	
 }

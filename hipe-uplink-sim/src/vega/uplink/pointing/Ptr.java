@@ -1,5 +1,6 @@
 package vega.uplink.pointing;
 
+import herschel.ia.dataset.StringParameter;
 import herschel.ia.pal.MapContext;
 import herschel.share.fltdyn.time.FineTime;
 
@@ -13,6 +14,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import vega.uplink.Properties;
 
 
 
@@ -33,11 +36,30 @@ public class Ptr extends MapContext{
 	 */
 	public Ptr(){
 		super();
+		setName(""+new java.util.Date().getTime());
+		setPath(Properties.getProperty("user.home"));
+		this.setType("PTR/PTSL");
+		this.setCreationDate(new FineTime(new java.util.Date()));
+
 		this.setStartDate(new FineTime(new Date()));
 		this.setEndDate(new FineTime(new Date(63072000000l)));
 		
 		//segments=new java.util.HashMap<String, PtrSegment>();
 	}
+	public void setName(String name){
+		getMeta().set("name", new StringParameter(name));
+	}
+	public void setPath(String path){
+		getMeta().set("path", new StringParameter(path));
+	}
+	
+	public String getName(){
+		return (String) getMeta().get("name").getValue();
+	}
+	public String getPath(){
+		return (String) getMeta().get("path").getValue();
+	}
+
 	public herschel.ia.pal.MapContext asContext(){
 		return this;
 	}

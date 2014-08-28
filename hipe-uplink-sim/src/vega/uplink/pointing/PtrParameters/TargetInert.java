@@ -11,7 +11,6 @@ public class TargetInert extends DirectionVector {
 	 * got a name assigned.
 	 */
 	public TargetInert(){
-		//super("target");
 		this("EME2000",0,0,1);
 	}
 	/**

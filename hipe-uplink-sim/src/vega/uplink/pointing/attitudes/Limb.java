@@ -7,8 +7,6 @@ import vega.uplink.pointing.PtrParameters.Height;
 import vega.uplink.pointing.PtrParameters.OffsetRefAxis;
 import vega.uplink.pointing.PtrParameters.PhaseAngle;
 import vega.uplink.pointing.PtrParameters.Surface;
-//import vega.uplink.pointing.PtrParameters.Target;
-//import vega.uplink.pointing.PtrParameters.TargetDir;
 import vega.uplink.pointing.PtrParameters.TargetDir;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetAngles;
 

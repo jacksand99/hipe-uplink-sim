@@ -17,6 +17,7 @@ import java.util.Vector;
 
 
 
+
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -373,19 +374,24 @@ public class PointingMetadata extends CompositeDataset  {
 	 * @return
 	 */
 	public static PointingMetadata readFrom(Node node){
-		String name=node.getNodeName();
+		String name=node.getNodeName().trim();
 		if (name.equals("#text")) return null;
 		if (name.equals("#comment")) return null;
-		String value=node.getTextContent();
+		//String nodeValue = node.getNodeValue();
+		String value=null;
+		//if (!node.hasChildNodes()) value=node.getTextContent();
+		value=getFirstLevelTextContent(node);
+		//if (nodeValue!=null) value=nodeValue.trim();
 		if (value==null) value="";
+		else value=value.trim();
 		PointingMetadata result = new PointingMetadata(name,value);
 
 		if (node.hasAttributes()){
 			NamedNodeMap att = node.getAttributes();
 			int size=att.getLength();
 			for (int i=0;i<size;i++){
-				String attname=att.item(i).getNodeName();
-				String attvalue=att.item(i).getNodeValue();
+				String attname=att.item(i).getNodeName().trim();
+				String attvalue=att.item(i).getNodeValue().trim();
 				if (attname!="" && attvalue!="") result.addAttribute(new PointingMetadata(attname,attvalue));
 			}
 		}
@@ -398,6 +404,17 @@ public class PointingMetadata extends CompositeDataset  {
 			}			
 		}
 		return result;
+	}
+	
+	public static String getFirstLevelTextContent(Node node) {
+	    NodeList list = node.getChildNodes();
+	    StringBuilder textContent = new StringBuilder();
+	    for (int i = 0; i < list.getLength(); ++i) {
+	        Node child = list.item(i);
+	        if (child.getNodeType() == Node.TEXT_NODE)
+	            textContent.append(child.getTextContent());
+	    }
+	    return textContent.toString();
 	}
 	
 	/*public long convertUnit(long orgValue,String orgUnit,String targetUnit){

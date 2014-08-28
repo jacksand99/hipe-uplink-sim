@@ -10,6 +10,7 @@ import java.util.List;
 
 import vega.uplink.Properties;
 import herschel.binstruct.tools.*;
+import herschel.ia.dataset.CompositeDataset;
 import herschel.ia.dataset.TableDataset;
 import herschel.ia.io.ascii.AsciiTableTool;
 import herschel.ia.io.ascii.CsvParser;
@@ -18,11 +19,11 @@ import herschel.share.interpreter.InterpreterUtil;
 import herschel.share.util.Configuration;
 import herschel.share.util.ObjectUtil;
 
-public class Mib {
+public class Mib extends CompositeDataset{
 	static Mib MIB;
 	//public static String ROSETTA_MIB_LOCATION="rosetta.mib.location";
-	TableDataset sdf_table;
-	TableDataset csp_table;
+	//TableDataset sdf_table;
+	//TableDataset csp_table;
 	static String[] sdf_columns={"SDF_SQNAME","SDF_ENTRY","SDF_ELEMID","SDF_POS","SDF_PNAME","SDF_FTYPE","SDF_VTYPE","SDF_VALUE","SDF_VALSET","SDF_REPPOS"};
 	static String[] sdf_types={"String","Integer","String","Integer","String","String","String","String","String","Integer"}; 
 	static String[] csp_columns={"CSP_SQNAME","CSP_FPNAME","CSP_FPNUM","CSP_DESCR","CSP_PTC","CSP_PFC","CSP_DISPFMT","CSP_RADIX","CSP_TYPE","CSP_VTYPE","CSP_DEFVAL","CSP_CATEG","CSP_PRFREF","CSP_CCAREF","CSP_PAFREF","CSP_UNIT"};
@@ -30,8 +31,12 @@ public class Mib {
 
 
 	private Mib(){
-		sdf_table=new TableDataset();
-		csp_table=new TableDataset();
+		this.set("sdf_table", new TableDataset());
+		this.set("csp_table", new TableDataset());
+		
+
+		//sdf_table=new TableDataset();
+		//csp_table=csp_table
 	}
 	public static Mib getMibFromFiles() throws IOException{
 		FileInputStream sdf_data=new FileInputStream(Properties.MIB_LOCATION+"sdf.dat");
@@ -66,9 +71,11 @@ public class Mib {
 			csp_template.setTypes(csp_types);
 			att.setTemplate(sdf_template);
 			att.setParser(parser);
-			result.sdf_table=att.load(sdfIS);
+			result.set("sdf_table", att.load(sdfIS));
+			//result.sdf_table=att.load(sdfIS);
 			att.setTemplate(csp_template);
-			result.csp_table=att.load(cspIS);
+			result.set("csp_table", att.load(cspIS));
+			//result.csp_table=att.load(cspIS);
 		//}catch(Exception e){
 		//	e.printStackTrace();
 		//}
@@ -86,14 +93,16 @@ public class Mib {
 	
 	
 	public boolean checkSequence(String sequence){
-		TableDataset paramsForCommand=findInTable(csp_table,"CSP_SQNAME",sequence);
+		TableDataset paramsForCommand=findInTable((TableDataset)this.get("csp_table"),"CSP_SQNAME",sequence);
+		//TableDataset paramsForCommand=findInTable(csp_table,"CSP_SQNAME",sequence);
 		if (paramsForCommand.getRowCount()>0) return true;
 		else return false;
 	}
 	
 	public boolean checkParameterSequence(String sequence,String parameter){
+		TableDataset paramsForCommand=findInTable((TableDataset)this.get("csp_table"),"CSP_SQNAME",sequence);
 		
-		TableDataset paramsForCommand=findInTable(csp_table,"CSP_SQNAME",sequence);
+		//TableDataset paramsForCommand=findInTable(csp_table,"CSP_SQNAME",sequence);
 		TableDataset resultTable=findInTable(paramsForCommand,"CSP_FPNAME",parameter);
 		if (resultTable.getRowCount()>0) return true;
 		else return false;
@@ -108,7 +117,8 @@ public class Mib {
 	
 	public Parameter getDefaultParameter(String parameterName){
 		Parameter result=new Parameter(parameterName,"Default","Default");
-		TableDataset resultTable=findInTable(csp_table,"CSP_FPNAME",parameterName);
+		TableDataset resultTable=findInTable((TableDataset)this.get("csp_table"),"CSP_FPNAME",parameterName);
+		//TableDataset resultTable=findInTable(csp_table,"CSP_FPNAME",parameterName);
 		java.util.List<Object> row = resultTable.getRow(0);
 		String value_type=(String) row.get(9);
 		String value=(String) row.get(10);

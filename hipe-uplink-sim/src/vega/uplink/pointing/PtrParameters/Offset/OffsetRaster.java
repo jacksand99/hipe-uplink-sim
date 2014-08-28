@@ -7,25 +7,88 @@ import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingMetadata;
 import vega.uplink.pointing.Units;
 
+/**
+ * A raster is defined if the element offsetAngles contains the attribute ref=raster.
+ * The rotation angles before the raster start-time and after the dwell-time of the last rasterpoint correspond to the angles of the first and last raster point respectively.
+ * @author jarenas
+ *
+ */
 public class OffsetRaster extends OffsetAngles {
+	/**
+	 * startTime
+	 */
 	public static String STARTTIME_FIELD="startTime";
+	/**
+	 * xPoints
+	 */
 	public static String XPOINTS_FIELD="xPoints";
+	/**
+	 * yPoints
+	 */
 	public static String YPOINTS_FIELD="yPoints";
+	/**
+	 * xStart
+	 */
 	public static String XSTART_FIELD="xStart";
+	/**
+	 * deg
+	 */
 	public static String XSTART_DEFAULT_UNIT=Units.DEGREE;
+	/**
+	 * yStart
+	 */
 	public static String YSTART_FIELD="yStart";
+	/**
+	 * deg
+	 */
 	public static String YSTART_DEFAULT_UNIT=Units.DEGREE;
+	/**
+	 * xDelta
+	 */
 	public static String XDELTA_FIELD="xDelta";
+	/**
+	 * deg
+	 */
 	public static String XDELTA_DEFAULT_UNIT=Units.DEGREE;
+	/**
+	 * yDelta
+	 */
 	public static String YDELTA_FIELD="yDelta";
+	/**
+	 * deg
+	 */
 	public static String YDELTA_DEFAULT_UNIT=Units.DEGREE;
+	/**
+	 * pointSlewTime
+	 */
 	public static String POINTSLEWTIME_FIELD="pointSlewTime";
+	/**
+	 * min
+	 */
 	public static String POINTSLEWTIME_DEFAULT_UNIT=Units.MINUTES;
+	/**
+	 * lineSlewTime
+	 */
 	public static String LINESLEWTIME_FIELD="lineSlewTime";
+	/**
+	 * min
+	 */
 	public static String LINESLEWTIME_DEFAULT_UNIT=Units.MINUTES;
+	/**
+	 * dwelTime
+	 */
 	public static String DWELLTIME_FIELD="dwellTime";
+	/**
+	 * min
+	 */
 	public static String DWELLTIME_DEFAULT_UNIT=Units.MINUTES;
+	/**
+	 * lineAxis
+	 */
 	public static String LINEAXIS_FIELD="lineAxis";
+	/**
+	 * keepLineDir
+	 */
 	public static String KEEPLINEDIR_FIELD="keepLineDir";
 	
 	public OffsetRaster(PointingMetadata org){
@@ -178,7 +241,10 @@ public class OffsetRaster extends OffsetAngles {
 
 	}
 	public String getPointSlewTimeUnit(){
-		return getUnit(LINESLEWTIME_FIELD);
+		String result = getUnit(LINESLEWTIME_FIELD);
+		if (result==null) return LINESLEWTIME_DEFAULT_UNIT;
+		else return result;
+		//return getUnit(LINESLEWTIME_FIELD);
 	}
 	public float getPointSlewTime(String unit){
 		return Units.convertUnit(getPointSlewTime(),getPointSlewTimeUnit(),unit);
@@ -196,8 +262,17 @@ public class OffsetRaster extends OffsetAngles {
 		}
 
 	}
+	public void setDwellTime(String unit,float value){
+		setFloatField(DWELLTIME_FIELD,value);
+		setUnit(DWELLTIME_FIELD,unit);
+
+	}
 	public String getDwellTimeUnit(){
-		return getUnit(DWELLTIME_FIELD);
+		String result = getUnit(DWELLTIME_FIELD);
+		if (result==null) return DWELLTIME_DEFAULT_UNIT;
+		else return result;
+
+		//return getUnit(DWELLTIME_FIELD);
 	}
 	public float getDwellTime(String unit){
 		return Units.convertUnit(getDwellTime(),getDwellTimeUnit(),unit);
@@ -207,7 +282,109 @@ public class OffsetRaster extends OffsetAngles {
 	 * @return
 	 */
 	public String getLineAxis(){
-		return getChild(LINEAXIS_FIELD).getValue();
+		try{
+			return getChild(LINEAXIS_FIELD).getValue();
+		}catch (java.lang.NullPointerException npe){
+			return "y";
+		}
+	}
+	/**
+	 * Set Name of offset-axis along which the raster-points are connected in a line.
+	 * @param lineAxis The new lineAxis
+	 */
+	public void setLineAxis(String lineAxis){
+		setStringField(LINEAXIS_FIELD,lineAxis);
+	
+	}
+	/**
+	 * Get the rotation angle of first raster-point towards the offset x-axis
+	 * @return
+	 */
+	public float getXStart(){
+			try{
+				return Float.parseFloat(getChild(XSTART_FIELD).getValue().trim());
+			}catch (NullPointerException npe){
+				return 0f;
+			}
+		
+	}
+	
+	/**
+	 * Get the unit in which the rotation angle of first raster-point towards the offset x-axis is expressed
+	 * @return
+	 */
+	public String getXStartUnit(){
+		String result = getUnit(XSTART_FIELD);
+		if (result==null) return XSTART_DEFAULT_UNIT;
+		else return result;
+
+		//return getUnit(XSTART_FIELD);
+	}
+	
+	/**
+	 * Get the rotation angle of first raster-point towards the offset x-axis expressed in a specific unit
+	 * @param unit the unit in which the value will be expressed
+	 * @return
+	 */
+	public float getXStart(String unit){
+		return Units.convertUnit(getXStart(),getXStartUnit(),unit);
+		
+	}
+	/**
+	 * Set the rotation angle of first raster-point towards the offset x-axis expressed in a specific unit
+	 * @param unit the unit in which the value is expressed
+	 * @param value
+	 */
+	public void setXStart(String unit,float value){
+		setFloatField(XSTART_FIELD,value);
+		setUnit(XSTART_FIELD,unit);
+	
+	}
+	/**
+	 * Get the rotation angle of first raster-point towards the offset y-axis
+	 * @return
+	 */
+	public float getYStart(){
+		try{
+			return Float.parseFloat(getChild(YSTART_FIELD).getValue().trim());
+		}catch (NullPointerException npe){
+			return 0f;
+		}
+
+			//return Float.parseFloat(getChild(YSTART_FIELD).getValue().trim());
+		
+	}
+	
+	/**
+	 * Get the unit in which the rotation angle of first raster-point towards the offset y-axis is expressed
+	 * @return
+	 */
+	public String getYStartUnit(){
+		String result = getUnit(YSTART_FIELD);
+		if (result==null) return YSTART_DEFAULT_UNIT;
+		else return result;
+
+		//return getUnit(YSTART_FIELD);
+	}
+	
+	/**
+	 * Get the rotation angle of first raster-point towards the offset y-axis expressed in a specific unit
+	 * @param unit the unit in which the value will be expressed
+	 * @return
+	 */
+	public float getYStart(String unit){
+		return Units.convertUnit(getYStart(),getYStartUnit(),unit);
+		
+	}
+	/**
+	 * Set the rotation angle of first raster-point towards the offset y-axis expressed in a specific unit
+	 * @param unit the unit in which the value is expressed
+	 * @param value
+	 */
+	public void setYStart(String unit,float value){
+		setFloatField(YSTART_FIELD,value);
+		setUnit(YSTART_FIELD,unit);
+	
 	}
 	
 	/**
@@ -223,10 +400,24 @@ public class OffsetRaster extends OffsetAngles {
 
 	}
 	public String getLineSlewTimeUnit(){
-		return getUnit(POINTSLEWTIME_FIELD);
+		String result = getUnit(POINTSLEWTIME_FIELD);
+		if (result==null) return POINTSLEWTIME_DEFAULT_UNIT;
+		else return result;
+
+		//return getUnit(POINTSLEWTIME_FIELD);
 	}
 	public float getLineSlewTime(String unit){
 		return Units.convertUnit(getLineSlewTime(),getLineSlewTimeUnit(),unit);
+	}
+	/**
+	 * Set slew time between two raster-points in different lines.
+	 * @param unit The unit in which the new value is expressed
+	 * @param value The new value for the slew time
+	 */
+	public void setLineSlewTime(String unit,float value){
+		setFloatField(LINESLEWTIME_FIELD,value);
+		setUnit(LINESLEWTIME_FIELD,unit);
+	
 	}
 	
 	

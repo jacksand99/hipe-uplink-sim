@@ -9,16 +9,49 @@ import vega.uplink.pointing.Units;
  *
  */
 public class StateVector extends PointingMetadata {
+	/**
+	 * ref
+	 */
 	public static String REF_TAG="ref";
+	/**
+	 * position
+	 */
 	public static String POSITION_FIELD="position";
+	/**
+	 * frame
+	 */
 	public static String FRAME_FIELD="frame";
+	/**
+	 * origin
+	 */
 	public static String ORIGIN_FIELD="origin";
+	/**
+	 * x
+	 */
 	public static String X_FIELD="x";
+	/**
+	 * y
+	 */
 	public static String Y_FIELD="y";
+	/**
+	 * z
+	 */
 	public static String Z_FIELD="z";
-	public static String DEFAULT_UNIT="km";
+	/**
+	 * km
+	 */
+	public static String DEFAULT_UNIT=Units.KILOMETER;
+	/**
+	 * landmark
+	 */
 	public static String LANDMARK_FIELD="landmark";
+	/**
+	 * units
+	 */
 	public static String UNITS_TAG="units";
+	/**
+	 * name
+	 */
 	public static String NAME_TAG="name";
 	public StateVector(PointingMetadata org){
 		super(org);

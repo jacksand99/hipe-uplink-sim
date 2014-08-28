@@ -6,11 +6,29 @@ import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingMetadata;
 
 public abstract class OffsetAngles extends PointingMetadata {
+	/**
+	 * offsetAngles
+	 */
 	public static String OFFSETANGLES_TAG="offsetAngles";
+	/**
+	 * custom
+	 */
 	public static String OFFSETANGLES_TYPE_CUSTOM="custom";
+	/**
+	 * fixed
+	 */
 	public static String OFFSETANGLES_TYPE_FIXED="fixed";
+	/**
+	 * raster
+	 */
 	public static String OFFSETANGLES_TYPE_RASTER="raster";
+	/**
+	 * scan
+	 */
 	public static String OFFSETANGLES_TYPE_SCAN="scan";
+	/**
+	 * ref
+	 */
 	public static String REF_TAG="ref";
 	public OffsetAngles(PointingMetadata org){
 		super(org);

@@ -10,7 +10,14 @@ import vega.uplink.pointing.Units;
  *
  */
 public class Height extends PointingMetadata {
+	/**
+	 * height
+	 */
 	public static String HEIGHT_TAG="height";
+	/**
+	 * units
+	 */
+	public static String UNITS_TAG="units";
 	public Height(PointingMetadata org){
 		super(org);
 	}
@@ -22,7 +29,7 @@ public class Height extends PointingMetadata {
 		 */
 		public Height(String units,String value){
 			super(HEIGHT_TAG,value);
-			this.addAttribute(new PointingMetadata("units",units));
+			this.addAttribute(new PointingMetadata(UNITS_TAG,units));
 			
 		}
 		/**
@@ -67,14 +74,14 @@ public class Height extends PointingMetadata {
 		 * @return
 		 */
 		public String getUnit(){
-			return getAttribute("units").getValue();
+			return getAttribute(UNITS_TAG).getValue();
 		}
 		/**
 		 * Set the unit where the height is expressed
 		 * @return
 		 */		
 		public void setUnit(String units){
-			addAttribute(new PointingMetadata("units",units));
+			addAttribute(new PointingMetadata(UNITS_TAG,units));
 		}
 
 }

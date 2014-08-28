@@ -7,15 +7,38 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
+import vega.uplink.Properties;
 import vega.uplink.pointing.PtrParameters.Boresight;
 import herschel.ia.dataset.Dataset;
 import herschel.ia.dataset.Product;
+import herschel.ia.dataset.StringParameter;
+import herschel.share.fltdyn.time.FineTime;
 import herschel.share.interpreter.InterpreterUtil;
 
 public class Pdfm extends Product {
 	public Pdfm(){
 		super();
+		setName(""+new java.util.Date().getTime());
+		setPath(Properties.getProperty("user.home"));
+		this.setType("PDFM");
+		this.setCreationDate(new FineTime(new java.util.Date()));
+
+		
 	}
+	public void setName(String name){
+		getMeta().set("name", new StringParameter(name));
+	}
+	public void setPath(String path){
+		getMeta().set("path", new StringParameter(path));
+	}
+	
+	public String getName(){
+		return (String) getMeta().get("name").getValue();
+	}
+	public String getPath(){
+		return (String) getMeta().get("path").getValue();
+	}
+
 	public void addDefinition(PdfmDirVector dirVector){
 		set(dirVector.getDirVectorName(),dirVector);
 	}

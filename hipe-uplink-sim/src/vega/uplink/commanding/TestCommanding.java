@@ -15,23 +15,42 @@ import herschel.ia.dataset.Product;
 
 public class TestCommanding {
     public static void main(String[] args) {
-    	herschel.share.util.Configuration.setProperty("var.hcss.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
-    	herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
-    	Orcd testOrcd=Orcd.readORCDfromJar();
-    	testOrcd.writeToFile("z:\\testorcd.csv");
-    	Orcd testOrcd2=Orcd.readORCDfile("z:\\testorcd.csv");
-    	System.out.println("Orcd is equal:"+testOrcd2.equals(testOrcd));
-    	Por por=PorUtils.readPORfromFile("C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP004A\\PORM\\POR__DM_004_01_SG_A1_00094.ROS");
-    	System.out.println(por.getOrderedSequences().length);
+    	herschel.share.util.Configuration.setProperty("var.hcss.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
+    	herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
+    	Fecs fecs;
+		try {
+			fecs = PorUtils.readFecsFromFile("/Users/jarenas 1/RosettaScripts/FECS_DL_001_02_______00028.ROS");
+			System.out.println(fecs.toString());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
     	
-    	Mib mib;
+    	//Orcd testOrcd=Orcd.readORCDfromJar();
+    	//testOrcd.writeToFile("z:\\testorcd.csv");
+    	//Orcd testOrcd2=Orcd.readORCDfile("z:\\testorcd.csv");
+    	//System.out.println("Orcd is equal:"+testOrcd2.equals(testOrcd));
+    	/*SuperPor sp;
+		try {
+			sp = PorUtils.readPORGfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP001/LTP001A/MTP004A/PORM/PORG_DM_004_01____A1_00006.ROS");
+			System.out.println(sp.getOrderedSequences().length);
+			PorUtils.writePORGtofile("/Users/jarenas 1/Downloads/testporg.zip", sp);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}*/
+    	//SuperPor sp=new SuperPor();
+    	//sp.addPor(por);
+    	//System.out.println(sp.getOrderedSequences().length);
+    	
+    	/*Mib mib;
 		try {
 			mib = Mib.getMibFromJar();
 			System.out.println(mib.csp_table.getColumnName(1));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
     	//System.out.println(mib.csp_table.getColumnName(1));
 		/*herschel.share.util.Configuration.setProperty("var.hcss.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
 		herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
@@ -42,7 +61,7 @@ public class TestCommanding {
 		while (it.hasNext()){
 			System.out.println(it.next());
 		}
-		Fecs fecs = PorUtils.readFecsFromFile("Z:\\MAPPS\\FECS_DL_001_02_______00018.ROS");
+		//Fecs fecs = PorUtils.readFecsFromFile("Z:\\MAPPS\\FECS_DL_001_02_______00018.ROS");
 		/*TreeSet passes = fecs.getPasses();
 		Iterator it = passes.iterator();
 		while(it.hasNext()){

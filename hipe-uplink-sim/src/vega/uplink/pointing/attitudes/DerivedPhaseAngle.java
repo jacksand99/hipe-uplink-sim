@@ -2,7 +2,6 @@ package vega.uplink.pointing.attitudes;
 
 import vega.uplink.pointing.PointingAttitude;
 import vega.uplink.pointing.PointingMetadata;
-import vega.uplink.pointing.PtrParameters.Boresight;
 import vega.uplink.pointing.PtrParameters.PhaseAngle;
 
 /**

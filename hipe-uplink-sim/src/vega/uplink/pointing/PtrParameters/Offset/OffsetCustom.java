@@ -8,16 +8,49 @@ import vega.uplink.pointing.PointingMetadata;
 import vega.uplink.pointing.Units;
 
 public class OffsetCustom extends OffsetAngles {
+	/**
+	 * xRates
+	 */
 	public static String XRATES_FIELD="xRates";
+	/**
+	 * yRates
+	 */	
 	public static String YRATES_FIELD="yRates";
+	/**
+	 * xAngles
+	 */
 	public static String XANGLES_FIELD="xAngles";
+	/**
+	 * yAngles
+	 */
 	public static String YANGLES_FIELD="yAngles";
+	/**
+	 * deltaTimes
+	 */
 	public static String DELTATIMES_FIELD="deltaTimes";
+	/**
+	 * startTime
+	 */
 	public static String STARTTIME_FIELD="startTime";
+	/**
+	 * min
+	 */
 	public static String DELTATIMES_DEFAULT_UNIT=Units.MINUTES;
+	/**
+	 * deg
+	 */
 	public static String XANGLES_DEFAULT_UNIT=Units.DEGREE;
+	/**
+	 * deg
+	 */
 	public static String YANGLES_DEFAULT_UNIT=Units.DEGREE;
+	/**
+	 * deg/sec
+	 */
 	public static String XRATES_DEFAULT_UNIT=Units.DEGREES_PER_SECOND;
+	/**
+	 * deg/sec
+	 */
 	public static String YRATES_DEFAULT_UNIT=Units.DEGREES_PER_SECOND;
 
 	public OffsetCustom(PointingMetadata org){

@@ -39,21 +39,37 @@ public class TestPointing {
 		//Pdfm pdfm=PtrUtils.readPdfmfromFile("C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP004A\\PTR\\PDFM_DM_004_01____A__00005.ROS");
 		//Ptr ptr=PtrUtils.readPTRfromFile("C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP004A\\PTR\\PTRM_DM_004_01____A__00005.ROS");
 		//Ptr ptr=PtrUtils.readPTRfromFile("Z:\\PTRM_DM_006_01____A__00008.ROS");
-		Ptr ptr=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PTRM_DM_008_01____Ab_00014.ROS");
-		String[] segmentNames = ptr.getPtrSegmentNames();
-		//ptrbox.removeAllItems();
+		//Ptr ptr=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PTRM_DM_007_01____A__00013.ROS");
+		Ptr ptr=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PTRM_DM_007_01____A__00013.ROS");
+		Ptr ptsl=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PTSL_DM_007_02____A__00002.ROS");
+		System.out.println(PtrChecker.checkPtr(ptr, ptsl));
+/*				String[] segmentNames = ptr.getPtrSegmentNames();
 		for (int i=0;i<segmentNames.length;i++){
 			System.out.println(segmentNames[i]);
-			//ptrbox.addItem(segmentNames[i]);
 		}
-		System.out.println("..");
+		PtrSegment segment = ptr.getSegment("MTP_007");
+		PointingBlock[] blocks = segment.getBlocks();
+		for (int i=0;i<blocks.length;i++){
+			PointingBlock block = blocks[i];
+			if (block.getType().equals("OBS")){
+				PointingAttitude attitude = block.getAttitude();
+				if (attitude!=null){
+					OffsetAngles offset = attitude.getOffsetAngles();
+					if (offset!=null){
+						if (!offset.isFixed());
+							System.out.println(offset.getDurationMilliSecs());
+					}
+				}
+			}
+		}*/
+		//System.out.println(ptr.toXml());
 		//System.out.println(ptr.getSegment("MTP_007").toXml(0));
 		//System.out.println(ptr.toXml());
 		
 
-		Pdfm pdfm=PtrUtils.readPdfmfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PDFM_DM_007_01____A__00014.ROS");
-		System.out.println(pdfm.toXml());
-		System.out.println(PtrChecker.checkPtr(ptr));
+		//Pdfm pdfm=PtrUtils.readPdfmfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PDFM_DM_007_01____A__00014.ROS");
+		//System.out.println(pdfm.toXml());
+		//System.out.println(PtrChecker.checkPtr(ptr));
 		/*PtrSegment seg = ptr.getSegments()[0];
 		PointingBlock[] allObs = seg.getAllBlocksOfType("OBS");
 		for (int i=0;i<allObs.length;i++){

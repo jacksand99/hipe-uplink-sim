@@ -7,6 +7,7 @@ import herschel.share.fltdyn.time.FineTime;
 //import herschel.share.interpreter.InterpreterUtil;
 //import herschel.share.predicate.Predicate;
 
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
@@ -22,6 +23,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import vega.uplink.Properties;
+
 
 	
 public class Por extends MapContext {
@@ -32,6 +35,8 @@ public class Por extends MapContext {
 		super();
 		setCreator(AUTHOR);
 		setName(""+new java.util.Date().getTime());
+		setPath(Properties.getProperty("user.home"));
+		this.setType("POR");
 		this.setCreationDate(new FineTime(new java.util.Date()));
 		sequenceMap=new TreeMap<String,Sequence>();
 	}
@@ -39,9 +44,15 @@ public class Por extends MapContext {
 	public void setName(String name){
 		getMeta().set("name", new StringParameter(name));
 	}
+	public void setPath(String path){
+		getMeta().set("path", new StringParameter(path));
+	}
 	
 	public String getName(){
 		return (String) getMeta().get("name").getValue();
+	}
+	public String getPath(){
+		return (String) getMeta().get("path").getValue();
 	}
 	
 	public void addSequence(Sequence sequence){

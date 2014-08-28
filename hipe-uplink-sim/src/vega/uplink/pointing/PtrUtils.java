@@ -95,6 +95,8 @@ public class PtrUtils {
 		try {
 			 
 			File fXmlFile = new File(file);
+			result.setName(fXmlFile.getName());
+			result.setPath(fXmlFile.getParent());
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
@@ -107,7 +109,7 @@ public class PtrUtils {
 			NodeList nlSegments=elBody.getElementsByTagName(PtrSegment.SEGMENT_TAG);
 			for (int i=0;i<nlSegments.getLength();i++){
 				Node nSegment=nlSegments.item(i);
-				String pName=((Element) nSegment).getAttribute(PtrSegment.NAME_TAG);
+				String pName=((Element) nSegment).getAttribute(PtrSegment.NAME_TAG).trim();
 				PtrSegment segment=new PtrSegment(pName);
 				Node nMetadata=((Element) nSegment).getElementsByTagName(PtrSegment.METADATA_TAG).item(0);
 				NodeList nlIncludes=((Element) nMetadata).getElementsByTagName(PtrSegment.INCLUDE_TAG);
@@ -142,6 +144,9 @@ public class PtrUtils {
 		return result; //to be remove
 	}
 	
+	public static void savePTR(Ptr ptr){
+		writePTRtofile(ptr.getPath()+"/"+ptr.getName(),ptr);
+	}
 	public static void writePTRtofile(String file,Ptr ptr){
 		try{
 			PrintWriter writer = new PrintWriter(file, "UTF-8");
@@ -152,7 +157,9 @@ public class PtrUtils {
 		}
 		
 	}
-	
+	public static void savePDFM(Pdfm pdfm){
+		writePDFMtofile(pdfm.getPath()+"/"+pdfm.getName(),pdfm);
+	}
 	public static void writePDFMtofile(String file,Pdfm pdfm){
 		try{
 			PrintWriter writer = new PrintWriter(file, "UTF-8");
@@ -169,6 +176,9 @@ public class PtrUtils {
 		try {
 			 
 			File fXmlFile = new File(file);
+			result.setName(fXmlFile.getName());
+			result.setPath(fXmlFile.getParent());
+
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
@@ -188,7 +198,7 @@ public class PtrUtils {
 				if(eventNodes.item(i).hasAttributes()){
 					String eventType=eventNodes.item(i).getNodeName();
 					NamedNodeMap eventAttributes = eventNodes.item(i).getAttributes();
-					String eventId=eventAttributes.getNamedItem(EvtmEvent.ID_TAG).getTextContent();
+					String eventId=eventAttributes.getNamedItem(EvtmEvent.ID_TAG).getTextContent().trim();
 					java.util.Date eventTime=EvtmEvent.zuluToDate(eventAttributes.getNamedItem(EvtmEvent.TIME_TAG).getNodeValue());
 					long eventDuration=Long.parseLong(eventAttributes.getNamedItem(EvtmEvent.DURATION_TAG).getNodeValue().replace(" ", ""));
 					boolean created=false;
@@ -260,6 +270,9 @@ public class PtrUtils {
 		try {
 			 
 			File fXmlFile = new File(file);
+			result.setName(fXmlFile.getName());
+			result.setPath(fXmlFile.getParent());
+
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);

@@ -1,12 +1,16 @@
 package vega.uplink.commanding.gui;
 
+import java.text.ParseException;
 import java.util.List;
+
+import javax.swing.JFrame;
 
 import herschel.share.interpreter.InterpreterFactory;
 import herschel.share.interpreter.InterpreterNameSpaceUtil;
 import herschel.share.interpreter.InterpreterNameSpaceUtil.And;
 import vega.uplink.commanding.Mib;
 import vega.uplink.commanding.Por;
+import vega.uplink.commanding.Sequence;
 import vega.uplink.commanding.SimulationContext;
 import static herschel.share.interpreter.InterpreterNameSpaceUtil.IS_VARIABLE;
 
@@ -27,8 +31,20 @@ public class TestGui {
 		//herschel.share.util.Configuration.setProperty("rosetta.pwpl.file", "C:\\ROS_SGS\\PLANNING\\RMOC\\FCT\\PWPL_14_001_14_365__OPT_01.ROS");
 		//herschel.share.util.Configuration.setProperty("rosetta.orcd.file", "Z:\\MAPPS\\MIB\\orcd.csv");
 		//herschel.share.util.Configuration.setProperty("rosetta.default.planningDirectory", "C:\\ROS_SGS\\PLANNING\\");
+    	try {
+			Sequence seq=new Sequence("AGDF060A", "P1009090", Sequence.dateToZulu(new java.util.Date()));
+			JFrame frame=new JFrame();
+			SequenceEditor editor=new SequenceEditor();
+			editor.setSequence(seq);
+			editor.makeContent();
+			frame.add(editor);
+			frame.setVisible(true);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		Por a=new Por();
+		/*Por a=new Por();
 		System.out.println("Is variable:");
 		System.out.println(IS_VARIABLE.satisfy("", a));
 		And an=new And(IS_VARIABLE, new CommandingCondition());
@@ -37,16 +53,16 @@ public class TestGui {
 		for (int i=0;i<variables.size();i++){
 			System.out.println(variables.get(i));
 		}
-		System.out.println(an.satisfy("", a));
+		System.out.println(an.satisfy("", a));*/
 		
 		//System.out.println(SimulationContext.getInstance().historyModes.getTimes().length);
 
 		// TODO Auto-generated method stub
-		javax.swing.JFrame frame=new javax.swing.JFrame();
+		/*javax.swing.JFrame frame=new javax.swing.JFrame();
 		SimulationView view=new SimulationView();
 		frame.add(view);
 		frame.pack();
-		frame.setVisible(true);
+		frame.setVisible(true);*/
 
 	}
 

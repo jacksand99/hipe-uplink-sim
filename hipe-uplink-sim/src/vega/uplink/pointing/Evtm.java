@@ -7,6 +7,8 @@ import herschel.share.fltdyn.time.FineTime;
 import java.util.HashMap;
 import java.util.Date;
 
+import vega.uplink.Properties;
+
 public class Evtm extends Product{
 	private HashMap<Date,EvtmEvent> eventsMap;
 	public static String EVENTFILE_TAG="eventfile";
@@ -25,6 +27,10 @@ public class Evtm extends Product{
 	
 	public Evtm(Date evtmGenerationTime,Date evtmValidityStart,Date evtmValidityEnd,String evtmSpacecraft,String evtmIcdVersion){
 		super();
+		setName(""+new java.util.Date().getTime());
+		setPath(Properties.getProperty("user.home"));
+		this.setType("EVTM");
+
 		//eventsMap=new HashMap<Date,EvtmEvent>();
 		this.setCreationDate(new FineTime(evtmGenerationTime));
 		//generationTime=evtmGenerationTime;
@@ -37,6 +43,19 @@ public class Evtm extends Product{
 		//validityEnd=evtmValidityEnd;
 		//spacecraft=evtmSpacecraft;
 		//icdVersion=evtmIcdVersion;
+	}
+	public void setName(String name){
+		getMeta().set("name", new StringParameter(name));
+	}
+	public void setPath(String path){
+		getMeta().set("path", new StringParameter(path));
+	}
+	
+	public String getName(){
+		return (String) getMeta().get("name").getValue();
+	}
+	public String getPath(){
+		return (String) getMeta().get("path").getValue();
 	}
 	
 	public Evtm(Date evtmGenerationTime,Date evtmValidityStart,Date evtmValidityEnd,String evtmIcdVersion){

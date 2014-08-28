@@ -8,6 +8,7 @@ import herschel.ia.numeric.*;
 import herschel.ia.gui.plot.*;
 
 import org.jfree.ui.RefineryUtilities;
+//import org.jfree.util.Log;
 
 import vega.uplink.Properties;
 import vega.uplink.commanding.gui.HistoryModesPlot;
@@ -17,12 +18,15 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+
 //import javax.naming.ConfigurationException;
 import javax.swing.JFrame;
 //import java.lang.Runnable ;
 public class Simulation {
 	java.text.SimpleDateFormat dateFormat2;
 	SimulationContext context;
+	private static final Logger LOG = Logger.getLogger(Simulation.class.getName());
 	private Simulation(){
 		context=new SimulationContext();
 		dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
@@ -64,17 +68,22 @@ public class Simulation {
 	public SimulationContext run(boolean printStrategy){
 		if (!context.getInitScript().equals("")){
 			try{
+				LOG.info("Executing init script "+context.getInitScript());
 				herschel.ia.jconsole.jython.Interpreter.getInterpreter().set("simulationContext", context);
 				herschel.ia.jconsole.jython.Interpreter.getInterpreter().getPythonInterpreter().execfile(context.getInitScript());
 				context=herschel.ia.jconsole.jython.Interpreter.getInterpreter().getPythonInterpreter().get("simulationContext", SimulationContext.class);
+
 			}catch (Exception e){
 				e.printStackTrace();
+				LOG.throwing("Simulation", "run", e);
+				LOG.severe("Error executing init script:"+e.getMessage());
 				context.log(e.getMessage());
 			}
 		}
 		Sequence[] seqs=context.getPor().getOrderedSequences();
 		//SsmmSimulator memorySimulator=context.ssmm;
 		SsmmSimulator memorySimulator=new RosettaSsmmSimulator(context);
+		LOG.info("Inserting commands into the model");
 		//String messages="";
 		for (int i=0;i<seqs.length;i++){
 			//if (seqs[i].getName())
@@ -101,7 +110,7 @@ public class Simulation {
 		}
 		java.util.Date start=context.getPor().getValidityDates()[0];
 		java.util.Date end=context.getPor().getValidityDates()[1];
-		
+		LOG.info("Inserting the GS passes from the FECS into the model");
 		TreeSet<GsPass> passes=context.getFecs().getPasses();
 		Iterator<GsPass> it = passes.iterator();
 		String strategy="";
@@ -127,7 +136,7 @@ public class Simulation {
 		}
 		Long[] times=new Long[temp.size()];
 		temp.toArray(times);
-		
+		LOG.info("Calculating mode transitions");
 		for (int i=0;i<times.length;i++){
 			long j=times[i];
 			String oldmode=context.getModelState().getStateForMode(context.getHistoryModes().get(j));
@@ -155,7 +164,7 @@ public class Simulation {
 			
 		}
 		
-		
+		LOG.info("Generating power plots");
 		PlotXY plot3=new PlotXY();
 		LayerXY layer6 = new LayerXY(context.getExecutionDates(),context.getHistoryPower());
 		layer6.setColor(java.awt.Color.BLUE);
@@ -193,7 +202,7 @@ public class Simulation {
 
 		layerLimitMemory.setColor(java.awt.Color.RED);
 		layerLimitMemory.setName("Packet Store limit");*/
-
+		LOG.info("Simulating SSMM");
 		String[] instruments=memorySimulator.getAllInstruments();
 		for (int i=0;i<instruments.length;i++){
 			long packetStoreSize;
@@ -251,7 +260,7 @@ public class Simulation {
 
 		//plot4.addLayer(layerTotalMemory);
 		//plot4.addLayer(layerLimitMemory);
-
+		LOG.info("Generating Datarate plots");
 		plot4.getXaxis().setTitleText("Time");
 		plot4.getYaxis().setTitleText("Data (bits)");
 		plot4.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
@@ -265,6 +274,7 @@ public class Simulation {
 		RefineryUtilities.centerFrameOnScreen(frame);
 
 		frame.setVisible(true);
+		LOG.info("Executing post script");
 		if (!context.getPostScript().equals("")){
 			try{
 				herschel.ia.jconsole.jython.Interpreter.getInterpreter().set("simulationContext", context);

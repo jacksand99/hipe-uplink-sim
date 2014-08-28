@@ -39,6 +39,9 @@ public class CommandingCondition implements Condition {
 		if (InterpreterUtil.isInstance(SimulationContext.class, arg1)){
 			result=true;
 		}
+		if (InterpreterUtil.isInstance(Pdfm.class, arg1)){
+			result=true;
+		}
 		
 		
 		return result;

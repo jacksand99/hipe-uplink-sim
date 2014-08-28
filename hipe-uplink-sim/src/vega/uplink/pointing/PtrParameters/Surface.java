@@ -1,14 +1,12 @@
 package vega.uplink.pointing.PtrParameters;
 
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import vega.uplink.pointing.PdfmSurface;
 import vega.uplink.pointing.PointingMetadata;
 import vega.uplink.pointing.Units;
 
 public class Surface extends PointingMetadata {
+	/**
+	 * surface
+	 */
 	public static String SURFACE_TAG="surface";
 	public Surface(PointingMetadata org){
 		

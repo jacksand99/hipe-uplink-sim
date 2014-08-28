@@ -2,9 +2,17 @@ package vega.uplink.pointing.PtrParameters;
 
 import vega.uplink.pointing.PointingMetadata;
 
-//public class OffsetRefAxis extends PointingMetadata {
 public class OffsetRefAxis extends DirectionVector {
+	
+	/**
+	 * offsetRefAxis
+	 */
 	public static String OFFSETREFAXIS_TAG="offsetRefAxis";
+	/**
+	 * SC_Xaxis
+	 */	
+	public static String SC_X_AXIS_TAG="SC_Xaxis";
+	
 	/**
 	 * Creates a offsetRefAxis Direction vector referenced to SC_Xaxis direction vector
 	 * Direction vectors can be defined by referencing to
@@ -14,7 +22,7 @@ public class OffsetRefAxis extends DirectionVector {
 	 */
 	public OffsetRefAxis(){
 		//super("offsetRefAxis");
-		this("SC_Xaxis");
+		this(SC_X_AXIS_TAG);
 	}
 	/**
 	 * Creates a offsetRefAxis fixed direction vector expressed in spherical coordinates
@@ -129,17 +137,5 @@ public class OffsetRefAxis extends DirectionVector {
 		
 	}
 
-/*	public OffsetRefAxis(PointingMetadata org){
-		super(org);
-	}
-
-	public OffsetRefAxis(String ref){
-		super("offsetRefAxis","");
-		this.addAttribute(new PointingMetadata("ref",ref));
-	}
-	
-	public OffsetRefAxis(){
-		this("SC_Xaxis");
-	}*/
 
 }

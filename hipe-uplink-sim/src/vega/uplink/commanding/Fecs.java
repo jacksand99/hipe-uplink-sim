@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import vega.uplink.Properties;
 import vega.uplink.pointing.EvtmEvent;
 
 /**
@@ -48,6 +49,9 @@ public class Fecs extends TableDataset{
 	 */
 	public Fecs(Date fecsGenerationTime,Date fecsValidityStart,Date fecsValidityEnd,String fecsSpacecraft,String fecsIcdVersion){
 		super();
+		setName(""+new java.util.Date().getTime());
+		setPath(Properties.getProperty("user.home"));
+
 		passesSet=new TreeSet<GsPass>();
 		setGenerationTime(fecsGenerationTime);
 		setValidityStart(fecsValidityStart);
@@ -75,6 +79,20 @@ public class Fecs extends TableDataset{
 		this.setColumnName(5, "TM rate");
 
 	}
+	public void setName(String name){
+		getMeta().set("name", new StringParameter(name));
+	}
+	public void setPath(String path){
+		getMeta().set("path", new StringParameter(path));
+	}
+	
+	public String getName(){
+		return (String) getMeta().get("name").getValue();
+	}
+	public String getPath(){
+		return (String) getMeta().get("path").getValue();
+	}
+
 	/**
 	 * Constructor of the Fecs class taking as parameters all the needed information, but assuming the spacecraft to be ROSETTA.
 	 * @param fecsGenerationTime Generation time of the FECS file
@@ -196,6 +214,9 @@ public class Fecs extends TableDataset{
 		//addRown(pass.get)
 		
 	}
+	public void removePass(GsPass pass){
+		passesSet.remove(pass);
+	}
 	
 	/**
 	 * Get all the Ground Station passes included in this Fecs, as an ordered set by GS pass start date
@@ -256,6 +277,22 @@ public class Fecs extends TableDataset{
 	/*public void 	addRow(Object[] array) {
 		//do nothing
 	}*/
+	public GsPass[] findOverlapingPasses(Date startDate,Date endDate){
+		java.util.Vector<GsPass> affected=new java.util.Vector<GsPass>();
+		Iterator<GsPass> it = passesSet.iterator();
+		while (it.hasNext()){
+			GsPass pass = it.next();
+			boolean con1=false;
+			boolean con2=false;
+			if (pass.getStartPass().after(endDate)) con1=true;
+			if (pass.getEndPass().before(startDate)) con2=true;
+			if (!con1 && !con2) affected.add(pass);
+			
+		}
+		GsPass[] result= new GsPass[affected.size()];
+		result=affected.toArray(result);
+		return result;
+	}
 
 }
 	

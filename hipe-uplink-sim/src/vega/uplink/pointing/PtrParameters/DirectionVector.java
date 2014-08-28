@@ -7,11 +7,63 @@ import vega.uplink.pointing.Units;
  * @author jarenas
  *
  */
-/**
- * @author jarenas
- *
- */
 public class DirectionVector extends PointingMetadata{
+	/**
+	 * units
+	 */
+	public static String UNITS_TAG="units";
+	/**
+	 * x
+	 */
+	public static String X_TAG="x";
+	/**
+	 * y
+	 */
+	public static String Y_TAG="y";
+	/**
+	 * z
+	 */
+	public static String Z_TAG="z";
+	/**
+	 * frame
+	 */
+	public static String FRAME_TAG="frame";
+	/**
+	 * lat
+	 */
+	public static String LATITUDE_TAG="lat";
+	/**
+	 * lon
+	 */
+	public static String LONGITUDE_TAG="lon";
+	/**
+	 * origin
+	 */
+	public static String ORIGIN_TAG="origin";
+	/**
+	 * ref
+	 */
+	public static String REF_TAG="ref";
+	/**
+	 * target
+	 */
+	public static String TARGET_TAG="target";
+	/**
+	 * rotate
+	 */
+	public static String ROTATE_TAG="rotate";
+	/**
+	 * axis
+	 */
+	public static String AXIS_TAG="axis";
+	/**
+	 * rotationAxis
+	 */
+	public static String ROTATION_AXIS_TAG="rotationAxis";
+	/**
+	 * rotationAngle
+	 */
+	public static String ROTATION_ANGLE_TAG="rotationAngle";
 	public DirectionVector(String type,PointingMetadata pm){
 		this(type);
 		this.copyFrom(pm);
@@ -24,8 +76,8 @@ public class DirectionVector extends PointingMetadata{
 	public String getUnit(String field){
 		PointingMetadata deltaTimesCh = getChild(field);
 		if (deltaTimesCh==null) return null;
-		if (deltaTimesCh.getAttribute("units")==null) return null;
-		return deltaTimesCh.getAttribute("units").getValue();
+		if (deltaTimesCh.getAttribute(UNITS_TAG)==null) return null;
+		return deltaTimesCh.getAttribute(UNITS_TAG).getValue();
 		
 	}
 	
@@ -33,7 +85,7 @@ public class DirectionVector extends PointingMetadata{
 		PointingMetadata deltaTimesCh = getChild(field);
 		//System.out.println(deltaTimesCh);
 		if (deltaTimesCh==null) deltaTimesCh=new PointingMetadata(field,"");
-		deltaTimesCh.addAttribute(new PointingMetadata("units",unit));
+		deltaTimesCh.addAttribute(new PointingMetadata(UNITS_TAG,unit));
 		addChild(deltaTimesCh);
 		
 	}
@@ -141,7 +193,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @param x The x component
 	 */
 	public void setX(float x){
-		this.addChild(new PointingMetadata("x",""+x));
+		this.addChild(new PointingMetadata(X_TAG,""+x));
 	}
 
 	/**
@@ -149,7 +201,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @param y The y component
 	 */
 	public void setY(float y){
-		this.addChild(new PointingMetadata("y",""+y));
+		this.addChild(new PointingMetadata(Y_TAG,""+y));
 	}
 
 	/**
@@ -157,7 +209,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @param z The z component
 	 */
 	public void setZ(float z){
-		this.addChild(new PointingMetadata("z",""+z));
+		this.addChild(new PointingMetadata(Z_TAG,""+z));
 	}
 	
 	/**
@@ -165,7 +217,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @return The x component
 	 */
 	public float getX(){
-		return Float.parseFloat(getChild("x").getValue());
+		return Float.parseFloat(getChild(X_TAG).getValue());
 	}
 
 	/**
@@ -173,7 +225,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @return The y component
 	 */
 	public float getY(){
-		return Float.parseFloat(getChild("y").getValue());
+		return Float.parseFloat(getChild(Y_TAG).getValue());
 	}
 
 	/**
@@ -181,7 +233,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @return The z component
 	 */
 	public float getZ(){
-		return Float.parseFloat(getChild("z").getValue());
+		return Float.parseFloat(getChild(Z_TAG).getValue());
 	}
 
 	/**
@@ -189,7 +241,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @return Frame to which the vector is relative
 	 */
 	public String getFrame(){
-		return getAttribute("frame").getValue();
+		return getAttribute(FRAME_TAG).getValue();
 	}
 	
 	/**
@@ -197,7 +249,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @param frame Frame to which the vector is relative
 	 */
 	public void setFrame(String frame){
-		addAttribute(new PointingMetadata("frame",frame));
+		addAttribute(new PointingMetadata(FRAME_TAG,frame));
 	}
 	//Cordinates spherical
 	/*public CoordinatesSpherical(String type,PointingMetadata pm){
@@ -245,7 +297,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @param latitude Latitude expressed in deg.
 	 */
 	public DirectionVector(String type,String frame,float longitude,float latitude){
-		this(type,frame,"deg",longitude,"deg",latitude);
+		this(type,frame,Units.DEGREE,longitude,Units.DEGREE,latitude);
 	}
 	
 	/**
@@ -254,16 +306,16 @@ public class DirectionVector extends PointingMetadata{
 	 * @param longitude Longitude
 	 */
 	public void setLongitude(String units,float longitude){
-		setFloatField("lon",longitude);
+		setFloatField(LONGITUDE_TAG,longitude);
 		//this.addChild(new PointingMetadata("lon",""+longitude));
-		this.setUnit("lon", units);
+		this.setUnit(LONGITUDE_TAG, units);
 	}
 	/**
 	 * For a direction vector expressed in spherical coordinates, set the longitude in deg.
 	 * @param longitude Longitude in deg.
 	 */
 	public void setLongitude(float longitude){
-		setLongitude("deg",longitude);
+		setLongitude(Units.DEGREE,longitude);
 	}
 	/**
 	 * For a direction vector expressed in spherical coordinates, set the latitude
@@ -272,15 +324,15 @@ public class DirectionVector extends PointingMetadata{
 	 */
 	public void setLatitude(String units,float latitude){
 		//this.addChild(new PointingMetadata("lat",""+latitude));
-		this.setFloatField("lat", latitude);
-		this.setUnit("lat", units);
+		this.setFloatField(LATITUDE_TAG, latitude);
+		this.setUnit(LATITUDE_TAG, units);
 	}
 	/**
 	 * For a direction vector expressed in spherical coordinates, set the latitude in deg.
 	 * @param latitude Latitude in deg.
 	 */
 	public void setLatitude(float latitude){
-		setLatitude("deg",latitude);
+		setLatitude(Units.DEGREE,latitude);
 	}
 	
 	/**
@@ -288,7 +340,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @return Latitude
 	 */
 	public float getLatitude(){
-		return Float.parseFloat(getChild("lat").getValue());
+		return Float.parseFloat(getChild(LATITUDE_TAG).getValue());
 	}
 	/**
 	 * For a direction vector expressed in spherical coordinates, get the latitude in the given unit
@@ -296,7 +348,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @return Latitude
 	 */
 	public float getLatitude(String unit){
-		return Units.convertUnit(Float.parseFloat(getChild("lat").getValue()),getLatitudeUnit(),unit);
+		return Units.convertUnit(Float.parseFloat(getChild(LATITUDE_TAG).getValue()),getLatitudeUnit(),unit);
 	}
 
 	/**
@@ -304,7 +356,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @return Longitude
 	 */
 	public float getLongitude(){
-		return Float.parseFloat(getChild("lon").getValue());
+		return Float.parseFloat(getChild(LONGITUDE_TAG).getValue());
 	}
 	/**
 	 * For a direction vector expressed in spherical coordinates, get the longitude in the given unit
@@ -312,7 +364,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @return Longitude
 	 */
 	public float getLongitude(String unit){
-		return Units.convertUnit(Float.parseFloat(getChild("lon").getValue()),getLongitudeUnit(),unit);
+		return Units.convertUnit(Float.parseFloat(getChild(LONGITUDE_TAG).getValue()),getLongitudeUnit(),unit);
 	}
 
 	/**
@@ -320,14 +372,14 @@ public class DirectionVector extends PointingMetadata{
 	 * @return unit where the longitude is expressed
 	 */
 	public String getLongitudeUnit(){
-		return this.getUnit("lon");
+		return this.getUnit(LONGITUDE_TAG);
 	}
 	/**
 	 * For a direction vector expressed in spherical coordinates, get the unit where the latitude is expressed.
 	 * @return unit where the latitude is expressed
 	 */
 	public String getLatitudeUnit(){
-		return this.getUnit("lat");
+		return this.getUnit(LATITUDE_TAG);
 	}
 	//Origin Target
 	/*public OriginTarget(String type,PointingMetadata pm){
@@ -356,8 +408,8 @@ public class DirectionVector extends PointingMetadata{
 	 * @param origin Origin State vector
 	 */
 	public void setOrigin(String origin){
-		PointingMetadata originChild = new PointingMetadata("origin","");
-		originChild.addAttribute(new PointingMetadata("ref",origin));
+		PointingMetadata originChild = new PointingMetadata(ORIGIN_TAG,"");
+		originChild.addAttribute(new PointingMetadata(REF_TAG,origin));
 		this.addChild(originChild);
 	}
 	/**
@@ -365,8 +417,8 @@ public class DirectionVector extends PointingMetadata{
 	 * @param target Target State vector
 	 */	
 	public void setTarget(String target){
-		PointingMetadata targetChild = new PointingMetadata("target","");
-		targetChild.addAttribute(new PointingMetadata("ref",target));
+		PointingMetadata targetChild = new PointingMetadata(TARGET_TAG,"");
+		targetChild.addAttribute(new PointingMetadata(REF_TAG,target));
 		this.addChild(targetChild);
 		
 	}
@@ -376,14 +428,14 @@ public class DirectionVector extends PointingMetadata{
 	 * @return Target State vector
 	 */
 	public String getTarget(){
-		return this.getChild("target").getAttribute("ref").getValue();
+		return this.getChild(TARGET_TAG).getAttribute(REF_TAG).getValue();
 	}
 	/**
 	 * For state vector based in Origin and Target, get the Origin
 	 * @return Origin State vector
 	 */
 	public String getOrigin(){
-		return this.getChild("origin").getAttribute("ref").getValue();
+		return this.getChild(ORIGIN_TAG).getAttribute(REF_TAG).getValue();
 	}
 	//Reference
 	/*public Reference(String type,PointingMetadata pm){
@@ -408,7 +460,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @param reference Name of the referenced vector
 	 */
 	public void setReference(String reference){
-		this.addAttribute(new PointingMetadata("ref",reference));
+		this.addAttribute(new PointingMetadata(REF_TAG,reference));
 	}
 	
 	/**
@@ -416,7 +468,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @return Name of the referenced vector
 	 */
 	public String getReference(){
-		return this.getAttribute("ref").getValue();
+		return this.getAttribute(REF_TAG).getValue();
 	}
 	
 	//Rotate
@@ -440,7 +492,7 @@ public class DirectionVector extends PointingMetadata{
 	 */
 	public DirectionVector(String type,String axis,String rotationAxis,String rotationAngleUnit,float rotationAngle){
 		this(type);
-		this.addAttribute(new PointingMetadata("ref","rotate"));
+		this.addAttribute(new PointingMetadata(REF_TAG,ROTATE_TAG));
 		setAxis(axis);
 		setRotationAxis(rotationAxis);
 		setRotationAngle(rotationAngleUnit,rotationAngle);
@@ -459,7 +511,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @param rotationAngle Rotation angle. It must be expressed in deg.
 	 */
 	public DirectionVector(String type,String axis,String rotationAxis,float rotationAngle){
-		this(type,axis,rotationAxis,"deg",rotationAngle);
+		this(type,axis,rotationAxis,Units.DEGREE,rotationAngle);
 	}
 	
 	/**
@@ -467,8 +519,8 @@ public class DirectionVector extends PointingMetadata{
 	 * @param axis
 	 */
 	public void setAxis(String axis){
-		PointingMetadata axisChild = new PointingMetadata("axis","");
-		axisChild.addAttribute(new PointingMetadata("ref",axis));
+		PointingMetadata axisChild = new PointingMetadata(AXIS_TAG,"");
+		axisChild.addAttribute(new PointingMetadata(REF_TAG,axis));
 		this.addChild(axisChild);
 	}
 	
@@ -477,7 +529,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @return Axis
 	 */
 	public String getAxis(){
-		return this.getChild("axis").getAttribute("ref").getValue();
+		return this.getChild(AXIS_TAG).getAttribute(REF_TAG).getValue();
 	}
 	
 	/**
@@ -485,8 +537,8 @@ public class DirectionVector extends PointingMetadata{
 	 * @param rotationAxis Rotation Axis
 	 */
 	public void setRotationAxis(String rotationAxis){
-		PointingMetadata rotationAxisChild = new PointingMetadata("rotationAxis","");
-		rotationAxisChild.addAttribute(new PointingMetadata("ref",rotationAxis));
+		PointingMetadata rotationAxisChild = new PointingMetadata(ROTATION_AXIS_TAG,"");
+		rotationAxisChild.addAttribute(new PointingMetadata(REF_TAG,rotationAxis));
 		this.addChild(rotationAxisChild);
 		
 	}
@@ -495,7 +547,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @return Rotation Axis
 	 */
 	public String getRotationAxis(){
-		return this.getChild("rotationAxis").getAttribute("ref").getValue();
+		return this.getChild(ROTATION_AXIS_TAG).getAttribute(REF_TAG).getValue();
 	}
 	/**
 	 * For rotated direction vector, set the rotation angle
@@ -503,22 +555,22 @@ public class DirectionVector extends PointingMetadata{
 	 * @param angle Rotation angle
 	 */
 	public void setRotationAngle(String angleUnit,float angle){
-		this.setFloatField("rotationAngle", angle);
-		this.setUnit("rotationAngle", angleUnit);
+		this.setFloatField(ROTATION_ANGLE_TAG, angle);
+		this.setUnit(ROTATION_ANGLE_TAG, angleUnit);
 	}
 	/**
 	 * For rotated direction vector, set the rotation angle
 	 * @param angle Rotation angle. The rotation angle unit is set to deg.
 	 */
 	public void setRotationAngle(float angle){
-		setRotationAngle("deg",angle);
+		setRotationAngle(Units.DEGREE,angle);
 	}
 	/**
 	 * For rotated direction vector, get the rotation angle
 	 * @return Rotation angle
 	 */
 	public float getRotationAngle(){
-		return Float.parseFloat(this.getChild("rotationAngle").getValue());
+		return Float.parseFloat(this.getChild(ROTATION_ANGLE_TAG).getValue());
 	}
 	/**
 	 * For rotated direction vector, get the rotation angle in the given unit
@@ -526,7 +578,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @return Rotation angle
 	 */
 	public float getRotationAngle(String unit){
-		return Units.convertUnit(Float.parseFloat(this.getChild("rotationAngle").getValue()),getRotationAngleUnit(),unit);
+		return Units.convertUnit(Float.parseFloat(this.getChild(ROTATION_ANGLE_TAG).getValue()),getRotationAngleUnit(),unit);
 	}
 
 	
@@ -535,7 +587,8 @@ public class DirectionVector extends PointingMetadata{
 	 * @return
 	 */
 	public String getRotationAngleUnit(){
-		return getUnit("rotationAngle");
+		return getUnit(ROTATION_ANGLE_TAG);
 	}
+	
 
 }
