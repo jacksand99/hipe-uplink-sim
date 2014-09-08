@@ -39,9 +39,9 @@ import vega.uplink.pointing.attitudes.*;
 
 public class PtrUtils {
 
-	private static PointingMetadata recursiveTranslation(PointingMetadata item){
+	private static PointingElement recursiveTranslation(PointingElement item){
 		if (!item.hasChildren()) return translateChild(item);
-		PointingMetadata[] children=item.getChildren();
+		PointingElement[] children=item.getChildren();
 		for (int i=0;i<children.length;i++){
 			 children[i]=recursiveTranslation(children[i]);
 			 item.addChild(children[i]);
@@ -51,7 +51,8 @@ public class PtrUtils {
 		
 		return item;
 	}
-	private static PointingMetadata translateChild(PointingMetadata item){
+	private static PointingElement translateChild(PointingElement item){
+		//if (item.getName().equals(PointingMetadata.))
 		if (item.getName().equals(PointingBlock.BLOCK_TAG)) return new PointingBlock(item);
 		if (item.getName().equals(PointingAttitude.ATTITUDE_TAG)){
 			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_ILLUMINATEDPOINT)) return new IlluminatedPoint(item);
@@ -125,7 +126,7 @@ public class PtrUtils {
 					//String type=
 					PointingBlock block=PointingBlock.readFrom(nlBlocks.item(j));
 					if (block.hasChildren()){
-						PointingMetadata[] children=block.getChildren();
+						PointingElement[] children=block.getChildren();
 						for (int h=0;h<children.length;h++){
 							 children[h]=recursiveTranslation(children[h]);
 							 block.addChild(children[h]);

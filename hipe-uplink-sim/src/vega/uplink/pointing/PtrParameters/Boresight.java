@@ -1,7 +1,7 @@
 package vega.uplink.pointing.PtrParameters;
 
 
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 
 /**
  * Vector defined in SC frame that shall be pointed to the target
@@ -35,7 +35,7 @@ public class Boresight extends DirectionVector{
 	public Boresight(String frame,float longitude,float latitude){
 		super(BORESIGHT_TAG,frame,longitude,latitude);
 	}
-	public Boresight(PointingMetadata pm){
+	public Boresight(PointingElement pm){
 		super(BORESIGHT_TAG,pm);
 	}
 	/**

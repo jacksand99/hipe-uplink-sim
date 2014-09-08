@@ -1,7 +1,7 @@
 package vega.uplink.pointing.attitudes;
 
 import vega.uplink.pointing.PointingAttitude;
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.PtrParameters.Boresight;
 import vega.uplink.pointing.PtrParameters.DirectionVector;
 import vega.uplink.pointing.PtrParameters.OffsetRefAxis;
@@ -15,7 +15,7 @@ import vega.uplink.pointing.PtrParameters.Offset.OffsetAngles;
  *
  */
 public class Track extends PointingAttitude {
-	public Track(PointingMetadata org){
+	public Track(PointingElement org){
 		super(org);
 	}
 	/**
@@ -101,8 +101,8 @@ public class Track extends PointingAttitude {
 		//this(new Boresight(),new PhaseAngle(),new Target("CG"));
 	}
 	
-	public PointingMetadata getTarget(){
-		return (PointingMetadata) this.getChild(PointingAttitude.POINTING_ATTITUDE_TYPE_TRACK);
+	public PointingElement getTarget(){
+		return (PointingElement) this.getChild(PointingAttitude.POINTING_ATTITUDE_TYPE_TRACK);
 	}
 	
 	public void setTarget(TargetTrack target){

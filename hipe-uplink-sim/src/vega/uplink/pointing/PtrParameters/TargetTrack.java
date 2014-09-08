@@ -1,10 +1,10 @@
 package vega.uplink.pointing.PtrParameters;
 
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 
 public class TargetTrack extends StateVector {
 	public static String TARGET_TAG="target";
-	public TargetTrack(PointingMetadata org){
+	public TargetTrack(PointingElement org){
 		super(org);
 	}
 	/**

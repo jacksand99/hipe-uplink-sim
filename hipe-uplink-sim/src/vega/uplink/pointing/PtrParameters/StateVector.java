@@ -1,6 +1,6 @@
 package vega.uplink.pointing.PtrParameters;
 
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.Units;
 
 /**
@@ -8,7 +8,7 @@ import vega.uplink.pointing.Units;
  * @author jarenas
  *
  */
-public class StateVector extends PointingMetadata {
+public class StateVector extends PointingElement {
 	/**
 	 * ref
 	 */
@@ -53,7 +53,7 @@ public class StateVector extends PointingMetadata {
 	 * name
 	 */
 	public static String NAME_TAG="name";
-	public StateVector(PointingMetadata org){
+	public StateVector(PointingElement org){
 		super(org);
 	}
 
@@ -73,7 +73,7 @@ public class StateVector extends PointingMetadata {
 	 * @param ref solar system object or landmarks defined in the PDFM
 	 */
 	public void setRef(String ref){
-		this.addAttribute(new PointingMetadata(REF_TAG,ref));		
+		this.addAttribute(new PointingElement(REF_TAG,ref));		
 	}
 	
 	/**
@@ -110,8 +110,8 @@ public class StateVector extends PointingMetadata {
 	 */
 	public StateVector(String type,String origin,String frame,String x,String y,String z){
 		super(type,"");
-		PointingMetadata fraChild = new PointingMetadata(POSITION_FIELD,"");
-		fraChild.addAttribute(new PointingMetadata(FRAME_FIELD,frame));
+		PointingElement fraChild = new PointingElement(POSITION_FIELD,"");
+		fraChild.addAttribute(new PointingElement(FRAME_FIELD,frame));
 		this.addChild(fraChild);
 		this.setOrigin(origin);
 		setX(DEFAULT_UNIT,Float.parseFloat(x));
@@ -148,8 +148,8 @@ public class StateVector extends PointingMetadata {
 	 */
 	public StateVector(String type,String origin,String frame,String xUnit,float x,String yUnit,float y,String zUnit,float z){
 		super(type,"");
-		PointingMetadata fraChild = new PointingMetadata(POSITION_FIELD,"");
-		fraChild.addAttribute(new PointingMetadata(FRAME_FIELD,frame));
+		PointingElement fraChild = new PointingElement(POSITION_FIELD,"");
+		fraChild.addAttribute(new PointingElement(FRAME_FIELD,frame));
 		this.addChild(fraChild);
 		this.setOrigin(origin);
 		setX(xUnit,x);
@@ -169,8 +169,8 @@ public class StateVector extends PointingMetadata {
 	public StateVector(String type,String origin,String frame,float x,float y,float z){
 		super(type,"");
 		//setLandMark(landmark);
-		PointingMetadata fraChild = new PointingMetadata(POSITION_FIELD,"");
-		fraChild.addAttribute(new PointingMetadata(FRAME_FIELD,frame));
+		PointingElement fraChild = new PointingElement(POSITION_FIELD,"");
+		fraChild.addAttribute(new PointingElement(FRAME_FIELD,frame));
 		this.addChild(fraChild);
 		this.setOrigin(origin);
 		setX(DEFAULT_UNIT,x);
@@ -184,8 +184,8 @@ public class StateVector extends PointingMetadata {
 	 * @param origin
 	 */
 	public void setOrigin(String origin){
-		PointingMetadata org = new PointingMetadata(ORIGIN_FIELD,"");
-		org.addAttribute(new PointingMetadata(REF_TAG,origin));
+		PointingElement org = new PointingElement(ORIGIN_FIELD,"");
+		org.addAttribute(new PointingElement(REF_TAG,origin));
 		this.addChild(org);
 	}
 	
@@ -196,7 +196,7 @@ public class StateVector extends PointingMetadata {
 	public String getOrigin(){
 		return this.getChild(ORIGIN_FIELD).getAttribute(REF_TAG).getValue();
 	}
-	private PointingMetadata getPosition(){
+	private PointingElement getPosition(){
 		return this.getChild(POSITION_FIELD);
 	}
 	
@@ -207,7 +207,7 @@ public class StateVector extends PointingMetadata {
 	 * @param x the X component of the position of the landmark
 	 */
 	public void setX(String unit,float x){
-		getPosition().addChild(new PointingMetadata(X_FIELD,""+x));
+		getPosition().addChild(new PointingElement(X_FIELD,""+x));
 		setUnit(X_FIELD,unit);
 	}
 	/**
@@ -216,7 +216,7 @@ public class StateVector extends PointingMetadata {
 	 * @param y the Y component of the position of the landmark
 	 */
 	public void setY(String unit,float y){
-		getPosition().addChild(new PointingMetadata(Y_FIELD,""+y));
+		getPosition().addChild(new PointingElement(Y_FIELD,""+y));
 		setUnit(Y_FIELD,unit);
 	}
 	/**
@@ -225,7 +225,7 @@ public class StateVector extends PointingMetadata {
 	 * @param z the Z component of the position of the landmark
 	 */
 	public void setZ(String unit,float z){
-		getPosition().addChild(new PointingMetadata(Z_FIELD,""+z));
+		getPosition().addChild(new PointingElement(Z_FIELD,""+z));
 		setUnit(Z_FIELD,unit);
 	}
 	
@@ -289,11 +289,11 @@ public class StateVector extends PointingMetadata {
 	}
 	
 	public void setLandMark(String name){
-		addAttribute(new PointingMetadata(LANDMARK_FIELD,name));
+		addAttribute(new PointingElement(LANDMARK_FIELD,name));
 	}
 	
 	public String getUnit(String field){
-		PointingMetadata deltaTimesCh = getPosition().getChild(field);
+		PointingElement deltaTimesCh = getPosition().getChild(field);
 		if (deltaTimesCh==null) return null;
 		if (deltaTimesCh.getAttribute(UNITS_TAG)==null) return null;
 		return deltaTimesCh.getAttribute(UNITS_TAG).getValue();
@@ -301,10 +301,10 @@ public class StateVector extends PointingMetadata {
 	}
 	
 	public void setUnit(String field,String unit){
-		PointingMetadata deltaTimesCh = getPosition().getChild(field);
+		PointingElement deltaTimesCh = getPosition().getChild(field);
 		//System.out.println(deltaTimesCh);
-		if (deltaTimesCh==null) deltaTimesCh=new PointingMetadata(field,"");
-		deltaTimesCh.addAttribute(new PointingMetadata(UNITS_TAG,unit));
+		if (deltaTimesCh==null) deltaTimesCh=new PointingElement(field,"");
+		deltaTimesCh.addAttribute(new PointingElement(UNITS_TAG,unit));
 		getPosition().addChild(deltaTimesCh);
 		
 	}
@@ -315,8 +315,8 @@ public class StateVector extends PointingMetadata {
 		for (int i=0;i<indent;i++){
 			iString=iString+"\t";
 		}
-		PointingMetadata[] childs=this.getChildren();
-		PointingMetadata[] attr=this.getAttributes();
+		PointingElement[] childs=this.getChildren();
+		PointingElement[] attr=this.getAttributes();
 		if (childs.length==0){
 			if (attr.length>0 || getValue()!=""){
 					result=result+iString+"<"+getName();

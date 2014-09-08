@@ -1,6 +1,6 @@
 package vega.uplink.pointing.PtrParameters.Offset;
 
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.Units;
 
 public class OffsetFixed extends OffsetAngles{
@@ -21,7 +21,7 @@ public class OffsetFixed extends OffsetAngles{
 	 */
 	public static String YANGLE_DEFAULT_UNIT=Units.DEGREE;
 	
-	public OffsetFixed(PointingMetadata org){
+	public OffsetFixed(PointingElement org){
 		super(org);
 	}
 
@@ -147,11 +147,11 @@ public class OffsetFixed extends OffsetAngles{
 		OffsetFixed result = new OffsetFixed();
 		
 		//result.setValue(getValue());
-		PointingMetadata[] ch = getChildren();
+		PointingElement[] ch = getChildren();
 		for (int i=0;i<ch.length;i++){
 			result.addChild(ch[i]);
 		}
-		PointingMetadata[] att = getAttributes();
+		PointingElement[] att = getAttributes();
 		for (int i=0;i<att.length;i++){
 			result.addAttribute(att[i]);
 		}

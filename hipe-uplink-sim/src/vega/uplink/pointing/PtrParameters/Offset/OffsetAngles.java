@@ -3,9 +3,9 @@ package vega.uplink.pointing.PtrParameters.Offset;
 import java.util.Date;
 
 import vega.uplink.pointing.PointingBlock;
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 
-public abstract class OffsetAngles extends PointingMetadata {
+public abstract class OffsetAngles extends PointingElement {
 	/**
 	 * offsetAngles
 	 */
@@ -30,7 +30,7 @@ public abstract class OffsetAngles extends PointingMetadata {
 	 * ref
 	 */
 	public static String REF_TAG="ref";
-	public OffsetAngles(PointingMetadata org){
+	public OffsetAngles(PointingElement org){
 		super(org);
 	}
 
@@ -40,7 +40,7 @@ public abstract class OffsetAngles extends PointingMetadata {
 	 */
 	public OffsetAngles(String ref){
 		super(OFFSETANGLES_TAG,"");
-		this.addAttribute(new PointingMetadata(REF_TAG,ref));
+		this.addAttribute(new PointingElement(REF_TAG,ref));
 
 	}
 	private OffsetAngles(){
@@ -61,7 +61,7 @@ public abstract class OffsetAngles extends PointingMetadata {
 	 */	
 	public void setStartTime(String startTime){
 		//System.out.println(startTime);
-		PointingMetadata startTimeCh = new PointingMetadata("startTime",startTime);
+		PointingElement startTimeCh = new PointingElement("startTime",startTime);
 		addChild(startTimeCh);
 		//System.out.println( this.getChild("startTime").getValue());
 
@@ -108,7 +108,7 @@ public abstract class OffsetAngles extends PointingMetadata {
 	}
 	
 	public String getUnit(String field){
-		PointingMetadata deltaTimesCh = getChild(field);
+		PointingElement deltaTimesCh = getChild(field);
 		if (deltaTimesCh==null) return null;
 		if (deltaTimesCh.getAttribute("units")==null) return null;
 		return deltaTimesCh.getAttribute("units").getValue();
@@ -116,10 +116,10 @@ public abstract class OffsetAngles extends PointingMetadata {
 	}
 	
 	public void setUnit(String field,String unit){
-		PointingMetadata deltaTimesCh = getChild(field);
+		PointingElement deltaTimesCh = getChild(field);
 		//System.out.println(deltaTimesCh);
-		if (deltaTimesCh==null) deltaTimesCh=new PointingMetadata(field,"");
-		deltaTimesCh.addAttribute(new PointingMetadata("units",unit));
+		if (deltaTimesCh==null) deltaTimesCh=new PointingElement(field,"");
+		deltaTimesCh.addAttribute(new PointingElement("units",unit));
 		addChild(deltaTimesCh);
 		
 	}
@@ -129,10 +129,10 @@ public abstract class OffsetAngles extends PointingMetadata {
 		for (int i=0;i<xAngles.length;i++){
 			sDT=sDT+xAngles[i]+" ";
 		}
-		PointingMetadata deltaTimesCh;
+		PointingElement deltaTimesCh;
 		deltaTimesCh=getChild(field);
 		if (deltaTimesCh==null){
-			deltaTimesCh = new PointingMetadata(field,sDT);
+			deltaTimesCh = new PointingElement(field,sDT);
 		}else{
 			deltaTimesCh.setValue(sDT);
 		}
@@ -143,10 +143,10 @@ public abstract class OffsetAngles extends PointingMetadata {
 	
 	public void setFloatField(String field,float value){
 		String sDT=""+value;
-		PointingMetadata deltaTimesCh;
+		PointingElement deltaTimesCh;
 		deltaTimesCh=getChild(field);
 		if (deltaTimesCh==null){
-			deltaTimesCh = new PointingMetadata(field,sDT);
+			deltaTimesCh = new PointingElement(field,sDT);
 		}else{
 			deltaTimesCh.setValue(sDT);
 		}
@@ -157,10 +157,10 @@ public abstract class OffsetAngles extends PointingMetadata {
 	
 	public void setIntegerField(String field,int value){
 		String sDT=""+value;
-		PointingMetadata deltaTimesCh;
+		PointingElement deltaTimesCh;
 		deltaTimesCh=getChild(field);
 		if (deltaTimesCh==null){
-			deltaTimesCh = new PointingMetadata(field,sDT);
+			deltaTimesCh = new PointingElement(field,sDT);
 		}else{
 			deltaTimesCh.setValue(sDT);
 		}
@@ -171,10 +171,10 @@ public abstract class OffsetAngles extends PointingMetadata {
 	
 	public void setStringField(String field,String value){
 		String sDT=""+value;
-		PointingMetadata deltaTimesCh;
+		PointingElement deltaTimesCh;
 		deltaTimesCh=getChild(field);
 		if (deltaTimesCh==null){
-			deltaTimesCh = new PointingMetadata(field,sDT);
+			deltaTimesCh = new PointingElement(field,sDT);
 		}else{
 			deltaTimesCh.setValue(sDT);
 		}
@@ -185,10 +185,10 @@ public abstract class OffsetAngles extends PointingMetadata {
 	
 	public void setBooleanField(String field,boolean value){
 		String sDT=""+value;
-		PointingMetadata deltaTimesCh;
+		PointingElement deltaTimesCh;
 		deltaTimesCh=getChild(field);
 		if (deltaTimesCh==null){
-			deltaTimesCh = new PointingMetadata(field,sDT);
+			deltaTimesCh = new PointingElement(field,sDT);
 		}else{
 			deltaTimesCh.setValue(sDT);
 		}

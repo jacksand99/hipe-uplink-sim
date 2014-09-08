@@ -1,11 +1,11 @@
 package vega.uplink.pointing.PtrParameters;
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 public class PointedAxis extends DirectionVector{
 		/**
 		 * pointedAxis
 		 */
 		public static String POINTED_AXIS_TAG="pointedAxis";
-        public PointedAxis(PointingMetadata pm){
+        public PointedAxis(PointingElement pm){
                 super(POINTED_AXIS_TAG,pm);
         }
     	/**

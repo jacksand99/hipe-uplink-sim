@@ -50,23 +50,23 @@ public class Pdfm extends Product {
 		set(child.getName(),child);
 	}*/
 	
-	public PointingMetadata getDefinition(String name){
+	public PointingElement getDefinition(String name){
 		Dataset result = get(name);
-		if (InterpreterUtil.isInstance(PointingMetadata.class, result)) return (PointingMetadata) result;
+		if (InterpreterUtil.isInstance(PointingElement.class, result)) return (PointingElement) result;
 		else return null;
 		
 	}
 	
-	public PointingMetadata[] getAllChildren(){
-		Vector<PointingMetadata> rVector=new Vector<PointingMetadata>();
+	public PointingElement[] getAllChildren(){
+		Vector<PointingElement> rVector=new Vector<PointingElement>();
 		Map<String, Dataset> sets = this.getSets();
 		Iterator<String> it = sets.keySet().iterator();
 		while (it.hasNext()){
 			String key = it.next();
-			PointingMetadata bore=getDefinition(key);
+			PointingElement bore=getDefinition(key);
 			if (bore!=null) rVector.add(bore);
 		}
-		PointingMetadata[] result=new PointingMetadata[rVector.size()];
+		PointingElement[] result=new PointingElement[rVector.size()];
 		rVector.toArray(result);
 		return result;
 		
@@ -81,7 +81,7 @@ public class Pdfm extends Product {
 		Iterator<String> it = sets.keySet().iterator();
 		while (it.hasNext()){
 			String key = it.next();
-			PointingMetadata bore=getDefinition(key);
+			PointingElement bore=getDefinition(key);
 			if (bore!=null){
 				result=result+bore.toXml(1);
 				//rVector.add(bore);

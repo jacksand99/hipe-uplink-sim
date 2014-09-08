@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import vega.uplink.pointing.PointingBlock;
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.Units;
 
 /**
@@ -12,7 +12,7 @@ import vega.uplink.pointing.Units;
  * @author jarenas
  *
  */
-public class PhaseAngle extends PointingMetadata {
+public class PhaseAngle extends PointingElement {
 	/**
 	 * yDir
 	 */
@@ -95,7 +95,7 @@ public class PhaseAngle extends PointingMetadata {
 	public static String INERTIAL_AXIS_TAG="inertialAxis";
 	
 
-	public PhaseAngle(PointingMetadata org){
+	public PhaseAngle(PointingElement org){
 		super(org);
 	}
 
@@ -135,9 +135,9 @@ public class PhaseAngle extends PointingMetadata {
 	 */
 	public PhaseAngle(java.lang.String tRef, java.lang.String yRot){
 		super(PHASEANGLE_TAG,"");
-		this.addAttribute(new PointingMetadata(REF_TAG,FLIP_TAG));
-		this.addChild(new PointingMetadata(FLIP_START_TIME_TAG,tRef));
-		PointingMetadata flipType = new PointingMetadata(FLIP_TYPE_TAG,yRot);
+		this.addAttribute(new PointingElement(REF_TAG,FLIP_TAG));
+		this.addChild(new PointingElement(FLIP_START_TIME_TAG,tRef));
+		PointingElement flipType = new PointingElement(FLIP_TYPE_TAG,yRot);
 		this.addChild(flipType);
 		
 	}
@@ -184,7 +184,7 @@ public class PhaseAngle extends PointingMetadata {
 	 */
 	public PhaseAngle(java.lang.Boolean yDir, String units,float angle){
 		super(PHASEANGLE_TAG,"");
-		this.addAttribute(new PointingMetadata(REF_TAG,POWER_OPTIMIZED_TAG));
+		this.addAttribute(new PointingElement(REF_TAG,POWER_OPTIMIZED_TAG));
 		setYDir(yDir);
 		setAngle(units,angle);
 		
@@ -209,7 +209,7 @@ public class PhaseAngle extends PointingMetadata {
 	 */
 	public PhaseAngle(java.lang.Boolean yDir, float angle){
 		super(PHASEANGLE_TAG,"");
-		this.addAttribute(new PointingMetadata(REF_TAG,POWER_OPTIMIZED_TAG));
+		this.addAttribute(new PointingElement(REF_TAG,POWER_OPTIMIZED_TAG));
 		setYDir(yDir);
 		setAngle(Units.DEGREE,angle);
 		//this.addChild(new PointingMetadata(yDir,yDir));
@@ -225,10 +225,10 @@ public class PhaseAngle extends PointingMetadata {
 	 */
 	public void setYDir(boolean yDir){
 		if (yDir){
-			this.addChild(new PointingMetadata(YDIR_TAG,"true"));
+			this.addChild(new PointingElement(YDIR_TAG,"true"));
 		}
 		else{
-			this.addChild(new PointingMetadata(YDIR_TAG,"false"));
+			this.addChild(new PointingElement(YDIR_TAG,"false"));
 		}
 	}
 	/**
@@ -293,19 +293,19 @@ public class PhaseAngle extends PointingMetadata {
 	 */
 	public PhaseAngle(String sCAxysFrame,float sCAxysx,float sCAxysy,float sCAxysz,String inertialAxysFrame,float inertialAxysx,float inertialAxysy,float inertialAxysz){
 		super(PHASEANGLE_TAG,"");
-		this.addAttribute(new PointingMetadata(REF_TAG,ALIGN_TAG));
-		PointingMetadata child = new PointingMetadata(SC_AXIS_TAG,"");
-		child.addAttribute(new PointingMetadata(FRAME_TAG,sCAxysFrame));
-		child.addChild(new PointingMetadata(X_TAG,""+sCAxysx));
-		child.addChild(new PointingMetadata(Y_TAG,""+sCAxysy));
-		child.addChild(new PointingMetadata(Z_TAG,""+sCAxysz));
+		this.addAttribute(new PointingElement(REF_TAG,ALIGN_TAG));
+		PointingElement child = new PointingElement(SC_AXIS_TAG,"");
+		child.addAttribute(new PointingElement(FRAME_TAG,sCAxysFrame));
+		child.addChild(new PointingElement(X_TAG,""+sCAxysx));
+		child.addChild(new PointingElement(Y_TAG,""+sCAxysy));
+		child.addChild(new PointingElement(Z_TAG,""+sCAxysz));
 		this.addChild(child);
 		
-		PointingMetadata child2 = new PointingMetadata(INERTIAL_AXIS_TAG,"");
-		child2.addAttribute(new PointingMetadata(FRAME_TAG,inertialAxysFrame));
-		child2.addChild(new PointingMetadata(X_TAG,""+inertialAxysx));
-		child2.addChild(new PointingMetadata(Y_TAG,""+inertialAxysy));
-		child2.addChild(new PointingMetadata(Z_TAG,""+inertialAxysz));
+		PointingElement child2 = new PointingElement(INERTIAL_AXIS_TAG,"");
+		child2.addAttribute(new PointingElement(FRAME_TAG,inertialAxysFrame));
+		child2.addChild(new PointingElement(X_TAG,""+inertialAxysx));
+		child2.addChild(new PointingElement(Y_TAG,""+inertialAxysy));
+		child2.addChild(new PointingElement(Z_TAG,""+inertialAxysz));
 		this.addChild(child2);
 
 
@@ -318,8 +318,8 @@ public class PhaseAngle extends PointingMetadata {
 	 * @param angle The angle parameter, for example 90
 	 */
 	public void setAngle(String units,String angle){
-		PointingMetadata an = (new PointingMetadata(ANGLE_TAG,angle));
-		an.addAttribute(new PointingMetadata(UNITS_TAG,units));
+		PointingElement an = (new PointingElement(ANGLE_TAG,angle));
+		an.addAttribute(new PointingElement(UNITS_TAG,units));
 		this.addChild(an);
 	}
 	/**
@@ -330,8 +330,8 @@ public class PhaseAngle extends PointingMetadata {
 	 * @param angle The angle parameter, for example 90
 	 */	
 	public void setAngle(String units,float angle){
-		PointingMetadata an = (new PointingMetadata(ANGLE_TAG,angle+""));
-		an.addAttribute(new PointingMetadata(UNITS_TAG,units));
+		PointingElement an = (new PointingElement(ANGLE_TAG,angle+""));
+		an.addAttribute(new PointingElement(UNITS_TAG,units));
 		this.addChild(an);
 	}
 	public float getAngle(){
@@ -352,7 +352,7 @@ public class PhaseAngle extends PointingMetadata {
 	 * @param time
 	 */
 	public void setFlipStartTime(Date time){
-		this.addChild(new PointingMetadata(FLIP_START_TIME_TAG,PointingBlock.dateToZulu(time)));
+		this.addChild(new PointingElement(FLIP_START_TIME_TAG,PointingBlock.dateToZulu(time)));
 	}
 	
 	

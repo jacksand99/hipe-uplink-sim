@@ -15,7 +15,7 @@ import herschel.share.interpreter.InterpreterUtil;
  * @author jarenas
  *
  */
-public class PointingAttitude extends PointingMetadata{
+public class PointingAttitude extends PointingElement{
 	/**
 	 * fixed attitude type that was implemented in the same PTR at an earlier time.
 	 */
@@ -54,7 +54,7 @@ public class PointingAttitude extends PointingMetadata{
 	public static String REF_TAG="ref";
 	public static String POWEROPTIMIZED_TAG="_pwropt";
 
-	public PointingAttitude(PointingMetadata org){
+	public PointingAttitude(PointingElement org){
 		super(org);
 	}
 
@@ -66,7 +66,7 @@ public class PointingAttitude extends PointingMetadata{
 	 */
 	public PointingAttitude(String type,Boresight boresight,PhaseAngle phaseAngle){
 		super(ATTITUDE_TAG,"");
-		this.addAttribute(new PointingMetadata(REF_TAG,type));
+		this.addAttribute(new PointingElement(REF_TAG,type));
 		setBoresight(boresight);
 		setPhaseAngle(phaseAngle);
 	}
@@ -76,7 +76,7 @@ public class PointingAttitude extends PointingMetadata{
 	 */
 	public PointingAttitude(String type){
 		super(ATTITUDE_TAG,"");
-		this.addAttribute(new PointingMetadata(REF_TAG,type));
+		this.addAttribute(new PointingElement(REF_TAG,type));
 		//setBoresight(new Boresight());
 		//setPhaseAngle(new PhaseAngle());
 	}
@@ -102,7 +102,7 @@ public class PointingAttitude extends PointingMetadata{
 	 * @return
 	 */
 	public Boresight getBoresight(){
-		PointingMetadata result = this.getChild(Boresight.BORESIGHT_TAG);
+		PointingElement result = this.getChild(Boresight.BORESIGHT_TAG);
 		if (result!=null){
 			return (Boresight) result;
 		}else{
@@ -122,7 +122,7 @@ public class PointingAttitude extends PointingMetadata{
 			//result.addAttribute(new PointingMetadata("ref","powerOptimised"));
 			
 		}
-		PointingMetadata result = this.getChild(PhaseAngle.PHASEANGLE_TAG);
+		PointingElement result = this.getChild(PhaseAngle.PHASEANGLE_TAG);
 		if (result!=null){
 			return (PhaseAngle) this.getChild(PhaseAngle.PHASEANGLE_TAG);
 		}else{
@@ -155,7 +155,7 @@ public class PointingAttitude extends PointingMetadata{
 	 * @return
 	 */
 	public OffsetRefAxis getOffsetRefAxis(){
-		PointingMetadata child = this.getChild(OffsetRefAxis.OFFSETREFAXIS_TAG);
+		PointingElement child = this.getChild(OffsetRefAxis.OFFSETREFAXIS_TAG);
 		if (child==null) return null;
 		if (InterpreterUtil.isInstance(OffsetRefAxis.class, child)){
 			return (OffsetRefAxis) child;
@@ -167,7 +167,7 @@ public class PointingAttitude extends PointingMetadata{
 	 * @return
 	 */
 	public OffsetAngles getOffsetAngles(){
-		PointingMetadata child = this.getChild(OffsetAngles.OFFSETANGLES_TAG);
+		PointingElement child = this.getChild(OffsetAngles.OFFSETANGLES_TAG);
 		if (child==null) return null;
 		if (InterpreterUtil.isInstance(OffsetAngles.class, child)){
 			return (OffsetAngles) child;
@@ -177,7 +177,7 @@ public class PointingAttitude extends PointingMetadata{
 	
 	public PointingAttitude copy() {
 		PointingAttitude result = new PointingAttitude(getAttitudeType());
-		PointingMetadata[] ch = getChildren();
+		PointingElement[] ch = getChildren();
 		for (int i=0;i<ch.length;i++){
 			result.addChild(ch[i]);
 		}

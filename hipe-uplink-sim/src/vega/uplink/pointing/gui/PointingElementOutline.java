@@ -15,15 +15,18 @@ import java.util.List;
 //import javafx.scene.control.TableColumn;
 
 
+
 import javax.swing.JComponent;
 
 
 
 
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
+
 
 
 
@@ -58,7 +61,7 @@ import javax.swing.table.TableRowSorter;
 
 import vega.uplink.pointing.*;
 //public class PointingMetadataOutline extends MultilineVariableOutline implements OutlineComponent{
-public class PointingMetadataOutline  extends JPanel implements OutlineComponent{
+public class PointingElementOutline  extends JPanel implements OutlineComponent{
 	/**
 	 * 
 	 */
@@ -66,6 +69,8 @@ public class PointingMetadataOutline  extends JPanel implements OutlineComponent
     private OutlineView view;
 	private static final long serialVersionUID = 1L;
 	JTable table;
+	//JPanel panel;
+	//JLabel xmlLabel;
 	protected static final Object[] TABLE_HEADER = { "Key", "Value" };
 	//VariableSelection selection;
 
@@ -106,6 +111,11 @@ public class PointingMetadataOutline  extends JPanel implements OutlineComponent
     }
 
     protected JComponent getTopComponent() {
+    	//if (panel==null) panel=new JPanel();
+    	/*if (xmlLabel==null){
+    		xmlLabel=new JLabel(); 
+    		//xmlLabel.
+    	}*/
         if (table == null) {
         	String cName = "-";
         	String pName = "(default)";
@@ -122,8 +132,10 @@ public class PointingMetadataOutline  extends JPanel implements OutlineComponent
         	Object[] row1={ "Class", cName };
         	Object[] row2={ "Package", pName };
             //Object[] row3 = { "Value", ((PointingMetadata)((VariableSelection)selection).getValue()).toString() };
-            Object[] row4 = { "XML", ((PointingMetadata)((VariableSelection)selection).getValue()).toXml(0) };
+            Object[] row4 = { "XML", ((PointingElement)((VariableSelection)selection).getValue()).toXml(0) };
             Object[][] data = new Object[][] { row0, row1,row2,row4 };
+            //Object[][] data = new Object[][] { row0, row1,row2 };
+            //xmlLabel.setText(((PointingElement)((VariableSelection)selection).getValue()).toXml(0));
         	/*int length = common.length + extra.length;
         	if (length == 0) { return; }
         	Object[][] data = new Object[length][2];*/
@@ -176,6 +188,12 @@ public class PointingMetadataOutline  extends JPanel implements OutlineComponent
         	revalidate();
         	repaint();
         }
+        /*panel=new JPanel();
+        panel.add(table);
+        xmlLabel= new JLabel();
+        xmlLabel.setText(((PointingElement)((VariableSelection)selection).getValue()).toXml(0));
+        panel.add(xmlLabel);*/
+        //return panel;
         return table;
     }
     

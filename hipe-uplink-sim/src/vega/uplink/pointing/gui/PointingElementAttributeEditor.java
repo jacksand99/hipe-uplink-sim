@@ -13,17 +13,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 //import vega.uplink.pointing.gui.PointingMetadataEditor.ValueListener;
 
-public class PointingMetadataAttributeEditor extends JPanel{
+public class PointingElementAttributeEditor extends JPanel{
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public PointingMetadataAttributeEditor(PointingMetadata attribute,PointingMetadata parent){
+	public PointingElementAttributeEditor(PointingElement attribute,PointingElement parent){
 		super();
 		JPanel main=new JPanel();
 		main.setLayout(new BoxLayout(this,BoxLayout.LINE_AXIS));
@@ -61,9 +61,9 @@ public class PointingMetadataAttributeEditor extends JPanel{
 	
 	public class ValueListener implements ActionListener{
 		JTextField field;
-		PointingMetadata pm;
-		PointingMetadata parentPm;
-		public ValueListener(PointingMetadata metadataAttached,PointingMetadata parent,JTextField fieldAttached){
+		PointingElement pm;
+		PointingElement parentPm;
+		public ValueListener(PointingElement metadataAttached,PointingElement parent,JTextField fieldAttached){
 			field=fieldAttached;
 			pm=metadataAttached;
 			parentPm=parent;

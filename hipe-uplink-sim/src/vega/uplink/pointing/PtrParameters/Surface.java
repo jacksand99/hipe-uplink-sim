@@ -1,14 +1,14 @@
 package vega.uplink.pointing.PtrParameters;
 
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.Units;
 
-public class Surface extends PointingMetadata {
+public class Surface extends PointingElement {
 	/**
 	 * surface
 	 */
 	public static String SURFACE_TAG="surface";
-	public Surface(PointingMetadata org){
+	public Surface(PointingElement org){
 		
 		super(org);
 	}
@@ -93,7 +93,7 @@ public class Surface extends PointingMetadata {
 	 * @param frame
 	 */
 	public void setFrame(String frame){
-		addAttribute(new PointingMetadata("frame",frame));
+		addAttribute(new PointingElement("frame",frame));
 	}
 	
 	/**
@@ -101,8 +101,8 @@ public class Surface extends PointingMetadata {
 	 * @param origin
 	 */
 	public void setOrigin(String origin){
-		PointingMetadata originChild = new PointingMetadata("origin","");
-		originChild.addAttribute(new PointingMetadata("ref",origin));
+		PointingElement originChild = new PointingElement("origin","");
+		originChild.addAttribute(new PointingElement("ref",origin));
 		this.addChild(originChild);
 	}
 	/**
@@ -210,10 +210,10 @@ public class Surface extends PointingMetadata {
 
 	public void setFloatField(String field,float value){
 		String sDT=""+value;
-		PointingMetadata deltaTimesCh;
+		PointingElement deltaTimesCh;
 		deltaTimesCh=getChild(field);
 		if (deltaTimesCh==null){
-			deltaTimesCh = new PointingMetadata(field,sDT);
+			deltaTimesCh = new PointingElement(field,sDT);
 		}else{
 			deltaTimesCh.setValue(sDT);
 		}
@@ -226,7 +226,7 @@ public class Surface extends PointingMetadata {
 		return Float.parseFloat(getChild(field).getValue());
 	}
 	public String getUnit(String field){
-		PointingMetadata deltaTimesCh = getChild(field);
+		PointingElement deltaTimesCh = getChild(field);
 		if (deltaTimesCh==null) return null;
 		if (deltaTimesCh.getAttribute("units")==null) return null;
 		return deltaTimesCh.getAttribute("units").getValue();
@@ -234,10 +234,10 @@ public class Surface extends PointingMetadata {
 	}
 	
 	public void setUnit(String field,String unit){
-		PointingMetadata deltaTimesCh = getChild(field);
+		PointingElement deltaTimesCh = getChild(field);
 		//System.out.println(deltaTimesCh);
-		if (deltaTimesCh==null) deltaTimesCh=new PointingMetadata(field,"");
-		deltaTimesCh.addAttribute(new PointingMetadata("units",unit));
+		if (deltaTimesCh==null) deltaTimesCh=new PointingElement(field,"");
+		deltaTimesCh.addAttribute(new PointingElement("units",unit));
 		addChild(deltaTimesCh);
 		
 	}
@@ -261,7 +261,7 @@ public class Surface extends PointingMetadata {
 	 */
 	public Surface(String ref){
 		this();
-		addAttribute(new PointingMetadata("ref",ref));
+		addAttribute(new PointingElement("ref",ref));
 	}
 	/**
 	 * Creates a surface referenced to the CG surface
@@ -276,7 +276,7 @@ public class Surface extends PointingMetadata {
 	 * @param ref
 	 */
 	public void setRef(String ref){
-		this.addAttribute(new PointingMetadata("ref",ref));
+		this.addAttribute(new PointingElement("ref",ref));
 	}
 	/**
 	 * Get the name of the other surface this surface refers to

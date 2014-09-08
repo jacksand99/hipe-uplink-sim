@@ -1,7 +1,7 @@
 package vega.uplink.pointing.attitudes;
 
 import vega.uplink.pointing.PointingAttitude;
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.PtrParameters.PhaseAngle;
 
 /**
@@ -13,7 +13,7 @@ import vega.uplink.pointing.PtrParameters.PhaseAngle;
  */
 public class DerivedPhaseAngle extends PointingAttitude {
 
-	public DerivedPhaseAngle(PointingMetadata org) {
+	public DerivedPhaseAngle(PointingElement org) {
 		super(org);
 		// TODO Auto-generated constructor stub
 	}

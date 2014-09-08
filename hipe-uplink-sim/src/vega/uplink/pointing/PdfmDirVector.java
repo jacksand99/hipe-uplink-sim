@@ -17,7 +17,7 @@ public class PdfmDirVector extends DirectionVector {
 	 * @param name
 	 */
 	public void setDirVectorName(String name){
-		if (name!=null) this.addChild(new PointingMetadata("dirvectorname",name));
+		if (name!=null) this.addChild(new PointingElement("dirvectorname",name));
 	}
 	
 	
@@ -50,8 +50,8 @@ public class PdfmDirVector extends DirectionVector {
 		for (int i=0;i<indent;i++){
 			iString=iString+"\t";
 		}
-		PointingMetadata[] childs=this.getChildren();
-		PointingMetadata[] attr=this.getAttributes();
+		PointingElement[] childs=this.getChildren();
+		PointingElement[] attr=this.getAttributes();
 		String surfaceName=getDirVectorName();
 		if (childs.length==0){
 			if (attr.length>0 || getValue()!=""){
@@ -103,14 +103,14 @@ public class PdfmDirVector extends DirectionVector {
 			for (int i=0;i<size;i++){
 				String attname=att.item(i).getNodeName();
 				String attvalue=att.item(i).getNodeValue();
-				if (!attname.equals("name") && !attname.equals("") && !attvalue.equals("")) result.addAttribute(new PointingMetadata(attname,attvalue));
+				if (!attname.equals("name") && !attname.equals("") && !attvalue.equals("")) result.addAttribute(new PointingElement(attname,attvalue));
 			}
 		}
 		if (node.hasChildNodes()){
 			NodeList children = node.getChildNodes();
 			int size=children.getLength();
 			for (int i=0;i<size;i++){
-				PointingMetadata child = PointingMetadata.readFrom(children.item(i));
+				PointingElement child = PointingElement.readFrom(children.item(i));
 				if (child!=null) result.addChild(child);
 			}			
 		}

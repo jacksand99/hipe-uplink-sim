@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import vega.uplink.pointing.PointingBlock;
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.Units;
 
 /**
@@ -91,7 +91,7 @@ public class OffsetRaster extends OffsetAngles {
 	 */
 	public static String KEEPLINEDIR_FIELD="keepLineDir";
 	
-	public OffsetRaster(PointingMetadata org){
+	public OffsetRaster(PointingElement org){
 		super(org);
 	}
 	
@@ -456,7 +456,7 @@ public class OffsetRaster extends OffsetAngles {
 	}
 	
 	public void setStartDate(Date date){
-		PointingMetadata startTimeCh = new PointingMetadata("startTime",PointingBlock.dateToZulu(date));
+		PointingElement startTimeCh = new PointingElement("startTime",PointingBlock.dateToZulu(date));
 		this.addChild(startTimeCh);
 
 	}
@@ -504,11 +504,11 @@ public class OffsetRaster extends OffsetAngles {
 		OffsetRaster result = new OffsetRaster();
 		
 		//result.setValue(getValue());
-		PointingMetadata[] ch = getChildren();
+		PointingElement[] ch = getChildren();
 		for (int i=0;i<ch.length;i++){
 			result.addChild(ch[i]);
 		}
-		PointingMetadata[] att = getAttributes();
+		PointingElement[] att = getAttributes();
 		for (int i=0;i<att.length;i++){
 			result.addAttribute(att[i]);
 		}

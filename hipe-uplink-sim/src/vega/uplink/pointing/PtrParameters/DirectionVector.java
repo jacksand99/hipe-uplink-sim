@@ -1,13 +1,13 @@
 package vega.uplink.pointing.PtrParameters;
 
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.Units;
 
 /**
  * @author jarenas
  *
  */
-public class DirectionVector extends PointingMetadata{
+public class DirectionVector extends PointingElement{
 	/**
 	 * units
 	 */
@@ -64,7 +64,7 @@ public class DirectionVector extends PointingMetadata{
 	 * rotationAngle
 	 */
 	public static String ROTATION_ANGLE_TAG="rotationAngle";
-	public DirectionVector(String type,PointingMetadata pm){
+	public DirectionVector(String type,PointingElement pm){
 		this(type);
 		this.copyFrom(pm);
 		//super(pm);
@@ -74,7 +74,7 @@ public class DirectionVector extends PointingMetadata{
 	}
 	
 	public String getUnit(String field){
-		PointingMetadata deltaTimesCh = getChild(field);
+		PointingElement deltaTimesCh = getChild(field);
 		if (deltaTimesCh==null) return null;
 		if (deltaTimesCh.getAttribute(UNITS_TAG)==null) return null;
 		return deltaTimesCh.getAttribute(UNITS_TAG).getValue();
@@ -82,10 +82,10 @@ public class DirectionVector extends PointingMetadata{
 	}
 	
 	public void setUnit(String field,String unit){
-		PointingMetadata deltaTimesCh = getChild(field);
+		PointingElement deltaTimesCh = getChild(field);
 		//System.out.println(deltaTimesCh);
-		if (deltaTimesCh==null) deltaTimesCh=new PointingMetadata(field,"");
-		deltaTimesCh.addAttribute(new PointingMetadata(UNITS_TAG,unit));
+		if (deltaTimesCh==null) deltaTimesCh=new PointingElement(field,"");
+		deltaTimesCh.addAttribute(new PointingElement(UNITS_TAG,unit));
 		addChild(deltaTimesCh);
 		
 	}
@@ -95,10 +95,10 @@ public class DirectionVector extends PointingMetadata{
 		for (int i=0;i<xAngles.length;i++){
 			sDT=sDT+xAngles[i]+" ";
 		}
-		PointingMetadata deltaTimesCh;
+		PointingElement deltaTimesCh;
 		deltaTimesCh=getChild(field);
 		if (deltaTimesCh==null){
-			deltaTimesCh = new PointingMetadata(field,sDT);
+			deltaTimesCh = new PointingElement(field,sDT);
 		}else{
 			deltaTimesCh.setValue(sDT);
 		}
@@ -109,10 +109,10 @@ public class DirectionVector extends PointingMetadata{
 	
 	public void setFloatField(String field,float value){
 		String sDT=""+value;
-		PointingMetadata deltaTimesCh;
+		PointingElement deltaTimesCh;
 		deltaTimesCh=getChild(field);
 		if (deltaTimesCh==null){
-			deltaTimesCh = new PointingMetadata(field,sDT);
+			deltaTimesCh = new PointingElement(field,sDT);
 		}else{
 			deltaTimesCh.setValue(sDT);
 		}
@@ -123,10 +123,10 @@ public class DirectionVector extends PointingMetadata{
 	
 	public void setIntegerField(String field,int value){
 		String sDT=""+value;
-		PointingMetadata deltaTimesCh;
+		PointingElement deltaTimesCh;
 		deltaTimesCh=getChild(field);
 		if (deltaTimesCh==null){
-			deltaTimesCh = new PointingMetadata(field,sDT);
+			deltaTimesCh = new PointingElement(field,sDT);
 		}else{
 			deltaTimesCh.setValue(sDT);
 		}
@@ -137,10 +137,10 @@ public class DirectionVector extends PointingMetadata{
 	
 	public void setStringField(String field,String value){
 		String sDT=""+value;
-		PointingMetadata deltaTimesCh;
+		PointingElement deltaTimesCh;
 		deltaTimesCh=getChild(field);
 		if (deltaTimesCh==null){
-			deltaTimesCh = new PointingMetadata(field,sDT);
+			deltaTimesCh = new PointingElement(field,sDT);
 		}else{
 			deltaTimesCh.setValue(sDT);
 		}
@@ -151,10 +151,10 @@ public class DirectionVector extends PointingMetadata{
 	
 	public void setBooleanField(String field,boolean value){
 		String sDT=""+value;
-		PointingMetadata deltaTimesCh;
+		PointingElement deltaTimesCh;
 		deltaTimesCh=getChild(field);
 		if (deltaTimesCh==null){
-			deltaTimesCh = new PointingMetadata(field,sDT);
+			deltaTimesCh = new PointingElement(field,sDT);
 		}else{
 			deltaTimesCh.setValue(sDT);
 		}
@@ -193,7 +193,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @param x The x component
 	 */
 	public void setX(float x){
-		this.addChild(new PointingMetadata(X_TAG,""+x));
+		this.addChild(new PointingElement(X_TAG,""+x));
 	}
 
 	/**
@@ -201,7 +201,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @param y The y component
 	 */
 	public void setY(float y){
-		this.addChild(new PointingMetadata(Y_TAG,""+y));
+		this.addChild(new PointingElement(Y_TAG,""+y));
 	}
 
 	/**
@@ -209,7 +209,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @param z The z component
 	 */
 	public void setZ(float z){
-		this.addChild(new PointingMetadata(Z_TAG,""+z));
+		this.addChild(new PointingElement(Z_TAG,""+z));
 	}
 	
 	/**
@@ -249,7 +249,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @param frame Frame to which the vector is relative
 	 */
 	public void setFrame(String frame){
-		addAttribute(new PointingMetadata(FRAME_TAG,frame));
+		addAttribute(new PointingElement(FRAME_TAG,frame));
 	}
 	//Cordinates spherical
 	/*public CoordinatesSpherical(String type,PointingMetadata pm){
@@ -408,8 +408,8 @@ public class DirectionVector extends PointingMetadata{
 	 * @param origin Origin State vector
 	 */
 	public void setOrigin(String origin){
-		PointingMetadata originChild = new PointingMetadata(ORIGIN_TAG,"");
-		originChild.addAttribute(new PointingMetadata(REF_TAG,origin));
+		PointingElement originChild = new PointingElement(ORIGIN_TAG,"");
+		originChild.addAttribute(new PointingElement(REF_TAG,origin));
 		this.addChild(originChild);
 	}
 	/**
@@ -417,8 +417,8 @@ public class DirectionVector extends PointingMetadata{
 	 * @param target Target State vector
 	 */	
 	public void setTarget(String target){
-		PointingMetadata targetChild = new PointingMetadata(TARGET_TAG,"");
-		targetChild.addAttribute(new PointingMetadata(REF_TAG,target));
+		PointingElement targetChild = new PointingElement(TARGET_TAG,"");
+		targetChild.addAttribute(new PointingElement(REF_TAG,target));
 		this.addChild(targetChild);
 		
 	}
@@ -460,7 +460,7 @@ public class DirectionVector extends PointingMetadata{
 	 * @param reference Name of the referenced vector
 	 */
 	public void setReference(String reference){
-		this.addAttribute(new PointingMetadata(REF_TAG,reference));
+		this.addAttribute(new PointingElement(REF_TAG,reference));
 	}
 	
 	/**
@@ -492,7 +492,7 @@ public class DirectionVector extends PointingMetadata{
 	 */
 	public DirectionVector(String type,String axis,String rotationAxis,String rotationAngleUnit,float rotationAngle){
 		this(type);
-		this.addAttribute(new PointingMetadata(REF_TAG,ROTATE_TAG));
+		this.addAttribute(new PointingElement(REF_TAG,ROTATE_TAG));
 		setAxis(axis);
 		setRotationAxis(rotationAxis);
 		setRotationAngle(rotationAngleUnit,rotationAngle);
@@ -519,8 +519,8 @@ public class DirectionVector extends PointingMetadata{
 	 * @param axis
 	 */
 	public void setAxis(String axis){
-		PointingMetadata axisChild = new PointingMetadata(AXIS_TAG,"");
-		axisChild.addAttribute(new PointingMetadata(REF_TAG,axis));
+		PointingElement axisChild = new PointingElement(AXIS_TAG,"");
+		axisChild.addAttribute(new PointingElement(REF_TAG,axis));
 		this.addChild(axisChild);
 	}
 	
@@ -537,8 +537,8 @@ public class DirectionVector extends PointingMetadata{
 	 * @param rotationAxis Rotation Axis
 	 */
 	public void setRotationAxis(String rotationAxis){
-		PointingMetadata rotationAxisChild = new PointingMetadata(ROTATION_AXIS_TAG,"");
-		rotationAxisChild.addAttribute(new PointingMetadata(REF_TAG,rotationAxis));
+		PointingElement rotationAxisChild = new PointingElement(ROTATION_AXIS_TAG,"");
+		rotationAxisChild.addAttribute(new PointingElement(REF_TAG,rotationAxis));
 		this.addChild(rotationAxisChild);
 		
 	}

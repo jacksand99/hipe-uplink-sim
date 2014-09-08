@@ -21,7 +21,7 @@ public class TestGui extends JFrame {
 
 		  //Limb pm = new Limb();
 		  OffsetScan pm = new OffsetScan(new java.util.Date(), 1, 2, 0.1f, 0.2f, 10.0f, 20.0f, null, 30.0f, 100.0f, 200.0f, 300.0f, "y", false, true);
-		  PointingMetadataEditor editor = new PointingMetadataEditor();
+		  PointingElementEditor editor = new PointingElementEditor();
 		  editor.setPointingMetadata(pm);
 		  this.add(editor);
 		    /*super("Multi-Line Cell Example");

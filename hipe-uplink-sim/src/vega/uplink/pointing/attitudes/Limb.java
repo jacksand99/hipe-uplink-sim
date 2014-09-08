@@ -1,7 +1,7 @@
 package vega.uplink.pointing.attitudes;
 
 import vega.uplink.pointing.PointingAttitude;
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.PtrParameters.Boresight;
 import vega.uplink.pointing.PtrParameters.Height;
 import vega.uplink.pointing.PtrParameters.OffsetRefAxis;
@@ -16,7 +16,7 @@ import vega.uplink.pointing.PtrParameters.Offset.OffsetAngles;
  *
  */
 public class Limb extends PointingAttitude {
-	public Limb(PointingMetadata org){
+	public Limb(PointingElement org){
 		super(org);
 	}
 	/**

@@ -1,20 +1,10 @@
 package vega.uplink.pointing.gui;
 
-import static javax.swing.GroupLayout.Alignment.BASELINE;
 import herschel.ia.gui.kernel.parts.AbstractVariableEditorComponent;
-
-
-
-
-
-import herschel.ia.gui.kernel.util.component.ColorButton;
-import herschel.share.swing.JLongField;
+import herschel.ia.numeric.String1d;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-//import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -25,30 +15,16 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-
-
-//import rosetta.uplink.commanding.HistoryModes;
-
 import javax.swing.JTextField;
 
-
-
-
-
-
-
-/*import javax.swing.GroupLayout.ParallelGroup;
-import javax.swing.GroupLayout.SequentialGroup;
-
-import vega.uplink.commanding.HistoryModes;*/
-//import vega.uplink.commanding.gui.HistoryModesPlot;
+import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.PointingMetadata;
+import herschel.ia.dataset.gui.views.ArrayDataComponent;
+//import vega.uplink.pointing.gui.PointingElementEditor.ValueListener;
 
 public class PointingMetadataEditor extends AbstractVariableEditorComponent<PointingMetadata> {
 	/**
@@ -76,20 +52,27 @@ public class PointingMetadataEditor extends AbstractVariableEditorComponent<Poin
 			dataPanel.add(valueField);
 		}
 		if (pointingMetadata.hasAttributtes()){
-			PointingMetadata[] attributes = pointingMetadata.getAttributes();
+			PointingElement[] attributes = pointingMetadata.getAttributes();
 			for (int i=0;i<attributes.length;i++){
-				PointingMetadataAttributeEditor cPanel = new PointingMetadataAttributeEditor(attributes[i],pointingMetadata);
+				PointingElementAttributeEditor cPanel = new PointingElementAttributeEditor(attributes[i],pointingMetadata);
 				dataPanel.add(cPanel);
 				
 			}
 		}
 		if (pointingMetadata.hasChildren()){
-			PointingMetadata[] children = pointingMetadata.getChildren();
+			PointingElement[] children = pointingMetadata.getChildren();
 			for (int i=0;i<children.length;i++){
-				PointingMetadataEditor cPanel = new PointingMetadataEditor();
+				PointingElementEditor cPanel = new PointingElementEditor();
 				cPanel.setPointingMetadata(children[i]);
 				dataPanel.add(cPanel);
 			}
+		}
+		String1d comments = pointingMetadata.getComments();
+		if (comments.length()>0){
+			dataPanel.add(new MetadataCommentsPanel(this.getPart(),comments));
+			//ArrayDataComponent adComponent=new ArrayDataComponent();
+			//JPanel commentsPanel=new JPanel();
+			//commentsPanel.setLayout(new BoxLayout(dataPanel,BoxLayout.PAGE_AXIS));
 		}
 		main.setLayout(new BoxLayout(main,BoxLayout.LINE_AXIS));
 		main.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
@@ -119,8 +102,8 @@ public class PointingMetadataEditor extends AbstractVariableEditorComponent<Poin
 	
 	public class ValueListener implements ActionListener{
 		JTextField field;
-		PointingMetadata pm;
-		public ValueListener(PointingMetadata metadataAttached,JTextField fieldAttached){
+		PointingElement pm;
+		public ValueListener(PointingElement metadataAttached,JTextField fieldAttached){
 			field=fieldAttached;
 			pm=metadataAttached;
 		}
@@ -134,7 +117,7 @@ public class PointingMetadataEditor extends AbstractVariableEditorComponent<Poin
 	public Icon getComponentIcon() {
 		// TODO Auto-generated method stub
         try {
-            URL resource = PointingMetadataEditor.class.getResource("/vega/vega.gif");
+            URL resource = PointingElementEditor.class.getResource("/vega/vega.gif");
             BufferedImage imageIcon = ImageIO.read(resource);
             return new ImageIcon(imageIcon);
     } catch (IOException e) {

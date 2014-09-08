@@ -1,7 +1,7 @@
 package vega.uplink.pointing.attitudes;
 
 import vega.uplink.pointing.PointingAttitude;
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.PtrParameters.Boresight;
 import vega.uplink.pointing.PtrParameters.OffsetRefAxis;
 import vega.uplink.pointing.PtrParameters.PhaseAngle;
@@ -14,7 +14,7 @@ import vega.uplink.pointing.PtrParameters.Offset.OffsetAngles;
  *
  */
 public class Specular extends PointingAttitude {
-	public Specular(PointingMetadata org){
+	public Specular(PointingElement org){
 		super(org);
 	}
 	

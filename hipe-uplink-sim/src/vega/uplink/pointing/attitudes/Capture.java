@@ -5,7 +5,7 @@ import java.util.Date;
 
 import vega.uplink.pointing.PointingAttitude;
 import vega.uplink.pointing.PointingBlock;
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 
 /**
  * A capture pointing is used for calibration purposes. It is required if an attitude that is not
@@ -16,7 +16,7 @@ import vega.uplink.pointing.PointingMetadata;
  *
  */
 public class Capture extends PointingAttitude {
-	public Capture(PointingMetadata pm){
+	public Capture(PointingElement pm){
 		super(pm);
 	}
 	/**
@@ -47,7 +47,7 @@ public class Capture extends PointingAttitude {
 	 * @return
 	 */	
 	public void setCaptureDate(Date captureDate){
-		this.addChild(new PointingMetadata("captureTime",PointingBlock.dateToZulu(captureDate)));
+		this.addChild(new PointingElement("captureTime",PointingBlock.dateToZulu(captureDate)));
 	}
 	
 	

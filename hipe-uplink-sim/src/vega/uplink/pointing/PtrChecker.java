@@ -1,6 +1,7 @@
 package vega.uplink.pointing;
 
 import java.util.Date;
+import java.util.NoSuchElementException;
 
 import vega.uplink.pointing.PtrParameters.Offset.OffsetAngles;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetCustom;
@@ -12,6 +13,33 @@ public class PtrChecker {
 		return checkSlewDuration(ptr)+checkGaps(ptr)+checkOffsetDuration(ptr);
 		//return checkSlewDuration(ptr)+checkGaps(ptr);
 	}
+	public static Ptr rebasePtrPtsl(Ptr ptr,Ptr ptsl){
+		String result="";
+		PtrSegment ptrSegment = ptr.getSegments()[0];
+		PtrSegment ptslSegment = ptsl.getSegment(ptrSegment.getName());
+
+		PointingBlock[] ptslBlocks = ptslSegment.getBlocks();
+		for (int i=0;i<ptslBlocks.length;i++){
+			PointingBlock ptslBlock = ptslBlocks[i];
+			if (!ptslBlock.getType().equals(PointingBlock.TYPE_OBS) && !ptslBlock.getType().equals(PointingBlock.TYPE_SLEW)){
+				PointingBlock ptrBlock = ptrSegment.getBlockAt(ptslBlock.getStartTime());
+				if (ptrBlock==null){
+					
+					result=result+"Block not found in PTR:\n";
+					result=result+ptslBlock.toXml(1)+"\n";
+					throw (new NoSuchElementException(result));
+				}else{
+					if (!ptslBlock.equals(ptrBlock)){
+						ptrSegment.removeBlock(ptrBlock);
+						ptrSegment.addBlock(ptslBlock);
+					}
+				}
+			}
+		}
+		return ptr;
+	
+	}
+
 	public static String checkPtr(Ptr ptr,Ptr ptsl){
 		if (ptsl!=null){
 			String result="";

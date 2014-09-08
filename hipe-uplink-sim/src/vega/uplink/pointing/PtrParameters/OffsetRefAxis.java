@@ -1,6 +1,6 @@
 package vega.uplink.pointing.PtrParameters;
 
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 
 public class OffsetRefAxis extends DirectionVector {
 	
@@ -41,7 +41,7 @@ public class OffsetRefAxis extends DirectionVector {
 	public OffsetRefAxis(String frame,float longitude,float latitude){
 		super(OFFSETREFAXIS_TAG,frame,longitude,latitude);
 	}
-	public OffsetRefAxis(PointingMetadata pm){
+	public OffsetRefAxis(PointingElement pm){
 		super(OFFSETREFAXIS_TAG,pm);
 	}
 	/**

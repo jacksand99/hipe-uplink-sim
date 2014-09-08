@@ -24,7 +24,7 @@ import org.w3c.dom.NodeList;
  * @author jarenas
  *
  */
-public class PointingBlock extends PointingMetadata{
+public class PointingBlock extends PointingElement{
 
 	
 		/**
@@ -61,10 +61,10 @@ public class PointingBlock extends PointingMetadata{
 		 */
 		public static String TYPE_GSEP="GSEP";
 		public static String BLOCK_TAG="block";
-		private java.util.HashMap<String, PointingMetadata> metadata;
+		private java.util.HashMap<String, PointingElement> metadata;
 		//private String id;
 		
-		public PointingBlock(PointingMetadata org){
+		public PointingBlock(PointingElement org){
 			super(org);
 		}
 		public CompositeDataset asDataset(){
@@ -83,10 +83,10 @@ public class PointingBlock extends PointingMetadata{
 		public PointingBlock(String blockType,java.util.Date startDate,java.util.Date endDate){
 			super(BLOCK_TAG,"");
 			
-			this.addAttribute(new PointingMetadata("ref",blockType));
-			this.addChild(new PointingMetadata("startTime",dateToZulu(startDate)));
-			this.addChild(new PointingMetadata("endTime",dateToZulu(endDate)));
-			this.addChild(new PointingMetadata("metadata",""));
+			this.addAttribute(new PointingElement("ref",blockType));
+			this.addChild(new PointingElement("startTime",dateToZulu(startDate)));
+			this.addChild(new PointingElement("endTime",dateToZulu(endDate)));
+			this.addChild(new PointingElement("metadata",""));
 			
 		}
 		
@@ -171,15 +171,21 @@ public class PointingBlock extends PointingMetadata{
 		 * @param name
 		 * @return
 		 */
-		public PointingMetadata getMetadata(String name){
+		public PointingElement getMetadata(String name){
 			return this.getChild("metadata").getChild(name);
 		}
 		/**
 		 * Get all the metadata that this block have or null if it has no metadata
 		 * @return
 		 */
-		public PointingMetadata[] getMetadata(){
+		public PointingElement[] getMetadata(){
 			return this.getChild("metadata").getChildren();
+			/*PointingElement[] metaChildren = this.getChild("metadata").getChildren();
+			PointingMetadata[] result= new PointingMetadata[metaChildren.length];
+			for (int i=0;i<metaChildren.length;i++){
+				result[i]=(PointingMetadata)metaChildren[i];
+			}
+			return result;*/
 		}
 		
 		/**
@@ -275,7 +281,8 @@ public class PointingBlock extends PointingMetadata{
 
 				return false;
 			}
-			PointingMetadata[] metas=getMetadata();
+			PointingElement[]  metas=getMetadata();
+			//PointingMetadata[] metas=getMetadata();
 			if (metas.length!=other.getMetadata().length) return false;
 			for (int i=0;i<metas.length;i++){
 				if (!metas[i].equals(other.getMetadata(metas[i].getName()))){
@@ -307,14 +314,18 @@ public class PointingBlock extends PointingMetadata{
 				for (int i=0;i<size;i++){
 					String attname=att.item(i).getNodeName();
 					String attvalue=att.item(i).getNodeValue();
-					if (attname!="" && attvalue!="") result.addAttribute(new PointingMetadata(attname,attvalue));
+					if (attname!="" && attvalue!="") result.addAttribute(new PointingElement(attname,attvalue));
 				}
 			}
 			if (node.hasChildNodes()){
 				NodeList children = node.getChildNodes();
 				int size=children.getLength();
 				for (int i=0;i<size;i++){
-					PointingMetadata child = PointingMetadata.readFrom(children.item(i));
+					PointingElement child=null;
+					if (children.item(i).getNodeName().equals(PointingMetadata.METADATA_TAG)){
+						child = PointingMetadata.readFrom(children.item(i));
+					}
+					else child = PointingElement.readFrom(children.item(i));
 					//System.out.println(child);
 					if (child!=null) result.addChild(child);
 				}			
@@ -325,6 +336,9 @@ public class PointingBlock extends PointingMetadata{
 			//}
 			return result;
 		}
+		
+
+
 
 		
 }

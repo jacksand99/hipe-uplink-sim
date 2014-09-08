@@ -1,6 +1,6 @@
 package vega.uplink.pointing.PtrParameters;
 
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.Units;
 
 /**
@@ -9,7 +9,7 @@ import vega.uplink.pointing.Units;
  * @author jarenas
  *
  */
-public class Height extends PointingMetadata {
+public class Height extends PointingElement {
 	/**
 	 * height
 	 */
@@ -18,7 +18,7 @@ public class Height extends PointingMetadata {
 	 * units
 	 */
 	public static String UNITS_TAG="units";
-	public Height(PointingMetadata org){
+	public Height(PointingElement org){
 		super(org);
 	}
 
@@ -29,7 +29,7 @@ public class Height extends PointingMetadata {
 		 */
 		public Height(String units,String value){
 			super(HEIGHT_TAG,value);
-			this.addAttribute(new PointingMetadata(UNITS_TAG,units));
+			this.addAttribute(new PointingElement(UNITS_TAG,units));
 			
 		}
 		/**
@@ -81,7 +81,7 @@ public class Height extends PointingMetadata {
 		 * @return
 		 */		
 		public void setUnit(String units){
-			addAttribute(new PointingMetadata(UNITS_TAG,units));
+			addAttribute(new PointingElement(UNITS_TAG,units));
 		}
 
 }

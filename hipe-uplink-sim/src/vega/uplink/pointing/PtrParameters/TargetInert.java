@@ -1,6 +1,6 @@
 package vega.uplink.pointing.PtrParameters;
 
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 
 public class TargetInert extends DirectionVector {
 	public static String TARGET_TAG="target";
@@ -30,7 +30,7 @@ public class TargetInert extends DirectionVector {
 	public TargetInert(String frame,float longitude,float latitude){
 		super(TARGET_TAG,frame,longitude,latitude);
 	}
-	public TargetInert(PointingMetadata pm){
+	public TargetInert(PointingElement pm){
 		super(TARGET_TAG,pm);
 	}
 	/**

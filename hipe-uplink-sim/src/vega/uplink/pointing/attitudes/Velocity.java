@@ -1,7 +1,7 @@
 package vega.uplink.pointing.attitudes;
 
 import vega.uplink.pointing.PointingAttitude;
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.PtrParameters.Boresight;
 import vega.uplink.pointing.PtrParameters.OffsetRefAxis;
 import vega.uplink.pointing.PtrParameters.PhaseAngle;
@@ -13,7 +13,7 @@ import vega.uplink.pointing.PtrParameters.Offset.OffsetAngles;
  *
  */
 public class Velocity extends PointingAttitude {
-	public Velocity(PointingMetadata org){
+	public Velocity(PointingElement org){
 		super(org);
 	}
 

@@ -16,7 +16,7 @@ import vega.uplink.pointing.PtrParameters.Surface;
  */
 public class PdfmSurface extends Surface {
 	//public static String SURFACE_TAG="surface";
-	public PdfmSurface(PointingMetadata org){
+	public PdfmSurface(PointingElement org){
 		
 		super(org);
 	}
@@ -94,7 +94,7 @@ public class PdfmSurface extends Surface {
 	 * @param name
 	 */
 	public void setSurfaceName(String name){
-		if (name!=null) this.addChild(new PointingMetadata("surfacename",name));
+		if (name!=null) this.addChild(new PointingElement("surfacename",name));
 	}
 	
 	
@@ -127,8 +127,8 @@ public class PdfmSurface extends Surface {
 		for (int i=0;i<indent;i++){
 			iString=iString+"\t";
 		}
-		PointingMetadata[] childs=this.getChildren();
-		PointingMetadata[] attr=this.getAttributes();
+		PointingElement[] childs=this.getChildren();
+		PointingElement[] attr=this.getAttributes();
 		String surfaceName=getSurfaceName();
 		if (childs.length==0){
 			if (attr.length>0 || getValue()!=""){
@@ -180,14 +180,14 @@ public class PdfmSurface extends Surface {
 			for (int i=0;i<size;i++){
 				String attname=att.item(i).getNodeName();
 				String attvalue=att.item(i).getNodeValue();
-				if (!attname.equals("name") && !attname.equals("") && !attvalue.equals("")) result.addAttribute(new PointingMetadata(attname,attvalue));
+				if (!attname.equals("name") && !attname.equals("") && !attvalue.equals("")) result.addAttribute(new PointingElement(attname,attvalue));
 			}
 		}
 		if (node.hasChildNodes()){
 			NodeList children = node.getChildNodes();
 			int size=children.getLength();
 			for (int i=0;i<size;i++){
-				PointingMetadata child = PointingMetadata.readFrom(children.item(i));
+				PointingElement child = PointingElement.readFrom(children.item(i));
 				if (child!=null) result.addChild(child);
 			}			
 		}

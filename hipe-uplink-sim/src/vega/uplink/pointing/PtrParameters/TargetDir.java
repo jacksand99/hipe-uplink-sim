@@ -1,6 +1,6 @@
 package vega.uplink.pointing.PtrParameters;
 
-import vega.uplink.pointing.PointingMetadata;
+import vega.uplink.pointing.PointingElement;
 
 public class TargetDir extends DirectionVector {
 	public static String TARGETDIR_TAG="targetDir";
@@ -31,7 +31,7 @@ public class TargetDir extends DirectionVector {
 	public TargetDir(String frame,float longitude,float latitude){
 		super(TARGETDIR_TAG,frame,longitude,latitude);
 	}
-	public TargetDir(PointingMetadata pm){
+	public TargetDir(PointingElement pm){
 		super(TARGETDIR_TAG,pm);
 	}
 	/**

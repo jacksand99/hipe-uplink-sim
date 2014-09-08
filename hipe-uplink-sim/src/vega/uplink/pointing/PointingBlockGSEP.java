@@ -29,8 +29,8 @@ public class PointingBlockGSEP extends PointingBlock {
 		this.setBooleanField("north",north);
 	}
 	public void setBooleanField(String field,boolean value){
-		if (value) this.addChild(new PointingMetadata(field,"true"));
-		else this.addChild(new PointingMetadata(field,"false"));
+		if (value) this.addChild(new PointingElement(field,"true"));
+		else this.addChild(new PointingElement(field,"false"));
 	}
 	
 	/**
