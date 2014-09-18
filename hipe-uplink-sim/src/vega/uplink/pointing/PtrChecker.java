@@ -10,34 +10,85 @@ import vega.uplink.pointing.PtrParameters.Offset.OffsetScan;
 
 public class PtrChecker {
 	public static String checkPtr(Ptr ptr){
-		return checkSlewDuration(ptr)+checkGaps(ptr)+checkOffsetDuration(ptr);
+		//return checkSlewDuration(ptr)+checkGaps(ptr)+checkOffsetDuration(ptr)+checkInternalSlewsDuration(ptr);
+		return checkBlockDuration(ptr)+checkGaps(ptr)+checkOffsetDuration(ptr)+checkInternalSlewsDuration(ptr);
+
 		//return checkSlewDuration(ptr)+checkGaps(ptr);
 	}
-	public static Ptr rebasePtrPtsl(Ptr ptr,Ptr ptsl){
+	
+	
+	public static String comparePtrs(Ptr fptr,Ptr sptr){
+		int nBlocksf = fptr.getSegments()[0].getBlocks().length;
+		int nBlockss = sptr.getSegments()[0].getBlocks().length;
+		Ptr ptr1=null;
+		Ptr ptr2=null;
+		if (nBlocksf>nBlockss){
+			ptr2=fptr;
+			ptr1=sptr;
+		}else{
+			ptr2=sptr;
+			ptr1=fptr;
+		}
 		String result="";
-		PtrSegment ptrSegment = ptr.getSegments()[0];
-		PtrSegment ptslSegment = ptsl.getSegment(ptrSegment.getName());
+		/*if (ptr1!=null){
+			String checkPtr1 = checkPtr(ptr1);
+			if (!checkPtr1.equals("")){
+				result=result+"**************************\nPTR 1 failed sanity check\n**************************\n"+checkPtr1;
+			}
+		}
+		if (ptr2!=null){
+			String checkPtr2 = checkPtr(ptr2);
+			if (!checkPtr2.equals("")){
+				result=result+"**************************\nPTR 2 failed sanity check\n**************************\n"+checkPtr2;
+			}
+		}*/
 
-		PointingBlock[] ptslBlocks = ptslSegment.getBlocks();
-		for (int i=0;i<ptslBlocks.length;i++){
-			PointingBlock ptslBlock = ptslBlocks[i];
-			if (!ptslBlock.getType().equals(PointingBlock.TYPE_OBS) && !ptslBlock.getType().equals(PointingBlock.TYPE_SLEW)){
-				PointingBlock ptrBlock = ptrSegment.getBlockAt(ptslBlock.getStartTime());
-				if (ptrBlock==null){
-					
-					result=result+"Block not found in PTR:\n";
-					result=result+ptslBlock.toXml(1)+"\n";
-					throw (new NoSuchElementException(result));
-				}else{
-					if (!ptslBlock.equals(ptrBlock)){
-						ptrSegment.removeBlock(ptrBlock);
-						ptrSegment.addBlock(ptslBlock);
+		if (ptr2!=null){
+			
+			PtrSegment ptr1Segment = ptr1.getSegments()[0];
+			PtrSegment ptr2Segment = ptr2.getSegment(ptr1Segment.getName());
+			if (!ptr1Segment.getStartDate().equals(ptr2Segment.getStartDate())){
+				result=result+"Start date of the "+ptr1.getName()+" and the "+ptr2.getName()+" segments are not the same:\n";
+				result=result+"PTR segment starts at:"+	ptr1Segment.getStartDate().toDate()+"\n";
+				result=result+"PTSL segment starts at:"+	ptr2Segment.getStartDate().toDate()+"\n";
+				result=result+"--------------------------------------\n";
+				
+			}
+			if (!ptr1Segment.getEndDate().equals(ptr2Segment.getEndDate())){
+				result=result+"End date of the "+ptr1.getName()+" and the "+ptr2.getName()+" segments are not the same:\n";
+				result=result+"PTR segment ends at:"+	ptr1Segment.getEndDate().toDate()+"\n";
+				result=result+"PTSL segment ends at:"+	ptr2Segment.getEndDate().toDate()+"\n";
+				result=result+"--------------------------------------\n";
+				
+			}
+			PointingBlock[] ptr2Blocks = ptr2Segment.getBlocks();
+			for (int i=0;i<ptr2Blocks.length;i++){
+				PointingBlock ptr2Block = ptr2Blocks[i];
+				if (!ptr2Block.getType().equals(PointingBlock.TYPE_SLEW)){
+					PointingBlock ptrBlock = ptr1Segment.getBlockAt(ptr2Block.getStartTime());
+					if (ptrBlock==null){
+						result=result+"Block not found in "+ptr1.getName()+":\n";
+						result=result+ptr2Block.toXml(1)+"\n";
+					}else{
+						if (!ptr2Block.equals(ptrBlock)){
+							result=result+"Block in "+ptr1.getName()+" different to same block in "+ptr2.getName()+":\n";
+							result=result+"Block in "+ptr2.getName()+":\n";
+							result=result+ptr2Block.toXml(0)+"\n";
+							result=result+"Blocks in "+ptr1.getName()+":\n";
+							PointingBlock[] blocksToReport = ptr1Segment.getBlocksAt(ptr2Block.getStartTime(),ptr2Block.getEndTime());
+							for (int j=0;j<blocksToReport.length;j++){
+								result=result+blocksToReport[j].toXml(0)+"\n";
+								
+							}
+							//result=result+ptrBlock.toXml(0)+"\n";
+							result=result+"--------------------------------------\n";
+						}
 					}
 				}
 			}
-		}
-		return ptr;
-	
+			return result;
+		}else return "PTR2 is null";
+		//return result+checkPtr(ptr);
 	}
 
 	public static String checkPtr(Ptr ptr,Ptr ptsl){
@@ -45,6 +96,8 @@ public class PtrChecker {
 			String result="";
 			PtrSegment ptrSegment = ptr.getSegments()[0];
 			PtrSegment ptslSegment = ptsl.getSegment(ptrSegment.getName());
+			if (ptslSegment==null) throw(new IllegalArgumentException("There is no "+ptrSegment.getName()+" segment in the ptsl"));
+
 			if (!ptrSegment.getStartDate().equals(ptslSegment.getStartDate())){
 				result=result+"Start date of the PTR and the PTSL segments are not the same:\n";
 				result=result+"PTR segment starts at:"+	ptrSegment.getStartDate().toDate()+"\n";
@@ -66,7 +119,7 @@ public class PtrChecker {
 					PointingBlock ptrBlock = ptrSegment.getBlockAt(ptslBlock.getStartTime());
 					if (ptrBlock==null){
 						result=result+"Block not found in PTR:\n";
-						result=result+ptrBlock.toXml(1)+"\n";
+						result=result+ptslBlock.toXml(1)+"\n";
 					}else{
 						if (!ptslBlock.equals(ptrBlock)){
 							result=result+"Block in PTR different to same block in PTSL:\n";
@@ -75,6 +128,39 @@ public class PtrChecker {
 							result=result+"Block in PTR:\n";
 							result=result+ptrBlock.toXml(0)+"\n";
 							result=result+"--------------------------------------\n";
+						}else{
+							PointingBlock ptslBlockBefore = ptslSegment.blockBefore(ptslBlock);
+							PointingBlock ptslBlockAfter = ptslSegment.blockAfter(ptslBlock);
+							PointingBlock ptrBlockBefore=ptrSegment.blockBefore(ptrBlock);
+							PointingBlock ptrBlockAfter=ptrSegment.blockAfter(ptrBlock);
+							if (ptslBlockBefore!=null && ptrBlockBefore!=null){
+								if (!ptslBlockBefore.getType().equals(ptrBlockBefore.getType())){
+									result=result+"Block type before maintenance block in PTR different to same block in PTSL:\n";
+									result=result+"Block in PTSL:\n";
+									result=result+ptslBlockBefore.toXml(0)+"\n";
+									result=result+ptslBlock.toXml(0)+"\n";
+									result=result+"Block in PTR:\n";
+									result=result+ptrBlockBefore.toXml(0)+"\n";
+									result=result+ptrBlock.toXml(0)+"\n";
+									result=result+"--------------------------------------\n";
+									
+								}
+							}
+							if (ptslBlockAfter!=null && ptrBlockAfter!=null){
+								if (!ptslBlockAfter.getType().equals(ptrBlockAfter.getType())){
+									result=result+"Block type after maintenance block in PTR different to same block in PTSL:\n";
+									result=result+"Block in PTSL:\n";
+									result=result+ptslBlock.toXml(0)+"\n";
+									result=result+ptslBlockAfter.toXml(0)+"\n";
+									result=result+"Block in PTR:\n";
+									result=result+ptrBlock.toXml(0)+"\n";									
+									result=result+ptrBlockAfter.toXml(0)+"\n";
+									result=result+"--------------------------------------\n";
+									
+								}
+								
+							}
+
 						}
 					}
 				}
@@ -88,6 +174,26 @@ public class PtrChecker {
 			return checkPtr(ptr);
 		}
 		//return result+checkPtr(ptr);
+	}
+	
+	public static String checkBlockDuration(Ptr ptr){
+		String messages="";
+		PtrSegment[] segs = ptr.getSegments();
+		for (int i=0;i<segs.length;i++){
+			PtrSegment segment = segs[i];
+			PointingBlock[] blocks = segment.getBlocks();
+			for (int j=0;j<blocks.length;j++){
+				if (blocks[j].getDuration()<300000){
+					messages=messages+"PTR:Pointing Block too short: "+PointingBlock.dateToZulu(blocks[j].getStartTime())+" - "+PointingBlock.dateToZulu(blocks[j].getEndTime())+"\n";
+					messages=messages+"--------------------------------------\n";
+				}
+			}
+		}
+		if (messages.equals("")) return messages;
+		else{
+			
+			return "**************************\nBLOCK DURATION\n**************************\n"+messages;
+		}
 	}
 	public static String checkSlewDuration(Ptr ptr){
 		String messages="";
@@ -123,11 +229,11 @@ public class PtrChecker {
 					messages=messages+"PTR:Gap detected between "+PointingBlock.dateToZulu(blockBefore.getEndTime())+" and "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
 					messages=messages+"--------------------------------------\n";
 				}
-				if (isSlew(blockBefore) && isSlew(blocks[j])){
+				if (blockBefore.isSlew() && blocks[j].isSlew()){
 					messages=messages+"PTR:Two consecutive slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
 					messages=messages+"--------------------------------------\n";
 				}
-				if (!isSlew(blockBefore) && !isSlew(blocks[j])){
+				if (!blockBefore.isSlew() && !blocks[j].isSlew()){
 					messages=messages+"PTR:Two consecutive blocks without slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
 					messages=messages+"--------------------------------------\n";
 				}
@@ -142,13 +248,13 @@ public class PtrChecker {
 
 		//return messages;
 	}
-	private static boolean isSlew(PointingBlock block){
+	/*protected static boolean isSlew(PointingBlock block){
 		boolean result=false;
 		if (block.getType().equals("SLEW") || block.getType().equals("MOCM") || block.getType().equals("MWOL") || block.getType().equals("MSLW")){
 			result=true;
 		}
 		return result;
-	}
+	}*/
 	public static String checkConsecutiveSlews(Ptr ptr){
 		String messages="";
 		PtrSegment[] segs = ptr.getSegments();
@@ -159,7 +265,7 @@ public class PtrChecker {
 			for (int j=1;j<blocks.length;j++){
 				PointingBlock blockBefore = blocks[j-1];
 				//PointingBlock blockAfter = blocks[j+1];
-				if (isSlew(blockBefore) && isSlew(blocks[j])){
+				if (blockBefore.isSlew() && blocks[j].isSlew()){
 					messages=messages+"PTR:Two consecutive slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
 					messages=messages+"--------------------------------------\n";
 				}
@@ -231,6 +337,65 @@ public class PtrChecker {
 		}
 
 		//return messages;
+	}
+	
+	public static String checkInternalSlewsDuration(Ptr ptr){
+		String messages="";
+		PtrSegment[] segs = ptr.getSegments();
+		for (int i=0;i<segs.length;i++){
+			PtrSegment segment = segs[i];
+			PointingBlock[] blocks = segment.getAllBlocksOfType("OBS");
+			
+			for (int j=0;j<blocks.length;j++){
+				PointingAttitude att = blocks[j].getAttitude();
+				if (att!=null){
+					OffsetAngles offset = att.getOffsetAngles();
+					if (offset!=null){
+						
+						//Date offsetstarttime
+						if (offset.isScan()){
+							float lineSlew = ((OffsetScan) offset).getLineSlewTime(Units.SECONDS);
+							//offsetstarttime =((OffsetScan) offset).getStartDate();
+							if (lineSlew<30){
+								messages=messages+"PTR:The line slew is less than 30 seconds at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+								messages=messages+"Block:\n";
+								messages=messages+blocks[j].toXml(0)+"\n";
+								messages=messages+"--------------------------------------\n";
+							}
+
+						}
+						if (offset.isRaster()){
+							float lineSlew = ((OffsetRaster) offset).getLineSlewTime(Units.SECONDS);
+							float pointSlew = ((OffsetRaster) offset).getPointSlewTime(Units.SECONDS);
+							if (lineSlew<30){
+								messages=messages+"PTR:The line slew is less than 30 seconds at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+								messages=messages+"Block:\n";
+								messages=messages+blocks[j].toXml(0)+"\n";
+								messages=messages+"--------------------------------------\n";
+							}
+							if (pointSlew<30){
+								messages=messages+"PTR:The point slew is less than 30 seconds at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+								messages=messages+"Block:\n";
+								messages=messages+blocks[j].toXml(0)+"\n";
+								messages=messages+"--------------------------------------\n";
+							}
+
+
+						}
+						
+					}
+
+
+				}
+
+			}
+		}
+		if (messages.equals("")) return messages;
+		else{
+			
+			return "**************************\nINTERNAL SLEWS DURATION\n**************************\n"+messages;
+		}
+		
 	}
 
 

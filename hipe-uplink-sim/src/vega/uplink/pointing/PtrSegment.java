@@ -1,5 +1,6 @@
 package vega.uplink.pointing;
 
+import herschel.ia.dataset.Dataset;
 import herschel.ia.dataset.DateParameter;
 import herschel.ia.dataset.MetaData;
 import herschel.ia.dataset.Product;
@@ -8,6 +9,7 @@ import herschel.ia.dataset.TableDataset;
 import herschel.share.fltdyn.time.FineTime;
 
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,7 +26,7 @@ import java.util.TreeMap;
 public class PtrSegment extends Product{
 	private String name;
 	private String[] includes;
-	private TreeMap<Date,PointingBlock> blMap;
+	//private TreeMap<Date,PointingBlock> blMap;
 	public static String SEGMENT_TAG="segment";
 	public static String METADATA_TAG="metadata";
 	public static String NAME_TAG="name";
@@ -39,6 +41,16 @@ public class PtrSegment extends Product{
 		return result;
 				
 	}
+	private TreeMap<Date,PointingBlock> getBlMap(){
+		TreeMap<Date, PointingBlock> result = new TreeMap<Date,PointingBlock>();
+		Iterator<Dataset> it = this.getSets().values().iterator();
+		while (it.hasNext()){
+			PointingBlock block = (PointingBlock) it.next();
+			result.put(block.getStartTime(), block);
+		}
+		return result;
+		
+	}
 	
 	
 	/**
@@ -47,7 +59,7 @@ public class PtrSegment extends Product{
 	 */
 	public PtrSegment(String segmentName){
 		super();
-		blMap=new TreeMap<Date,PointingBlock>();
+		//blMap=new TreeMap<Date,PointingBlock>();
 		name=segmentName;
 		includes=new String[0];
 		this.setTimeLineFrame("SC");
@@ -62,6 +74,7 @@ public class PtrSegment extends Product{
 	 * @return
 	 */
 	private PointingBlock[] getBlocksasArry(){
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		PointingBlock[] result=new PointingBlock[blMap.size()];
 		Iterator<Entry<Date, PointingBlock>> it = blMap.entrySet().iterator();
 		int i=0;
@@ -72,15 +85,16 @@ public class PtrSegment extends Product{
 		return result;
 		
 	}
-	private void hardRemoveBlock(PointingBlock block){
+	protected void hardRemoveBlock(PointingBlock block){
 		remove(getBlockName(block));
-		blMap.remove(block.getStartTime());
+		//blMap.remove(block.getStartTime());
 	}
 	
-	private void hardInsertBlock(PointingBlock block){
+	protected void hardInsertBlock(PointingBlock block){
 		set(getBlockName(block),block);
-		blMap.put(block.getStartTime(), block);
+		//blMap.put(block.getStartTime(), block);
 		//System.out.println("inserted "+block.toXml(0));
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		if (!blMap.lastEntry().getValue().getType().equals(PointingBlock.TYPE_SLEW)){
 			this.setValidityDates(blMap.firstKey(), blMap.lastEntry().getValue().getEndTime());
 		}
@@ -96,7 +110,7 @@ public class PtrSegment extends Product{
 		PointingBlock before = blockBefore(block);
 		PointingBlock after = blockAfter(block);
 		if (before!=null && after!=null){
-			if (before.getValue().equals(PointingBlock.TYPE_SLEW) && after.getType().equals(PointingBlock.TYPE_SLEW)){
+			if (before.getType().equals(PointingBlock.TYPE_SLEW) && after.getType().equals(PointingBlock.TYPE_SLEW)){
 				PointingBlockSlew slewBefore=(PointingBlockSlew) before;
 				PointingBlockSlew slewAfter=(PointingBlockSlew) after;				
 				hardRemoveBlock(slewBefore);
@@ -106,11 +120,11 @@ public class PtrSegment extends Product{
 				newSlew.setBlockAfter(slewAfter.getBlockAfter());
 				hardInsertBlock(newSlew);				
 			}
-			if (before.getValue().equals(PointingBlock.TYPE_SLEW) && !after.getType().equals(PointingBlock.TYPE_SLEW)){
+			if (before.getType().equals(PointingBlock.TYPE_SLEW) && !after.getType().equals(PointingBlock.TYPE_SLEW)){
 				PointingBlockSlew slewBefore=(PointingBlockSlew) before;
 				slewBefore.setBlockAfter(after);				
 			}
-			if (!before.getValue().equals(PointingBlock.TYPE_SLEW) && after.getType().equals(PointingBlock.TYPE_SLEW)){
+			if (!before.getType().equals(PointingBlock.TYPE_SLEW) && after.getType().equals(PointingBlock.TYPE_SLEW)){
 				PointingBlockSlew slewAfter=(PointingBlockSlew) after;				
 				slewAfter.setBlockBefore(before);
 			}
@@ -136,20 +150,22 @@ public class PtrSegment extends Product{
 	 * @param block
 	 * @return
 	 */
-	private PointingBlock blockBefore(PointingBlock block){
+	public PointingBlock blockBefore(PointingBlock block){
 		if (block==null) return null;
 
 		long time=block.getStartTime().getTime()-1;
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		Entry<Date, PointingBlock> result = blMap.floorEntry(new Date(time));
 		if (result==null) return null;
 		else return result.getValue();
 	}
-	private PointingBlock blockAfter(PointingBlock block){
+	public PointingBlock blockAfter(PointingBlock block){
 		if (block==null) return null;
 
 
 
 		long time=block.getStartTime().getTime()+1;
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		Entry<Date, PointingBlock> result = blMap.ceilingEntry(new Date(time));
 		if (result==null) return null;
 		else return result.getValue();
@@ -159,7 +175,9 @@ public class PtrSegment extends Product{
 	 * Check if there is any gap before a MOCM, MWOL or MSLW block (which have) internal slews and extend the observation before to end at the beginning of the maintenance block
 	 */
 	public void repairMocm(){
-		Iterator<Entry<Date, PointingBlock>> it = ((TreeMap<Date,PointingBlock>)blMap.clone()).entrySet().iterator();
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		//Iterator<Entry<Date, PointingBlock>> it = ((TreeMap<Date,PointingBlock>)blMap.clone()).entrySet().iterator();
+		Iterator<Entry<Date, PointingBlock>> it = ((TreeMap<Date,PointingBlock>)blMap).entrySet().iterator();
 		while (it.hasNext()){
 			PointingBlock block = it.next().getValue();
 			if (block.getType().equals(PointingBlock.TYPE_MOCM) || block.getType().equals(PointingBlock.TYPE_MWOL) || block.getType().equals(PointingBlock.TYPE_MSLW)){
@@ -179,11 +197,25 @@ public class PtrSegment extends Product{
 
 		}
 	}
+	private void removeDuplicateSlews(){
+		PointingBlock[] blocks = getBlocks();
+		for (int i=1;i<blocks.length;i++){
+			PointingBlock block = blocks[i];
+			PointingBlock before = blockBefore(block);
+			if (before.getType().equals(PointingBlock.TYPE_SLEW) && block.getType().equals(PointingBlock.TYPE_SLEW)){
+				//System.out.println("Duplicatr Slew detected");
+				hardRemoveBlock(block);
+			}
+		}
+			
+			//PointingBlock after = blockAfter(block);
+	}
 	
 	/**
 	 * Check if there is any gap and fill it with slews. It is recommended to run repairMocm() before to avoid that a slew 
 	 */
 	public void repairSlews(){
+		removeDuplicateSlews();
 		PointingBlock[] blocks = getBlocks();
 
 		for (int i=0;i<blocks.length;i++){
@@ -206,6 +238,7 @@ public class PtrSegment extends Product{
 	 */
 	public void addBlock(PointingBlock newBlock){
 		boolean new_is_slew = newBlock.getType().equals(PointingBlock.TYPE_SLEW);
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		Entry<Date, PointingBlock> lastEntry = blMap.lastEntry();
 		PointingBlock before;
 		if (new_is_slew &&((PointingBlockSlew) newBlock).getBlockBefore()==null){
@@ -248,7 +281,8 @@ public class PtrSegment extends Product{
 					if (before_is_slew){
 						//The last object is a slew
 						if (new_is_slew){
-							return; //can not insert a slew after a slew
+							throw new IllegalArgumentException("Two consecutives slews are not accepted at "+PointingBlock.dateToZulu(before.getEndTime()));
+							//return; //can not insert a slew after a slew
 						}
 						((PointingBlockSlew) before).setBlockAfter(newBlock);
 						hardInsertBlock(newBlock);
@@ -324,6 +358,7 @@ public class PtrSegment extends Product{
 	 * @param newBlocks New blocks to replace the current ones
 	 */
 	public void setBlocks(PointingBlock[] newBlocks){
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		Iterator<Entry<Date, PointingBlock>> it = blMap.entrySet().iterator();
 		while (it.hasNext()){
 			remove(getBlockName(it.next().getValue()));
@@ -426,15 +461,35 @@ public class PtrSegment extends Product{
 	/**
 	 * Get the block with a start time equal to the given one or the greates value before the given date
 	 * @param time The desired time
-	 * @return The block with a start time less or equal to the given time
+	 * @return The block with a start time less or equal to the given time or null if there is no such block
 	 */
 	public PointingBlock getBlockAt(java.util.Date time){
-		return blMap.floorEntry(time).getValue();
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		Entry<Date, PointingBlock> floorEntry = blMap.floorEntry(time);
+		if (floorEntry==null) return null;
+		return floorEntry.getValue();
 	}
 	
-	/*public PointingBlock getBlockAt(java.util.Date startTime,java.util.Date endTime){
-		return getBlockAt(startTime);
-	}*/
+	public PointingBlock[] getBlocksAt(java.util.Date startTime,java.util.Date endTime){
+		endTime=new Date(endTime.getTime()-1);
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		SortedMap<Date, PointingBlock> sm = new TreeMap<Date, PointingBlock>(blMap.subMap(startTime, endTime));
+		PointingBlock startObs = getBlockAt(startTime);
+		PointingBlock endObs = getBlockAt(endTime);
+		sm.put(startObs.getStartTime(), startObs);
+		sm.put(endObs.getStartTime(), endObs);
+		Collection<PointingBlock> val = sm.values();
+		PointingBlock[] result=new PointingBlock[val.size()];
+		result=val.toArray(result);
+		return result;
+		//return getBlockAt(startTime);
+	}
+	
+	public void removeBlocks(PointingBlock[] blocks){
+		for (int i=0;i<blocks.length;i++){
+			removeBlock(blocks[i]);
+		}
+	}
 	
 	/**
 	 * Get all blocks of a given type

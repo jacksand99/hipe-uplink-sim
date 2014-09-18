@@ -17,16 +17,31 @@ public class TestCommanding {
     public static void main(String[] args) {
     	herschel.share.util.Configuration.setProperty("var.hcss.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
     	herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
-    	Fecs fecs;
+    	herschel.share.util.Configuration.setProperty("vega.mib.location", "/Users/jarenas 1/Downloads/MAPPS/MIB");
+
+    	/*Fecs fecs;
 		try {
 			fecs = PorUtils.readFecsFromFile("/Users/jarenas 1/RosettaScripts/FECS_DL_001_02_______00028.ROS");
 			System.out.println(fecs.toString());
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		}*/
+    	try {
+			Mib actMIB=Mib.getMib();
+			Parameter[] params = actMIB.getDefaultParameters("ACSF001A");
+			for (int i=0;i<params.length;i++){
+				System.out.println(params[i].toXML(1,0));
+			}
+		} catch (IOException e1) {
+			
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
     	
-    	//Orcd testOrcd=Orcd.readORCDfromJar();
+    	/*Orcd testOrcd=Orcd.readORCDfile("/Users/jarenas 1/Downloads/MAPPS/MIB/orcd.csv");
+    	System.out.println(testOrcd.toXml());
+    	PorUtils.writeORCDtoXMLfile("/Users/jarenas 1/Downloads/MAPPS/orcd.xml", testOrcd);*/
     	//testOrcd.writeToFile("z:\\testorcd.csv");
     	//Orcd testOrcd2=Orcd.readORCDfile("z:\\testorcd.csv");
     	//System.out.println("Orcd is equal:"+testOrcd2.equals(testOrcd));
@@ -56,11 +71,11 @@ public class TestCommanding {
 		herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
 		herschel.share.util.Configuration.setProperty(Mib.ROSETTA_MIB_LOCATION, "Z:\\MAPPS\\MIB");
 		herschel.share.util.Configuration.setProperty("rosetta.instrument.names", "{ALICE,CONSERT,COSIMA,GIADA,MIDAS,MIRO,ROSINA,RPC,RSI,OSIRIS,VIRTIS,SREM,LANDER}");*/
-		List<String> list = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
+		/*List<String> list = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
 		Iterator<String> it = list.iterator();
 		while (it.hasNext()){
 			System.out.println(it.next());
-		}
+		}*/
 		//Fecs fecs = PorUtils.readFecsFromFile("Z:\\MAPPS\\FECS_DL_001_02_______00018.ROS");
 		/*TreeSet passes = fecs.getPasses();
 		Iterator it = passes.iterator();

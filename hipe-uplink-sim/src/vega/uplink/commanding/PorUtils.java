@@ -332,6 +332,16 @@ public class PorUtils {
 		}
 		
 	}
+	public static void writeORCDtoXMLfile(String file,Orcd orcd){
+		try{
+			PrintWriter writer = new PrintWriter(file, "UTF-8");
+			writer.print(orcd.toXml());
+			writer.close();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		
+	}
 	
 	public static String PORtoITL(Por POR){
 		String result="";
@@ -341,28 +351,39 @@ public class PorUtils {
 		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		String l01="Version: 1\n";
 		String l02="Ref_date: "+dateFormat.format(POR.getValidityDates()[0])+"\n\n\n";
-		String l03="Start_time:"+dateFormat2.format(POR.getValidityDates()[0])+"\n";
-		String l04="End_time:"+dateFormat2.format(POR.getValidityDates()[1])+"\n\n\n";
+		String l03="Start_time: "+dateFormat2.format(POR.getValidityDates()[0])+"\n";
+		String l04="End_time: "+dateFormat2.format(POR.getValidityDates()[1])+"\n\n\n";
 		String l05="";
 		Sequence[] tempSeq=POR.getSequences();
 		Parameter[] tempParam;
 		SequenceProfile[] tempPro;
 		for (int i=0;i<tempSeq.length;i++){
-			l05=l05+dateFormat2.format(tempSeq[i].getExecutionDate())+" 00:00:00 "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\"+"\n";
+			l05=l05+dateFormat2.format(tempSeq[i].getExecutionDate())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\"+"\n";
 			tempParam = tempSeq[i].getParameters();
 			for (int z=0;z<tempParam.length;z++){
 				l05=l05+"\t"+tempParam[z].getName()+"="+tempParam[z].getStringValue()+" ["+tempParam[z].getRepresentation()+"] \\ \n";
 			}
 			tempPro=tempSeq[i].getProfiles();
+			String dataRateProfile="\tDATA_RATE_PROFILE = \t\t\t";
+			String powerProfile="\tPOWER_PROFILE = \t\t\t";
+			boolean dataRatePresent=false;
+			boolean powerProfilePresent=false;
 			for (int j=0;j<tempPro.length;j++){
 				if (tempPro[j].getType().equals(SequenceProfile.PROFILE_TYPE_DR)){
-					l05 =l05+ "\tDATA_RATE_PROFILE = \t\t\t"+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[bits/sec]\\\n"; 
+					dataRateProfile=dataRateProfile+" "+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[bits/sec]";
+					dataRatePresent=true;
+					//l05 =l05+ "\tDATA_RATE_PROFILE = \t\t\t"+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[bits/sec]\\\n"; 
 				}
 				if (tempPro[j].getType().equals(SequenceProfile.PROFILE_TYPE_PW)){
-					l05 = l05+"\tPOWER_PROFILE = \t\t\t"+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[Watts]\\\n"; 
+					powerProfile=powerProfile+" "+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[Watts]";
+					powerProfilePresent=true;
+					//l05 = l05+"\tPOWER_PROFILE = \t\t\t"+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[Watts]\\\n"; 
 				}
 				
 			}
+			if (dataRatePresent) l05 =l05+dataRateProfile+"\\\n";
+			if (powerProfilePresent) l05 =l05+powerProfile+"\\\n";
+
 			l05=l05+"\t\t\t\t)\n";
 
 		}

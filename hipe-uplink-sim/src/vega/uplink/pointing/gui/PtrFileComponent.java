@@ -38,13 +38,23 @@ public class PtrFileComponent extends AbstractFileEditorComponent implements Pro
     @Override
     public VariableSelection getTargetSelection() throws IOException {
         File file = getFile();
-        Ptr ptr = PtrUtils.readPTRfromFile(file.getAbsolutePath());
-        String variableName = file.getName().toLowerCase();
-        variableName = variableName.replaceAll("[.]ROS$", "");
-        variableName = variableName.replaceAll("[.]xml$", "");
-        variableName = InterpreterUtil.makeVariableName(variableName);
-        herschel.ia.gui.kernel.util.VariablesUtil.addVariable(variableName, ptr);
-        return new VariableSelection(variableName, ptr);
+        Ptr ptr;
+		try {
+			ptr = PtrUtils.readPTRfromFile(file.getAbsolutePath());
+	        String variableName = file.getName().toLowerCase();
+	        variableName = variableName.replaceAll("[.]ROS$", "");
+	        variableName = variableName.replaceAll("[.]xml$", "");
+	        variableName = InterpreterUtil.makeVariableName(variableName);
+	        herschel.ia.gui.kernel.util.VariablesUtil.addVariable(variableName, ptr);
+	        return new VariableSelection(variableName, ptr);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			IOException io = new IOException(e.getMessage());
+			io.initCause(e);
+			throw io;
+		}
     }
 
     @Override

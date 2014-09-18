@@ -167,7 +167,14 @@ public class Sequence extends Product {
 	public String getExecutionTime(){
 		return dateToZulu(getExecutionDate());
 	}
-	
+	public Parameter getParameter(String parameterName){
+		CompositeDataset parameters = (CompositeDataset) get("parameters");
+		return (Parameter)parameters.get(parameterName);
+		
+	}
+	public void setEngParameter(String paramName,String value){
+		((ParameterString) getParameter(paramName)).setValue(value);
+	}
 	public Parameter[] getParameters(){
 		CompositeDataset parameters = (CompositeDataset) get("parameters");
 		Parameter[] result=new Parameter[parameters.size()];

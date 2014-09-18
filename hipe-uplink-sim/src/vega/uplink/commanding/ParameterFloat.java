@@ -1,5 +1,7 @@
 package vega.uplink.commanding;
 
+import java.math.BigDecimal;
+
 import herschel.ia.dataset.Column;
 import herschel.ia.numeric.Float1d;
 //import herschel.ia.numeric.String1d;
@@ -42,13 +44,16 @@ public class ParameterFloat extends Parameter{
 	}*/
 	
 	public String getStringValue(){
+		String result="";
 		if (getRadix().equals(RADIX_DECIMAL)){
-			return new Float(getValue()).toString();
+			result=new BigDecimal(getValue()).toPlainString();
+			//result= new Float(getValue()).toString();
 		}
 		if (getRadix().equals(RADIX_HEX)){
-			return Integer.toHexString(new Float(getValue()).intValue());
+			result= "0x"+Integer.toHexString(new Float(getValue()).intValue());
 		}
-		return "";
+		if (result.endsWith(".0")) result=result.substring(0, result.length()-3);
+		return result;
 		
 	}
 

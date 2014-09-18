@@ -21,14 +21,15 @@ public class TestPtrParameters {
 		// TODO Auto-generated method stub
 		herschel.share.util.Configuration.setProperty("var.hcss.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
 		herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
+		try {
 		Ptr ptr=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PTRM_DM_007_01____A__00015.ROS");
 		PtrSegment seg = ptr.getSegment("MTP_007");
-		try {
+
 			PointingBlock block = seg.getBlockAt(PointingBlock.zuluToDate("2014-09-03T18:30:00"));
 			OffsetAngles os = block.getAttitude().getOffsetAngles();
 			System.out.println(os.getDurationMilliSecs());
 			
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -187,7 +188,7 @@ public class TestPtrParameters {
 		writer.close();
 	}
 	
-	public static void insertInPTSL(Vector<PointingAttitude> vector,Vector<OffsetAngles> vOffSet){
+	/*public static void insertInPTSL(Vector<PointingAttitude> vector,Vector<OffsetAngles> vOffSet){
 		Ptr orPtr=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PTRM_DM_008_01____Ab_00014.ROS");
 		PtrSegment orSeg = orPtr.getSegment("MTP_007");
 		//System.out.println(orSeg.toXml(0));
@@ -274,7 +275,7 @@ public class TestPtrParameters {
 		}
 
 
-	}
+	}*/
 	public static void print(String string){
 		writer.println(string);
 		System.out.println(string);

@@ -32,5 +32,9 @@
 	<classpathentry kind="lib" path="/Users/jarenas 1/git/hipe-uplink-sim/hipe-uplink-sim/jars/jfxrt.jar"/>
 	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_jconsole/13.19/ia_jconsole_13.19.jar"/>
 	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/share_unit/13.6/share_unit_13.6.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/ext/junit/4.3.1/junit-4.3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/ext/jsr.275/1.0.0/jsr-275.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_task/13.30/ia_task_13.30.jar"/>
+	<classpathentry kind="lib" path="jars/commons-compress-1.8.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -59,7 +59,9 @@ import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
 import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
+
 import java.lang.Runnable;
+
 import javax.swing.*; 
 
 
@@ -749,13 +751,22 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 		}
 		else{
 			ptrbar.setText(ptrFile.getName());
-			ptr=PtrUtils.readPTRfromFile(ptrFile.getAbsolutePath());
-			segmentNames=ptr.getPtrSegmentNames();
-			ptrbox.removeAllItems();
-			for (int i=0;i<segmentNames.length;i++){
-				ptrbox.addItem(segmentNames[i]);
+			try {
+				ptr=PtrUtils.readPTRfromFile(ptrFile.getAbsolutePath());
+				segmentNames=ptr.getPtrSegmentNames();
+				ptrbox.removeAllItems();
+				for (int i=0;i<segmentNames.length;i++){
+					ptrbox.addItem(segmentNames[i]);
+				}
+				ptrbox.setEnabled(true);
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				ptrbar.setText("Error readinf PTR/PTSL file");
+				ptrbox.setEnabled(false);
+
 			}
-			ptrbox.setEnabled(true);
 			//ptrbox.addItem(segmentNames);
 			//ptrbox=new JComboBox(segmentNames);
 		}

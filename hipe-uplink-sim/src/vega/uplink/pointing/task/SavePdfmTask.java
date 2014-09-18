@@ -1,7 +1,14 @@
 package vega.uplink.pointing.task;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import herschel.ia.gui.apps.modifier.JFilePathModifier;
+import herschel.ia.gui.apps.modifier.Modifier;
+import herschel.ia.gui.kernel.util.field.FileSelectionMode;
 import herschel.ia.task.Task;
 import herschel.ia.task.TaskParameter;
+import vega.uplink.Properties;
 import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.PtrUtils;
 
@@ -39,11 +46,20 @@ public class SavePdfmTask extends Task {
         }
         String path=(String ) getParameter("path").getValue();
         if (path == null) {
-            name=pdfm.getPath();
+            path=pdfm.getPath();
         }
         
         PtrUtils.writePDFMtofile(path+"/"+name, pdfm);
 	}
+	public Map<String,Modifier> getCustomModifiers(){
+
+		HashMap<String,Modifier> result=new HashMap<String,Modifier>();
+		JFilePathModifier filePathModifier = new JFilePathModifier(FileSelectionMode.DIRECTORY);
+		filePathModifier.setValue(Properties.getProperty(Properties.DEFAULT_PLANNING_DIRECTORY));
+		result.put("path", filePathModifier);
+		return result;
+	}
+
 }
 
 

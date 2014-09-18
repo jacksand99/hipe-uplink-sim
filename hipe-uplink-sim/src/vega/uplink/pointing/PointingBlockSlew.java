@@ -21,6 +21,7 @@ public class PointingBlockSlew extends PointingBlock {
 	 * @param before
 	 */
 	public void setBlockBefore(PointingBlock before){
+		if (before!=null) if (before.getType().equals("SLEW")) throw new IllegalArgumentException("Trying to put two consecutive slews");
 		blockBefore=before;
 	}
 	/**
@@ -28,6 +29,7 @@ public class PointingBlockSlew extends PointingBlock {
 	 * @param before
 	 */
 	public void setBlockAfter(PointingBlock after){
+		if (after!=null) if (after.getType().equals("SLEW")) throw new IllegalArgumentException("Trying to put to consecutive slews");
 		blockAfter=after;
 	}
 	

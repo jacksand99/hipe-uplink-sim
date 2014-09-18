@@ -1,6 +1,7 @@
 package vega.uplink.commanding;
 
 import herschel.ia.dataset.Column;
+import herschel.ia.dataset.StringParameter;
 import herschel.ia.dataset.TableDataset;
 import herschel.ia.numeric.Float1d;
 import herschel.ia.numeric.String1d;
@@ -13,7 +14,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 
 public class Orcd extends TableDataset{
@@ -48,7 +52,14 @@ public class Orcd extends TableDataset{
 		this.setColumnName(INDEX_OFFSET, "Transition Offset");
 		this.setColumnName(INDEX_ALLOWED, "Transition allowed from mode");
 		this.setColumnName(INDEX_NOT_ALLOWED, "Transition forbidden from mode");
-
+		this.setVersion("1.0");
+	}
+	public void setVersion(String version){
+		this.getMeta().set("version", new StringParameter(version));
+	}
+	
+	public String getVersion(){
+		return (String) this.getMeta().get("version").getValue();
 	}
 	
 	public herschel.ia.dataset.TableDataset asTable(){
@@ -248,6 +259,82 @@ public class Orcd extends TableDataset{
 		int seconds=Integer.parseInt(times[2]);
 		offset=(hours*3600)+(minutes*60)+seconds;
 		return offset;
+	}
+	
+	public String toXml(){
+		TreeSet<String> modes=new TreeSet<String>();
+		int rowCount=this.getRowCount();
+		for (int i=0;i<rowCount;i++){
+			String[] array=new String[6];
+			array = this.getRow(i).toArray(array);
+			String mode=array[0];
+			modes.add(mode);
+		}
+		
+		String result="<orcd version="+getVersion()+">\n";
+		result=result+"\t<powerModel>\n";
+		Iterator<String> it = modes.iterator();
+		while (it.hasNext()){
+			String mode=it.next();
+			result=result+"\t\t<mode name="+mode+">\n";
+			//result=result+"\t\t<mode>"+mode+"</mode>\n";
+			result=result+"\t\t\t<power>"+this.getPowerForMode(mode)+"</power>\n";
+			TableDataset table = findInTable(this, INDEX_MODE, mode);
+			int rowCount2=table.getRowCount();
+			String allowed="null";
+			String notAllowed="null";
+			for (int i=0;i<rowCount2;i++){
+				String[] array=new String[6];
+				array = table.getRow(i).toArray(array);
+				//String mode=array[0];
+				//String power=array[1];
+				String sequence=array[2];
+				String offSet=array[3];
+				allowed=array[4];
+				notAllowed=array[5];
+				//result=result+"\t<entry>\n";
+				//result=result+"\t\t<mode>"+mode+"</mode>\n";
+				//result=result+"\t\t<power>"+power+"</power>\n";
+				if (!offSet.equals("00:00:00")) result=result+"\t\t\t<sequence offset=\""+offSet+"\""+">"+sequence+"</sequence>\n";
+				else result=result+"\t\t\t<sequence>"+sequence+"</sequence>\n";
+				//result=result+"\t\t<offset>"+offSet+"</offset>\n";
+				/*if (!allowed.equals("null")){
+					StringTokenizer allTok = new StringTokenizer(allowed);
+					while(allTok.hasMoreElements()){
+						result=result+"\t\t<allowed>"+allTok.nextToken()+"</allowed>\n";
+					}
+					//result=result+"\t\t<allowed>"+allowed+"</allowed>\n";
+				}
+				if (!notAllowed.equals("null")){
+					StringTokenizer notallTok = new StringTokenizer(notAllowed);
+					while(notallTok.hasMoreElements()){
+						result=result+"\t\t<notAllowed>"+notallTok.nextToken()+"</notAllowed>\n";
+					}
+				}*/
+				//result=result+"\t</entry>\n";
+				
+				
+			}
+			if (!allowed.equals("null")){
+				StringTokenizer allTok = new StringTokenizer(allowed);
+				while(allTok.hasMoreElements()){
+					result=result+"\t\t\t<transitionAllowed>"+allTok.nextToken()+"</transitionAllowed>\n";
+				}
+			//result=result+"\t\t<allowed>"+allowed+"</allowed>\n";
+			}
+			if (!notAllowed.equals("null")){
+				StringTokenizer notallTok = new StringTokenizer(notAllowed);
+				while(notallTok.hasMoreElements()){
+					result=result+"\t\t\t<transitionNotAllowed>"+notallTok.nextToken()+"</transitionNotAllowed>\n";
+				}
+			}
+
+			result=result+"\t\t</mode>\n";
+		}
+		result = result+"\t</powerModel>\n";
+
+		result = result+"</orcd>";
+		return result;
 	}
 	
 }

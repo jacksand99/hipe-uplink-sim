@@ -258,7 +258,7 @@ public class PointingBlock extends PointingElement{
 		 * @param other block to be compared with this one
 		 * @return true if the blocks are equal or false otherwise
 		 */
-		public boolean equals(PointingBlock other){
+		/*public boolean equals(PointingBlock other){
 			
 			boolean result=true;
 			if (!this.getStartTime().equals(other.getStartTime())){
@@ -292,7 +292,7 @@ public class PointingBlock extends PointingElement{
 				}
 			}
 			return result;
-		}
+		}*/
 		
 		/**
 		 * Read a block from a XML node
@@ -336,6 +336,15 @@ public class PointingBlock extends PointingElement{
 			//}
 			return result;
 		}
+		
+		public  boolean isSlew(){
+			boolean result=false;
+			if (getType().equals("SLEW") || getType().equals("MOCM") || getType().equals("MWOL") || getType().equals("MSLW")){
+				result=true;
+			}
+			return result;
+		}
+
 		
 
 

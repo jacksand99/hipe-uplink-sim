@@ -16,6 +16,11 @@ import java.io.PrintWriter;
 
 
 
+
+
+import java.text.ParseException;
+import java.util.NoSuchElementException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -90,7 +95,7 @@ public class PtrUtils {
 		return item;
 	}
 	
-	public static Ptr readPTRfromFile(String file){
+	public static Ptr readPTRfromFile(String file) throws Exception{
 
 		Ptr result = new Ptr();
 		try {
@@ -140,6 +145,7 @@ public class PtrUtils {
 			
 		    } catch (Exception e) {
 		    	e.printStackTrace();
+		    	throw(e);
 		    }
 		
 		return result; //to be remove
@@ -308,5 +314,106 @@ public class PtrUtils {
 		
 		return result; //to be remove
 	}
+	
+	public static void mergePtrs(Ptr master, Ptr ptr, Ptr target){
+		PtrSegment ptr1Segment = master.getSegments()[0];
+		PtrSegment ptr2Segment = ptr.getSegment(ptr1Segment.getName());
+		PtrSegment targetSegment = target.getSegment(ptr1Segment.getName());
+
+		PointingBlock[] ptr2Blocks = ptr2Segment.getBlocks();
+		for (int i=0;i<ptr2Blocks.length;i++){
+			PointingBlock ptr2Block = ptr2Blocks[i];
+			if (!ptr2Block.getType().equals(PointingBlock.TYPE_SLEW)){
+				PointingBlock ptrBlock = ptr1Segment.getBlockAt(ptr2Block.getStartTime());
+				PointingBlock targetBlock = targetSegment.getBlockAt(ptr2Block.getStartTime());
+
+					if (!ptr2Block.equals(ptrBlock)){
+						PointingBlock[] blocksToRemove = targetSegment.getBlocksAt(ptr2Block.getStartTime(), ptr2Block.getEndTime());
+						targetSegment.removeBlocks(blocksToRemove);
+						targetSegment.addBlock(ptr2Block);
+						repairGaps(targetSegment);
+
+					}
+			}else{
+				PointingBlock[] blocksInSlew = ptr1Segment.getBlocksAt(ptr2Block.getStartTime(),ptr2Block.getEndTime());
+				targetSegment.removeBlocks(blocksInSlew);
+				repairGaps(targetSegment);
+				/*for (int j=0;j<blocksInSlew.length;j++){
+					PointingBlock targetBlock = targetSegment.getBlockAt(blocksInSlew[j].getStartTime());
+					if (!targetBlock.getType().equals("SLEW")) 
+				}*/
+			}
+		}
+		repairGaps(targetSegment);
+		
+	}
+	public static void repairOrphanSlews(PtrSegment segment){
+		PointingBlock[] blocks = segment.getBlocks();
+		
+		for (int j=1;j<blocks.length;j++){
+			PointingBlock blockBefore = blocks[j-1];
+			if (blockBefore.getType().equals("SLEW")) {
+				((PointingBlockSlew) blockBefore).setBlockAfter(blocks[j]);
+			}
+		}
+		for (int j=0;j<blocks.length-1;j++){
+			PointingBlock blockAfter = blocks[j+1];
+			if (blockAfter.getType().equals("SLEW")) {
+				((PointingBlockSlew) blockAfter).setBlockBefore(blocks[j]);
+			}
+		}
+		
+	}
+	
+	public static void repairGaps(PtrSegment segment){
+		repairOrphanSlews(segment);
+			PointingBlock[] blocks = segment.getBlocks();
+			
+			for (int j=1;j<blocks.length;j++){
+				PointingBlock blockBefore = blocks[j-1];
+				if (!blockBefore.getEndTime().equals(blocks[j].getStartTime()) && !blockBefore.isSlew() && !blocks[j].isSlew()){
+					PointingBlockSlew slew = new PointingBlockSlew();
+					slew.setBlockBefore(blockBefore);
+					slew.setBlockAfter(blocks[j]);
+					segment.hardInsertBlock(slew);
+
+				}
+
+			}
+	}
+	
+	public static Ptr rebasePtrPtsl(Ptr ptr,Ptr ptsl){
+		String result="";
+		PtrSegment ptrSegment = ptr.getSegments()[0];
+		PtrSegment ptslSegment = ptsl.getSegment(ptrSegment.getName());
+		if (ptslSegment==null) throw(new IllegalArgumentException("There is no "+ptrSegment.getName()+" segment in the ptsl"));
+
+		PointingBlock[] ptslBlocks = ptslSegment.getBlocks();
+		for (int i=0;i<ptslBlocks.length;i++){
+			PointingBlock ptslBlock = ptslBlocks[i];
+			if (!ptslBlock.getType().equals(PointingBlock.TYPE_OBS) && !ptslBlock.getType().equals(PointingBlock.TYPE_SLEW)){
+				PointingBlock ptrBlock = ptrSegment.getBlockAt(ptslBlock.getStartTime());
+				if (ptrBlock==null){
+					
+					result=result+"Block not found in PTR:\n";
+					result=result+ptslBlock.toXml(1)+"\n";
+					throw (new NoSuchElementException(result));
+				}else{
+					if (!ptslBlock.equals(ptrBlock)){
+						ptrSegment.removeBlock(ptrBlock);
+						PointingBlock[] eqPtslBlocks = ptslSegment.getBlocksAt(ptrBlock.getStartTime(), ptrBlock.getEndTime());
+						for (int j=0;j<eqPtslBlocks.length;j++){
+							ptrSegment.addBlock(eqPtslBlocks[j]);
+						}
+						//ptrSegment.addBlock(ptslBlock);
+					}
+				}
+			}
+		}
+		repairGaps(ptrSegment);
+		return ptr;
+	
+	}
+
 
 }

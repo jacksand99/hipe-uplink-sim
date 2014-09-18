@@ -1,7 +1,14 @@
 package vega.uplink.commanding.task;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import vega.uplink.Properties;
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.PorUtils;
+import herschel.ia.gui.apps.modifier.JFilePathModifier;
+import herschel.ia.gui.apps.modifier.Modifier;
+import herschel.ia.gui.kernel.util.field.FileSelectionMode;
 import herschel.ia.task.Task;
 import herschel.ia.task.TaskParameter;
 
@@ -39,9 +46,18 @@ public class SavePorTask extends Task {
         }
         String path=(String ) getParameter("path").getValue();
         if (path == null) {
-            name=por.getPath();
+            path=por.getPath();
         }
         
         PorUtils.writePORtofile(path+"/"+name, por);
 	}
+	public Map<String,Modifier> getCustomModifiers(){
+
+		HashMap<String,Modifier> result=new HashMap<String,Modifier>();
+		JFilePathModifier filePathModifier = new JFilePathModifier(FileSelectionMode.DIRECTORY);
+		filePathModifier.setValue(Properties.getProperty(Properties.DEFAULT_PLANNING_DIRECTORY));
+		result.put("path", filePathModifier);
+		return result;
+	}
+
 }
