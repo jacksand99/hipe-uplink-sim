@@ -55,6 +55,11 @@ public class OffsetCustom extends OffsetAngles {
 
 	public OffsetCustom(PointingElement org){
 		super(org);
+		normalize();
+	}
+	public void regenerate(PointingElement org){
+		super.regenerate(org);
+		normalize();
 	}
 	
 	private OffsetCustom(){
@@ -311,8 +316,13 @@ public class OffsetCustom extends OffsetAngles {
 			return PointingBlock.zuluToDate(getChild(STARTTIME_FIELD).getValue());
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			
+			IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+
+			//e.printStackTrace();
+			//return null;
 		}
 	}
 	/**
@@ -382,6 +392,21 @@ public class OffsetCustom extends OffsetAngles {
 		//System.out.println(result.toXml(0));
 
 		return result;
+	}
+	
+	private void normalize(){
+		try{
+			setDeltaTimes(getDeltaTimes());
+			setXAngles(getXAngles());
+			setXRates(getXRates());
+			setYAngles(getYAngles());
+			setYRates(getYRates());
+		}catch (Exception e){
+			IllegalArgumentException iae = new IllegalArgumentException("Can not reasd number array from field: "+e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+		}
+		
 	}
 
 

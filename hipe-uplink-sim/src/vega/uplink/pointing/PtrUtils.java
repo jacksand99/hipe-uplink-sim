@@ -95,6 +95,53 @@ public class PtrUtils {
 		return item;
 	}
 	
+	public static Ptr readPTRfromDoc(Document doc){
+	  Ptr result = new Ptr();
+	  try{
+		doc.getDocumentElement().normalize();
+		 
+		NodeList nListHeader = doc.getElementsByTagName(Ptr.BODY_TAG);
+		Node nBody =nListHeader.item(0);
+		Element elBody = (Element) nBody;
+		NodeList nlSegments=elBody.getElementsByTagName(PtrSegment.SEGMENT_TAG);
+		for (int i=0;i<nlSegments.getLength();i++){
+			Node nSegment=nlSegments.item(i);
+			String pName=((Element) nSegment).getAttribute(PtrSegment.NAME_TAG).trim();
+			PtrSegment segment=new PtrSegment(pName);
+			Node nMetadata=((Element) nSegment).getElementsByTagName(PtrSegment.METADATA_TAG).item(0);
+			NodeList nlIncludes=((Element) nMetadata).getElementsByTagName(PtrSegment.INCLUDE_TAG);
+			for (int j=0;j<nlIncludes.getLength();j++){
+				segment.addInclude(((Element)nlIncludes.item(j)).getAttribute(PtrSegment.HREF_TAG));
+			}
+			Node nData=((Element) nSegment).getElementsByTagName(PtrSegment.DATA_TAG).item(0);
+			Node nTimeline=((Element) nData).getElementsByTagName(PtrSegment.TIMELINE_TAG).item(0);
+			String tlframe=((Element) nTimeline).getAttribute(PtrSegment.FRAME_TAG);
+			segment.setTimeLineFrame(tlframe);
+			NodeList nlBlocks=((Element) nTimeline).getElementsByTagName(PointingBlock.BLOCK_TAG);
+			for (int j=0;j<nlBlocks.getLength();j++){
+				//String type=
+				PointingBlock block=PointingBlock.readFrom(nlBlocks.item(j));
+				if (block.hasChildren()){
+					PointingElement[] children=block.getChildren();
+					for (int h=0;h<children.length;h++){
+						 children[h]=recursiveTranslation(children[h]);
+						 block.addChild(children[h]);
+					}
+				}
+				if (block.getType().equals(PointingBlock.TYPE_SLEW)) block=new PointingBlockSlew();
+				segment.addBlock(block);
+			}
+			result.addSegment(segment);
+		}
+		
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    	throw(e);
+	    }
+	
+	return result; //to be remove
+
+	}
 	public static Ptr readPTRfromFile(String file) throws Exception{
 
 		Ptr result = new Ptr();

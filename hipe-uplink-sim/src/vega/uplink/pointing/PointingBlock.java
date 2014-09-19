@@ -108,9 +108,11 @@ public class PointingBlock extends PointingElement{
 			try {
 				return zuluToDate(this.getChild("startTime").getValue());
 			} catch (ParseException e) {
-				e.printStackTrace();
-
-				return new Date();
+				//e.printStackTrace();
+				IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
+				iae.initCause(e);
+				throw(iae);
+				//return new Date();
 			}
 		}
 		/**
@@ -120,9 +122,9 @@ public class PointingBlock extends PointingElement{
 			try {
 				return zuluToDate(this.getChild("endTime").getValue());
 			} catch (ParseException e) {
-				e.printStackTrace();
-
-				return new Date();
+				IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
+				iae.initCause(e);
+				throw(iae);
 			}
 		}
 		
@@ -342,6 +344,25 @@ public class PointingBlock extends PointingElement{
 			if (getType().equals("SLEW") || getType().equals("MOCM") || getType().equals("MWOL") || getType().equals("MSLW")){
 				result=true;
 			}
+			return result;
+		}
+		
+		public boolean validate(){
+			//System.out.println("validating pointing block");
+			boolean result = true;
+			try {
+				zuluToDate(this.getChild("startTime").getValue());
+				zuluToDate(this.getChild("endTime").getValue());
+			} catch (ParseException e) {
+				System.out.println("detected problem");
+				e.printStackTrace();
+				IllegalArgumentException iae = new IllegalArgumentException("Date not in the correct format./n"+this.toXml(0)+"/n"+e.getMessage());
+				iae.initCause(e);
+				throw (iae);
+				//return false;
+			}
+
+			if (!super.validate()) result=false;
 			return result;
 		}
 

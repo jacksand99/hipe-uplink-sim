@@ -9,6 +9,7 @@
    <em:minVersion>5.0.1760</em:minVersion>
    <!-- Compatible with all future HIPE versions -->
    <em:maxVersion>*</em:maxVersion>
+   <em:updateURL>http://10.68.182.65:8080/plugin-registry.xml</em:updateURL>
 
 
 </plugin>

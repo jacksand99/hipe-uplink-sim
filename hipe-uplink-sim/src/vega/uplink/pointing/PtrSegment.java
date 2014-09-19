@@ -242,7 +242,11 @@ public class PtrSegment extends Product{
 		Entry<Date, PointingBlock> lastEntry = blMap.lastEntry();
 		PointingBlock before;
 		if (new_is_slew &&((PointingBlockSlew) newBlock).getBlockBefore()==null){
-			before=lastEntry.getValue();
+			if (lastEntry==null){
+				throw (new IllegalArgumentException("Can not introduce a SLEW as first block of a segment"));
+				//before=null;
+			}
+			else before=lastEntry.getValue();
 		}
 		else before= blockBefore(newBlock);
 		PointingBlock after;

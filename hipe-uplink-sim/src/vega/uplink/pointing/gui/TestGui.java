@@ -9,13 +9,17 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import vega.uplink.Properties;
+import vega.uplink.pointing.Ptr;
+import vega.uplink.pointing.PtrUtils;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetScan;
 import vega.uplink.pointing.attitudes.Limb;
+import vega.uplink.pointing.gui.xmleditor.XMLTextEditor;
 
 import com.sun.glass.events.WindowEvent;
 
 public class TestGui extends JFrame {
-	  public TestGui() {
+	  /*public TestGui() {
 			herschel.share.util.Configuration.setProperty("var.hcss.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
 			herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
 
@@ -24,47 +28,35 @@ public class TestGui extends JFrame {
 		  PointingElementEditor editor = new PointingElementEditor();
 		  editor.setPointingMetadata(pm);
 		  this.add(editor);
-		    /*super("Multi-Line Cell Example");
-		    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		    DefaultTableModel dm = new DefaultTableModel() {
-		      public Class<String> getColumnClass(int columnIndex) {
-		        return String.class;
-		      }
-		      public boolean isCellEditable(int row, int column) {
-		        return false;
-		      }
-		    };
-		    dm.setDataVector(
-		        new Object[][]{
-		            {"A0, Line1\n\tA0, Line2\n\t\tA0, Line3",
-		             "B0, Line1\nB0, Line2",
-		             "C0, Line1"},
-		            {"A1, Line1",
-		             "B1, Line1\nB1, Line2",
-		             "C1, Line1"},
-		            {"A2, Line1",
-		             "B2, Line1",
-		             "C2, Line1"}
-		            },
-		            new Object[] {"A", "B", "C"});
 
-		    JTable table = new JTable(dm);
-		    table.setDefaultRenderer(String.class, new MultiLineCellRenderer());
-		    TableRowSorter<? extends TableModel> sort = new TableRowSorter<DefaultTableModel>(dm);
-		    table.setRowSorter(sort);
-		    JScrollPane scroll = new JScrollPane(table);
-		    getContentPane().add(scroll);
-		    setLocationByPlatform(true);*/
 		    setSize(400, 430);
 		    setVisible(true);
-		  }
+		  }*/
 
 		  public static void main(String[] args) {
-			  TestGui frame = new TestGui();
-		    frame.addWindowListener(new WindowAdapter() {
-		      public void windowClosing(WindowEvent e) {
-		        System.exit(0);
-		      }
-		    });
+				herschel.share.util.Configuration.setProperty("var.hcss.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
+				herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "C:\\Users\\jarenas\\Downloads\\hcss-12.0.2524");
+				//herschel.share.util.Configuration.setProperty(Mib.ROSETTA_MIB_LOCATION, "Z:\\MAPPS\\MIB");
+				herschel.share.util.Configuration.setProperty(Properties.DEFAULT_EVT_DIRECTORY, "Z:\\MAPPS\\RMOC\\");
+				herschel.share.util.Configuration.setProperty(Properties.PWPL_FILE, "C:\\ROS_SGS\\PLANNING\\RMOC\\FCT\\PWPL_14_001_14_365__OPT_01.ROS");
+				herschel.share.util.Configuration.setProperty(Properties.ORCD_FILE, "Z:\\MAPPS\\MIB\\orcd.csv");
+				herschel.share.util.Configuration.setProperty(Properties.DEFAULT_PLANNING_DIRECTORY, "C:\\ROS_SGS\\PLANNING\\");
+
+				try{
+					Ptr ptr1=PtrUtils.readPTRfromFile("/Users/jarenas 1/Rosetta/testing/comparePtr/PTRM_001.ROS");
+					TestGui frame = new TestGui();
+					//PointingElementXMLEditor editor = new PointingElementXMLEditor();
+					PtrXmlEditor editor = new PtrXmlEditor();
+					//editor.setPointingMetadata(ptr1.getSegments()[0].getBlocks()[0]);
+					editor.setPtr(ptr1);
+					//XMLTextEditor xmlEditor = new XMLTextEditor();
+					//xmlEditor.setText(ptr1.toXml());
+					frame.add(editor);
+					frame.pack();
+					frame.setVisible(true);
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
 		  }
 		}

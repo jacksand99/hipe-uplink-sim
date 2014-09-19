@@ -63,6 +63,28 @@ public class PointingElement extends CompositeDataset  {
 		}
 		//return result;
 	}
+	public void regenerate(PointingElement org){
+		if (!org.getName().equals(this.getName())) throw new IllegalArgumentException("Can not change the name of this Pointing Element");
+		PointingElement[] attr = this.getAttributes();
+		for (int i=0;i<attr.length;i++){
+			this.removeAttribute(attr[i]);
+		}
+		PointingElement[] chi = this.getChildren();
+		for (int i=0;i<chi.length;i++){
+			this.remove(chi[i].getName());
+		}
+		this.setValue(org.getValue());
+		PointingElement[] ch = org.getChildren();
+		for (int i=0;i<ch.length;i++){
+			addChild(ch[i]);
+		}
+		PointingElement[] att = org.getAttributes();
+		for (int i=0;i<att.length;i++){
+			addAttribute(att[i]);
+		}
+
+
+	}
 	/**
 	 * copy all attributes, children and value from another pointing metadata into this one.
 	 * @param org
@@ -415,6 +437,20 @@ public class PointingElement extends CompositeDataset  {
 	            textContent.append(child.getTextContent());
 	    }
 	    return textContent.toString();
+	}
+	
+	public boolean validate(){
+		boolean result = true;
+		PointingElement[] ch = this.getChildren();
+		for (int i=0;i<ch.length;i++){
+			if (!ch[i].validate()) result=false;
+		}
+		PointingElement[] att = this.getAttributes();
+		for (int i=0;i<att.length;i++){
+			if (!att[i].validate()) result=false;
+		}
+		
+		return result;
 	}
 	
 

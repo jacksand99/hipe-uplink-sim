@@ -155,7 +155,11 @@ public class PhaseAngle extends PointingElement {
 			return PointingBlock.zuluToDate(this.getChild(FLIP_START_TIME_TAG).getValue());
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			IllegalArgumentException iae = new IllegalArgumentException("Can not read date for Flip Start Time: "+this.getChild(FLIP_START_TIME_TAG).getValue()+" "+e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+
+			//return null;
 			// TODO Auto-generated catch block
 			
 		}
@@ -354,7 +358,6 @@ public class PhaseAngle extends PointingElement {
 	public void setFlipStartTime(Date time){
 		this.addChild(new PointingElement(FLIP_START_TIME_TAG,PointingBlock.dateToZulu(time)));
 	}
-	
 	
 
 }

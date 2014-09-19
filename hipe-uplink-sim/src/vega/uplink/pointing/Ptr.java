@@ -63,6 +63,22 @@ public class Ptr extends MapContext{
 	public herschel.ia.pal.MapContext asContext(){
 		return this;
 	}
+	public void regenerate(Ptr ptr){
+		String name=this.getName();
+		String path=this.getPath();
+		String[] segNames = this.getPtrSegmentNames();
+		for (int i=0;i<segNames.length;i++){
+			this.getRefs().remove(segNames[i]);
+			//this.remove(segNames[i]);
+		}
+		PtrSegment[] newSegments = ptr.getSegments();
+		for (int i=0;i<newSegments.length;i++){
+			this.addSegment(newSegments[i]);
+		}
+		this.setMeta(ptr.getMeta());
+		this.setName(name);
+		this.setPath(path);
+	}
 	
 	/**
 	 * Get all segments contained in this PTR/PTSL

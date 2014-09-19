@@ -11,7 +11,7 @@ import vega.uplink.pointing.PtrParameters.Offset.OffsetScan;
 public class PtrChecker {
 	public static String checkPtr(Ptr ptr){
 		//return checkSlewDuration(ptr)+checkGaps(ptr)+checkOffsetDuration(ptr)+checkInternalSlewsDuration(ptr);
-		return checkBlockDuration(ptr)+checkGaps(ptr)+checkOffsetDuration(ptr)+checkInternalSlewsDuration(ptr);
+		return checkBlocks(ptr)+checkBlockDuration(ptr)+checkGaps(ptr)+checkOffsetDuration(ptr)+checkInternalSlewsDuration(ptr);
 
 		//return checkSlewDuration(ptr)+checkGaps(ptr);
 	}
@@ -237,7 +237,11 @@ public class PtrChecker {
 					messages=messages+"PTR:Two consecutive blocks without slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
 					messages=messages+"--------------------------------------\n";
 				}
-
+				if (blockBefore.getEndTime().after(blocks[j].getStartTime())){
+					messages=messages+"PTR:Two overlaping blocks detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+					messages=messages+"--------------------------------------\n";
+					
+				}
 			}
 		}
 		if (messages.equals("")) return messages;
@@ -248,6 +252,33 @@ public class PtrChecker {
 
 		//return messages;
 	}
+	public static String checkBlocks(Ptr ptr){
+		String messages="";
+		PtrSegment[] segs = ptr.getSegments();
+		for (int i=0;i<segs.length;i++){
+			PtrSegment segment = segs[i];
+			PointingBlock[] blocks = segment.getBlocks();
+			
+			for (int j=1;j<blocks.length;j++){
+				try{
+					blocks[j].validate();
+				}catch (Exception e){
+					messages=messages+"PTR:Incorrect Block detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+					messages=messages+e.getMessage();
+					messages=messages+"--------------------------------------\n";
+					
+				}
+			}
+		}
+		if (messages.equals("")) return messages;
+		else{
+			
+			return "**************************\nPOINTING BLOCK CHECKS\n**************************\n"+messages;
+		}
+
+		//return messages;
+	}
+
 	/*protected static boolean isSlew(PointingBlock block){
 		boolean result=false;
 		if (block.getType().equals("SLEW") || block.getType().equals("MOCM") || block.getType().equals("MWOL") || block.getType().equals("MSLW")){
