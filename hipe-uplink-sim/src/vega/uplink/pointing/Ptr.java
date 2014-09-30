@@ -201,4 +201,20 @@ public class Ptr extends MapContext{
 		return result;
 	}
 	
+	public PointingBlocksSlice getSlice(int number){
+		return this.getSegments()[0].getSlice(number);
+	}
+	public PointingBlocksSlice getAllBlocksOfInstrument(String instrument){
+		PointingBlocksSlice result=new PointingBlocksSlice();
+		PtrSegment[] segs = this.getSegments();
+		for (int i=0;i<segs.length;i++){
+			PointingBlock[] blocks = segs[i].getAllBlocksOfInstrument(instrument).getBlocks();
+			result.setBlocks(blocks);
+		}
+		
+		return result;
+	}
+	public void setSlice(PointingBlocksSlice slice){
+		this.getSegments()[0].setSlice(slice);
+	}
 }

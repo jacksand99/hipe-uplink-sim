@@ -27,6 +27,11 @@ public class PointingMetadata extends PointingElement{
 	public String1d getComments(){
 		return (String1d)((ArrayDataset)this.get("comments")).getData();
 	}
+	public int getVstpNumber(){
+		PointingElement child = this.getChild("vstpNumber");
+		if (child==null) return -1;
+		return Integer.parseInt(child.getValue());
+	}
 	
 	/**
 	 * Write a XML representation of this element

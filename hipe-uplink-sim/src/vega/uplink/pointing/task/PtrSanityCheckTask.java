@@ -17,6 +17,7 @@ import javax.swing.JTextPane;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
 //import vega.uplink.pointing.task.ComparePtrsTask.MessagesFrame;
+import vega.uplink.pointing.gui.xmlutils.HtmlEditorKit;
 
 public class PtrSanityCheckTask extends Task {
 	private static final Logger LOGGER = Logger.getLogger(ComparePtrsTask.class.getName());
@@ -49,15 +50,16 @@ public class PtrSanityCheckTask extends Task {
             throw (new NullPointerException("Missing ptr value"));
         }
 		if (ptsl==null){
-        	String result = PtrChecker.checkPtr(ptr);
+        	String result = PtrChecker.checkPtrHTML(ptr);
         	LOGGER.warning(result);
-        	MessagesFrame frame = new MessagesFrame(result);
-        	frame.setVisible(true);
+        	HtmlEditorKit htmlEditor=new HtmlEditorKit("PTR sanity Check",result);
+        	//MessagesFrame frame = new MessagesFrame(result);
+        	//frame.setVisible(true);
 		}else{
-	       	String result = PtrChecker.checkPtr(ptr, ptsl);
+	       	String result = PtrChecker.checkPtrHTML(ptr, ptsl);
+	       	result="<html><body>"+result+"</body><html>";
         	LOGGER.warning(result);
-        	MessagesFrame frame = new MessagesFrame(result);
-        	frame.setVisible(true);
+        	HtmlEditorKit htmlEditor=new HtmlEditorKit("PTR sanity Check",result);
 			
 		}
 	}

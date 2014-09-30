@@ -36,5 +36,6 @@
 	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/ext/jsr.275/1.0.0/jsr-275.jar"/>
 	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_task/13.30/ia_task_13.30.jar"/>
 	<classpathentry kind="lib" path="jars/commons-compress-1.8.1.jar"/>
+	<classpathentry kind="lib" path="jars/commons-lang3-3.3.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

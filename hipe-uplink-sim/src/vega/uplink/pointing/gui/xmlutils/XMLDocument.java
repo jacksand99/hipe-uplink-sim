@@ -16,7 +16,7 @@
    limitations under the License.
 
  */
-package vega.uplink.pointing.gui.xmleditor;
+package vega.uplink.pointing.gui.xmlutils;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;

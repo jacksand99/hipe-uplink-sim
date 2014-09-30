@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -23,8 +24,8 @@ import java.util.TreeMap;
  * @author jarenas
  *
  */
-public class PtrSegment extends Product{
-	private String name;
+public class PtrSegment extends PointingBlocksSlice{
+	//private String name;
 	private String[] includes;
 	//private TreeMap<Date,PointingBlock> blMap;
 	public static String SEGMENT_TAG="segment";
@@ -51,6 +52,18 @@ public class PtrSegment extends Product{
 		return result;
 		
 	}
+	private TreeMap<Integer,Date> getVstpMap(){
+		TreeMap<Integer, Date> result = new TreeMap<Integer,Date>();
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		Iterator<PointingBlock> it = blMap.values().iterator();
+		while (it.hasNext()){
+			PointingBlock block = it.next();
+			int vstp = block.getVstpNumberMeta();
+			if (vstp>0) result.put(vstp,block.getStartTime());
+		}
+		return result;
+		
+	}
 	
 	
 	/**
@@ -60,7 +73,8 @@ public class PtrSegment extends Product{
 	public PtrSegment(String segmentName){
 		super();
 		//blMap=new TreeMap<Date,PointingBlock>();
-		name=segmentName;
+		setName(segmentName);
+		//name=segmentName;
 		includes=new String[0];
 		this.setTimeLineFrame("SC");
 	}
@@ -68,6 +82,16 @@ public class PtrSegment extends Product{
 	public Product asProduct(){
 		return this;
 
+	}
+	
+	public Date getSegmentStartDate(){
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		return blMap.firstKey();
+	}
+	
+	public Date getSegmentEndDate(){
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		return blMap.lastEntry().getValue().getEndTime();
 	}
 	/**
 	 * Get all blocks of this segment as an array
@@ -98,6 +122,31 @@ public class PtrSegment extends Product{
 		if (!blMap.lastEntry().getValue().getType().equals(PointingBlock.TYPE_SLEW)){
 			this.setValidityDates(blMap.firstKey(), blMap.lastEntry().getValue().getEndTime());
 		}
+	}
+	protected void hardInsertBlocks(PointingBlock[] blocks){
+		//TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		//PointingBlock block;
+		PointingBlock lastBlock=null;
+		for (int i=0;i<blocks.length;i++){
+			PointingBlock block=blocks[i];
+			if (block.getType().equals("SLEW")) ((PointingBlockSlew) block).setBlockBefore(lastBlock);
+			if (lastBlock!=null && lastBlock.getType().equals("SLEW")) ((PointingBlockSlew) lastBlock).setBlockAfter(block);
+			set(getBlockName(block),block);
+			lastBlock=block;
+
+		}
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		if (!blMap.lastEntry().getValue().getType().equals(PointingBlock.TYPE_SLEW)){
+			this.setValidityDates(blMap.firstKey(), blMap.lastEntry().getValue().getEndTime());
+		}
+
+		//set(getBlockName(block),block);
+		//blMap.put(block.getStartTime(), block);
+		//System.out.println("inserted "+block.toXml(0));
+		/*TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		if (!blMap.lastEntry().getValue().getType().equals(PointingBlock.TYPE_SLEW)){
+			this.setValidityDates(blMap.firstKey(), blMap.lastEntry().getValue().getEndTime());
+		}*/
 	}
 	
 	/**
@@ -393,7 +442,8 @@ public class PtrSegment extends Product{
 	 * @return name of the segment
 	 */
 	public String getName(){
-		return name;
+		return (String) this.getMeta().get("name").getValue();
+		//return name;
 	}
 	
 	/**
@@ -401,7 +451,8 @@ public class PtrSegment extends Product{
 	 * @param newName
 	 */
 	public void setName(String newName){
-		name=newName;
+		this.getMeta().set("name", new StringParameter(newName));
+		//name=newName;
 	}
 	
 	/**
@@ -431,6 +482,8 @@ public class PtrSegment extends Product{
 	 * @return The XML representation of this segment
 	 */
 	public String toXml(int indent){
+		int obsBlockConter=0;
+		boolean inObsSegment=false;
 		String result=new String();
 		String iString="";
 		for (int i=0;i<indent;i++){
@@ -447,8 +500,14 @@ public class PtrSegment extends Product{
 		result=result+iString+"\t\t"+"<"+TIMELINE_TAG+" "+FRAME_TAG+"='"+getTimeLineFrame()+"'>\n";
 		PointingBlock[] blocks = getBlocks();
 		for (int i=0;i<blocks.length;i++){
+			if (blocks[i].getType().equals(PointingBlock.TYPE_OBS) && !inObsSegment){
+				obsBlockConter++;
+				result=result+iString+"\t\t\t<!--OBS SLICE #"+String.format("%04d", obsBlockConter)+"-->\n";
+				inObsSegment=true;
+			}
+			if (!blocks[i].getType().equals(PointingBlock.TYPE_OBS) && !blocks[i].getType().equals(PointingBlock.TYPE_SLEW)) inObsSegment=false;
 			int blocknumber=i+1;
-			result=result+"<!-- BLOCK #"+blocknumber+"-->\n";
+			result=result+iString+"\t\t\t<!-- BLOCK #"+blocknumber+"-->\n";
 			result=result+blocks[i].toXml(indent+3);
 		}
 		result=result+iString+"\t\t"+"</"+TIMELINE_TAG+">\n";
@@ -473,8 +532,24 @@ public class PtrSegment extends Product{
 		if (floorEntry==null) return null;
 		return floorEntry.getValue();
 	}
+	public PointingBlocksSlice getBlocksAt(java.util.Date startTime,java.util.Date endTime){
+		endTime=new Date(endTime.getTime()-1);
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		SortedMap<Date, PointingBlock> sm = new TreeMap<Date, PointingBlock>(blMap.subMap(startTime, endTime));
+		PointingBlock startObs = getBlockAt(startTime);
+		PointingBlock endObs = getBlockAt(endTime);
+		sm.put(startObs.getStartTime(), startObs);
+		sm.put(endObs.getStartTime(), endObs);
+		Collection<PointingBlock> val = sm.values();
+		PointingBlock[] result=new PointingBlock[val.size()];
+		result=val.toArray(result);
+		PointingBlocksSlice pbs = new PointingBlocksSlice();
+		pbs.setBlocks(result);
+		return pbs;
+	//return getBlockAt(startTime);
+	}
 	
-	public PointingBlock[] getBlocksAt(java.util.Date startTime,java.util.Date endTime){
+	/*public PointingBlock[] getBlocksAt(java.util.Date startTime,java.util.Date endTime){
 		endTime=new Date(endTime.getTime()-1);
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		SortedMap<Date, PointingBlock> sm = new TreeMap<Date, PointingBlock>(blMap.subMap(startTime, endTime));
@@ -487,7 +562,7 @@ public class PtrSegment extends Product{
 		result=val.toArray(result);
 		return result;
 		//return getBlockAt(startTime);
-	}
+	}*/
 	
 	public void removeBlocks(PointingBlock[] blocks){
 		for (int i=0;i<blocks.length;i++){
@@ -500,7 +575,44 @@ public class PtrSegment extends Product{
 	 * @param blockType type of blocks to search for
 	 * @return an array of blocks of the given type
 	 */
-	public PointingBlock[] getAllBlocksOfType(String blockType){
+	public PointingBlocksSlice getAllBlocksOfType(String blockType){
+		java.util.Vector<PointingBlock> result=new java.util.Vector<PointingBlock>();
+		PointingBlock[] blocks = getBlocks();
+		for (int i=0;i<blocks.length;i++){
+			if (blocks[i].getType().equals(blockType)) result.add(blocks[i]);
+		}
+		
+		PointingBlock[] resultArray=new PointingBlock[result.size()];
+		result.toArray(resultArray);
+		PointingBlocksSlice pbs = new PointingBlocksSlice();
+		pbs.setBlocks(resultArray);
+		pbs.setName(blockType);
+		return pbs;
+	}
+	public PointingBlocksSlice getAllBlocksOfVstp(int vstp){
+		TreeMap<Integer, Date> vstpMap = getVstpMap();
+		Date startDate = vstpMap.get(vstp);
+		if (startDate==null) return null;
+		Date endDate = vstpMap.get(vstp+1);
+		if (endDate==null){
+			endDate=this.getSegmentEndDate();
+		}
+		PointingBlocksSlice rs = this.getBlocksAt(startDate, endDate);
+		rs.setName("VSTP_"+String.format("%04d", vstp));
+		return rs;
+	}
+	public int[] getVstpNumbers(){
+		TreeMap<Integer, Date> vstpMap = getVstpMap();
+		Set<Integer> numbers = vstpMap.keySet();
+		Integer[] result=new Integer[numbers.size()];
+		result=numbers.toArray(result);
+		int[] finalResult=new int[result.length];
+		for (int i=0;i<result.length;i++){
+			finalResult[i]=result[i];
+		}
+		return finalResult;
+	}
+	/*public PointingBlock[] getAllBlocksOfType(String blockType){
 		java.util.Vector<PointingBlock> result=new java.util.Vector<PointingBlock>();
 		PointingBlock[] blocks = getBlocks();
 		for (int i=0;i<blocks.length;i++){
@@ -510,7 +622,7 @@ public class PtrSegment extends Product{
 		PointingBlock[] resultArray=new PointingBlock[result.size()];
 		result.toArray(resultArray);
 		return resultArray;
-	}
+	}*/
 	
 	/*public PointingBlock getBlockAt(String startTime,String endTime) throws ParseException{
 		return getBlockAt(PointingBlock.zuluToDate(startTime));
@@ -525,6 +637,58 @@ public class PtrSegment extends Product{
 		setStartDate(new FineTime(startDate));
 		setEndDate(new FineTime(endDate));
 	}
+	
+	public PointingBlocksSlice getSlice(int number){
+		PointingBlocksSlice result=new PointingBlocksSlice();
+		int obsBlockConter=0;
+		boolean inObsSegment=false;
+		PointingBlock[] blocks = getBlocks();
+		for (int i=0;i<blocks.length;i++){
+			if (blocks[i].getType().equals(PointingBlock.TYPE_OBS) && !inObsSegment){
+				obsBlockConter++;
+				
+				//result=result+iString+"\t\t\t<!--OBS SLICE #"+String.format("%04d", obsBlockConter)+"-->\n";
+				inObsSegment=true;
+			}
+			if (!blocks[i].getType().equals(PointingBlock.TYPE_OBS) && !blocks[i].getType().equals(PointingBlock.TYPE_SLEW)) inObsSegment=false;
+			if (inObsSegment && obsBlockConter==number && blocks[i].getType().equals(PointingBlock.TYPE_OBS)) result.addBlock(blocks[i]);
+		}
+		blocks=result.getBlocks();
+		PointingBlock lastBlock = blocks[result.size()-1];
+		if (lastBlock.getType().equals(PointingBlock.TYPE_SLEW)) result.removeBlock(lastBlock);
+		result.setName("OBS_SLICE_"+String.format("%04d", number));
+		return result;
+	}
+	
+	public void setSlice(PointingBlocksSlice slice){
+		PointingBlock[] obs = slice.getBlocks();
+		for (int i=0;i<obs.length;i++){
+			PointingBlock[] blocksToRemove = this.getBlocksAt(obs[i].getStartTime(), obs[i].getEndTime()).getBlocks();
+			this.removeBlocks(blocksToRemove);
+			this.addBlock(obs[i]);
+			PtrUtils.repairGaps(this);
+
+		}
+	}
+	
+	
+	public PointingBlocksSlice getAllBlocksOfInstrument(String instrument){
+		java.util.Vector<PointingBlock> result=new java.util.Vector<PointingBlock>();
+		PointingBlock[] blocks = getBlocks();
+		for (int i=0;i<blocks.length;i++){
+			if (instrument.equals(blocks[i].getInstrument())) result.add(blocks[i]);
+		}
+		
+		PointingBlock[] resultArray=new PointingBlock[result.size()];
+		result.toArray(resultArray);
+		PointingBlocksSlice resultSlice = new PointingBlocksSlice();
+		resultSlice.setBlocks(resultArray);
+		resultSlice.setName(instrument);
+		return resultSlice;
+		
+	}
+	
+	 
 	
 	
 	

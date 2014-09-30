@@ -32,6 +32,16 @@ public class GsPass implements Comparable<GsPass>{
 		groundStation=groundStationName;
 		tmRate=passTmRate;
 	}
+	public boolean equals(GsPass pass){
+		if (!startPass.equals(pass.getStartPass())) return false;
+		if (!endPass.equals(pass.getEndPass())) return false;
+		if (!startDump.equals(pass.getStartDump())) return false;
+		if (!endDump.equals(pass.getEndDump())) return false;
+		if (!groundStation.equals(pass.getGroundStation())) return false;
+		if (tmRate!=pass.getTmRate()) return false;
+		
+		return true;
+	}
 	
 	public GsPass(GsPass org){
 		this(org.getStartPass(),org.getEndPass(),org.getStartDump(),org.getEndDump(),org.getGroundStation(),org.getTmRate());
@@ -121,5 +131,21 @@ public class GsPass implements Comparable<GsPass>{
 		//int result=0;
 		return new Long((this.getEndDump().getTime()-this.getStartDump().getTime())/1000).intValue();
 		//return result;
+	}
+	public int getPassDurationSecs(){
+		//int result=0;
+		return new Long((this.getEndPass().getTime()-this.getStartPass().getTime())/1000).intValue();
+		//return result;
+	}
+	
+	public float getTotalDataDump(){
+		return this.getTmRate()*getDumpDurationSecs();
+	}
+	public boolean isBSR(){
+		return false;
+	}
+	public boolean is70m(){
+		if (this.getTmRate()<90000) return false;
+		else return true;
 	}
 }

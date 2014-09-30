@@ -45,14 +45,18 @@ public class Mib extends CompositeDataset{
 	static String[] csp_types={"String","String","Integer","String","Integer","Integer","String","String","String","String","String","String","String","String","String","String"};
 	static String[] cdf_columns={"CDF_CNAME","CDF_ELTYPE","CDF_DESCR","CDF_ELLEN","CDF_BIT","CDF_GRPSIZE","CDF_PNAME","CDF_INTER","CDF_VALUE","CDF_TMID"};
 	static String[] cdf_types={"String","String","String","Integer","Integer","Integer","String","String","String","String"};
-	static String[] cpc_columns={"CPC_CNAME","CPC_DESCR","CPC_PTC","CPC_PFC","CPC_DISPFMT","CPC_RADIX","CPC_UNIT","CPC_CATEG","CPC_PRFREF","CPC_CCAREF","CPC_PAFREF","CPC_INTER","CPC_DEFVAL",};
+	static String[] cpc_columns={"CPC_CNAME","CPC_DESCR","CPC_PTC","CPC_PFC","CPC_DISPFMT","CPC_RADIX","CPC_UNIT","CPC_CATEG","CPC_PRFREF","CPC_CCAREF","CPC_PAFREF","CPC_INTER","CPC_DEFVAL"};
 	static String[] cpc_types={"String","String","Integer","Integer","String","String","String","String","Integer","Integer","Integer","String","String"};
+
+	static String[] css_columns={"CSS_SQNAME","CSS_COMM","CSS_ENTRY","CSS_TYPE","CSS_ELEMID","CSS_NPARS","CSS_MANDISP","CPC_CATEG","CSS_RELTYPE","CSS_RELTIME","CSS_EXTIME","CSS_PREVREL","CSS_GROUPL","CSS_BLOCK","CSS_ILSCOPE","CSS_ILSTAGE","CSS_DYNPTV","CSS_STAPTV","CSS_CEV"};
+	static String[] css_types={"String","String","Integer","String","String","Integer","String","String","String","String","String","String","String","String","String","String","String","String","String"};
 
 	private Mib(){
 		this.set("sdf_table", new TableDataset());
 		this.set("csp_table", new TableDataset());
 		this.set("cdf_table", new TableDataset());
 		this.set("cpc_table", new TableDataset());
+		this.set("css_table", new TableDataset());
 		
 
 		//sdf_table=new TableDataset();
@@ -68,8 +72,9 @@ public class Mib extends CompositeDataset{
 			FileInputStream csp_data=new FileInputStream(tdir.getAbsolutePath()+"/"+"csp.dat");
 			FileInputStream cdf_data=new FileInputStream(tdir.getAbsolutePath()+"/"+"cdf.dat");
 			FileInputStream cpc_data=new FileInputStream(tdir.getAbsolutePath()+"/"+"cdf.dat");
+			FileInputStream css_data=new FileInputStream(tdir.getAbsolutePath()+"/"+"css.dat");
 
-			return readMib(sdf_data,csp_data,cdf_data,cpc_data);
+			return readMib(sdf_data,csp_data,cdf_data,cpc_data,css_data);
 		}catch (ArchiveException aex){
 			IOException ioe = new IOException(aex.getMessage());
 			ioe.initCause(aex);
@@ -85,8 +90,9 @@ public class Mib extends CompositeDataset{
 		FileInputStream csp_data=new FileInputStream(Properties.getProperty(Properties.MIB_LOCATION)+"/"+"csp.dat");
 		FileInputStream cdf_data=new FileInputStream(Properties.getProperty(Properties.MIB_LOCATION)+"/"+"cdf.dat");
 		FileInputStream cpc_data=new FileInputStream(Properties.getProperty(Properties.MIB_LOCATION)+"/"+"cdf.dat");
+		FileInputStream css_data=new FileInputStream(Properties.getProperty(Properties.MIB_LOCATION)+"/"+"css.dat");
 
-		return readMib(sdf_data,csp_data,cdf_data,cpc_data);
+		return readMib(sdf_data,csp_data,cdf_data,cpc_data,css_data);
 /*		MibAsciiTableImporter importer=new MibAsciiTableImporter();
 		importer.setMibAsciiTableLocation(rosettaMibLocation);
 		try{
@@ -102,7 +108,7 @@ public class Mib extends CompositeDataset{
 		
 	}
 	
-	private static Mib readMib(InputStream sdfIS,InputStream cspIS,InputStream cdfIS,InputStream cpcIS) throws IOException{
+	private static Mib readMib(InputStream sdfIS,InputStream cspIS,InputStream cdfIS,InputStream cpcIS,InputStream cssIS) throws IOException{
 		Mib result=new Mib();
 		//try{
 	        CsvParser parser = new CsvParser();
@@ -120,6 +126,10 @@ public class Mib extends CompositeDataset{
 			TableTemplate cpc_template=new TableTemplate(cpc_columns.length);
 			cpc_template.setNames(cpc_columns);
 			cpc_template.setTypes(cpc_types);						
+			TableTemplate css_template=new TableTemplate(css_columns.length);
+			css_template.setNames(css_columns);
+			css_template.setTypes(css_types);						
+
 			att.setTemplate(sdf_template);
 			att.setParser(parser);
 			result.set("sdf_table", att.load(sdfIS));
@@ -130,6 +140,8 @@ public class Mib extends CompositeDataset{
 			result.set("cdf_table", att.load(cdfIS));
 			att.setTemplate(cpc_template);
 			result.set("cpc_table", att.load(cdfIS));
+			att.setTemplate(css_template);
+			result.set("css_table", att.load(cssIS));
 
 			//result.csp_table=att.load(cspIS);
 		//}catch(Exception e){
@@ -144,8 +156,9 @@ public class Mib extends CompositeDataset{
 		InputStream csp_data = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/mib/csp.dat");
 		InputStream cdf_data = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/mib/cdf.dat");
 		InputStream cpc_data = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/mib/cpc.dat");
+		InputStream css_data = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/mib/css.dat");
 
-		return readMib(sdf_data,csp_data,cdf_data,cpc_data);
+		return readMib(sdf_data,csp_data,cdf_data,cpc_data,css_data);
 
 
 	}
@@ -174,9 +187,70 @@ public class Mib extends CompositeDataset{
 		
 		//TableDataset paramsForCommand=findInTable(csp_table,"CSP_SQNAME",sequence);
 		TableDataset resultTable=findInTable(paramsForCommand,"CSP_FPNAME",parameter);
-		if (resultTable.getRowCount()>0) return true;
+		if (resultTable.getRowCount()>0){
+
+			return true;
+		}
 		else return false;
 		
+	}
+	public boolean checkParameter(Parameter param){
+		//Parameter deParam = getDefaultParameter(param.getName());
+		Parameter result=new Parameter(param.getName(),"Default","Default");
+		TableDataset resultTable=findInTable((TableDataset)this.get("csp_table"),"CSP_FPNAME",param.getName());
+		//TableDataset resultTable=findInTable(csp_table,"CSP_FPNAME",parameterName);
+		java.util.List<Object> row = resultTable.getRow(0);
+		String value_type=(String) row.get(9);
+		String value=(String) row.get(10);
+		String radix=(String) row.get(7);
+		String final_radix="";
+		String final_representation="";
+		if (radix.equals("D")) final_radix=Parameter.RADIX_DECIMAL;
+		if (radix.equals("H")) final_radix=Parameter.RADIX_HEX;
+		if (radix.equals("O")) final_radix=Parameter.RADIX_OCTAL;
+		if (value_type.equals("E")) final_representation=Parameter.REPRESENTATION_ENGINEERING;
+		if (value_type.equals("R")) final_representation=Parameter.REPRESENTATION_RAW;
+		
+		if (!final_representation.equals(param.getRepresentation())){
+			IllegalArgumentException iae = new IllegalArgumentException("Representation for parameter "+param.getName()+" in the MIB is "+final_representation+" but in the sequence is "+param.getRepresentation());
+			throw(iae);
+
+			//return false;
+		}
+		if (!final_representation.equals(Parameter.REPRESENTATION_RAW) && !final_radix.equals(param.getRadix())){
+			IllegalArgumentException iae = new IllegalArgumentException("Radix for parameter "+param.getName()+" in the MIB is "+final_radix+" but in the sequence is "+param.getRadix());
+			throw(iae);
+			
+			//return false;
+		}
+		return true;
+	}
+	public boolean checkSequence(Sequence seq){
+		TableDataset paramsForCommand=findInTable((TableDataset)this.get("csp_table"),"CSP_SQNAME",seq.getName());
+		if (paramsForCommand.getRowCount()<=0){
+			TableDataset sequencesTable=findInTable((TableDataset)this.get("sdf_table"),"SDF_SQNAME",seq.getName());
+			if (sequencesTable.getRowCount()<=0){
+				TableDataset sequences2Table=findInTable((TableDataset)this.get("css_table"),"CSS_SQNAME",seq.getName());
+				if (sequences2Table.getRowCount()<=0){
+					
+					IllegalArgumentException iae = new IllegalArgumentException("Sequence "+seq.getName()+" definition not present in the MIB");
+					throw(iae);
+				}
+			}
+			return true;
+			//return false;
+		}
+		Parameter[] params = seq.getParameters();
+		for (int i=0;i<params.length;i++){
+			if(!checkParameterSequence(seq.getName(),params[i].getName())){
+				IllegalArgumentException iae = new IllegalArgumentException("Parameter "+params[i].getName()+" not valid for sequence "+seq.getName()+" definition not present in the MIB");
+				throw(iae);
+				
+				//return false;
+			}
+			if(!checkParameter(params[i])) return false;
+		}
+		return true;
 	}
 	
 	//public TableDataset 
@@ -200,9 +274,11 @@ public class Mib extends CompositeDataset{
 				
 		if (value_type.equals("R")){
 			
-			if (radix.equals("D"))result=new ParameterFloat(parameterName,Parameter.REPRESENTATION_RAW,final_radix,new Float(value).floatValue());
-			if (radix.equals("H"))result=new ParameterFloat(parameterName,Parameter.REPRESENTATION_RAW,final_radix,Long.parseLong(value, 16));
-			
+			if (radix.equals("D") && value!=null) result=new ParameterFloat(parameterName,Parameter.REPRESENTATION_RAW,final_radix,new Float(value).floatValue());
+			if (radix.equals("H") && value!=null) result=new ParameterFloat(parameterName,Parameter.REPRESENTATION_RAW,final_radix,Long.parseLong(value, 16));
+			/*if (radix.equals("D") && value==null) result=new ParameterFloat(parameterName,Parameter.REPRESENTATION_RAW,final_radix,-1);
+			if (radix.equals("H") && value==null) result=new ParameterFloat(parameterName,Parameter.REPRESENTATION_RAW,final_radix,Long.parseLong("-1", 16));*/
+
 		}
 
 		if (value_type.equals("E")){

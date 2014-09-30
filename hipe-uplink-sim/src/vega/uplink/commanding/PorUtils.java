@@ -513,6 +513,11 @@ public class PorUtils {
 			TreeMap<Date,Node> stadNodes=new TreeMap<Date,Node>();
 			TreeMap<Date,Node> stodNodes=new TreeMap<Date,Node>();
 			TreeMap<Date,Node> eotNodes=new TreeMap<Date,Node>();
+			TreeMap<Date,Node> botbNodes=new TreeMap<Date,Node>();
+			TreeMap<Date,Node> eotbNodes=new TreeMap<Date,Node>();
+			TreeMap<Date,Node> boabNodes=new TreeMap<Date,Node>();
+			TreeMap<Date,Node> eoabNodes=new TreeMap<Date,Node>();
+			
 			int size=fcsNodeList.getLength();
 			for (int i=0;i<size;i++){
 				Node item = fcsNodeList.item(i);
@@ -537,6 +542,20 @@ public class PorUtils {
 					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOT_")){
 						eotNodes.put(time,item);
 					}
+					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOTB")){
+						botbNodes.put(time,item);
+					}
+					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOTB")){
+						eotbNodes.put(time,item);
+					}
+					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOAB")){
+						boabNodes.put(time,item);
+					}
+					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOAB")){
+						eoabNodes.put(time,item);
+					}
+					
+
 				}
 			}
 			Iterator<Date> it = botNodes.keySet().iterator();
@@ -554,6 +573,24 @@ public class PorUtils {
 					result.addPass(pass);
 				}
 			}
+			Iterator<Date> it2 = botbNodes.keySet().iterator();
+			while (it2.hasNext()){
+				Date passStart=it2.next();
+				Date passEnd=eotbNodes.ceilingKey(passStart);
+				String station=botbNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
+				result.addPass(new GsPassBSR(passStart,passEnd,station));
+				
+			}
+
+			Iterator<Date> it3 = boabNodes.keySet().iterator();
+			while (it3.hasNext()){
+				Date passStart=it3.next();
+				Date passEnd=eoabNodes.ceilingKey(passStart);
+				String station=boabNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
+				result.addPass(new GsPassOAB(passStart,passEnd,station));
+				
+			}
+
 			
 		}catch (Exception e){
 			LOG.throwing("PORUtils", "readFecsFromFile", e);

@@ -16,7 +16,7 @@
    limitations under the License.
 
  */
-package vega.uplink.pointing.gui.xmleditor;
+package vega.uplink.pointing.gui.xmlutils;
 
 import java.awt.Color;
 import java.awt.Font;

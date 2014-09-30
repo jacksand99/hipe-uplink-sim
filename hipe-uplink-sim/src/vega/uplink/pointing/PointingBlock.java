@@ -11,6 +11,7 @@ import herschel.share.interpreter.InterpreterUtil;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import java.util.Map.Entry;
@@ -18,6 +19,8 @@ import java.util.Map.Entry;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import vega.uplink.Properties;
 
 /**
  * A block containing a pointing definition
@@ -86,7 +89,7 @@ public class PointingBlock extends PointingElement{
 			this.addAttribute(new PointingElement("ref",blockType));
 			this.addChild(new PointingElement("startTime",dateToZulu(startDate)));
 			this.addChild(new PointingElement("endTime",dateToZulu(endDate)));
-			this.addChild(new PointingElement("metadata",""));
+			this.addChild(new PointingMetadata());
 			
 		}
 		
@@ -175,6 +178,17 @@ public class PointingBlock extends PointingElement{
 		 */
 		public PointingElement getMetadata(String name){
 			return this.getChild("metadata").getChild(name);
+		}
+		public PointingMetadata getMetadataElement(){
+			PointingElement child = this.getChild("metadata");
+			if (child==null) return null;
+			try{
+				return (PointingMetadata) child;
+			}catch (ClassCastException cce){
+				IllegalArgumentException iae = new IllegalArgumentException("Observation was not read properly:\n"+this.toXml(0)+"\n"+child.toXml(0));
+				iae.initCause(cce);
+				throw(iae);
+			}
 		}
 		/**
 		 * Get all the metadata that this block have or null if it has no metadata
@@ -364,6 +378,29 @@ public class PointingBlock extends PointingElement{
 
 			if (!super.validate()) result=false;
 			return result;
+		}
+		
+		public String getInstrument(){
+			List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
+			//PointingMetadata meta = (PointingMetadata)this.getChild(PointingMetadata.METADATA_TAG);
+			PointingMetadata meta = this.getMetadataElement();
+			if (meta==null) return null;
+			String[] comments = meta.getComments().getArray();
+			for (int i=0;i<comments.length;i++){
+				Iterator<String> it = ins.iterator();
+				while (it.hasNext()){
+					String in_name = it.next();
+					if (comments[i].toUpperCase().startsWith(in_name)) return in_name;
+				}
+			}
+			return null;
+			
+		}
+		
+		public int getVstpNumberMeta(){
+			PointingMetadata meta = this.getMetadataElement();
+			if (meta==null) return -1;
+			return meta.getVstpNumber();
 		}
 
 		

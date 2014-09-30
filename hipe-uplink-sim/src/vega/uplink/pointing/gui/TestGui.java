@@ -14,7 +14,7 @@ import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrUtils;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetScan;
 import vega.uplink.pointing.attitudes.Limb;
-import vega.uplink.pointing.gui.xmleditor.XMLTextEditor;
+import vega.uplink.pointing.gui.xmlutils.XMLTextEditor;
 
 import com.sun.glass.events.WindowEvent;
 

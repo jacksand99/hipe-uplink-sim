@@ -16,6 +16,7 @@ import herschel.ia.task.TaskParameter;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
 //import vega.uplink.pointing.PtrUtils;
+import vega.uplink.pointing.gui.xmlutils.HtmlEditorKit;
 
 public class ComparePtrsTask extends Task {
 	private static final Logger LOGGER = Logger.getLogger(ComparePtrsTask.class.getName());
@@ -46,10 +47,12 @@ public class ComparePtrsTask extends Task {
 		if (ptr2 == null) {
             throw (new NullPointerException("Missing ptr1 value"));
         }
-        String result = PtrChecker.comparePtrs(ptr1, ptr2);
+        String result = PtrChecker.comparePtrsHTML(ptr1, ptr2);
+        result="<html><body>"+result+"</body><html>";
         LOGGER.warning(result);
-        MessagesFrame frame = new MessagesFrame(result);
-        frame.setVisible(true);
+        HtmlEditorKit kit=new HtmlEditorKit("PTR compare",result);
+        //MessagesFrame frame = new MessagesFrame(result);
+        //frame.setVisible(true);
 	}
 	
     private class MessagesFrame extends JFrame{

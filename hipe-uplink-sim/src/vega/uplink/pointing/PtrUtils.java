@@ -94,6 +94,35 @@ public class PtrUtils {
 		
 		return item;
 	}
+	public static PointingBlocksSlice readBlocksfromDoc(Document doc){
+		PointingBlocksSlice result = new PointingBlocksSlice();
+		  try{
+			doc.getDocumentElement().normalize();
+			 
+				NodeList nlBlocks=doc.getElementsByTagName(PointingBlock.BLOCK_TAG);
+				for (int j=0;j<nlBlocks.getLength();j++){
+					//String type=
+					PointingBlock block=PointingBlock.readFrom(nlBlocks.item(j));
+					if (block.hasChildren()){
+						PointingElement[] children=block.getChildren();
+						for (int h=0;h<children.length;h++){
+							 children[h]=recursiveTranslation(children[h]);
+							 block.addChild(children[h]);
+						}
+					}
+					if (block.getType().equals(PointingBlock.TYPE_SLEW)) block=new PointingBlockSlew();
+					result.addBlock(block);
+				}
+			
+		    } catch (Exception e) {
+		    	e.printStackTrace();
+		    	throw(e);
+		    }
+		
+		return result; //to be remove
+
+		}
+
 	
 	public static Ptr readPTRfromDoc(Document doc){
 	  Ptr result = new Ptr();
@@ -174,6 +203,7 @@ public class PtrUtils {
 				String tlframe=((Element) nTimeline).getAttribute(PtrSegment.FRAME_TAG);
 				segment.setTimeLineFrame(tlframe);
 				NodeList nlBlocks=((Element) nTimeline).getElementsByTagName(PointingBlock.BLOCK_TAG);
+				java.util.Vector<PointingBlock> blocks=new java.util.Vector<PointingBlock>();
 				for (int j=0;j<nlBlocks.getLength();j++){
 					//String type=
 					PointingBlock block=PointingBlock.readFrom(nlBlocks.item(j));
@@ -185,8 +215,12 @@ public class PtrUtils {
 						}
 					}
 					if (block.getType().equals(PointingBlock.TYPE_SLEW)) block=new PointingBlockSlew();
-					segment.addBlock(block);
+					//segment.addBlock(block);
+					blocks.add(block);
 				}
+				PointingBlock[] arrayBlocks=new PointingBlock[blocks.size()];
+				arrayBlocks=blocks.toArray(arrayBlocks);
+				segment.hardInsertBlocks(arrayBlocks);
 				result.addSegment(segment);
 			}
 			
@@ -375,14 +409,14 @@ public class PtrUtils {
 				PointingBlock targetBlock = targetSegment.getBlockAt(ptr2Block.getStartTime());
 
 					if (!ptr2Block.equals(ptrBlock)){
-						PointingBlock[] blocksToRemove = targetSegment.getBlocksAt(ptr2Block.getStartTime(), ptr2Block.getEndTime());
+						PointingBlock[] blocksToRemove = targetSegment.getBlocksAt(ptr2Block.getStartTime(), ptr2Block.getEndTime()).getBlocks();
 						targetSegment.removeBlocks(blocksToRemove);
 						targetSegment.addBlock(ptr2Block);
 						repairGaps(targetSegment);
 
 					}
 			}else{
-				PointingBlock[] blocksInSlew = ptr1Segment.getBlocksAt(ptr2Block.getStartTime(),ptr2Block.getEndTime());
+				PointingBlock[] blocksInSlew = ptr1Segment.getBlocksAt(ptr2Block.getStartTime(),ptr2Block.getEndTime()).getBlocks();
 				targetSegment.removeBlocks(blocksInSlew);
 				repairGaps(targetSegment);
 				/*for (int j=0;j<blocksInSlew.length;j++){
@@ -448,7 +482,7 @@ public class PtrUtils {
 				}else{
 					if (!ptslBlock.equals(ptrBlock)){
 						ptrSegment.removeBlock(ptrBlock);
-						PointingBlock[] eqPtslBlocks = ptslSegment.getBlocksAt(ptrBlock.getStartTime(), ptrBlock.getEndTime());
+						PointingBlock[] eqPtslBlocks = ptslSegment.getBlocksAt(ptrBlock.getStartTime(), ptrBlock.getEndTime()).getBlocks();
 						for (int j=0;j<eqPtslBlocks.length;j++){
 							ptrSegment.addBlock(eqPtslBlocks[j]);
 						}

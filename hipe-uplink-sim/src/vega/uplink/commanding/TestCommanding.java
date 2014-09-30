@@ -2,6 +2,7 @@ package vega.uplink.commanding;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
@@ -11,6 +12,7 @@ import javax.swing.JFrame;
 import org.jfree.ui.RefineryUtilities;
 
 import vega.uplink.Properties;
+import vega.uplink.pointing.PointingBlock;
 import herschel.ia.dataset.Product;
 
 public class TestCommanding {
@@ -19,15 +21,22 @@ public class TestCommanding {
     	herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
     	herschel.share.util.Configuration.setProperty("vega.mib.location", "/Users/jarenas 1/Downloads/MAPPS/MIB");
 
-    	/*Fecs fecs;
+    	Fecs older;
 		try {
-			fecs = PorUtils.readFecsFromFile("/Users/jarenas 1/RosettaScripts/FECS_DL_001_02_______00028.ROS");
-			System.out.println(fecs.toString());
+			Date MTP_008_start = PointingBlock.zuluToDate("2014-09-23T10:00:00");
+			Date MTP_008_end = PointingBlock.zuluToDate("2014-10-24T10:00:00");
+			
+			older = PorUtils.readFecsFromFile("/Users/jarenas 1/OPS/FECS/FECS_DL_001_02_______00032.ROS");
+			Fecs newer = PorUtils.readFecsFromFile("/Users/jarenas 1/OPS/FECS/FECS_DL_001_02_______00033.ROS");
+			Fecs older_mtp008 = older.getSubFecs(MTP_008_start, MTP_008_end).getSubFecs("DSS");
+			Fecs newer_mtp008 = newer.getSubFecs(MTP_008_start, MTP_008_end).getSubFecs("DSS");
+
+			System.out.println(Fecs.compareFecs(older_mtp008, newer_mtp008));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}*/
-    	try {
+		}
+    	/*try {
 			Mib actMIB=Mib.getMib();
 			Parameter[] params = actMIB.getDefaultParameters("ACSF001A");
 			for (int i=0;i<params.length;i++){
@@ -37,7 +46,7 @@ public class TestCommanding {
 			
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
+		}*/
     	
     	/*Orcd testOrcd=Orcd.readORCDfile("/Users/jarenas 1/Downloads/MAPPS/MIB/orcd.csv");
     	System.out.println(testOrcd.toXml());
@@ -48,8 +57,8 @@ public class TestCommanding {
     	/*SuperPor sp;
 		try {
 			sp = PorUtils.readPORGfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP001/LTP001A/MTP004A/PORM/PORG_DM_004_01____A1_00006.ROS");
-			System.out.println(sp.getOrderedSequences().length);
-			PorUtils.writePORGtofile("/Users/jarenas 1/Downloads/testporg.zip", sp);
+			System.out.println(PorChecker.checkPor(sp));
+			//PorUtils.writePORGtofile("/Users/jarenas 1/Downloads/testporg.zip", sp);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

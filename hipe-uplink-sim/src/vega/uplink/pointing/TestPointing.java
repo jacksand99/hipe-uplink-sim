@@ -1,5 +1,6 @@
 package vega.uplink.pointing;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 
 
@@ -13,6 +14,14 @@ import java.io.File;
 
 
 
+
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
 
 import herschel.ia.pal.MapContext;
 
@@ -41,8 +50,39 @@ public class TestPointing {
 		//Ptr ptr=PtrUtils.readPTRfromFile("Z:\\PTRM_DM_006_01____A__00008.ROS");
 		//Ptr ptr=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PTRM_DM_007_01____A__00013.ROS");
 		//Ptr ptr=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PTRM_DM_007_01____A__00013.ROS");
-		try{
-		Ptr ptr1=PtrUtils.readPTRfromFile("/Users/jarenas 1/Rosetta/testing/comparePtr/PTRM_001.ROS");
+		//try{
+		try {
+			Ptr ptr = PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP001/LTP001A/MTP005A/PTR/PTRM_DM_005_01____A__00007.ROS");
+			//PtrSegment seg = ptr.getSegments()[0];
+			PointingBlocksSlice miroSlice = ptr.getAllBlocksOfInstrument("MIRO");
+			System.out.println(miroSlice.toXml(0));
+			/*PointingBlock[] miroObs = seg.getAllBlocksOfInstrument("MIRO");
+			for (int i=0;i<miroObs.length;i++){
+				System.out.println(miroObs[i].toXml(0));
+			}*
+			/*PointingBlocksSlice slice = ptr.getSlice(1);
+
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			String tempText="<slice>\n"+slice.toXml(0)+"</slice>\n";
+			InputStream stream = new ByteArrayInputStream(tempText.getBytes(StandardCharsets.UTF_8));
+			Document doc;
+
+			doc = dBuilder.parse(stream);
+			doc.getDocumentElement().normalize();
+			//Node node = (Node) doc;
+			//PointingElement pe = PointingElement.readFrom(node.getFirstChild());
+			PointingBlocksSlice tempSlice = PtrUtils.readBlocksfromDoc(doc);
+			//System.out.println(tempSlice.toXml(0));
+			slice.regenerate(tempSlice);
+			System.out.println(slice.toXml(0));*/
+			
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+
+		//PointingBlocksSlice slice2=PtrUtils.readBlocksfromDoc(doc);
+		/*Ptr ptr1=PtrUtils.readPTRfromFile("/Users/jarenas 1/Rosetta/testing/comparePtr/PTRM_001.ROS");
 		Ptr ptr2=PtrUtils.readPTRfromFile("/Users/jarenas 1/Rosetta/testing/comparePtr/PTRM_001_move.ROS");
 		Ptr target=PtrUtils.readPTRfromFile("/Users/jarenas 1/Rosetta/testing/comparePtr/PTRM_001_v2.ROS");
 		PtrUtils.mergePtrs(ptr1, ptr2, target);
@@ -51,7 +91,7 @@ public class TestPointing {
 		System.out.println(PtrChecker.comparePtrs(ptr1, target));
 		}catch (Exception e){
 			e.printStackTrace();
-		}
+		}*/
 		//System.out.println(PtrChecker.comparePtrs(target,ptr1));
 
 		//Ptr ptsl=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PTSL_DM_007_02____A__00002.ROS");

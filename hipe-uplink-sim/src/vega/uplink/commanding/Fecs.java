@@ -12,9 +12,11 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import vega.uplink.Properties;
 import vega.uplink.pointing.EvtmEvent;
+import vega.uplink.pointing.PointingBlock;
 
 /**
 * The Fecs class is a data model to store the information from the FECS file.
@@ -33,12 +35,50 @@ import vega.uplink.pointing.EvtmEvent;
  */
 public class Fecs extends TableDataset{
 	private TreeSet<GsPass> passesSet;
+	private static String PASS_TABLE_HEADER=""
+			+ "<tr>\n"
+			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th>\n"
+			+ "</tr>\n";
+	private static String PASS_TABLE_HEADER_DURATION=""
+			+ "<tr>\n"
+			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Duration is (s)</th><th>Duration was (s)</th>\n"
+			+ "</tr>\n";
+
 	//private Date generationTime;
 	//private Date validityStart;
 	//private Date validityEnd;
 	//private String spacecraft;
 	//private String icdVersion;
-	
+	/*private Fecs(TreeSet<GsPass> passes){
+		super();
+		passesSet=passes;
+		setGenerationTime(new Date());
+		setValidityStart(passes.first().getStartPass());
+		setValidityEnd(passes.last().getEndPass());
+		setSpacecraft("ROS");
+		setIcdVersion("PLID-0.0");
+		Column gs=new Column(new String1d());
+		Column stpass=new Column(new String1d());
+		Column edpass=new Column(new String1d());
+		Column stdump=new Column(new String1d());
+		Column eddump=new Column(new String1d());
+		Column tmRate=new Column(new String1d());
+		
+		this.addColumn(gs);		
+		this.addColumn(stpass);
+		this.addColumn(edpass);
+		this.addColumn(stdump);
+		this.addColumn(eddump);
+		this.addColumn(tmRate);
+		this.setColumnName(0, "Ground Station");
+		this.setColumnName(1, "Start pass");
+		this.setColumnName(2, "End Pass");
+		this.setColumnName(3, "Start Dump");
+		this.setColumnName(4, "End Dump");
+		this.setColumnName(5, "TM rate");
+
+
+	}*/
 	/**
 	 * Constructor of the Fecs class taking as parameters all the needed information, without taking any parameter with default value.
 	 * @param fecsGenerationTime Generation time of the FECS file
@@ -64,6 +104,8 @@ public class Fecs extends TableDataset{
 		Column stdump=new Column(new String1d());
 		Column eddump=new Column(new String1d());
 		Column tmRate=new Column(new String1d());
+		Column totalTime=new Column(new String1d());
+		Column dumpTime=new Column(new String1d());
 		
 		this.addColumn(gs);		
 		this.addColumn(stpass);
@@ -71,12 +113,17 @@ public class Fecs extends TableDataset{
 		this.addColumn(stdump);
 		this.addColumn(eddump);
 		this.addColumn(tmRate);
+		this.addColumn(totalTime);
+		this.addColumn(dumpTime);
+
 		this.setColumnName(0, "Ground Station");
 		this.setColumnName(1, "Start pass");
 		this.setColumnName(2, "End Pass");
 		this.setColumnName(3, "Start Dump");
 		this.setColumnName(4, "End Dump");
 		this.setColumnName(5, "TM rate");
+		this.setColumnName(6, "Total time (s)");
+		this.setColumnName(7, "Dump time (s)");
 
 	}
 	public void setName(String name){
@@ -202,13 +249,16 @@ public class Fecs extends TableDataset{
 	
 	public void addPass(GsPass pass){
 		passesSet.add(pass);
-		String[] row=new String[6];
+		String[] row=new String[8];
 		row[0]=pass.getGroundStation();
 		row[1]=GsPass.dateToZulu(pass.getStartPass());
 		row[2]=GsPass.dateToZulu(pass.getEndPass());
 		row[3]=GsPass.dateToZulu(pass.getStartDump());
 		row[4]=GsPass.dateToZulu(pass.getEndDump());
 		row[5]=new Float(pass.getTmRate()).toString();
+		row[6]=new Long(pass.getPassDurationSecs()).toString();
+		row[7]=new Long(pass.getDumpDurationSecs()).toString();
+
 		addRow(row);
 		
 		//addRown(pass.get)
@@ -258,7 +308,7 @@ public class Fecs extends TableDataset{
 		return result;
 	}
 	
-	public GsPass getGsPass(Date date){
+	public GsPass getGsDump(Date date){
 		Iterator<GsPass> it = passesSet.iterator();
 		while (it.hasNext()){
 			GsPass pass=it.next();
@@ -293,6 +343,498 @@ public class Fecs extends TableDataset{
 		result=affected.toArray(result);
 		return result;
 	}
+	
+	public int size(){
+		return passesSet.size();
+	}
+	public static String compareFecsHTML(Fecs older,Fecs newer){
+		System.out.println(compareFecs(older,newer));
+		String result="";
+		/*Fecs larger;
+		Fecs shorter;
+		if (fecs1.size()<fecs2.size()){
+			larger=fecs2;
+			shorter=fecs1;
+		}else{
+			larger=fecs1;
+			shorter=fecs2;
+		}
+		//TreeSet<GsPass> passes1 = larger.getPasses();*/
+		TreeSet<GsPass> added=new TreeSet<GsPass>();
+		TreeSet<GsPass> removed=new TreeSet<GsPass>();
+		TreeSet<GsPass> shorter=new TreeSet<GsPass>();
+		TreeSet<GsPass> larger=new TreeSet<GsPass>();
+		
+		Iterator<GsPass> it = newer.getPasses().iterator();
+		while (it.hasNext()){
+			GsPass newerPass = it.next();
+			GsPass[] olderPasses = older.getSubFecs(newerPass.getGroundStation()).findOverlapingPasses(newerPass.getStartPass(), newerPass.getEndPass());
+			if (olderPasses.length==1){
+				if (!newerPass.equals(olderPasses[0])){
+					if (newerPass.getDumpDurationSecs()<olderPasses[0].getDumpDurationSecs()){
+						shorter.add(newerPass);
+					}
+					if (newerPass.getDumpDurationSecs()>olderPasses[0].getDumpDurationSecs()){
+						larger.add(newerPass);
+						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
+					}
+
+				}
+			}
+			else {
+					if (olderPasses.length==0){
+						added.add(newerPass);
+					}else{
+						for (int i=0;i<olderPasses.length;i++){
+							removed.add(olderPasses[i]);
+						}
+						added.add(newerPass);
+
+					}
+					
+			}
+			
+		}
+		Iterator<GsPass> it2 = older.getPasses().iterator();
+		while (it2.hasNext()){
+			GsPass olderPass = it2.next();
+			GsPass[] newerPasses = newer.getSubFecs(olderPass.getGroundStation()).findOverlapingPasses(olderPass.getStartPass(), olderPass.getEndPass());
+			if (newerPasses.length<1){
+				if (added.contains(olderPass)){
+					added.remove(olderPass);
+				}else{
+					removed.add(olderPass);
+				}
+			}
+		}
+		if (added.size()>0){
+			result=result+"<h2>GS passes added in "+newer.getName()+"</h2>\n";
+			result=result+"<br>\n";
+			
+			result=result+"<table class=\"gridtable\">\n"+PASS_TABLE_HEADER;
+			Iterator<GsPass> addedIt = added.iterator();
+			while (addedIt.hasNext()){
+				result=result+passToHTMLRow(addedIt.next());
+				//result=result+"--------------------------------------\n";
+
+			}
+			result=result+"</table><br>";
+
+		}
+		if (removed.size()>0){
+			result=result+"<h2>GS passes removed in "+newer.getName()+"</h2>\n";
+			result=result+"<br>\n";
+			
+			result=result+"<table class=\"gridtable\">\n"+PASS_TABLE_HEADER;
+
+			
+			Iterator<GsPass> removedIt = removed.iterator();
+			while (removedIt.hasNext()){
+				result=result+passToHTMLRow(removedIt.next());
+				//result=result+"--------------------------------------\n";
+
+			}
+			result=result+"</table><br>";
+
+		}
+
+		if (shorter.size()>0){
+			result=result+"<h2>GS passes shortened in "+newer.getName()+"</h2>\n";
+			result=result+"<br>\n";
+			
+			result=result+"<table class=\"gridtable\">\n"+PASS_TABLE_HEADER_DURATION;
+
+			Iterator<GsPass> shortIt = shorter.iterator();
+			while (shortIt.hasNext()){
+				GsPass pass = shortIt.next();
+				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
+				String row = passToHTMLRow(pass);
+				row=row.replace("</tr>", "");
+				row=row+"<td>"+pass.getPassDurationSecs()+"</td>"+"<td>"+oldPass.getPassDurationSecs()+"</td></tr>";
+				result=result+row;
+				
+			}
+			result=result+"</table><br>";
+
+		}
+		if (larger.size()>0){
+			result=result+"<h2>GS passes enlarged in "+newer.getName()+"</h2>\n";
+			result=result+"<br>\n";
+			
+			result=result+"<table class=\"gridtable\">\n"+PASS_TABLE_HEADER_DURATION;
+
+
+			Iterator<GsPass> largerIt = larger.iterator();
+			while (largerIt.hasNext()){
+				GsPass pass = largerIt.next();
+				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
+				String row = passToHTMLRow(pass);
+				row=row.replace("</tr>", "");
+				row=row+"<td>"+pass.getPassDurationSecs()+"</td>"+"<td>"+oldPass.getPassDurationSecs()+"</td></tr>";
+				result=result+row;
+
+				
+			}
+			result=result+"</table><br>";
+
+		}
+
+		return result;
+		
+	}
+	
+	public static String compareFecs(Fecs older,Fecs newer){
+		String result="";
+		/*Fecs larger;
+		Fecs shorter;
+		if (fecs1.size()<fecs2.size()){
+			larger=fecs2;
+			shorter=fecs1;
+		}else{
+			larger=fecs1;
+			shorter=fecs2;
+		}
+		//TreeSet<GsPass> passes1 = larger.getPasses();*/
+		TreeSet<GsPass> added=new TreeSet<GsPass>();
+		TreeSet<GsPass> removed=new TreeSet<GsPass>();
+		TreeSet<GsPass> shorter=new TreeSet<GsPass>();
+		TreeSet<GsPass> larger=new TreeSet<GsPass>();
+		
+		Iterator<GsPass> it = newer.getPasses().iterator();
+		while (it.hasNext()){
+			GsPass newerPass = it.next();
+			GsPass[] olderPasses = older.findOverlapingPasses(newerPass.getStartPass(), newerPass.getEndPass());
+			if (olderPasses.length==1){
+				if (!newerPass.equals(olderPasses[0])){
+					if (newerPass.getDumpDurationSecs()<olderPasses[0].getDumpDurationSecs()){
+						shorter.add(newerPass);
+					}
+					if (newerPass.getDumpDurationSecs()>olderPasses[0].getDumpDurationSecs()){
+						larger.add(newerPass);
+						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
+					}
+
+				}
+			}
+			else {
+					if (olderPasses.length==0){
+						added.add(newerPass);
+					}else{
+						for (int i=0;i<olderPasses.length;i++){
+							removed.add(olderPasses[i]);
+						}
+						added.add(newerPass);
+
+					}
+					
+			}
+			
+		}
+		Iterator<GsPass> it2 = older.getPasses().iterator();
+		while (it2.hasNext()){
+			GsPass olderPass = it2.next();
+			GsPass[] newerPasses = newer.findOverlapingPasses(olderPass.getStartPass(), olderPass.getEndPass());
+			if (newerPasses.length<1){
+				if (added.contains(olderPass)){
+					added.remove(olderPass);
+				}else{
+					removed.add(olderPass);
+				}
+			}
+		}
+		if (added.size()>0){
+			result=result+"**************************\n";
+			result=result+"GS passes added in "+newer.getName()+":\n";
+			result=result+"**************************\n";
+			Iterator<GsPass> addedIt = added.iterator();
+			while (addedIt.hasNext()){
+				result=result+passToString(addedIt.next());
+				result=result+"--------------------------------------\n";
+
+			}
+
+		}
+		if (removed.size()>0){
+			result=result+"**************************\n";
+			result=result+"GS passes removed in "+newer.getName()+":\n";
+			result=result+"**************************\n";
+			Iterator<GsPass> removedIt = removed.iterator();
+			while (removedIt.hasNext()){
+				result=result+passToString(removedIt.next());
+				result=result+"--------------------------------------\n";
+
+			}
+
+		}
+
+		if (shorter.size()>0){
+			result=result+"**************************\n";
+			result=result+"GS passes shortened in "+newer.getName()+":\n";
+			result=result+"**************************\n";
+			Iterator<GsPass> shortIt = shorter.iterator();
+			while (shortIt.hasNext()){
+				GsPass pass = shortIt.next();
+				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
+				result=result+passToString(pass);
+				result=result+"Duration is:"+pass.getPassDurationSecs()+" s\n";
+				result=result+"Duration was:"+oldPass.getPassDurationSecs()+" s\n";
+				result=result+"--------------------------------------\n";
+
+				
+			}
+
+		}
+		if (larger.size()>0){
+			result=result+"**************************\n";
+			result=result+"GS passes enlarged in "+newer.getName()+":\n";
+			result=result+"**************************\n";
+			Iterator<GsPass> largerIt = larger.iterator();
+			while (largerIt.hasNext()){
+				GsPass pass = largerIt.next();
+				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
+				result=result+passToString(pass);
+				result=result+"Duration is:"+pass.getPassDurationSecs()+" s\n";
+				result=result+"Duration was:"+oldPass.getPassDurationSecs()+" s\n";
+				result=result+"--------------------------------------\n";
+
+				
+			}
+
+		}
+
+		return result;
+		
+	}
+	public static String passToHTMLRow(GsPass pass){
+		String result="";
+		String type="-";
+		if (pass.is70m()) type="70 m";
+		else type="34 m";
+		if (!pass.isBSR()){
+			result=result+ "<tr>\n"
+					+ "	<td>"+type+"</td><td>"+pass.getGroundStation()
+					+"</td><td>"+PointingBlock.dateToZulu(pass.getStartPass())
+					+"</td><td>"+PointingBlock.dateToZulu(pass.getEndPass())
+					+"</td><td>"+PointingBlock.dateToZulu(pass.getStartDump())
+					+"</td><td>"+PointingBlock.dateToZulu(pass.getEndDump())
+					+"</td><td>"+pass.getTmRate()+"</td>\n"
+					+ "</tr>\n"
+					+ "\n";
+
+			//result=result+"Pass "+pass.getGroundStation()+" from "+PointingBlock.dateToZulu(pass.getStartPass())+" to "+PointingBlock.dateToZulu(pass.getEndPass())+"\n";
+			//result=result+"\tDump Start at:"+PointingBlock.dateToZulu(pass.getStartDump())+"\n";
+			//result=result+"\tDump End at:"+PointingBlock.dateToZulu(pass.getEndDump())+"\n";
+			//result=result+"TM bitrate:"+pass.getTmRate()+"\n";
+			
+			return result;
+		}
+		else{
+			result=result+ "<tr>\n"
+					+ "	<td>BSR</td><td>"+pass.getGroundStation()
+					+"</td><td>"+PointingBlock.dateToZulu(pass.getStartPass())
+					+"</td><td>"+PointingBlock.dateToZulu(pass.getEndPass())
+					+"</td><td>-"
+					+"</td><td>-"
+					+"</td><td>-"
+					+ "</tr>\n"
+					+ "\n";
+
+			//result=result+"BSR Pass "+pass.getGroundStation()+" from "+PointingBlock.dateToZulu(pass.getStartPass())+" to "+PointingBlock.dateToZulu(pass.getEndPass())+"\n";
+			
+			return result;
+			
+		}
+	}
+	
+	public static String passToString(GsPass pass){
+		if (!pass.isBSR()){
+			String result="";
+			result=result+"Pass "+pass.getGroundStation()+" from "+PointingBlock.dateToZulu(pass.getStartPass())+" to "+PointingBlock.dateToZulu(pass.getEndPass())+"\n";
+			result=result+"\tDump Start at:"+PointingBlock.dateToZulu(pass.getStartDump())+"\n";
+			result=result+"\tDump End at:"+PointingBlock.dateToZulu(pass.getEndDump())+"\n";
+			result=result+"TM bitrate:"+pass.getTmRate()+"\n";
+			
+			return result;
+		}
+		else{
+			String result="";
+			result=result+"BSR Pass "+pass.getGroundStation()+" from "+PointingBlock.dateToZulu(pass.getStartPass())+" to "+PointingBlock.dateToZulu(pass.getEndPass())+"\n";
+			
+			return result;
+			
+		}
+	}
+	public Fecs getSubFecs(String station){
+		Fecs result=new Fecs(this.getValidityStart(),this.getValidityEnd());
+		result.setName(getName()+"_"+station);
+		Iterator<GsPass> it = passesSet.iterator();
+		while(it.hasNext()){
+			GsPass pass = it.next();
+			if (pass.getGroundStation().startsWith(station)) result.addPass(pass);
+		}
+		return result;
+	}
+	
+	public Fecs getSubFecsDSN(){
+		return getSubFecs("DSS");
+	}
+	
+	public Fecs getSubFecsESA(){
+		Fecs result=new Fecs(this.getValidityStart(),this.getValidityEnd());
+		result.setName(getName()+"_ESA");
+		Iterator<GsPass> it = passesSet.iterator();
+		while(it.hasNext()){
+			GsPass pass = it.next();
+			if (!pass.getGroundStation().startsWith("DSS")) result.addPass(pass);
+		}
+		return result;
+		
+	}
+	
+	public Fecs getSubFecs(Date startDate,Date endDate){
+		Fecs result=new Fecs(startDate,endDate);
+		GsPass[] passes = this.findOverlapingPasses(startDate, endDate);
+		for (int i=0;i<passes.length;i++){
+			result.addPass(passes[i]);
+		}
+		
+		return result;
+	}
+	
+	public String[] getStations(){
+		TreeSet<String> stationsSet=new TreeSet<String>();
+		Iterator<GsPass> it = passesSet.iterator();
+		while (it.hasNext()){
+			stationsSet.add(it.next().getGroundStation());
+		}
+		String[] result=new String[stationsSet.size()];
+		result=stationsSet.toArray(result);
+		return result;
+	}
+	public float getTotalDataDump(){
+		float result=0;
+		Iterator<GsPass> it = passesSet.iterator();
+		while (it.hasNext()){
+			GsPass pass = it.next();
+			result=result+pass.getTotalDataDump();
+		}
+		return result;
+		
+	}
+	public float getTotalDataDump(String station){
+		float result=0;
+		Iterator<GsPass> it = passesSet.iterator();
+		while (it.hasNext()){
+			GsPass pass = it.next();
+			if (pass.getGroundStation().startsWith(station)) result=result+pass.getTotalDataDump();
+		}
+		return result;
+	}
+	public float getHoursDay(){
+		float totalSecs=0;
+		Iterator<GsPass> it = passesSet.iterator();
+		while (it.hasNext()){
+			GsPass pass = it.next();
+			totalSecs=totalSecs+pass.getPassDurationSecs();
+		}
+		float totalHours=(totalSecs/60)/60;
+		float fecsDays=((((this.getValidityEnd().getTime()-this.getValidityStart().getTime())*1000)/60)/60)/24;
+		
+		return totalHours/fecsDays;
+		
+	}
+	public float getHoursDay70m(){
+		float totalSecs=0;
+		Iterator<GsPass> it = passesSet.iterator();
+		while (it.hasNext()){
+			GsPass pass = it.next();
+			if (pass.is70m() && !pass.isBSR()) totalSecs=totalSecs+pass.getDumpDurationSecs();
+		}
+		float totalHours=(totalSecs/60)/60;
+		//float fecsDays=((((this.getValidityEnd().getTime()-this.getValidityStart().getTime())*1000)/60)/60)/24;
+		float fecsDays =  ((this.getValidityEnd().getTime()-this.getValidityStart().getTime()) / (1000*60*60*24));
+
+		
+		return totalHours/fecsDays;
+		
+	}
+
+	public float getHoursDay35m(){
+		float totalSecs=0;
+		Iterator<GsPass> it = passesSet.iterator();
+		while (it.hasNext()){
+			GsPass pass = it.next();
+			if (!pass.is70m() && !pass.isBSR()) totalSecs=totalSecs+pass.getDumpDurationSecs();
+		}
+		float totalHours=(totalSecs/60)/60;
+		//float fecsDays=((((this.getValidityEnd().getTime()-this.getValidityStart().getTime())*1000)/60)/60)/24;
+		float fecsDays =  ((this.getValidityEnd().getTime()-this.getValidityStart().getTime()) / (1000*60*60*24));
+		System.out.println("Fecs Days:"+fecsDays);
+		return totalHours/fecsDays;
+		
+	}
+
+	public float getBSRHours(){
+		float totalSecs=0;
+		Iterator<GsPass> it = passesSet.iterator();
+		while (it.hasNext()){
+			GsPass pass = it.next();
+			if (pass.isBSR()) totalSecs=totalSecs+pass.getPassDurationSecs();
+		}
+		float totalHours=(totalSecs/60)/60;
+		//float fecsDays=((((this.getValidityEnd().getTime()-this.getValidityStart().getTime())*1000)/60)/60)/24;
+		
+		return totalHours;
+		
+	}
+
+	public float getBSRHoursDay(){
+		float totalHours=getBSRHours();
+		float fecsDays =  ((this.getValidityEnd().getTime()-this.getValidityStart().getTime()) / (1000*60*60*24));
+
+		//float fecsDays=((((this.getValidityEnd().getTime()-this.getValidityStart().getTime())*1000)/60)/60)/24;
+		
+		return totalHours/fecsDays;
+		
+	}
+	
+	public String getFecsSummaryTableHTML(){
+		String message="";
+		//message=message+"<h1>"+getName()+"</h1>";
+		message=message+ "<table class=\"gridtable\">\n"
+				+ "<tr>\n"
+				+ "	<th>Name</th><th>Start Date</th><th>End Date</th>\n"
+				+ "</tr>\n";
+		message=message+ "<tr>\n"
+				+ "	<td>"+getName()+"</td><td>"+PointingBlock.dateToZulu(this.getValidityStart())+"</td><td>"+PointingBlock.dateToZulu(this.getValidityEnd())+"</td>\n"
+				+ "</tr>\n"
+				+ "</table>\n";
+		message=message+"<br><br>";
+		message=message+ "<table class=\"gridtable\">\n"
+				+ "<tr>\n"
+				+ "	<th>FECS</th><th>34 m (h/day)</th><th>70 m (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
+				+ "</tr>\n";
+		/*message=message+ "<tr>\n"
+				+ "	<td>"+getName()+"</td><td>"+getHoursDay35m()+"</td><td>"+getHoursDay70m()+"</td><td>"+getBSRHoursDay()+"</td><td>"+getTotalDataDump()+"</td>\n"
+				+ "</tr></table>\n";*/
+		message=message+getFecsSummaryRowHTML(getName());
+		message=message+"</table>\n";
+		
+		return message;
+
+	}
+	public String getFecsSummaryRowHTML(String name){
+		String message="";
+		//message=message+"<h1>"+getName()+"</h1>";
+		message=message+ "<tr>\n"
+				+ "	<td>"+name+"</td><td>"+getHoursDay35m()+"</td><td>"+getHoursDay70m()+"</td><td>"+getBSRHoursDay()+"</td><td>"+getTotalDataDump()+"</td>\n"
+				+ "</tr>";
+		
+		return message;
+
+	}
+
+	//public GsPass()
 
 }
 	
