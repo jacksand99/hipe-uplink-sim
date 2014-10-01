@@ -216,7 +216,7 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
 		init();
 	}
     public boolean makeEditorContent() {
-    	setGlobalScroll(false);
+    	//setGlobalScroll(false);
     	//this.setGlobalScroll(true, false);
     	setPtr(getValue());
     	return true;

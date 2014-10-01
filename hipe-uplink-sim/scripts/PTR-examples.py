@@ -9,7 +9,7 @@ pdfm=PtrUtils.readPdfmfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP
 #It can also be done by doble click in the file navigator tree
 
 #Load PTSL
-pdsl=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP008A/PTR/PTSL_DL_002_02____A__00040.ROS")
+pdsl=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/PTSL/PTSL_DL_003_01____A__00067.ROS")
 #It can also be done by doble click in the file navigator tree
 
 #All the following task can also be executed by selecting the PTR from the variables view
@@ -34,6 +34,8 @@ ptrSanityCheckTask(ptr=ptr, ptsl=pdsl)
 #Extract a Block Slice from the PTR
 slice=ptr.getSlice(1)
 miroSlice=ptr.getAllBlocksOfInstrument("MIRO") 
+vstp_57=ptr.getSegment("MTP_010").getAllBlocksOfVstp(57)
+mnav=ptr.getSegment("MTP_010").getAllBlocksOfType("MNAV")
 
 ptr2=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP003/LTP003A/MTP010A/PTR/PTRM_PL_M010______01_A_RSM0PIM0.ROS")
 #Put back slices after mofification

@@ -50,7 +50,7 @@ public class PointingBlocksSliceXmlEditor extends AbstractVariableEditorComponen
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		JPanel topPanel=new JPanel();
 		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.LINE_AXIS));
-		JLabel classLabel=new JLabel("PointingBlocksSliceXmlEditor");
+		JLabel classLabel=new JLabel(slice.getName());
 		classLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		JButton button=new JButton("Finish Edditing");
 		button.setAlignmentX(Component.LEFT_ALIGNMENT);
