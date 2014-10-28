@@ -1,5 +1,6 @@
 package vega.uplink.pointing.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -29,6 +30,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import herschel.ia.gui.apps.components.util.BottomPanel;
 import herschel.ia.gui.kernel.parts.AbstractVariableEditorComponent;
 import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.gui.xmlutils.XMLTextEditor;
@@ -41,7 +43,7 @@ public class PointingElementXMLEditor extends AbstractVariableEditorComponent<Po
 	PointingElement pointingMetadata;
 	XMLTextEditor editor;
 	public PointingElementXMLEditor(){
-		super();
+		super(new BorderLayout());
 		//this.setGlobalScroll(false, false);
 	}
 	public void init(){
@@ -98,11 +100,13 @@ public class PointingElementXMLEditor extends AbstractVariableEditorComponent<Po
 		/*Container contentPane = getContentPane();
 		contentPane.add(listPane, BorderLayout.CENTER);
 		contentPane.add(buttonPane, BorderLayout.PAGE_END);*/
-		this.add(topPanel);
+		JPanel global=new JPanel(new BorderLayout());
+		global.add(topPanel,BorderLayout.NORTH);
 		editor = new XMLTextEditor();
 		editor.setText(pointingMetadata.toXml(0));
-		//this.add(new JScrollPane(editor));
-		this.add(editor);
+		global.add(new JScrollPane(editor),BorderLayout.CENTER);
+		this.add(new BottomPanel(this, global));
+		//this.add(editor);
 	}
 	
 	public void setPointingMetadata(PointingElement pMetadata){

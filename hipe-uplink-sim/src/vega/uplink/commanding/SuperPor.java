@@ -56,13 +56,13 @@ public class SuperPor extends Por {
 		super.calculateValidity();
 	}
 	
-	public Sequence[] getSequences(){
-		java.util.Vector<Sequence> vector=new java.util.Vector<Sequence>();
+	public AbstractSequence[] getSequences(){
+		java.util.Vector<AbstractSequence> vector=new java.util.Vector<AbstractSequence>();
 		int size=0;
 		//Sequence[] result = new Sequence[0];
 		Por[] pors = getPors();
 		for(int i=0; i < pors.length;i++){
-			Sequence[] seqs=pors[i].getSequences();
+			AbstractSequence[] seqs=pors[i].getSequences();
 			for (int j=0;j<seqs.length;j++){
 				//result=super.insertSequenceAt(result, seqs[j], result.length);
 				size=size+1;

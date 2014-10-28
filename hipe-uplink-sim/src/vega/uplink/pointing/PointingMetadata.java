@@ -16,6 +16,22 @@ import herschel.ia.dataset.ArrayDataset;
 public class PointingMetadata extends PointingElement{
 	public static String METADATA_TAG="metadata";
 	//public static String COMMENT_TAG="comment";
+	public PointingMetadata copy(){
+		PointingMetadata result = new PointingMetadata();
+		
+		//result.setValue(getValue());
+		PointingElement[] ch = getChildren();
+		for (int i=0;i<ch.length;i++){
+			result.addChild(ch[i]);
+		}
+		PointingElement[] att = getAttributes();
+		for (int i=0;i<att.length;i++){
+			result.addAttribute(att[i]);
+		}
+		result.set("comments",this.get("comments").copy());
+		return result;
+
+	}
 	public PointingMetadata(){
 		super(METADATA_TAG,"");
 		set("comments",new ArrayDataset(new String1d()));

@@ -743,7 +743,7 @@ public class Fecs extends TableDataset{
 		return totalHours/fecsDays;
 		
 	}
-	public float getHoursDay70m(){
+	public float getDumpHoursDay70m(){
 		float totalSecs=0;
 		Iterator<GsPass> it = passesSet.iterator();
 		while (it.hasNext()){
@@ -758,13 +758,42 @@ public class Fecs extends TableDataset{
 		return totalHours/fecsDays;
 		
 	}
+	public float getPassHoursDay70m(){
+		float totalSecs=0;
+		Iterator<GsPass> it = passesSet.iterator();
+		while (it.hasNext()){
+			GsPass pass = it.next();
+			if (pass.is70m() && !pass.isBSR()) totalSecs=totalSecs+pass.getPassDurationSecs();
+		}
+		float totalHours=(totalSecs/60)/60;
+		//float fecsDays=((((this.getValidityEnd().getTime()-this.getValidityStart().getTime())*1000)/60)/60)/24;
+		float fecsDays =  ((this.getValidityEnd().getTime()-this.getValidityStart().getTime()) / (1000*60*60*24));
 
-	public float getHoursDay35m(){
+		
+		return totalHours/fecsDays;
+		
+	}
+
+	public float getDumpHoursDay35m(){
 		float totalSecs=0;
 		Iterator<GsPass> it = passesSet.iterator();
 		while (it.hasNext()){
 			GsPass pass = it.next();
 			if (!pass.is70m() && !pass.isBSR()) totalSecs=totalSecs+pass.getDumpDurationSecs();
+		}
+		float totalHours=(totalSecs/60)/60;
+		//float fecsDays=((((this.getValidityEnd().getTime()-this.getValidityStart().getTime())*1000)/60)/60)/24;
+		float fecsDays =  ((this.getValidityEnd().getTime()-this.getValidityStart().getTime()) / (1000*60*60*24));
+		System.out.println("Fecs Days:"+fecsDays);
+		return totalHours/fecsDays;
+		
+	}
+	public float getPassHoursDay35m(){
+		float totalSecs=0;
+		Iterator<GsPass> it = passesSet.iterator();
+		while (it.hasNext()){
+			GsPass pass = it.next();
+			if (!pass.is70m() && !pass.isBSR()) totalSecs=totalSecs+pass.getPassDurationSecs();
 		}
 		float totalHours=(totalSecs/60)/60;
 		//float fecsDays=((((this.getValidityEnd().getTime()-this.getValidityStart().getTime())*1000)/60)/60)/24;
@@ -812,7 +841,7 @@ public class Fecs extends TableDataset{
 		message=message+"<br><br>";
 		message=message+ "<table class=\"gridtable\">\n"
 				+ "<tr>\n"
-				+ "	<th>FECS</th><th>34 m (h/day)</th><th>70 m (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
+				+ "	<th>FECS</th><th>34 m pass (h/day)</th><th>34 m dump (h/day)</th><th>70 m pass (h/day)</th><th>70 m dump (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
 				+ "</tr>\n";
 		/*message=message+ "<tr>\n"
 				+ "	<td>"+getName()+"</td><td>"+getHoursDay35m()+"</td><td>"+getHoursDay70m()+"</td><td>"+getBSRHoursDay()+"</td><td>"+getTotalDataDump()+"</td>\n"
@@ -827,7 +856,7 @@ public class Fecs extends TableDataset{
 		String message="";
 		//message=message+"<h1>"+getName()+"</h1>";
 		message=message+ "<tr>\n"
-				+ "	<td>"+name+"</td><td>"+getHoursDay35m()+"</td><td>"+getHoursDay70m()+"</td><td>"+getBSRHoursDay()+"</td><td>"+getTotalDataDump()+"</td>\n"
+				+ "	<td>"+name+"</td><td>"+getPassHoursDay35m()+"</td><td>"+getDumpHoursDay35m()+"</td><td>"+getPassHoursDay70m()+"</td><td>"+getDumpHoursDay70m()+"</td><td>"+getBSRHoursDay()+"</td><td>"+getTotalDataDump()+"</td>\n"
 				+ "</tr>";
 		
 		return message;

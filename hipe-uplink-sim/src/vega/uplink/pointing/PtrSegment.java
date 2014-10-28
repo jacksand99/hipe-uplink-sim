@@ -1,22 +1,37 @@
 package vega.uplink.pointing;
 
 import herschel.ia.dataset.Dataset;
-import herschel.ia.dataset.DateParameter;
-import herschel.ia.dataset.MetaData;
+//import herschel.ia.dataset.DateParameter;
+//import herschel.ia.dataset.MetaData;
 import herschel.ia.dataset.Product;
 import herschel.ia.dataset.StringParameter;
-import herschel.ia.dataset.TableDataset;
+//import herschel.ia.dataset.TableDataset;
 import herschel.share.fltdyn.time.FineTime;
 
-import java.text.ParseException;
-import java.util.Collection;
+
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+//import java.text.ParseException;
+//import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
+//import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedMap;
+//import java.util.SortedMap;
 import java.util.TreeMap;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+
+/*import vega.uplink.planning.Observation;
+import vega.uplink.planning.ObservationUtil;*/
+
+//import vega.uplink.commanding.GsPass;
 
 
 /**
@@ -36,6 +51,8 @@ public class PtrSegment extends PointingBlocksSlice{
 	public static String DATA_TAG="data";
 	public static String TIMELINE_TAG="timeline";
 	public static String FRAME_TAG="frame";
+	
+	
 	
 	private String getBlockName(PointingBlock block){
 		String result=block.getType()+" "+PointingBlock.dateToZulu(block.getStartTime());
@@ -77,6 +94,29 @@ public class PtrSegment extends PointingBlocksSlice{
 		//name=segmentName;
 		includes=new String[0];
 		this.setTimeLineFrame("SC");
+	}
+	
+	public PtrSegment copy(){
+    	String text = this.toXml(0);
+
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		try{
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			InputStream stream = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
+			Document doc;
+	
+			doc = dBuilder.parse(stream);
+			doc.getDocumentElement().normalize();
+			//Node node = (Node) doc;
+			//PointingElement pe = PointingElement.readFrom(node.getFirstChild());
+			PtrSegment tempseg = PtrUtils.getPtrSegmentFromDoc(doc);
+			return tempseg;
+		}catch (Exception e){
+			IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
+			iae.initCause(e);
+			throw iae;
+			
+		}
 	}
 	
 	public Product asProduct(){
@@ -219,6 +259,58 @@ public class PtrSegment extends PointingBlocksSlice{
 		if (result==null) return null;
 		else return result.getValue();
 	}
+	public void repairConsecutiveBlocks(){
+		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		//Iterator<Entry<Date, PointingBlock>> it = ((TreeMap<Date,PointingBlock>)blMap.clone()).entrySet().iterator();
+		Iterator<Entry<Date, PointingBlock>> it = ((TreeMap<Date,PointingBlock>)blMap).entrySet().iterator();
+		while (it.hasNext()){
+			PointingBlock block = it.next().getValue();
+			PointingBlock blockAfter = blockAfter(block);
+			if (blockAfter!=null && block.getType().equals(PointingBlock.TYPE_OBS) && !blockAfter.isSlew() && block.getEndTime().equals(blockAfter.getStartTime())){
+				//if (block.getEndTime().equals(blockAfter.getStartTime())){
+					block.setEndTime(new Date(blockAfter.getStartTime().getTime()-300000));
+					PointingMetadata meta = block.getMetadataElement();
+					if (meta==null){
+						meta=new PointingMetadata();
+						
+					}
+					meta.addComment("End time of the block modified");
+					if (block.getMetadataElement()==null){
+						block.setMetadata(new PointingMetadata());
+					}
+					
+					block.getMetadataElement().addComment("End time of the block modified");
+					PointingBlockSlew newSlew = new PointingBlockSlew();
+					newSlew.setBlockBefore(block);
+					newSlew.setBlockAfter(blockAfter);
+					this.addBlock(newSlew);
+				//}
+			}
+		}
+		
+		Iterator<Entry<Date, PointingBlock>> it2 = ((TreeMap<Date,PointingBlock>)blMap).entrySet().iterator();
+		while (it2.hasNext()){
+			PointingBlock block = it2.next().getValue();
+			PointingBlock blockBefore = blockBefore(block);
+			if (blockBefore!=null && block.getType().equals(PointingBlock.TYPE_OBS) && !blockBefore.isSlew() && block.getStartTime().equals(blockBefore.getEndTime())){
+				//if (block.getEndTime().equals(blockAfter.getStartTime())){
+					block.setStartTime(new Date(blockBefore.getEndTime().getTime()+300000));
+					PointingMetadata meta = block.getMetadataElement();
+					if (meta==null){
+						meta=new PointingMetadata();
+						
+					}
+					meta.addComment("Start time of the block modified");
+
+					PointingBlockSlew newSlew = new PointingBlockSlew();
+					newSlew.setBlockBefore(blockBefore);
+					newSlew.setBlockAfter(block);
+					this.addBlock(newSlew);
+				//}
+			}
+		}
+
+	}
 	
 	/**
 	 * Check if there is any gap before a MOCM, MWOL or MSLW block (which have) internal slews and extend the observation before to end at the beginning of the maintenance block
@@ -235,9 +327,15 @@ public class PtrSegment extends PointingBlocksSlice{
 					if (before.getType().equals(PointingBlock.TYPE_SLEW)){
 						PointingBlock beforeSlew=blockBefore(before);
 						this.removeBlock(before);
-						beforeSlew.setEndTime(block.getStartTime());
+						//this.hardRemoveBlock(before);
+						if (beforeSlew.getType().equals(PointingBlock.TYPE_OBS)) {
+							beforeSlew.setEndTime(block.getStartTime());
+						}
+						
 					}else{
-						before.setEndTime(block.getStartTime());
+						if (before.getType().equals(PointingBlock.TYPE_OBS)){
+							before.setEndTime(block.getStartTime());
+						}
 					}
 					//before.setEndTime(block.getStartTime());
 				}
@@ -526,20 +624,47 @@ public class PtrSegment extends PointingBlocksSlice{
 	 * @param time The desired time
 	 * @return The block with a start time less or equal to the given time or null if there is no such block
 	 */
-	public PointingBlock getBlockAt(java.util.Date time){
+	/*public PointingBlock getBlockAt(java.util.Date time){
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		Entry<Date, PointingBlock> floorEntry = blMap.floorEntry(time);
 		if (floorEntry==null) return null;
 		return floorEntry.getValue();
-	}
-	public PointingBlocksSlice getBlocksAt(java.util.Date startTime,java.util.Date endTime){
-		endTime=new Date(endTime.getTime()-1);
+	}*/
+	public PointingBlock getBlockAt(java.util.Date time){
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		Entry<Date, PointingBlock> floorEntry = blMap.floorEntry(time);
+		if (floorEntry==null) return null;
+		PointingBlock result = floorEntry.getValue();
+		if (result.getEndTime().before(time)){
+			PointingBlock after = blockAfter(result);
+			if (after!=null && after.isSlew()) return after;
+			else return null;
+		}
+		return result;
+	}
+
+	public PointingBlocksSlice getBlocksAt(java.util.Date startTime,java.util.Date endTime){
+		PointingBlocksSlice result=new PointingBlocksSlice();
+		startTime=new Date(startTime.getTime()+1);
+		endTime=new Date(endTime.getTime()-1);
+		//TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		Iterator<PointingBlock> it = this.getBlMap().values().iterator();
+		while(it.hasNext()){
+			PointingBlock block=it.next();
+			boolean con1=false;
+			boolean con2=false;
+			if (block.getStartTime().after(endTime)) con1=true;
+			if (block.getEndTime().before(startTime)) con2=true;
+			if (!con1 && !con2) result.addBlock(block);
+		}
+		return result;
+	}
+		/*if (blMap.size()==0) return new PointingBlocksSlice();
 		SortedMap<Date, PointingBlock> sm = new TreeMap<Date, PointingBlock>(blMap.subMap(startTime, endTime));
 		PointingBlock startObs = getBlockAt(startTime);
 		PointingBlock endObs = getBlockAt(endTime);
-		sm.put(startObs.getStartTime(), startObs);
-		sm.put(endObs.getStartTime(), endObs);
+		if (startObs!=null) sm.put(startObs.getStartTime(), startObs);
+		if (endObs!=null) sm.put(endObs.getStartTime(), endObs);
 		Collection<PointingBlock> val = sm.values();
 		PointingBlock[] result=new PointingBlock[val.size()];
 		result=val.toArray(result);
@@ -547,7 +672,9 @@ public class PtrSegment extends PointingBlocksSlice{
 		pbs.setBlocks(result);
 		return pbs;
 	//return getBlockAt(startTime);
-	}
+	}*/
+	
+
 	
 	/*public PointingBlock[] getBlocksAt(java.util.Date startTime,java.util.Date endTime){
 		endTime=new Date(endTime.getTime()-1);

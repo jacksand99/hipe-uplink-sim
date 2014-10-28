@@ -61,6 +61,7 @@ import org.w3c.dom.NodeList;
 
 
 
+
 //import vega.uplink.pointing.Evtm;
 import vega.uplink.pointing.EvtmEvent;
 
@@ -207,7 +208,7 @@ public class PorUtils {
 		return result;
 	}
 	
-	private static Parameter[] readParameters(NodeList nList) throws IOException{
+	public static Parameter[] readParameters(NodeList nList) throws IOException{
 		Mib MIB = Mib.getMib();
 		Parameter[] result = new Parameter[nList.getLength()];
 
@@ -240,13 +241,15 @@ public class PorUtils {
 					}
 					if (radix.equals(Parameter.RADIX_HEX)){
 						try{
-							result[temp]=new ParameterFloat(name,representation,radix,new Integer(Integer.parseInt(value, 16)).floatValue());
+							String hexValue = value.replace("0x", "");
+							result[temp]=new ParameterFloat(name,representation,radix,new Integer(Integer.parseInt(hexValue, 16)).floatValue());
 						}
 						catch (java.lang.NumberFormatException e){
 							try{
 								result[temp]=new ParameterFloat(name,representation,radix,new Integer(Integer.parseInt("0x"+value, 16)).floatValue());
 							}
 							catch (java.lang.NumberFormatException e1){
+								e.printStackTrace();
 								e1.printStackTrace();
 								result[temp]=new ParameterFloat(name,representation,radix,0);
 							}
@@ -267,7 +270,7 @@ public class PorUtils {
 		return result;
 	}
 	
-	private static SequenceProfile[] readProfiles(NodeList nList){
+	public static SequenceProfile[] readProfiles(NodeList nList){
 		SequenceProfile[] result = new SequenceProfile[nList.getLength()];
 		 
 		for (int temp = 0; temp < nList.getLength(); temp++) {
@@ -354,7 +357,7 @@ public class PorUtils {
 		String l03="Start_time: "+dateFormat2.format(POR.getValidityDates()[0])+"\n";
 		String l04="End_time: "+dateFormat2.format(POR.getValidityDates()[1])+"\n\n\n";
 		String l05="";
-		Sequence[] tempSeq=POR.getSequences();
+		AbstractSequence[] tempSeq=POR.getSequences();
 		Parameter[] tempParam;
 		SequenceProfile[] tempPro;
 		for (int i=0;i<tempSeq.length;i++){
@@ -513,8 +516,8 @@ public class PorUtils {
 			TreeMap<Date,Node> stadNodes=new TreeMap<Date,Node>();
 			TreeMap<Date,Node> stodNodes=new TreeMap<Date,Node>();
 			TreeMap<Date,Node> eotNodes=new TreeMap<Date,Node>();
-			TreeMap<Date,Node> botbNodes=new TreeMap<Date,Node>();
-			TreeMap<Date,Node> eotbNodes=new TreeMap<Date,Node>();
+			//TreeMap<Date,Node> botbNodes=new TreeMap<Date,Node>();
+			//TreeMap<Date,Node> eotbNodes=new TreeMap<Date,Node>();
 			TreeMap<Date,Node> boabNodes=new TreeMap<Date,Node>();
 			TreeMap<Date,Node> eoabNodes=new TreeMap<Date,Node>();
 			
@@ -542,12 +545,12 @@ public class PorUtils {
 					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOT_")){
 						eotNodes.put(time,item);
 					}
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOTB")){
+					/*if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOTB")){
 						botbNodes.put(time,item);
 					}
 					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOTB")){
 						eotbNodes.put(time,item);
-					}
+					}*/
 					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOAB")){
 						boabNodes.put(time,item);
 					}
@@ -573,14 +576,14 @@ public class PorUtils {
 					result.addPass(pass);
 				}
 			}
-			Iterator<Date> it2 = botbNodes.keySet().iterator();
+			/*Iterator<Date> it2 = botbNodes.keySet().iterator();
 			while (it2.hasNext()){
 				Date passStart=it2.next();
 				Date passEnd=eotbNodes.ceilingKey(passStart);
 				String station=botbNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
 				result.addPass(new GsPassBSR(passStart,passEnd,station));
 				
-			}
+			}*/
 
 			Iterator<Date> it3 = boabNodes.keySet().iterator();
 			while (it3.hasNext()){

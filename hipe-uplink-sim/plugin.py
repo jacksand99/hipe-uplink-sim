@@ -58,7 +58,15 @@ from vega.uplink.pointing.PtrParameters import PointedAxis
 from vega.uplink.pointing.PtrParameters.Offset import OffsetFixed
 from vega.uplink.pointing.PtrParameters.Offset import OffsetRaster
 from vega.uplink.pointing.PtrParameters.Offset import OffsetScan
-from vega.uplink.pointing.PtrParameters.Offset import OffsetCustom    
+from vega.uplink.pointing.PtrParameters.Offset import OffsetCustom
+from vega.uplink.planning import Observation
+from vega.uplink.planning import ObservationUtil
+from vega.uplink.planning import Schedule
+from vega.uplink.planning import ObservationsSchedule
+from vega.uplink.planning import ObservationSequence
+from vega.uplink.planning import ObservationPointingBlock
+
+
 from vega.help import HelpMenuFactory
 
 REGISTRY = ExtensionRegistry.getInstance()
@@ -84,6 +92,8 @@ REGISTRY.register(REGISTRY.COMPONENT,Extension("Pointing XML Editor","vega.uplin
 REGISTRY.register(REGISTRY.COMPONENT,Extension("PTR XML Editor","vega.uplink.pointing.gui.PtrXmlEditor","factory.editor.variable","vega.uplink.pointing.Ptr"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("PointingBlocksSlice XML Editor","vega.uplink.pointing.gui.PointingBlocksSliceXmlEditor","factory.editor.variable","vega.uplink.pointing.PointingBlocksSlice"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Pointing Metadata Editor","vega.uplink.pointing.gui.PointingMetadataEditor","factory.editor.variable","vega.uplink.pointing.PointingMetadata"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("Observation Editor","vega.uplink.planning.gui.ObservationEditor","factory.editor.variable","vega.uplink.planning.Observation"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("Scheduler Viewer","vega.uplink.planning.gui.ScheduleViewer","factory.editor.variable","vega.uplink.planning.Schedule"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Power Plot Viewer","vega.uplink.commanding.gui.PowerPlotViewer","factory.editor.variable","vega.uplink.commanding.SimulationContext"))
 REGISTRY.register(UserPreferences.CATEGORY, Extension("Mission Planning","vega.hipe.preferences.UplinkPathPreferences",None,None))  # unused
 REGISTRY.register(UserPreferences.CATEGORY, Extension("Mission Planning/Instruments","vega.hipe.preferences.InstrumentsNamesPreferences",None,None))  # unused
@@ -94,6 +104,8 @@ REGISTRY.register(REGISTRY.COMPONENT,Extension("POR Reader","vega.uplink.command
 REGISTRY.register(REGISTRY.COMPONENT,Extension("PORG Reader","vega.uplink.commanding.gui.PorgFileComponent","factory.editor.file","vega.uplink.commanding.gui.PorgFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("MIB Reader","vega.uplink.commanding.gui.MibFileComponent","factory.editor.file","vega.uplink.commanding.gui.MibFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("FECS Reader","vega.uplink.commanding.gui.FecsFileComponent","factory.editor.file","vega.uplink.commanding.gui.FecsFile"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("Planning Observation Reader","vega.uplink.planning.gui.ObservationFileComponent","factory.editor.file","vega.uplink.planning.gui.ObservationFile"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("Planning Schedule Reader","vega.uplink.planning.gui.ScheduleFileComponent","factory.editor.file","vega.uplink.planning.gui.ScheduleFile"))
 REGISTRY.register("site.fileType",Extension("site.file.ptr","vega.uplink.pointing.gui.PtrFile","regex:^PTR[a-zA-Z0-9_\-]*.ROS","vega/vega.gif"));
 REGISTRY.register("site.fileType",Extension("site.file.ptsl","vega.uplink.pointing.gui.PtrFile","regex:^PTSL[a-zA-Z0-9_\-]*.ROS","vega/vega.gif"));
 REGISTRY.register("site.fileType",Extension("site.file.pdfm","vega.uplink.pointing.gui.PdfmFile","regex:^PDFM[a-zA-Z0-9_\-]*.ROS","vega/vega.gif"));
@@ -102,6 +114,8 @@ REGISTRY.register("site.fileType",Extension("site.file.por","vega.uplink.command
 REGISTRY.register("site.fileType",Extension("site.file.fecs","vega.uplink.commanding.gui.FecsFile","regex:^FECS[a-zA-Z0-9_\-]*.ROS","vega/vega.gif"));
 REGISTRY.register("site.fileType",Extension("site.file.porg","vega.uplink.commanding.gui.PorgFile","regex:^PORG[a-zA-Z0-9_\-]*.ROS","vega/vega.gif"));
 REGISTRY.register("site.fileType",Extension("site.file.mib","vega.uplink.commanding.gui.MibFile","regex:^MIB[a-zA-Z0-9_\-]*.ROS","vega/vega.gif"));
+REGISTRY.register("site.fileType",Extension("site.file.obs","vega.uplink.planning.gui.ObservationFile","regex:^OBS[a-zA-Z0-9_\-]*.ROS","vega/vega.gif"));
+REGISTRY.register("site.fileType",Extension("site.file.schedule","vega.uplink.planning.gui.ScheduleFile","regex:^SCH[a-zA-Z0-9_\-]*.ROS","vega/vega.gif"));
 
 toolRegistry = TaskToolRegistry.getInstance()
 from vega.uplink.commanding.task import SavePorTask
@@ -110,6 +124,7 @@ from vega.uplink.commanding.task import PorCheckTask
 from vega.uplink.commanding.task import CompareFecsTask
 from vega.uplink.commanding.task import FecsSummaryTask
 from vega.uplink.commanding.task import RosettaFecsSummaryTask
+from vega.uplink.commanding.task import CreateTimelineTask
 
 from vega.uplink.commanding.task import SavePorgTask
 from vega.uplink.pointing.task import SavePtrTask
@@ -122,6 +137,7 @@ from vega.uplink.pointing.task import RebasePtslTask
 from vega.uplink.commanding.task import SimulateTask
 toolRegistry.register(FecsSummaryTask());
 toolRegistry.register(RosettaFecsSummaryTask());
+toolRegistry.register(CreateTimelineTask());
 toolRegistry.register(CompareFecsTask());
 toolRegistry.register(SavePorTask())
 toolRegistry.register(SaveItlTask())

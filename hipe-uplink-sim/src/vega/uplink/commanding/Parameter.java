@@ -22,6 +22,7 @@ import java.util.List;
 
 
 
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -130,7 +131,11 @@ public class Parameter extends TableDataset{
 				Element eleValue=doc.createElement("value");
 				eleValue.setAttribute("representation", getRepresentation());
 				eleValue.setAttribute("radix", getRadix());
-				eleValue.setTextContent(getStringValue());
+				String val = getStringValue();
+				if (getRadix().equals(RADIX_HEX)){
+					val.replace("0x", "");
+				}
+				eleValue.setTextContent(val);
 				eleParameter.appendChild(eleValue);
 				
 		  }catch (Exception e){
@@ -146,7 +151,12 @@ public class Parameter extends TableDataset{
 		}
 		String pos=new Integer(position).toString();				
 		String l1= "<parameter name=\""+this.getName()+"\" position=\""+pos+"\">";
-		String l2= "<value representation=\""+getRepresentation()+"\" radix=\""+getRadix()+"\">"+getStringValue()+"</value>";
+		String val = getStringValue();
+		if (getRadix().equals(RADIX_HEX)){
+			val=val.replace("0x", "");
+		}
+
+		String l2= "<value representation=\""+getRepresentation()+"\" radix=\""+getRadix()+"\">"+val+"</value>";
 		String l3="</parameter>";
 		//return l1+"\n\t"+l2+"\n"+l3;
 		return indentString+l1+"\n\t"+indentString+l2+"\n"+indentString+l3;

@@ -225,7 +225,7 @@ public class Mib extends CompositeDataset{
 		}
 		return true;
 	}
-	public boolean checkSequence(Sequence seq){
+	public boolean checkSequence(SequenceInterface seq){
 		TableDataset paramsForCommand=findInTable((TableDataset)this.get("csp_table"),"CSP_SQNAME",seq.getName());
 		if (paramsForCommand.getRowCount()<=0){
 			TableDataset sequencesTable=findInTable((TableDataset)this.get("sdf_table"),"SDF_SQNAME",seq.getName());

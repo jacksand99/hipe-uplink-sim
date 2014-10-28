@@ -62,11 +62,11 @@ public class CompareFecsTask extends Task {
         if (olderFecs == null) {
             throw (new NullPointerException("Missing olderFecs value"));
         }
-		Fecs newerFecs = (Fecs) getParameter("newerFecs").getValue();
+ 		Fecs newerFecs = (Fecs) getParameter("newerFecs").getValue();
         if (newerFecs == null) {
             throw (new NullPointerException("Missing newerFecs value"));
         }
-
+        olderFecs=olderFecs.getSubFecs(newerFecs.getValidityStart(), newerFecs.getValidityEnd());
         String station=(String) getParameter("station").getValue();
         if (station!=null) {
         	if (station.equals("ESA")){
@@ -98,11 +98,11 @@ public class CompareFecsTask extends Task {
         		message=message+newerFecs.getName()+" BSR (h):"+newerFecs.getBSRHours()+"\n";*/
         		message=message+ "<table class=\"gridtable\">\n"
         				+ "<tr>\n"
-        				+ "	<th>FECS</th><th>34 m (h/day)</th><th>70 m (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
+        				+ "	<th>FECS</th><th>34 m pass (h/day)</th><th>34 m dump (h/day)</th><th>70 m pass (h/day)</th><th>70 m dump (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
         				+ "</tr>\n";
         		message=message+ "<tr>\n"
-        				+ "	<td>"+olderFecs.getName()+"</td><td>"+olderFecs.getHoursDay35m()+"</td><td>"+olderFecs.getHoursDay70m()+"</td><td>"+olderFecs.getBSRHoursDay()+"</td><td>"+olderFecs.getTotalDataDump()+"</td></tr>\n"
-        				+ "	<td>"+newerFecs.getName()+"</td><td>"+newerFecs.getHoursDay35m()+"</td><td>"+newerFecs.getHoursDay70m()+"</td><td>"+newerFecs.getBSRHoursDay()+"</td><td>"+newerFecs.getTotalDataDump()+"</td>\n"
+        				+ "	<td>"+olderFecs.getName()+"</td><td>"+olderFecs.getPassHoursDay35m()+"</td><td>"+olderFecs.getDumpHoursDay35m()+"</td><td>"+olderFecs.getPassHoursDay70m()+"</td><td>"+olderFecs.getDumpHoursDay70m()+"</td><td>"+olderFecs.getBSRHoursDay()+"</td><td>"+olderFecs.getTotalDataDump()+"</td></tr>\n"
+        				+ "	<td>"+newerFecs.getName()+"</td><td>"+newerFecs.getPassHoursDay35m()+"</td><td>"+newerFecs.getDumpHoursDay35m()+"</td><td>"+newerFecs.getPassHoursDay70m()+"</td><td>"+newerFecs.getDumpHoursDay70m()+"</td><td>"+newerFecs.getBSRHoursDay()+"</td><td>"+newerFecs.getTotalDataDump()+"</td>\n"
         				+ "</tr></table>\n";      		
 
         		
@@ -118,53 +118,49 @@ public class CompareFecsTask extends Task {
         }else{
         	PtrSegment[] segments = ptsl.getSegments();
         	for (int i=0;i<segments.length;i++){
-        		String name=segments[i].getName();
-        		Date start=segments[i].getSegmentStartDate();
-        		Date end=segments[i].getSegmentEndDate();
-        		String oldFecsName=olderFecs.getName()+"_"+name;
-        		String newFecsName=newerFecs.getName()+"_"+name;
-        		Fecs oldFecs = olderFecs.getSubFecs(start, end);
-        		oldFecs.setName(oldFecsName);
-        		Fecs newFecs = newerFecs.getSubFecs(start, end);
-        		newFecs.setName(newFecsName);
-        		//message=message+"**************** "+name+" ****************\n\n";
-        		message=message+"<h1>"+name+"</h1>";
-        		message=message+ "<table class=\"gridtable\">\n"
-        				+ "<tr>\n"
-        				+ "	<th>Start Date</th><th>End Date</th>\n"
-        				+ "</tr>\n";
-        		message=message+ "<tr>\n"
-        				+ "	<td>"+PointingBlock.dateToZulu(start)+"</td><td>"+PointingBlock.dateToZulu(end)+"</td>\n"
-        				+ "</tr>\n"
-        				+ "</table>\n";
-        		message=message+"<br><br>";
-        		message=message+ "<table class=\"gridtable\">\n"
-        				+ "<tr>\n"
-        				+ "	<th>FECS</th><th>34 m (h/day)</th><th>70 m (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
-        				+ "</tr>\n";
-        		message=message+ "<tr>\n"
-        				+ "	<td>"+oldFecs.getName()+"</td><td>"+oldFecs.getHoursDay35m()+"</td><td>"+oldFecs.getHoursDay70m()+"</td><td>"+oldFecs.getBSRHoursDay()+"</td><td>"+oldFecs.getTotalDataDump()+"</td></tr>\n"
-        				+ "	<td>"+newFecs.getName()+"</td><td>"+newFecs.getHoursDay35m()+"</td><td>"+newFecs.getHoursDay70m()+"</td><td>"+newFecs.getBSRHoursDay()+"</td><td>"+newFecs.getTotalDataDump()+"</td>\n"
-        				+ "</tr></table>\n";      		
-        		/*message=message+oldFecs.getName()+" 34 m (h/day):"+oldFecs.getHoursDay35m()+"\n";
-        		message=message+newFecs.getName()+" 34 m (h/day):"+newFecs.getHoursDay35m()+"\n";
-        		message=message+oldFecs.getName()+" 70 m (h/day):"+oldFecs.getHoursDay70m()+"\n";
-        		message=message+newFecs.getName()+" 70 m (h/day):"+newFecs.getHoursDay70m()+"\n";
-        		message=message+oldFecs.getName()+" BSR (h):"+oldFecs.getBSRHours()+"\n";
-        		message=message+newFecs.getName()+" BSR (h):"+newFecs.getBSRHours()+"\n";*/
-        		message=message+"<br><br>";
-
-        		
-            	try{
-            		message=message+Fecs.compareFecsHTML(oldFecs, newFecs);
-            	}catch (Exception e){
-        			message=message+e.getMessage();
-        			LOGGER.throwing(CompareFecsTask.class.getName(), "execute", e);
-        			LOGGER.severe(e.getMessage());
-        			// TODO Auto-generated catch block
-        			e.printStackTrace();
-            	}
-
+        		if (segments[i].getEndDate().toDate().after(newerFecs.getValidityStart())){
+	        		String name=segments[i].getName();
+	        		Date start=segments[i].getSegmentStartDate();
+	        		Date end=segments[i].getSegmentEndDate();
+	        		String oldFecsName=olderFecs.getName()+"_"+name;
+	        		String newFecsName=newerFecs.getName()+"_"+name;
+	        		Fecs oldFecs = olderFecs.getSubFecs(start, end);
+	        		oldFecs.setName(oldFecsName);
+	        		Fecs newFecs = newerFecs.getSubFecs(start, end);
+	        		newFecs.setName(newFecsName);
+	        		//message=message+"**************** "+name+" ****************\n\n";
+	        		message=message+"<h1>"+name+"</h1>";
+	        		message=message+ "<table class=\"gridtable\">\n"
+	        				+ "<tr>\n"
+	        				+ "	<th>Start Date</th><th>End Date</th>\n"
+	        				+ "</tr>\n";
+	        		message=message+ "<tr>\n"
+	        				+ "	<td>"+PointingBlock.dateToZulu(start)+"</td><td>"+PointingBlock.dateToZulu(end)+"</td>\n"
+	        				+ "</tr>\n"
+	        				+ "</table>\n";
+	        		message=message+"<br><br>";
+	        		message=message+ "<table class=\"gridtable\">\n"
+	        				+ "<tr>\n"
+	        				+ "	<th>FECS</th><th>34 m pass (h/day)</th><th>34 m dump (h/day)</th><th>70 m pass (h/day)</th><th>70 m dump (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
+	        				+ "</tr>\n";
+	        		message=message+ "<tr>\n"
+	        				+ "	<td>"+oldFecs.getName()+"</td><td>"+oldFecs.getPassHoursDay35m()+"</td><td>"+oldFecs.getDumpHoursDay35m()+"</td><td>"+oldFecs.getPassHoursDay70m()+"</td><td>"+oldFecs.getDumpHoursDay70m()+"</td><td>"+oldFecs.getBSRHoursDay()+"</td><td>"+oldFecs.getTotalDataDump()+"</td></tr>\n"
+	        				+ "	<td>"+newFecs.getName()+"</td><td>"+newFecs.getPassHoursDay35m()+"</td><td>"+newFecs.getDumpHoursDay35m()+"</td><td>"+newFecs.getPassHoursDay70m()+"</td><td>"+newFecs.getDumpHoursDay70m()+"</td><td>"+newFecs.getBSRHoursDay()+"</td><td>"+newFecs.getTotalDataDump()+"</td>\n"
+	        				+ "</tr></table>\n";      		
+	
+	        		message=message+"<br><br>";
+	
+	        		
+	            	try{
+	            		message=message+Fecs.compareFecsHTML(oldFecs, newFecs);
+	            	}catch (Exception e){
+	        			message=message+e.getMessage();
+	        			LOGGER.throwing(CompareFecsTask.class.getName(), "execute", e);
+	        			LOGGER.severe(e.getMessage());
+	        			// TODO Auto-generated catch block
+	        			e.printStackTrace();
+	            	}
+        		}
         	}
         }
         message="<html><body>"+message+"</body><html>";
@@ -173,13 +169,9 @@ public class CompareFecsTask extends Task {
     	//frame.setVisible(true);
 		
 	}
+}
 
-
-	private class MessagesFrame extends JFrame{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+/*		private static final long serialVersionUID = 1L;
 	
 		MessagesFrame(String messages){
 			super();
@@ -191,9 +183,6 @@ public class CompareFecsTask extends Task {
 	        scrollPane.getViewport().add(pane);
 	        pnl.add( scrollPane, BorderLayout.CENTER );
 	        pnl.add(new JButton(new AbstractAction("Close") {
-	            /**
-				 * 
-				 */
 				private static final long serialVersionUID = 1L;
 	
 				@Override
@@ -206,8 +195,8 @@ public class CompareFecsTask extends Task {
 			//this.add(new JLabel(messages));
 			this.pack();
 		}
-	}
+	}*/
 	
 	
 
-}
+

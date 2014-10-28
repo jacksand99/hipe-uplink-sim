@@ -11,7 +11,7 @@ public class PorChecker {
 		String messages="";
 		Date startDate = por.getValidityDates()[0];
 		Date endDate = por.getValidityDates()[1];
-		Sequence[] sequences = por.getSequences();
+		SequenceInterface[] sequences = por.getSequences();
 		for (int i=0;i<sequences.length;i++){
 			if (sequences[i].getExecutionDate().before(startDate)){
 				messages=messages+"POR:Sequence execution date before validity of POR: "+sequences[i].getName()+" - "+sequences[i].getExecutionTime()+"\n";

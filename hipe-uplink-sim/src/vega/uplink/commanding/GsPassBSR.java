@@ -18,6 +18,24 @@ public class GsPassBSR extends GsPass {
 	public boolean isBSR(){
 		return true;
 	}
+	
+	public boolean equals(GsPassBSR pass){
+		if (!this.getStartPass().equals(pass.getStartPass())) return false;
+		if (!this.getEndPass().equals(pass.getEndPass())) return false;
+		//if (!startDump.equals(pass.getStartDump())) return false;
+		//if (!endDump.equals(pass.getEndDump())) return false;
+		if (this.getGroundStation().equals(pass.getGroundStation())) return false;
+		//if (tmRate!=pass.getTmRate()) return false;
+		
+		return true;
+	}
+	public int getDumpDurationSecs(){
+		//int result=0;
+		return 0;
+		//return result;
+	}
+
+
 
 
 }

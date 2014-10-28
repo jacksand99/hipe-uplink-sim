@@ -1,25 +1,28 @@
 package vega.uplink.pointing.gui;
 
-import herschel.ia.gui.kernel.VariableSelection;
-import herschel.ia.gui.kernel.parts.AbstractFileEditorComponent;
-import herschel.ia.gui.kernel.parts.EditorComponent;
-import herschel.ia.gui.kernel.parts.ProxyEditorComponent;
+//import herschel.ia.gui.kernel.VariableSelection;
+import herschel.ia.gui.kernel.parts.AbstractFileCommandComponent;
+//import herschel.ia.gui.kernel.parts.AbstractFileEditorComponent;
+//import herschel.ia.gui.kernel.parts.EditorComponent;
+//import herschel.ia.gui.kernel.parts.ProxyEditorComponent;
 import herschel.ia.gui.kernel.util.IconLoader;
-import herschel.share.interpreter.InterpreterUtil;
+//import herschel.share.interpreter.InterpreterUtil;
 
-import java.io.File;
-import java.io.IOException;
+//import java.io.File;
+//import java.io.IOException;
 
 import javax.swing.Icon;
 
-import vega.uplink.pointing.Ptr;
+//import vega.uplink.planning.ObservationUtil;
+//import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrUtils;
 
 /**
  * This is a class that provides means for opening an editor (view) for a
  * product stored in a PTR file.
  */
-public class PtrFileComponent extends AbstractFileEditorComponent implements ProxyEditorComponent<VariableSelection>{
+public class PtrFileComponent extends AbstractFileCommandComponent{
+//AbstractFileEditorComponent implements ProxyEditorComponent<VariableSelection>{
 
     //private static final String IMAGE = "image";
     private static final long serialVersionUID = 1L;
@@ -35,7 +38,7 @@ public class PtrFileComponent extends AbstractFileEditorComponent implements Pro
         return ICON;
     }
 
-    @Override
+    /*@Override
     public VariableSelection getTargetSelection() throws IOException {
         File file = getFile();
         Ptr ptr;
@@ -63,6 +66,10 @@ public class PtrFileComponent extends AbstractFileEditorComponent implements Pro
     }
 
     @Override
-    public void setTargetEditor(EditorComponent editor) {}
+    public void setTargetEditor(EditorComponent editor) {}*/
+	public String getCommandStatement() {
+        return PtrUtils.class.getSimpleName()+".readPTRfromFile(\""+getFile().getAbsolutePath()+"\")";
+	}
+
 }
 

@@ -161,20 +161,7 @@ public class HistoryModesPlot extends AbstractVariableEditorComponent<HistoryMod
 			String ins=it.next();
 			taskVectorMap.put(ins, new java.util.Vector<Task>());
 		}
-        /*java.util.Vector<Task> taskAlice = new java.util.Vector<Task>();
-        java.util.Vector<Task> taskConsert = new java.util.Vector<Task>();
-        java.util.Vector<Task> taskCosima = new java.util.Vector<Task>();
-        java.util.Vector<Task> taskGiada = new java.util.Vector<Task>();
-        java.util.Vector<Task> taskMidas = new java.util.Vector<Task>();
-        java.util.Vector<Task> taskMiro = new java.util.Vector<Task>();
-        java.util.Vector<Task> taskOsiris = new java.util.Vector<Task>();
-        java.util.Vector<Task> taskRosina = new java.util.Vector<Task>();
-        java.util.Vector<Task> taskRpc = new java.util.Vector<Task>();
-        java.util.Vector<Task> taskRsi = new java.util.Vector<Task>();
-        java.util.Vector<Task> taskSrem = new java.util.Vector<Task>();
-        java.util.Vector<Task> taskVirtis = new java.util.Vector<Task>();
-        java.util.Vector<Task> taskLander = new java.util.Vector<Task>();
-        java.util.Vector<Task> taskPtr = new java.util.Vector<Task>();*/
+
         
         TaskSeries globalSerie=new TaskSeries("GLOBAL");
         String[] modes=hm.getAllStates();
@@ -198,26 +185,7 @@ public class HistoryModesPlot extends AbstractVariableEditorComponent<HistoryMod
 	        		java.util.Vector<Task> taskVector=taskVectorMap.get(ins);
 	        		if (modes[i].startsWith(stString)) taskVector.add(task);
 	        	}
-	        	/*if (modes[i].startsWith("AL")) taskAlice.add(task);
-	        	if (modes[i].startsWith("CN")) taskConsert.add(task);
-	        	if (modes[i].startsWith("CS")) taskCosima.add(task);
-	        	if (modes[i].startsWith("GD")) taskGiada.add(task);
-	        	if (modes[i].startsWith("GDS")) taskGiada.add(task);
-	        	if (modes[i].startsWith("MBS")) taskGiada.add(task);
-	        	if (modes[i].startsWith("IS")) taskGiada.add(task);
-	        	if (modes[i].startsWith("LAS")) taskGiada.add(task);
-	        	if (modes[i].startsWith("HEAT")) taskGiada.add(task);
-	        	if (modes[i].startsWith("MD")) taskMidas.add(task);
-	        	if (modes[i].startsWith("MR")) taskMiro.add(task);
-	        	if (modes[i].startsWith("SR")) taskOsiris.add(task);
-	        	if (modes[i].startsWith("RN")) taskRosina.add(task);
-	        	if (modes[i].startsWith("RP")) taskRpc.add(task);
-	        	if (modes[i].startsWith("LBS")) taskRsi.add(task);
-	        	if (modes[i].startsWith("BSR")) taskRsi.add(task);
-	        	if (modes[i].startsWith("SE")) taskSrem.add(task);
-	        	if (modes[i].startsWith("VR")) taskVirtis.add(task);
-	        	if (modes[i].startsWith("ESS")) taskLander.add(task);
-	        	if (modes[i].startsWith("PTR")) taskPtr.add(task);*/
+
         	
         	}
         }
@@ -232,20 +200,7 @@ public class HistoryModesPlot extends AbstractVariableEditorComponent<HistoryMod
 			addToSerie(globalSerie,tempTask);
 		}
 
-        /*addToSerie(globalSerie,taskAlice);
-        addToSerie(globalSerie,taskConsert);
-        addToSerie(globalSerie,taskSrem);
-        addToSerie(globalSerie,taskRosina);
-        addToSerie(globalSerie,taskVirtis);
-        addToSerie(globalSerie,taskOsiris);
-        addToSerie(globalSerie,taskRsi);
-        addToSerie(globalSerie,taskLander);
-        addToSerie(globalSerie,taskGiada);
-        addToSerie(globalSerie,taskMidas);
-        addToSerie(globalSerie,taskRpc);
-        addToSerie(globalSerie,taskMiro);
-        addToSerie(globalSerie,taskCosima);
-        addToSerie(globalSerie,taskPtr);*/
+
 
         
         collection.add(globalSerie);

@@ -402,7 +402,7 @@ public class OffsetCustom extends OffsetAngles {
 			setYAngles(getYAngles());
 			setYRates(getYRates());
 		}catch (Exception e){
-			IllegalArgumentException iae = new IllegalArgumentException("Can not reasd number array from field: "+e.getMessage());
+			IllegalArgumentException iae = new IllegalArgumentException("Can not read number array from field: "+e.getMessage());
 			iae.initCause(e);
 			throw(iae);
 		}

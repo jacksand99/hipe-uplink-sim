@@ -4,7 +4,11 @@ import herschel.ia.dataset.Dataset;
 import herschel.ia.dataset.Product;
 import herschel.ia.dataset.StringParameter;
 import herschel.share.fltdyn.time.FineTime;
+import herschel.share.interpreter.InterpreterUtil;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -13,7 +17,12 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-public class PointingBlocksSlice extends Product{
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+
+public class PointingBlocksSlice extends Product implements PointingBlockSetInterface{
 	/*private String name;
 	private String[] includes;
 	//private TreeMap<Date,PointingBlock> blMap;
@@ -25,7 +34,7 @@ public class PointingBlocksSlice extends Product{
 	public static String DATA_TAG="data";
 	public static String TIMELINE_TAG="timeline";
 	public static String FRAME_TAG="frame";*/
-	public void regenerate(PointingBlocksSlice slice){
+	public void regenerate(PointingBlockSetInterface slice){
 		Set<String> ks = keySet();
 		String[] obs=new String[ks.size()] ;
 		obs=ks.toArray(obs);
@@ -33,6 +42,41 @@ public class PointingBlocksSlice extends Product{
 			remove(obs[i]);
 		}
 		this.setBlocks(slice.getBlocks());
+	}
+	
+	public PointingBlocksSlice copy(){
+		PointingBlocksSlice result = new PointingBlocksSlice();
+		/*Set<String> ks = keySet();
+		String[] obs=new String[ks.size()] ;
+		obs=ks.toArray(obs);
+		for (int i=0;i<obs.length;i++){
+			remove(obs[i]);
+		}*/
+		PointingBlock[] blocks = this.getBlocks();
+		for (int i=0;i<blocks.length;i++){
+			blocks[i]=blocks[i].copy();
+		}
+		result.setBlocks(blocks);
+		return result;
+		/*try{
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			String tempText="<slice>\n"+this.toXml(0)+"</slice>\n";
+			InputStream stream = new ByteArrayInputStream(tempText.getBytes(StandardCharsets.UTF_8));
+			Document doc;
+	
+			doc = dBuilder.parse(stream);
+			doc.getDocumentElement().normalize();
+			//Node node = (Node) doc;
+			//PointingElement pe = PointingElement.readFrom(node.getFirstChild());
+			PointingBlocksSlice tempSlice = PtrUtils.readBlocksfromDoc(doc);
+			return tempSlice;
+		}catch (Exception e){
+			IllegalArgumentException iae = new IllegalArgumentException("Could not replicate slice:"+e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+		}*/
+
 	}
 	
 	private String getBlockName(PointingBlock block){
@@ -116,11 +160,14 @@ public class PointingBlocksSlice extends Product{
 	 * Remove a block from the segment. It adjust as well the slews if they are affected by the removal.
 	 * @param block Block to be removed
 	 */
-	public void removeBlock(PointingBlock block){
+	public void removeBlock(PointingBlockInterface block){
+		if (!InterpreterUtil.isInstance(PointingBlock.class, block)){
+			block=PointingBlock.toPointingBlock(block);
+		}
 		
 		Date oldDate=block.getStartTime();
-		PointingBlock before = blockBefore(block);
-		PointingBlock after = blockAfter(block);
+		PointingBlockInterface before = blockBefore(block);
+		PointingBlockInterface after = blockAfter(block);
 		if (before!=null && after!=null){
 			if (before.getType().equals(PointingBlock.TYPE_SLEW) && after.getType().equals(PointingBlock.TYPE_SLEW)){
 				PointingBlockSlew slewBefore=(PointingBlockSlew) before;
@@ -153,7 +200,7 @@ public class PointingBlocksSlice extends Product{
 				slewBefore.setBlockAfter(null);
 			}
 		}
-		hardRemoveBlock(block);
+		hardRemoveBlock((PointingBlock)block);
 		
 	}
 	
@@ -162,7 +209,7 @@ public class PointingBlocksSlice extends Product{
 	 * @param block
 	 * @return
 	 */
-	public PointingBlock blockBefore(PointingBlock block){
+	public PointingBlockInterface blockBefore(PointingBlockInterface block){
 		if (block==null) return null;
 
 		long time=block.getStartTime().getTime()-1;
@@ -171,7 +218,7 @@ public class PointingBlocksSlice extends Product{
 		if (result==null) return null;
 		else return result.getValue();
 	}
-	public PointingBlock blockAfter(PointingBlock block){
+	public PointingBlockInterface blockAfter(PointingBlockInterface block){
 		if (block==null) return null;
 
 
@@ -193,10 +240,10 @@ public class PointingBlocksSlice extends Product{
 		while (it.hasNext()){
 			PointingBlock block = it.next().getValue();
 			if (block.getType().equals(PointingBlock.TYPE_MOCM) || block.getType().equals(PointingBlock.TYPE_MWOL) || block.getType().equals(PointingBlock.TYPE_MSLW)){
-				PointingBlock before = blockBefore(block);
+				PointingBlockInterface before = blockBefore(block);
 				if (before!=null){
 					if (before.getType().equals(PointingBlock.TYPE_SLEW)){
-						PointingBlock beforeSlew=blockBefore(before);
+						PointingBlockInterface beforeSlew=blockBefore(before);
 						this.removeBlock(before);
 						beforeSlew.setEndTime(block.getStartTime());
 					}else{
@@ -213,13 +260,23 @@ public class PointingBlocksSlice extends Product{
 		PointingBlock[] blocks = getBlocks();
 		for (int i=1;i<blocks.length;i++){
 			PointingBlock block = blocks[i];
-			PointingBlock before = blockBefore(block);
-			if (before.getType().equals(PointingBlock.TYPE_SLEW) && block.getType().equals(PointingBlock.TYPE_SLEW)){
+			PointingBlockInterface before = blockBefore(block);
+			if (before.isSlew() && block.getType().equals(PointingBlock.TYPE_SLEW)){
 				//System.out.println("Duplicatr Slew detected");
 				hardRemoveBlock(block);
 			}
 		}
-			
+
+		PointingBlock[] blocks2 = getBlocks();
+		for (int i=0;i<blocks2.length-1;i++){
+			PointingBlock block = blocks2[i];
+			PointingBlockInterface after = blockAfter(block);
+			if (after.isSlew() && block.getType().equals(PointingBlock.TYPE_SLEW)){
+				//System.out.println("Duplicatr Slew detected");
+				hardRemoveBlock(block);
+			}
+		}
+
 			//PointingBlock after = blockAfter(block);
 	}
 	
@@ -232,9 +289,9 @@ public class PointingBlocksSlice extends Product{
 
 		for (int i=0;i<blocks.length;i++){
 			PointingBlock block = blocks[i];
-			PointingBlock before = blockBefore(block);
-			PointingBlock after = blockAfter(block);
-			if (before!=null && !before.getType().equals(PointingBlock.TYPE_SLEW) && !before.getEndTime().equals(block.getStartTime())){
+			PointingBlockInterface before = blockBefore(block);
+			PointingBlockInterface after = blockAfter(block);
+			if (before!=null && !block.isSlew() && !before.isSlew() && !before.getEndTime().equals(block.getStartTime())){
 				PointingBlockSlew newSlew=new PointingBlockSlew();
 				newSlew.setBlockBefore(before);
 				newSlew.setBlockAfter(block);
@@ -248,11 +305,14 @@ public class PointingBlocksSlice extends Product{
 	 * Add a new block to the given segment
 	 * @param newBlock Block to be added
 	 */
-	public void addBlock(PointingBlock newBlock){
+	public void addBlock(PointingBlockInterface newBlock){
+		if (!InterpreterUtil.isInstance(PointingBlock.class, newBlock)){
+			newBlock=PointingBlock.toPointingBlock(newBlock);
+		}
 		boolean new_is_slew = newBlock.getType().equals(PointingBlock.TYPE_SLEW);
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		Entry<Date, PointingBlock> lastEntry = blMap.lastEntry();
-		PointingBlock before;
+		PointingBlockInterface before;
 		if (new_is_slew &&((PointingBlockSlew) newBlock).getBlockBefore()==null){
 			if (lastEntry==null){
 				throw (new IllegalArgumentException("Can not introduce a SLEW as first block of a segment"));
@@ -261,7 +321,7 @@ public class PointingBlocksSlice extends Product{
 			else before=lastEntry.getValue();
 		}
 		else before= blockBefore(newBlock);
-		PointingBlock after;
+		PointingBlockInterface after;
 		if (new_is_slew &&((PointingBlockSlew) newBlock).getBlockAfter()==null){
 			after=null;
 		}
@@ -272,7 +332,7 @@ public class PointingBlocksSlice extends Product{
 			//The block list empty
 			if (new_is_slew) return; //Can not insert slew in an empty list;
 			else{
-				hardInsertBlock(newBlock);
+				hardInsertBlock((PointingBlock)newBlock);
 				return; //job done
 			}
 		}else{
@@ -286,7 +346,7 @@ public class PointingBlocksSlice extends Product{
 						//In case a orphan slew was left at the beginning of the list
 						((PointingBlockSlew) after).setBlockBefore(newBlock);
 					}
-					hardInsertBlock(newBlock);
+					hardInsertBlock((PointingBlock)newBlock);
 					return; //job done
 				}
 			}
@@ -301,14 +361,14 @@ public class PointingBlocksSlice extends Product{
 							//return; //can not insert a slew after a slew
 						}
 						((PointingBlockSlew) before).setBlockAfter(newBlock);
-						hardInsertBlock(newBlock);
+						hardInsertBlock((PointingBlock)newBlock);
 						return; //job done
 					}else{
 						//The last object is not a slew
 						if (new_is_slew){
 							((PointingBlockSlew) newBlock).setBlockBefore(before);
 						}
-						hardInsertBlock(newBlock);
+						hardInsertBlock((PointingBlock)newBlock);
 						return; //job done
 					}
 				}else{
@@ -317,7 +377,7 @@ public class PointingBlocksSlice extends Product{
 						if (new_is_slew) return;//can not insert a slew after a slew
 						((PointingBlockSlew) before).setBlockAfter(newBlock);
 						//Also insert a slew just after
-						hardInsertBlock(newBlock);
+						hardInsertBlock((PointingBlock)newBlock);
 						return; //job done
 					}else{
 						//before is not a slew
@@ -332,10 +392,10 @@ public class PointingBlocksSlice extends Product{
 								slewBefore.setBlockBefore(before);
 							}else{
 								//remove orphan slew and reajust
-								hardRemoveBlock(before);
+								hardRemoveBlock((PointingBlock)before);
 								slewBefore.setBlockBefore(((PointingBlockSlew)before).getBlockBefore());
 							}
-							hardInsertBlock(newBlock);
+							hardInsertBlock((PointingBlock)newBlock);
 							hardInsertBlock(slewBefore);
 							return; //job done
 						}else{
@@ -343,12 +403,12 @@ public class PointingBlocksSlice extends Product{
 							if (new_is_slew){
 								((PointingBlockSlew) newBlock).setBlockBefore(before);
 								((PointingBlockSlew) newBlock).setBlockAfter(after);
-								hardInsertBlock(newBlock);
+								hardInsertBlock((PointingBlock)newBlock);
 								return; //job done
 							}
 							else{
 								//neither the block before, after or the new one are slews
-								hardInsertBlock(newBlock);
+								hardInsertBlock((PointingBlock)newBlock);
 								return; //job done								
 							}
 						}
@@ -373,7 +433,7 @@ public class PointingBlocksSlice extends Product{
 	 * Remove all currents blocks and substitute by the given ones
 	 * @param newBlocks New blocks to replace the current ones
 	 */
-	public void setBlocks(PointingBlock[] newBlocks){
+	public void setBlocks(PointingBlockInterface[] newBlocks){
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		Iterator<Entry<Date, PointingBlock>> it = blMap.entrySet().iterator();
 		while (it.hasNext()){
@@ -450,7 +510,9 @@ public class PointingBlocksSlice extends Product{
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		Entry<Date, PointingBlock> floorEntry = blMap.floorEntry(time);
 		if (floorEntry==null) return null;
-		return floorEntry.getValue();
+		PointingBlock result = floorEntry.getValue();
+		if (result.getEndTime().before(time)) return null;
+		return result;
 	}
 	
 	/*public PointingBlock[] getBlocksAt(java.util.Date startTime,java.util.Date endTime){
@@ -467,7 +529,7 @@ public class PointingBlocksSlice extends Product{
 		return result;
 		//return getBlockAt(startTime);
 	}*/
-	public PointingBlocksSlice getBlocksAt(java.util.Date startTime,java.util.Date endTime){
+	/*public PointingBlocksSlice getBlocksAt(java.util.Date startTime,java.util.Date endTime){
 		endTime=new Date(endTime.getTime()-1);
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		SortedMap<Date, PointingBlock> sm = new TreeMap<Date, PointingBlock>(blMap.subMap(startTime, endTime));
@@ -482,7 +544,24 @@ public class PointingBlocksSlice extends Product{
 		pbs.setBlocks(result);
 		return pbs;
 	//return getBlockAt(startTime);
+	}*/
+	public PointingBlocksSlice getBlocksAt(java.util.Date startTime,java.util.Date endTime){
+		PointingBlocksSlice result=new PointingBlocksSlice();
+		startTime=new Date(startTime.getTime()+1);
+		endTime=new Date(endTime.getTime()-1);
+		//TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		Iterator<PointingBlock> it = this.getBlMap().values().iterator();
+		while(it.hasNext()){
+			PointingBlock block=it.next();
+			boolean con1=false;
+			boolean con2=false;
+			if (block.getStartTime().after(endTime)) con1=true;
+			if (block.getEndTime().before(startTime)) con2=true;
+			if (!con1 && !con2) result.addBlock(block);
+		}
+		return result;
 	}
+
 
 	
 	public void removeBlocks(PointingBlock[] blocks){
@@ -520,6 +599,40 @@ public class PointingBlocksSlice extends Product{
 		pbs.setBlocks(resultArray);
 		return pbs;
 	}
+	
+	public PointingBlocksSlice getAllMaintenanceBlocks(){
+		
+		
+		java.util.Vector<PointingBlock> result=new java.util.Vector<PointingBlock>();
+		PointingBlock[] blocks = getBlocks();
+		for (int i=0;i<blocks.length;i++){
+			if (blocks[i].getType().equals(PointingBlock.TYPE_MNAV) ||
+					blocks[i].getType().equals(PointingBlock.TYPE_MNAV) ||
+					blocks[i].getType().equals(PointingBlock.TYPE_MOCM) ||
+					blocks[i].getType().equals(PointingBlock.TYPE_MSLW) ||
+					blocks[i].getType().equals(PointingBlock.TYPE_MWNV) ||
+					blocks[i].getType().equals(PointingBlock.TYPE_MWOL) ||
+					blocks[i].getType().equals(PointingBlock.TYPE_MWAC)) result.add(blocks[i]);
+		}
+		
+		PointingBlock[] resultArray=new PointingBlock[result.size()];
+		result.toArray(resultArray);
+		PointingBlocksSlice pbs = new PointingBlocksSlice();
+		pbs.setBlocks(resultArray);
+		return pbs;
+	}
+	
+	public void setSlice(PointingBlockSetInterface slice){
+		PointingBlockInterface[] obs = slice.getBlocks();
+		for (int i=0;i<obs.length;i++){
+			PointingBlock[] blocksToRemove = this.getBlocksAt(obs[i].getStartTime(), obs[i].getEndTime()).getBlocks();
+			this.removeBlocks(blocksToRemove);
+			this.addBlock(obs[i]);
+			//PtrUtils.repairGaps(this);
+
+		}
+	}
+
 
 	
 

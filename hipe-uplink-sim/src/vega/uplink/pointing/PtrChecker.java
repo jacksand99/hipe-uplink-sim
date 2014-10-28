@@ -400,8 +400,10 @@ public class PtrChecker {
 				if (!blocks[j].isSlew()){
 					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j].toXml(0))+"</pre></td><td>Pointing Block too short</td></tr>";
 				}else{
-					
-					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0)+blocks[j+1].toXml(0))+"</pre></td><td>Slew too short</td></tr>";
+					if (j+1<blocks.length)
+						messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0)+blocks[j+1].toXml(0))+"</pre></td><td>Slew too short</td></tr>";
+					else 
+						messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0))+"</pre></td><td>Slew too short</td></tr>";
 					
 				}
 			}
@@ -483,25 +485,25 @@ public class PtrChecker {
 				PointingBlock blockBefore = blocks[j-1];
 				//PointingBlock blockAfter = blocks[j+1];
 				if (!blockBefore.getEndTime().equals(blocks[j].getStartTime())){
-					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1]+blocks[j].toXml(0))+"</pre></td><td>PTR:Gap detected between "+PointingBlock.dateToZulu(blockBefore.getEndTime())+" and "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
+					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0))+"</pre></td><td>PTR:Gap detected between "+PointingBlock.dateToZulu(blockBefore.getEndTime())+" and "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
 
 					//messages=messages+"PTR:Gap detected between "+PointingBlock.dateToZulu(blockBefore.getEndTime())+" and "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
 					//messages=messages+"--------------------------------------\n";
 				}
 				if (blockBefore.isSlew() && blocks[j].isSlew()){
-					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1]+blocks[j].toXml(0))+"</pre></td><td>Two consecutive slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
+					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0))+"</pre></td><td>Two consecutive slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
 
 					//messages=messages+"PTR:Two consecutive slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
 					//messages=messages+"--------------------------------------\n";
 				}
 				if (!blockBefore.isSlew() && !blocks[j].isSlew()){
-					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1]+blocks[j].toXml(0))+"</pre></td><td>Two consecutive blocks without slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
+					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0))+"</pre></td><td>Two consecutive blocks without slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
 
 					//messages=messages+"PTR:Two consecutive blocks without slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
 					//messages=messages+"--------------------------------------\n";
 				}
 				if (blockBefore.getEndTime().after(blocks[j].getStartTime())){
-					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1]+blocks[j].toXml(0))+"</pre></td><td>Two overlaping blocks detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
+					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0))+"</pre></td><td>Two overlaping blocks detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
 
 					//messages=messages+"PTR:Two overlaping blocks detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
 					//messages=messages+"--------------------------------------\n";

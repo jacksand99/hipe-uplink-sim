@@ -121,7 +121,7 @@ public class TestCommanding {
         	Por POR = new Por();
         	POR.addSequence(command);
         	POR.addSequence(command2);
-        	Sequence[] hh=POR.getOrderedSequences();
+        	AbstractSequence[] hh=POR.getOrderedSequences();
         	SequenceProfile[] pro = hh[0].getProfiles();
         	System.out.println(pro.length);
         	for (int i=0;i<pro.length;i++){

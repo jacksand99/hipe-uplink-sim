@@ -27,9 +27,12 @@ import vega.uplink.Properties;
  * @author jarenas
  *
  */
-public class PointingBlock extends PointingElement{
-
+public class PointingBlock extends PointingElement implements PointingBlockInterface{
+	public static String STARTTIME_TAG="startTime";
+	public static String ENDTIME_TAG="endTime";
 	
+
+	public static String TYPE_MWAC="MWAC";	
 		/**
 		 * PointingBlock type for performing a dV manoeuvre
 		 */
@@ -70,6 +73,16 @@ public class PointingBlock extends PointingElement{
 		public PointingBlock(PointingElement org){
 			super(org);
 		}
+		public PointingBlock copy(){
+			return new PointingBlock(super.copy());
+		}
+		public static PointingBlock toPointingBlock(PointingBlockInterface pb){
+			//PointingBlock result = new PointingBlock();
+			PointingBlock result = new PointingBlock(pb.getType(),pb.getStartTime(),pb.getEndTime());
+			result.setAttitude(pb.getAttitude());
+			result.setMetadata(pb.getMetadataElement());
+			return result;
+		}
 		public CompositeDataset asDataset(){
 			return this;
 			
@@ -87,8 +100,8 @@ public class PointingBlock extends PointingElement{
 			super(BLOCK_TAG,"");
 			
 			this.addAttribute(new PointingElement("ref",blockType));
-			this.addChild(new PointingElement("startTime",dateToZulu(startDate)));
-			this.addChild(new PointingElement("endTime",dateToZulu(endDate)));
+			this.addChild(new PointingElement(STARTTIME_TAG,dateToZulu(startDate)));
+			this.addChild(new PointingElement(ENDTIME_TAG,dateToZulu(endDate)));
 			this.addChild(new PointingMetadata());
 			
 		}
@@ -109,7 +122,7 @@ public class PointingBlock extends PointingElement{
 		 */
 		public java.util.Date getStartTime(){
 			try {
-				return zuluToDate(this.getChild("startTime").getValue());
+				return zuluToDate(this.getChild(STARTTIME_TAG).getValue());
 			} catch (ParseException e) {
 				//e.printStackTrace();
 				IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
@@ -123,7 +136,7 @@ public class PointingBlock extends PointingElement{
 		 */		
 		public java.util.Date getEndTime(){
 			try {
-				return zuluToDate(this.getChild("endTime").getValue());
+				return zuluToDate(this.getChild(ENDTIME_TAG).getValue());
 			} catch (ParseException e) {
 				IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 				iae.initCause(e);
@@ -136,7 +149,7 @@ public class PointingBlock extends PointingElement{
 		 * @param time
 		 */
 		public void setStartTime(java.util.Date time){
-			this.getChild("startTime").setValue(dateToZulu(time));
+			this.getChild(STARTTIME_TAG).setValue(dateToZulu(time));
 		}
 		/**
 		 * Set end date of the time interval during which the pointing block is valid
@@ -144,7 +157,7 @@ public class PointingBlock extends PointingElement{
 		 */		
 		public void setEndTime(java.util.Date time){
 			//System.out.println(getChild("endTime"));
-			this.getChild("endTime").setValue(dateToZulu(time));
+			this.getChild(ENDTIME_TAG).setValue(dateToZulu(time));
 			//System.out.println(getChild("endTime"));
 			
 		}
@@ -168,7 +181,13 @@ public class PointingBlock extends PointingElement{
 		 * Get the attitude of this block
 		 */
 		public PointingAttitude getAttitude(){
-			return (PointingAttitude) this.getChild("attitude");
+			try{
+				return (PointingAttitude) this.getChild("attitude");
+			}catch (Exception e){
+				IllegalArgumentException iae = new IllegalArgumentException("Attitude was not read properly:"+this.getChild("attitude").toXml(0)+e.getMessage());
+				iae.initCause(e);
+				throw(iae);
+			}
 		}
 		
 		/**
@@ -225,6 +244,10 @@ public class PointingBlock extends PointingElement{
 		 */
 		public void addMetadata(PointingMetadata newMetadata){
 			this.getChild("metadata").addChild(newMetadata);
+		}
+		
+		public void setMetadata(PointingMetadata meta){
+			this.addChild(meta);
 		}
 		
 		
@@ -360,13 +383,21 @@ public class PointingBlock extends PointingElement{
 			}
 			return result;
 		}
+		public boolean isMaintenance(){
+			boolean result=false;
+			if (getType().equals(TYPE_MNAV) || getType().equals(TYPE_MOCM) || getType().equals(TYPE_MSLW) || getType().equals(TYPE_MWAC) || getType().equals(TYPE_MWNV) || getType().equals(TYPE_MWOL)){
+				result=true;
+			}
+			return result;
+			
+		}
 		
 		public boolean validate(){
 			//System.out.println("validating pointing block");
 			boolean result = true;
 			try {
-				zuluToDate(this.getChild("startTime").getValue());
-				zuluToDate(this.getChild("endTime").getValue());
+				zuluToDate(this.getChild(STARTTIME_TAG).getValue());
+				zuluToDate(this.getChild(ENDTIME_TAG).getValue());
 			} catch (ParseException e) {
 				System.out.println("detected problem");
 				e.printStackTrace();

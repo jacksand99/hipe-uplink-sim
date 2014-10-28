@@ -284,7 +284,7 @@ public class SsmmSimulator {
 
 		}
 	}
-	public void addSequence(Sequence seq){
+	public void addSequence(SequenceInterface seq){
 		//Do nothing. To be implemented by inheriting classes
 	}
 		

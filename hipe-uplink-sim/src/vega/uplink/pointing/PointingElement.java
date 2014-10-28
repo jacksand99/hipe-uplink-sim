@@ -90,22 +90,23 @@ public class PointingElement extends CompositeDataset  {
 	 * @param org
 	 */
 	public void copyFrom(PointingElement org){
-		this.setValue(org.getValue());
+		this.setValue(new String(org.getValue()));
 		PointingElement[] ch = org.getChildren();
 		for (int i=0;i<ch.length;i++){
-			addChild(ch[i]);
+			addChild(ch[i].copy());
 		}
 		PointingElement[] att = org.getAttributes();
 		for (int i=0;i<att.length;i++){
-			addAttribute(att[i]);
+			addAttribute(att[i].copy());
 		}
 		
 	}
 
 	@Override
 	public PointingElement copy() {
-		PointingElement result = new PointingElement();
-		result.setValue(getValue());
+		PointingElement result = new PointingElement(this.getName(),this.getValue());
+		
+		//result.setValue(getValue());
 		PointingElement[] ch = getChildren();
 		for (int i=0;i<ch.length;i++){
 			result.addChild(ch[i]);
@@ -183,6 +184,7 @@ public class PointingElement extends CompositeDataset  {
 	 * @param child
 	 */
 	public void addChild(PointingElement child){
+		
 		set(child.getName(),child);
 	}
 	
@@ -337,6 +339,7 @@ public class PointingElement extends CompositeDataset  {
 	}
 	public boolean equals(PointingElement other){
 		boolean result=true;
+		if (other==null) return false;
 		if (!this.getName().equals(other.getName())){
 			System.out.println("Name of two metadata different");
 

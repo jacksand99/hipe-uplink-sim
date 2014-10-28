@@ -44,13 +44,15 @@ public class ParameterFloat extends Parameter{
 	}*/
 	
 	public String getStringValue(){
+		float value = getValue();
+		if (value==0) return "0";
 		String result="";
 		if (getRadix().equals(RADIX_DECIMAL)){
-			result=new BigDecimal(getValue()).toPlainString();
+			result=new BigDecimal(value).toPlainString();
 			//result= new Float(getValue()).toString();
 		}
 		if (getRadix().equals(RADIX_HEX)){
-			result= "0x"+Integer.toHexString(new Float(getValue()).intValue());
+			result= "0x"+Integer.toHexString(new Float(value).intValue());
 		}
 		if (result.endsWith(".0")) result=result.substring(0, result.length()-3);
 		return result;

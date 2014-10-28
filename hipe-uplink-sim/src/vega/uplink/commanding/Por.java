@@ -8,6 +8,8 @@ import herschel.share.fltdyn.time.FineTime;
 //import herschel.share.predicate.Predicate;
 
 
+import herschel.share.interpreter.InterpreterUtil;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
@@ -27,9 +29,9 @@ import vega.uplink.Properties;
 
 
 	
-public class Por extends MapContext {
+public class Por extends MapContext implements SequenceTimelineInterface{
 	static private String AUTHOR="Rosetta Testing Team";
-	TreeMap<String,Sequence> sequenceMap;
+	TreeMap<String,AbstractSequence> sequenceMap;
 	
 	public Por (){
 		super();
@@ -38,7 +40,7 @@ public class Por extends MapContext {
 		setPath(Properties.getProperty("user.home"));
 		this.setType("POR");
 		this.setCreationDate(new FineTime(new java.util.Date()));
-		sequenceMap=new TreeMap<String,Sequence>();
+		sequenceMap=new TreeMap<String,AbstractSequence>();
 	}
 	
 	public void setName(String name){
@@ -54,15 +56,24 @@ public class Por extends MapContext {
 	public String getPath(){
 		return (String) getMeta().get("path").getValue();
 	}
-	
-	public void addSequence(Sequence sequence){
+	public void addSequence(SequenceInterface sequence){
+		if (InterpreterUtil.isInstance(AbstractSequence.class, sequence)){
+			setProduct(sequence.getUniqueID(),(AbstractSequence)sequence);
+			sequenceMap.put(sequence.getUniqueID(), (AbstractSequence)sequence);
+			calculateValidity();
+		}else{
+			addSequence(new Sequence(sequence));
+		}
+	}
+
+	/*public void addSequence(AbstractSequence sequence){
 		setProduct(sequence.getUniqueID(),sequence);
 		sequenceMap.put(sequence.getUniqueID(), sequence);
 		calculateValidity();
-	}
+	}*/
 	
 	protected void calculateValidity(){
-		Sequence[] seqs=getSequences();
+		AbstractSequence[] seqs=getSequences();
 		int size=seqs.length;
 		java.util.Date lower=null;
 		java.util.Date higher=null;
@@ -80,10 +91,10 @@ public class Por extends MapContext {
 
 	}
 	
-	public Sequence[] getSequencesForDate(java.util.Date date){
-		Vector<Sequence> vector= new Vector<Sequence>();
+	public AbstractSequence[] getSequencesForDate(java.util.Date date){
+		Vector<AbstractSequence> vector= new Vector<AbstractSequence>();
 		
-		Sequence[] seqs=getSequences();
+		AbstractSequence[] seqs=getSequences();
 		for (int i=0;i<seqs.length;i++){
 			if (seqs[i].getExecutionDate().equals(date)) vector.add(seqs[i]);
 		}
@@ -132,21 +143,21 @@ public class Por extends MapContext {
 		return result;
 	}
 	
-	public void setSequences(Sequence[] porSequences){
+	public void setSequences(SequenceInterface[] porSequences){
 		for (int i=0;i<porSequences.length;i++){
 			addSequence(porSequences[i]);
 		}
 		calculateValidity();
 	}
 	
-	public Sequence[] getSequences(){
+	public AbstractSequence[] getSequences(){
 		int size=sequenceMap.size();
 		Sequence[] result=new  Sequence[size];
 		sequenceMap.values().toArray(result);
 		return result;
 	}
 	protected Document getXMLDocument() throws ParserConfigurationException{
-		Sequence[] seqs=getOrderedSequences();
+		AbstractSequence[] seqs=getOrderedSequences();
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
  
@@ -179,7 +190,7 @@ public class Por extends MapContext {
 		eleOcurrenceList.setAttribute("author", getCreator());
 		int size=seqs.length;
 		for (int i=0;i<size;i++){
-			eleOcurrenceList.appendChild(seqs[i].getXMLElement(doc));
+			eleOcurrenceList.appendChild(((Sequence) seqs[i]).getXMLElement(doc));
 		}
 		eleCommandRequest.appendChild(eleOcurrenceList);
 		rootElement.appendChild(eleCommandRequest);
@@ -191,7 +202,7 @@ public class Por extends MapContext {
 
 	
 	public String toXml(){
-		Sequence[] seqs=getOrderedSequences();
+		AbstractSequence[] seqs=getOrderedSequences();
 		String l01="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 		String l02="<planningData xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n              xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\n              xsi:noNamespaceSchemaLocation=\"rosPlanningData.xsd\">\n";
 		String l03="\t<commandRequests>\n";
@@ -215,11 +226,11 @@ public class Por extends MapContext {
 		
 	}
 	
-	public Sequence[] getOrderedSequences(){
+	public AbstractSequence[] getOrderedSequences(){
 		
-		Sequence[] arraySeq=getSequences();
+		AbstractSequence[] arraySeq=getSequences();
 		if (arraySeq==null) return new Sequence[0];
-		java.util.Vector<Sequence> result =new java.util.Vector<Sequence>();
+		java.util.Vector<AbstractSequence> result =new java.util.Vector<AbstractSequence>();
 		long[] times;
 		java.util.Set<Long> set = new HashSet<Long>();
 		Long newTime;
@@ -236,7 +247,7 @@ public class Por extends MapContext {
 		}
 		Arrays.sort(times);
 		for (int i=0;i<times.length;i++){
-			Sequence[] seqDate = this.getSequencesForDate(new java.util.Date(times[i]));
+			AbstractSequence[] seqDate = this.getSequencesForDate(new java.util.Date(times[i]));
 			for (int j=0;j<seqDate.length;j++) result.add(seqDate[j]);
 		}
 		Sequence[] ret=new Sequence[result.size()];
@@ -244,8 +255,8 @@ public class Por extends MapContext {
 		return ret;
 	}
 	
-	protected Sequence[] insertInOrder(Sequence[] arr,Sequence newSeq){
-		Sequence[] result=new Sequence[0];
+	protected AbstractSequence[] insertInOrder(AbstractSequence[] arr,AbstractSequence newSeq){
+		AbstractSequence[] result=new AbstractSequence[0];
 		if (arr.length==0) return insertSequenceAt(arr,newSeq,0);
 		if (newSeq.getExecutionDate().after(arr[arr.length-1].getExecutionDate())){
 			result=this.insertSequenceAt(arr, newSeq, arr.length);
@@ -264,9 +275,9 @@ public class Por extends MapContext {
 		return result;
 	}
 	
-	protected Sequence[] insertSequenceAt(Sequence[] arr,Sequence newSeq, int index){
+	protected AbstractSequence[] insertSequenceAt(AbstractSequence[] arr,AbstractSequence newSeq, int index){
 		int size=arr.length;
-		Sequence[] result = new Sequence[size+1];
+		AbstractSequence[] result = new AbstractSequence[size+1];
 		for (int i=0;i<index;i++){
 			result[i]=arr[i];
 		}
@@ -277,9 +288,9 @@ public class Por extends MapContext {
 		return result;
 	}
 	
-	public Sequence getSequenceBefore(java.util.Date date){
-		Sequence[] tempSeqs=this.getOrderedSequences();
-		Sequence result=null;
+	public AbstractSequence getSequenceBefore(java.util.Date date){
+		AbstractSequence[] tempSeqs=this.getOrderedSequences();
+		AbstractSequence result=null;
 		for (int i=0;i<tempSeqs.length;i++){
 			if (tempSeqs[i].getExecutionDate().before(date) || tempSeqs[i].equals(date)){
 				result=tempSeqs[i];
@@ -292,7 +303,7 @@ public class Por extends MapContext {
 	public Por getPORforInstrument(String instrument){
 		Por result= new Por();
 		result.setValidityDates(this.getValidityDates());
-		Sequence[] seq=this.getOrderedSequences();
+		AbstractSequence[] seq=this.getOrderedSequences();
 		for (int i=0;i<seq.length;i++){
 			if (seq[i].getInstrument().equals(instrument)){
 				result.addSequence(seq[i]);

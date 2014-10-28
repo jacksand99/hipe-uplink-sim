@@ -9,8 +9,8 @@ package vega.uplink.pointing;
  *
  */
 public class PointingBlockSlew extends PointingBlock {
-	private PointingBlock blockBefore;
-	private PointingBlock blockAfter;
+	private PointingBlockInterface blockBefore;
+	private PointingBlockInterface blockAfter;
 	
 	public PointingBlockSlew(){
 		super("SLEW",new java.util.Date(),new java.util.Date());
@@ -20,7 +20,7 @@ public class PointingBlockSlew extends PointingBlock {
 	 * Set the pointing block before the slew
 	 * @param before
 	 */
-	public void setBlockBefore(PointingBlock before){
+	public void setBlockBefore(PointingBlockInterface before){
 		if (before!=null) if (before.getType().equals("SLEW")) throw new IllegalArgumentException("Trying to put two consecutive slews");
 		blockBefore=before;
 	}
@@ -28,7 +28,7 @@ public class PointingBlockSlew extends PointingBlock {
 	 * Set the pointing block after the slew
 	 * @param before
 	 */
-	public void setBlockAfter(PointingBlock after){
+	public void setBlockAfter(PointingBlockInterface after){
 		if (after!=null) if (after.getType().equals("SLEW")) throw new IllegalArgumentException("Trying to put to consecutive slews");
 		blockAfter=after;
 	}
@@ -36,13 +36,13 @@ public class PointingBlockSlew extends PointingBlock {
 	/**
 	 * @return The pointing block before the slew or null if it has not been set yet
 	 */
-	public PointingBlock getBlockBefore(){
+	public PointingBlockInterface getBlockBefore(){
 		return blockBefore;
 	}
 	/**
 	 * @return The pointing block after the slew or null if it has not been set yet
 	 */
-	public PointingBlock getBlockAfter(){
+	public PointingBlockInterface getBlockAfter(){
 		return blockAfter;
 	}
 	

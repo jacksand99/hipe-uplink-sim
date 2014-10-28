@@ -1,6 +1,7 @@
 package vega.uplink.pointing.gui;
 
 import herschel.ia.gui.kernel.VariableSelection;
+import herschel.ia.gui.kernel.parts.AbstractFileCommandComponent;
 import herschel.ia.gui.kernel.parts.AbstractFileEditorComponent;
 import herschel.ia.gui.kernel.parts.EditorComponent;
 import herschel.ia.gui.kernel.parts.ProxyEditorComponent;
@@ -19,7 +20,8 @@ import vega.uplink.pointing.PtrUtils;
  * This is a class that provides means for opening an editor (view) for a
  * product stored in a PTR file.
  */
-public class PdfmFileComponent extends AbstractFileEditorComponent implements ProxyEditorComponent<VariableSelection>{
+public class PdfmFileComponent extends AbstractFileCommandComponent{
+//extends AbstractFileEditorComponent implements ProxyEditorComponent<VariableSelection>{
 
     //private static final String IMAGE = "image";
     private static final long serialVersionUID = 1L;
@@ -35,10 +37,19 @@ public class PdfmFileComponent extends AbstractFileEditorComponent implements Pr
         return ICON;
     }
 
-    @Override
+    /*@Override
     public VariableSelection getTargetSelection() throws IOException {
         File file = getFile();
-        Pdfm pdfm = PtrUtils.readPdfmfromFile(file.getAbsolutePath());
+        Pdfm pdfm;
+		try {
+			pdfm = PtrUtils.readPdfmfromFile(file.getAbsolutePath());
+		} catch (Exception e) {
+			IOException ioe = new IOException(e.getMessage());
+			ioe.initCause(e);
+			throw(ioe);
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
         String variableName = file.getName().toLowerCase();
         variableName = variableName.replaceAll("[.]ROS$", "");
         variableName = variableName.replaceAll("[.]xml$", "");
@@ -53,7 +64,10 @@ public class PdfmFileComponent extends AbstractFileEditorComponent implements Pr
     }
 
     @Override
-    public void setTargetEditor(EditorComponent editor) {}
+    public void setTargetEditor(EditorComponent editor) {}*/
+	public String getCommandStatement() {
+        return PtrUtils.class.getSimpleName()+".readPdfmfromFile(\""+getFile().getAbsolutePath()+"\")";
+	}
 }
 
 

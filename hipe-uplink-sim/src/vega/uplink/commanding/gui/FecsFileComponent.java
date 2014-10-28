@@ -1,6 +1,7 @@
 package vega.uplink.commanding.gui;
 
 import herschel.ia.gui.kernel.VariableSelection;
+import herschel.ia.gui.kernel.parts.AbstractFileCommandComponent;
 import herschel.ia.gui.kernel.parts.AbstractFileEditorComponent;
 import herschel.ia.gui.kernel.parts.EditorComponent;
 import herschel.ia.gui.kernel.parts.ProxyEditorComponent;
@@ -19,7 +20,8 @@ import vega.uplink.commanding.PorUtils;
  * This is a class that provides means for opening an editor (view) for a
  * product stored in a POR file.
  */
-public class FecsFileComponent extends AbstractFileEditorComponent implements ProxyEditorComponent<VariableSelection>{
+public class FecsFileComponent extends AbstractFileCommandComponent{
+//extends AbstractFileEditorComponent implements ProxyEditorComponent<VariableSelection>{
 
     //private static final String IMAGE = "image";
     private static final long serialVersionUID = 1L;
@@ -35,7 +37,7 @@ public class FecsFileComponent extends AbstractFileEditorComponent implements Pr
         return ICON;
     }
 
-    @Override
+    /*@Override
     public VariableSelection getTargetSelection() throws IOException {
         File file = getFile();
         Fecs fecs;
@@ -63,6 +65,9 @@ public class FecsFileComponent extends AbstractFileEditorComponent implements Pr
     }
 
     @Override
-    public void setTargetEditor(EditorComponent editor) {}
+    public void setTargetEditor(EditorComponent editor) {}*/
+	public String getCommandStatement() {
+        return PorUtils.class.getSimpleName()+".readFecsFromFile(\""+getFile().getAbsolutePath()+"\")";
+	}
 }
 

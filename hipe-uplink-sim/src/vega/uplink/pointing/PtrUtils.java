@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 
 import java.text.ParseException;
 import java.util.NoSuchElementException;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -30,6 +31,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import vega.uplink.planning.gui.ScheduleModel;
 import vega.uplink.pointing.EvtmEvents.EvtmEventAnt;
 import vega.uplink.pointing.EvtmEvents.EvtmEventAos;
 import vega.uplink.pointing.EvtmEvents.EvtmEventBdi;
@@ -43,6 +45,7 @@ import vega.uplink.pointing.attitudes.*;
 
 
 public class PtrUtils {
+	private static final Logger LOG = Logger.getLogger(PtrUtils.class.getName());
 
 	private static PointingElement recursiveTranslation(PointingElement item){
 		if (!item.hasChildren()) return translateChild(item);
@@ -57,6 +60,8 @@ public class PtrUtils {
 		return item;
 	}
 	private static PointingElement translateChild(PointingElement item){
+		if (item.getName().equals(PointingBlock.STARTTIME_TAG) || item.getName().equals(PointingBlock.ENDTIME_TAG)) return new PrmTime(item);
+
 		//if (item.getName().equals(PointingMetadata.))
 		if (item.getName().equals(PointingBlock.BLOCK_TAG)) return new PointingBlock(item);
 		if (item.getName().equals(PointingAttitude.ATTITUDE_TAG)){
@@ -135,7 +140,7 @@ public class PtrUtils {
 		NodeList nlSegments=elBody.getElementsByTagName(PtrSegment.SEGMENT_TAG);
 		for (int i=0;i<nlSegments.getLength();i++){
 			Node nSegment=nlSegments.item(i);
-			String pName=((Element) nSegment).getAttribute(PtrSegment.NAME_TAG).trim();
+			/*String pName=((Element) nSegment).getAttribute(PtrSegment.NAME_TAG).trim();
 			PtrSegment segment=new PtrSegment(pName);
 			Node nMetadata=((Element) nSegment).getElementsByTagName(PtrSegment.METADATA_TAG).item(0);
 			NodeList nlIncludes=((Element) nMetadata).getElementsByTagName(PtrSegment.INCLUDE_TAG);
@@ -159,7 +164,8 @@ public class PtrUtils {
 				}
 				if (block.getType().equals(PointingBlock.TYPE_SLEW)) block=new PointingBlockSlew();
 				segment.addBlock(block);
-			}
+			}*/
+			PtrSegment segment = getPtrSegmentFromNode(nSegment);
 			result.addSegment(segment);
 		}
 		
@@ -170,6 +176,46 @@ public class PtrUtils {
 	
 	return result; //to be remove
 
+	}
+	public static PtrSegment getPtrSegmentFromDoc(Document doc){
+		  try{
+				doc.getDocumentElement().normalize();
+				 
+				NodeList nListHeader = doc.getElementsByTagName(PtrSegment.SEGMENT_TAG);
+				Node nBody =nListHeader.item(0);
+				return getPtrSegmentFromNode(nBody);
+		  }catch (Exception e) {
+		    	e.printStackTrace();
+		    	throw(e);
+		   }
+	}
+	public static PtrSegment getPtrSegmentFromNode(Node nSegment){
+		String pName=((Element) nSegment).getAttribute(PtrSegment.NAME_TAG).trim();
+		PtrSegment segment=new PtrSegment(pName);
+		Node nMetadata=((Element) nSegment).getElementsByTagName(PtrSegment.METADATA_TAG).item(0);
+		NodeList nlIncludes=((Element) nMetadata).getElementsByTagName(PtrSegment.INCLUDE_TAG);
+		for (int j=0;j<nlIncludes.getLength();j++){
+			segment.addInclude(((Element)nlIncludes.item(j)).getAttribute(PtrSegment.HREF_TAG));
+		}
+		Node nData=((Element) nSegment).getElementsByTagName(PtrSegment.DATA_TAG).item(0);
+		Node nTimeline=((Element) nData).getElementsByTagName(PtrSegment.TIMELINE_TAG).item(0);
+		String tlframe=((Element) nTimeline).getAttribute(PtrSegment.FRAME_TAG);
+		segment.setTimeLineFrame(tlframe);
+		NodeList nlBlocks=((Element) nTimeline).getElementsByTagName(PointingBlock.BLOCK_TAG);
+		for (int j=0;j<nlBlocks.getLength();j++){
+			//String type=
+			PointingBlock block=PointingBlock.readFrom(nlBlocks.item(j));
+			if (block.hasChildren()){
+				PointingElement[] children=block.getChildren();
+				for (int h=0;h<children.length;h++){
+					 children[h]=recursiveTranslation(children[h]);
+					 block.addChild(children[h]);
+				}
+			}
+			if (block.getType().equals(PointingBlock.TYPE_SLEW)) block=new PointingBlockSlew();
+			segment.addBlock(block);
+		}
+		return segment;
 	}
 	public static Ptr readPTRfromFile(String file) throws Exception{
 
@@ -352,14 +398,68 @@ public class PtrUtils {
 		return result;
 	}
 	
-	public static Pdfm readPdfmfromFile(String file){
-
+	public static Pdfm readPdfmfromNode(Node nBody) throws Exception{
 		Pdfm result = new Pdfm();
-		try {
+		Element elBody = (Element) nBody;
+		NodeList nlSegments=elBody.getElementsByTagName("dirVector");
+		for (int i=0;i<nlSegments.getLength();i++){
+			Node nSegment=nlSegments.item(i);
+			String pName=((Element) nSegment).getAttribute("name");
+			PdfmDirVector bore=PdfmDirVector.readFrom(nSegment);
+			result.addDefinition(bore);
+		}
+		NodeList nlSurface=elBody.getElementsByTagName("surface");
+		for (int i=0;i<nlSurface.getLength();i++){
+			Node nSegment=nlSurface.item(i);
+			String pName=((Element) nSegment).getAttribute("name");
+			PdfmSurface bore=PdfmSurface.readFrom(nSegment);
+			result.addDefinition(bore);
+		}
+		return result;
+	}
+	public static Pdfm readPdfmfromDoc(Document doc) throws Exception{
+		Pdfm result;
+		//Pdfm result = new Pdfm();
+		//try {
+			 
+
+		 
+			//optional, but recommended
+			//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+			doc.getDocumentElement().normalize();
+		 
+			//System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+			NodeList nListHeader = doc.getElementsByTagName("definition");
+			Node nBody =nListHeader.item(0);
+			result=readPdfmfromNode(nBody);
+			/*Element elBody = (Element) nBody;
+			NodeList nlSegments=elBody.getElementsByTagName("dirVector");
+			for (int i=0;i<nlSegments.getLength();i++){
+				Node nSegment=nlSegments.item(i);
+				String pName=((Element) nSegment).getAttribute("name");
+				PdfmDirVector bore=PdfmDirVector.readFrom(nSegment);
+				result.addDefinition(bore);
+			}
+			NodeList nlSurface=elBody.getElementsByTagName("surface");
+			for (int i=0;i<nlSurface.getLength();i++){
+				Node nSegment=nlSurface.item(i);
+				String pName=((Element) nSegment).getAttribute("name");
+				PdfmSurface bore=PdfmSurface.readFrom(nSegment);
+				result.addDefinition(bore);
+			}*/
+
+			
+		    /*} catch (Exception e) {
+		    	e.printStackTrace();
+		    }*/
+		return result;
+	}
+	public static Pdfm readPdfmfromFile(String file) throws Exception{
+		Pdfm result;
+		//Pdfm result = new Pdfm();
+		//try {
 			 
 			File fXmlFile = new File(file);
-			result.setName(fXmlFile.getName());
-			result.setPath(fXmlFile.getParent());
 
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -368,9 +468,11 @@ public class PtrUtils {
 			//optional, but recommended
 			//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
 			doc.getDocumentElement().normalize();
-		 
-			//System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-			NodeList nListHeader = doc.getElementsByTagName("definition");
+			result=readPdfmfromDoc(doc);
+			result.setName(fXmlFile.getName());
+			result.setPath(fXmlFile.getParent());
+
+			/*NodeList nListHeader = doc.getElementsByTagName("definition");
 			Node nBody =nListHeader.item(0);
 			Element elBody = (Element) nBody;
 			NodeList nlSegments=elBody.getElementsByTagName("dirVector");
@@ -386,14 +488,14 @@ public class PtrUtils {
 				String pName=((Element) nSegment).getAttribute("name");
 				PdfmSurface bore=PdfmSurface.readFrom(nSegment);
 				result.addDefinition(bore);
-			}
+			}*/
 
 			
-		    } catch (Exception e) {
+		    /*} catch (Exception e) {
 		    	e.printStackTrace();
-		    }
+		    }*/
 		
-		return result; //to be remove
+		return result; 
 	}
 	
 	public static void mergePtrs(Ptr master, Ptr ptr, Ptr target){
@@ -463,35 +565,95 @@ public class PtrUtils {
 			}
 	}
 	
-	public static Ptr rebasePtrPtsl(Ptr ptr,Ptr ptsl){
-		String result="";
+	/*public static Ptr rebasePtrPtsl(Ptr ptr,Ptr ptsl){
 		PtrSegment ptrSegment = ptr.getSegments()[0];
 		PtrSegment ptslSegment = ptsl.getSegment(ptrSegment.getName());
-		if (ptslSegment==null) throw(new IllegalArgumentException("There is no "+ptrSegment.getName()+" segment in the ptsl"));
+		//PointingBlocksSlice ptslObs = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_OBS).copy();
+		PointingBlocksSlice obs = ptrSegment.getAllBlocksOfType(PointingBlock.TYPE_OBS);
+		PointingBlocksSlice ptslObs = new PointingBlocksSlice();
+		ptslObs.setSlice(obs);
+		PointingBlocksSlice manv = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MNAV).copy();
+		PointingBlocksSlice mocm = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MOCM).copy();
+		PointingBlocksSlice mslw = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MSLW).copy();
+		PointingBlocksSlice mwnv = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MWNV).copy();
+		PointingBlocksSlice mwol = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MWOL).copy();
+		PointingBlocksSlice mwac = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MWAC).copy();
+		PointingBlocksSlice maintenance=new PointingBlocksSlice();
+		maintenance.setSlice(manv);
+		maintenance.setSlice(mocm);
+		maintenance.setSlice(mslw);
+		maintenance.setSlice(mwnv);
+		maintenance.setSlice(mwol);
+		maintenance.setSlice(mwac);
+		ptslObs.setSlice(maintenance);
+		PtrSegment newSegment = new PtrSegment(ptrSegment.getName());
+		newSegment.setSlice(ptslObs);
+		newSegment.repairMocm();
+		newSegment.repairSlews();
+		newSegment.repairConsecutiveBlocks();
+		repairGaps(newSegment);
 
-		PointingBlock[] ptslBlocks = ptslSegment.getBlocks();
-		for (int i=0;i<ptslBlocks.length;i++){
-			PointingBlock ptslBlock = ptslBlocks[i];
-			if (!ptslBlock.getType().equals(PointingBlock.TYPE_OBS) && !ptslBlock.getType().equals(PointingBlock.TYPE_SLEW)){
-				PointingBlock ptrBlock = ptrSegment.getBlockAt(ptslBlock.getStartTime());
-				if (ptrBlock==null){
-					
-					result=result+"Block not found in PTR:\n";
-					result=result+ptslBlock.toXml(1)+"\n";
-					throw (new NoSuchElementException(result));
-				}else{
-					if (!ptslBlock.equals(ptrBlock)){
-						ptrSegment.removeBlock(ptrBlock);
-						PointingBlock[] eqPtslBlocks = ptslSegment.getBlocksAt(ptrBlock.getStartTime(), ptrBlock.getEndTime()).getBlocks();
-						for (int j=0;j<eqPtslBlocks.length;j++){
-							ptrSegment.addBlock(eqPtslBlocks[j]);
-						}
-						//ptrSegment.addBlock(ptslBlock);
-					}
-				}
-			}
+		ptr.remove(ptrSegment.getName());
+		
+		ptr.addSegment(newSegment);
+
+		return ptr;
+		//ptslObs.setSlice(obs);
+		
+	}*/
+	
+	public static Ptr rebasePtrPtsl(Ptr ptr,Ptr ptsl){
+		LOG.info("Starting rebase PTR");
+		//Thread.dumpStack();
+		PtrSegment ptrSegment = ptr.getSegments()[0];
+		PtrSegment ptslSegment = ptsl.getSegment(ptrSegment.getName());
+		PointingBlocksSlice maintenance = ptslSegment.getAllMaintenanceBlocks().copy();
+		/*PointingBlocksSlice manv = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MNAV).copy();
+		PointingBlocksSlice mocm = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MOCM).copy();
+		PointingBlocksSlice mslw = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MSLW).copy();
+		PointingBlocksSlice mwnv = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MWNV).copy();
+		PointingBlocksSlice mwol = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MWOL).copy();
+		PointingBlocksSlice mwac = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MWAC).copy();*/
+		PointingBlocksSlice ptslObs = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_OBS).copy();
+		
+		PointingBlocksSlice obs = ptrSegment.getAllBlocksOfType(PointingBlock.TYPE_OBS);
+		
+		
+		PointingBlocksSlice merged=new PointingBlocksSlice();
+		
+		merged.setSlice(ptslObs);
+		PointingBlock[] allObsBlocks = obs.getBlocks();
+		for (int i=0;i<allObsBlocks.length;i++){
+			PointingBlock o = allObsBlocks[i];
+			PointingBlock ptslBlockAtStart = ptslSegment.getBlockAt(o.getStartTime());
+			PointingBlock ptslBlockAtEnd = ptslSegment.getBlockAt(o.getEndTime());
+
+			if (ptslBlockAtStart!=null && ptslBlockAtStart.isMaintenance()) o.setStartTime(ptslBlockAtStart.getEndTime());
+			if (ptslBlockAtEnd!=null && ptslBlockAtEnd.isMaintenance()) o.setEndTime(ptslBlockAtEnd.getStartTime());
+			
 		}
-		repairGaps(ptrSegment);
+		merged.setSlice(obs);
+		merged.setSlice(maintenance);
+		/*merged.setSlice(manv);
+		merged.setSlice(mocm);
+		merged.setSlice(mslw);
+		merged.setSlice(mwnv);
+		merged.setSlice(mwol);
+		merged.setSlice(mwac);*/
+		
+		
+		PtrSegment newSegment = new PtrSegment(ptrSegment.getName());
+
+		newSegment.setSlice(merged);
+		newSegment.repairMocm();
+		newSegment.repairSlews();
+		newSegment.repairConsecutiveBlocks();
+		repairGaps(newSegment);
+
+		ptr.remove(ptrSegment.getName());
+		
+		ptr.addSegment(newSegment);
+		LOG.info("stop rebase PTR");
 		return ptr;
 	
 	}

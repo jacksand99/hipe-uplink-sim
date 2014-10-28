@@ -33,33 +33,47 @@ import org.w3c.dom.Element;
 
 import vega.uplink.Properties;
 
-public class Sequence extends Product {
+//public class Sequence extends Product {
+public class Sequence extends AbstractSequence {
 	public static String INSERT_FLAG = "Insert";
 	public static String DELETE_FLAG = "Delete";
+	public static String UNIQUEID_FIELD="uniqueID";
+	public static String FLAG_FLIED="flag";
+	public static String DESTINATION_FIELD="destination";
+	public static String EXECUTIONTIME_FIELD="executiontime";
+	public static String SOURCE_FIELD="source";
+	public static String NAME_FIELD="name";
+	public static String PARAMETERS_FIELD="parameters";
+	public static String PROFILES_FIELD="profiles";
+	
+	
 	//Parameter[] parameters;
 	
 	//TableDataset profilesTable;
+	public Sequence(SequenceInterface seq){
+		this(seq.getName(),seq.getUniqueID(),seq.getFlag(),seq.getSource(),seq.getDestination(),seq.getExecutionDate(),seq.getParameters(),seq.getProfiles());
+	}
 	
 	public Sequence (String sequenceName,String sequenceID,String sequenceFlag,char sequenceSource,char sequenceDestination,java.util.Date sequenceExecutionTime,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles){
 		super();
-		getMeta().set("name", new StringParameter(sequenceName));
-		getMeta().set("uniqueID", new StringParameter(sequenceID));
-		getMeta().set("executiontime",new DateParameter(new FineTime(sequenceExecutionTime)));
-		getMeta().set("source", new StringParameter(""+sequenceSource));
-		getMeta().set("destination", new StringParameter(""+sequenceDestination));
-		getMeta().set("flag", new StringParameter(sequenceFlag));
+		getMeta().set(NAME_FIELD, new StringParameter(sequenceName));
+		getMeta().set(UNIQUEID_FIELD, new StringParameter(sequenceID));
+		getMeta().set(EXECUTIONTIME_FIELD,new DateParameter(new FineTime(sequenceExecutionTime)));
+		getMeta().set(SOURCE_FIELD, new StringParameter(""+sequenceSource));
+		getMeta().set(DESTINATION_FIELD, new StringParameter(""+sequenceDestination));
+		getMeta().set(FLAG_FLIED, new StringParameter(sequenceFlag));
 		setInstrument(getInstrumentName());
 
 		//parameters=sequenceParamaters;
 		if (sequenceParamaters!=null)setParameters(sequenceParamaters);
-		else set("parameters",new CompositeDataset());
+		else set(PARAMETERS_FIELD,new CompositeDataset());
 		TableDataset profilesTable=createProfilesTable();
 		if (sequenceProfiles!=null){
 			for (int i=0;i<sequenceProfiles.length;i++){
 				profilesTable.concatenate(sequenceProfiles[i]);
 			}
 		}
-		set("profiles",profilesTable);
+		set(PROFILES_FIELD,profilesTable);
 
 	}
 	
@@ -120,7 +134,7 @@ public class Sequence extends Product {
 	
 	public String getName(){
 		try{
-			return (String) getMeta().get("name").getValue();
+			return (String) getMeta().get(NAME_FIELD).getValue();
 		}catch (java.lang.NullPointerException nullEx){
 			nullEx.printStackTrace();
 			System.out.println(this.getClass());
@@ -135,26 +149,26 @@ public class Sequence extends Product {
 	}
 	
 	public String getUniqueID(){
-		return (String) getMeta().get("uniqueID").getValue();
+		return (String) getMeta().get(UNIQUEID_FIELD).getValue();
 
 	}
 	
 	public String getFlag(){
-		return (String) getMeta().get("flag").getValue();
+		return (String) getMeta().get(FLAG_FLIED).getValue();
 	}
 	
 	public char getSource(){
-		return ((String) getMeta().get("flag").getValue()).charAt(0);
+		return ((String) getMeta().get(FLAG_FLIED).getValue()).charAt(0);
 
 	}
 	
 	public char getDestination(){
-		return ((String) getMeta().get("destination").getValue()).charAt(0);
+		return ((String) getMeta().get(DESTINATION_FIELD).getValue()).charAt(0);
 
 	}
 	
 	public java.util.Date getExecutionDate(){
-		return ((FineTime) getMeta().get("executiontime").getValue()).toDate();
+		return ((FineTime) getMeta().get(EXECUTIONTIME_FIELD).getValue()).toDate();
 
 	}
 	
@@ -168,7 +182,7 @@ public class Sequence extends Product {
 		return dateToZulu(getExecutionDate());
 	}
 	public Parameter getParameter(String parameterName){
-		CompositeDataset parameters = (CompositeDataset) get("parameters");
+		CompositeDataset parameters = (CompositeDataset) get(PARAMETERS_FIELD);
 		return (Parameter)parameters.get(parameterName);
 		
 	}
@@ -176,7 +190,7 @@ public class Sequence extends Product {
 		((ParameterString) getParameter(paramName)).setValue(value);
 	}
 	public Parameter[] getParameters(){
-		CompositeDataset parameters = (CompositeDataset) get("parameters");
+		CompositeDataset parameters = (CompositeDataset) get(PARAMETERS_FIELD);
 		Parameter[] result=new Parameter[parameters.size()];
 		Iterator<String> it = parameters.keySet().iterator();
 		for (int i=0;i<result.length;i++){
@@ -194,7 +208,7 @@ public class Sequence extends Product {
 	}
 	
 	public SequenceProfile[] getProfiles(){
-		TableDataset profilesTable = (TableDataset) get("profiles");
+		TableDataset profilesTable = (TableDataset) get(PROFILES_FIELD);
 		if (profilesTable==null) return new SequenceProfile[0];
 		int size=profilesTable.getRowCount();
 		SequenceProfile[] result=new SequenceProfile[size];
@@ -205,32 +219,32 @@ public class Sequence extends Product {
 	}
 	
 	public void setName(String sequenceName){
-		getMeta().set("name", new StringParameter(sequenceName));
+		getMeta().set(NAME_FIELD, new StringParameter(sequenceName));
 		setInstrument(getInstrumentName());
 	}
 	
 	public void setUniqueID(String sequenceID){
-		getMeta().set("uniqueID", new StringParameter(sequenceID));
+		getMeta().set(UNIQUEID_FIELD, new StringParameter(sequenceID));
 
 	}
 	
 	public void setFlag (String sequenceFlag){
-		getMeta().set("flag", new StringParameter(sequenceFlag));
+		getMeta().set(FLAG_FLIED, new StringParameter(sequenceFlag));
 
 	}
 	
 	public void setSource(char sequenceSource){
-		getMeta().set("source", new StringParameter(""+sequenceSource));
+		getMeta().set(SOURCE_FIELD, new StringParameter(""+sequenceSource));
 
 	}
 	
 	public void setDestination(char sequenceDestination){
-		getMeta().set("destination", new StringParameter(""+sequenceDestination));
+		getMeta().set(DESTINATION_FIELD, new StringParameter(""+sequenceDestination));
 
 	}
 	
 	public void setExecutionDate(java.util.Date date){
-		getMeta().set("executiontime",new DateParameter(new FineTime(date)));
+		getMeta().set(EXECUTIONTIME_FIELD,new DateParameter(new FineTime(date)));
 
 	}
 	
@@ -239,107 +253,13 @@ public class Sequence extends Product {
 
 	}
 	
-	/*public Dataset get(String name){
-		if (name.equals("profiles")){
-			return profilesTable;
-		}else{
-			Parameter[] params=getParameters();
-			for (int i=0;i<params.length;i++){
-				if (params[i].getName().equals(name)) return params[i];
-			}
-			
-		}
-		
-		return null;
-	}*/
-	
-	/*public void set(String name, Dataset newDataset){
-		if (InterpreterUtil.isInstance(Parameter.class, newDataset)){
-			Parameter newParameter=(Parameter) newDataset;
-			Parameter[] params=getParameters();
-			for (int i=0;i<params.length;i++){
-				if (params[i].getName().equals(name)){
-					params[i]=newParameter;
-					return;
-				}
-			}
-			
-		}
-		if (name.equals("profiles")){
-			if (!InterpreterUtil.isInstance(TableDataset.class, newDataset)) return;
-			TableDataset newTableDataset=(TableDataset) newDataset;
-			if (newTableDataset.getColumnCount()!=3) return;
-			if (!InterpreterUtil.isInstance(String1d.class,newTableDataset.getColumn(0).getData())) return;
-			if (!InterpreterUtil.isInstance(String1d.class,newTableDataset.getColumn(1).getData())) return;
-			if (!InterpreterUtil.isInstance(Double1d.class,newTableDataset.getColumn(2).getData())) return;
-			profilesTable=newTableDataset;
-
-		}
-	}*/
-	/*public boolean containsKey(String name){
-		if (name.equals("profiles")) return true;
-		Parameter[] params=getParameters();
-		for (int i=0;i<params.length;i++){
-			if (params[i].getName().equals(name)) return true;
-			
-		}
-		return false;
-
-		
-	}*/
-	
-	/*public int size(){
-		return getParameters().length+1;
-	}*/
-	/*public Set<String> keySet(){
-		HashSet<String> result=new HashSet<String>();
-		Parameter[] params=getParameters();
-		for (int i=0;i<params.length;i++){
-			result.add(params[i].getName());
-		}
-		result.add("profiles");
-		return result;
-
-	}*/
-	
-	/*public boolean isEmpty(){
-		return false;
-	}*/
-	
-	/*public boolean contains(Object o){
-		if (InterpreterUtil.isInstance(Parameter.class, o)){
-			String name=((Parameter) o).getName();
-			return containsKey(name);
-		}
-		if (InterpreterUtil.isInstance(SequenceProfile.class, o)){
-			SequenceProfile obj=(SequenceProfile) o;
-			
-			SequenceProfile[] sProfiles=getProfiles();
-			for (int i=0;i<sProfiles.length;i++){
-				if (sProfiles[i].equal(obj)) return true;
-			}
-		}
-		return false;
-	}*/
-	
-	/*public Map<String,Dataset> getSets(){
-		HashMap<String,Dataset> result=new HashMap<String,Dataset>();
-		Set<String> names = this.keySet();
-		Iterator<String> it = names.iterator();
-		while (it.hasNext()){
-			String name=it.next();
-			result.put(name, get(name));
-		}
-		
-		return result;
-	}*/
 
 	public void setParameters(Parameter[] sequenceParameters){
 		CompositeDataset parameters=new CompositeDataset();
 		for (int i=0;i<sequenceParameters.length;i++){
 			parameters.set(sequenceParameters[i].getName(),sequenceParameters[i]);
 		}
-		set("parameters",parameters);
+		set(PARAMETERS_FIELD,parameters);
 		//parameters.set(arg0, arg1);
 		//parameters=sequenceParameters;
 	}
@@ -349,32 +269,17 @@ public class Sequence extends Product {
 		for (int i=0;i<sequenceProfiles.length;i++){
 			profilesTable.concatenate(sequenceProfiles[i]);
 		}
-		set("profiles",profilesTable);
+		set(PROFILES_FIELD,profilesTable);
 
 	}
 	
 	public void addParameter(Parameter sequenceParameter){
-		CompositeDataset parameter = (CompositeDataset) get("parameters");
+		CompositeDataset parameter = (CompositeDataset) get(PARAMETERS_FIELD);
 		parameter.set(sequenceParameter.getName(), sequenceParameter);
-		/*Parameter[] newParameters;
-		int oldSize=0;
-		if (parameters!=null){
-			oldSize=parameters.length;
-			newParameters=new Parameter[oldSize+1];
-			for (int i=0;i<oldSize;i++){
-				newParameters[i]=parameters[i];
-			}
-			newParameters[oldSize]=sequenceParameter;
-			setParameters(newParameters);
-		} else {
-			newParameters=new Parameter[1];
-			newParameters[0]=sequenceParameter;
-			setParameters(newParameters);
-		}*/
 	}
 	
 	public void addProfile(SequenceProfile sequenceProfile){
-		TableDataset profilesTable = (TableDataset) get("profiles");
+		TableDataset profilesTable = (TableDataset) get(PROFILES_FIELD);
 		profilesTable.concatenate(sequenceProfile);
 		
 	}
@@ -470,27 +375,34 @@ public class Sequence extends Product {
 		String l6=indentString+"\t<executionTime>\n";
 		String l7=indentString+"\t\t<actionTime>"+getExecutionTime()+"</actionTime>\n";
 		String l8=indentString+"\t</executionTime>\n";
-		String l9="";
+		//String l9="";
 		Parameter[] parameters = getParameters();
-		if (parameters!=null) l9=indentString+"\t<parameterList count=\""+parameters.length+"\">\n";
+		//if (parameters!=null) l9=indentString+"\t<parameterList count=\""+parameters.length+"\">\n";
+		String l9="";
 		String l10="";
-		if (parameters!=null){
+		String l11="";
+		if (parameters!=null && parameters.length>0){
+			l9=indentString+"\t<parameterList count=\""+parameters.length+"\">\n";
 			for (int i=0;i<parameters.length;i++){
 				if (parameters[i]==null) System.out.println("parameter is nulll:"+new Integer(i).toString()+getUniqueID());
 				l10=l10+parameters[i].toXML(i+1, indent+2)+"\n";
 			}
+			l11=indentString+"\t</parameterList>\n";
 		}
-		String l11=indentString+"\t</parameterList>\n";
+		//String l11=indentString+"\t</parameterList>\n";
 		String l12="";
 		SequenceProfile[] profiles=getProfiles();
 		if (profiles.length>0) l12=indentString+"\t<profileList count=\""+profiles.length+"\">\n";
 		String l13="";
+		String l14="";
 		if (profiles.length>0){
 			for (int i=0;i<profiles.length;i++){
 				l13=l13+profiles[i].toXml(indent+2)+"\n";
 			}
+			l14=indentString+"\t</profileList>\n";
+
 		}
-		String l14=indentString+"\t </profileList>\n";
+		//String l14=indentString+"\t</profileList>\n";
 		String l15=indentString+"</sequence>\n";
 		return l1+l2+l3+l4+l5+l6+l7+l8+l9+l10+l11+l12+l13+l14+l15;
 	}

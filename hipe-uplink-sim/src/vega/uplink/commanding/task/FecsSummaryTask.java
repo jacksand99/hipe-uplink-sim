@@ -86,7 +86,7 @@ public class FecsSummaryTask extends Task {
         	PtrSegment[] segments = ptsl.getSegments();
     		message=message+ "<table class=\"gridtable\">\n"
     				+ "<tr>\n"
-    				+ "	<th>Name</th><th>34 m (h/day)</th><th>70 m (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
+    				+ "	<th>Name</th><th>34 m pass (h/day)</th><th>34 m dump (h/day)</th><th>70 m pass (h/day)</th><th>70 m dump (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
     				+ "</tr>\n";
 
         	for (int i=0;i<segments.length;i++){

@@ -5,6 +5,7 @@ import herschel.ia.gui.kernel.VariableSelection;
 import herschel.ia.gui.kernel.menus.ActionBars;
 import herschel.ia.gui.kernel.menus.Retarget;
 import herschel.ia.gui.kernel.parts.AbstractEditorAction;
+import herschel.ia.gui.kernel.parts.AbstractFileCommandComponent;
 import herschel.ia.gui.kernel.parts.AbstractFileEditorComponent;
 import herschel.ia.gui.kernel.parts.EditorComponent;
 import herschel.ia.gui.kernel.parts.ProxyEditorComponent;
@@ -23,6 +24,7 @@ import javax.swing.JFileChooser;
 
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.PorUtils;
+import vega.uplink.pointing.PtrUtils;
 import static herschel.ia.gui.kernel.util.Constants.CTRL;
 //import vega.uplink.pointing.Ptr;
 //import vega.uplink.pointing.PtrUtils;
@@ -31,7 +33,8 @@ import static herschel.ia.gui.kernel.util.Constants.CTRL;
  * This is a class that provides means for opening an editor (view) for a
  * product stored in a POR file.
  */
-public class PorFileComponent extends AbstractFileEditorComponent implements ProxyEditorComponent<VariableSelection>{
+public class PorFileComponent extends AbstractFileCommandComponent{
+//extends AbstractFileEditorComponent implements ProxyEditorComponent<VariableSelection>{
 
     //private static final String IMAGE = "image";
     private static final long serialVersionUID = 1L;
@@ -49,7 +52,7 @@ public class PorFileComponent extends AbstractFileEditorComponent implements Pro
         return ICON;
     }
 
-    @Override
+    /*@Override
     public VariableSelection getTargetSelection() throws IOException {
         File file = getFile();
         path=file.getParent();
@@ -143,6 +146,11 @@ public class PorFileComponent extends AbstractFileEditorComponent implements Pro
         fileChooser.setFileFilters("ROS");
         return fileChooser.showDialog(this, null) == JFileChooser.APPROVE_OPTION;
     }
+    
+	public String getCommandStatement() {
+        return PorUtils.class.getSimpleName()+".readPORfromFile(\""+getFile().getAbsolutePath()+"\")";
+	}
+
 
 
 

@@ -77,7 +77,7 @@ public class RosettaFecsSummaryTask extends Task {
         	message=message+"<h1>Global</h1>";
     		message=message+ "<table class=\"gridtable\">\n"
     				+ "<tr>\n"
-    				+ "	<th>Name</th><th>34 m (h/day)</th><th>70 m (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
+       				+ "	<th>Name</th><th>34 m pass duration (h/day)</th><th>34 m dump duration (h/day)</th><th>70 m pass duration (h/day)</th><th>70 m dump duration (h/day)</th><th>BSR duration (h/day)</th><th>Total data dump (bits)</th>\n"       			 
     				+ "</tr>\n";
 
         	for (int i=0;i<segments.length;i++){
@@ -95,8 +95,8 @@ public class RosettaFecsSummaryTask extends Task {
            	message=message+"<h1>DSN</h1>";
         		message=message+ "<table class=\"gridtable\">\n"
         				+ "<tr>\n"
-        				+ "	<th>Name</th><th>34 m (h/day)</th><th>70 m (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
-        				+ "</tr>\n";
+           				+ "	<th>Name</th><th>34 m pass duration (h/day)</th><th>34 m dump duration (h/day)</th><th>70 m pass duration (h/day)</th><th>70 m dump duration (h/day)</th><th>BSR duration (h/day)</th><th>Total data dump (bits)</th>\n"
+           			    + "</tr>\n";
 
             	for (int i=0;i<segments.length;i++){
             		String name=segments[i].getName();
@@ -113,7 +113,7 @@ public class RosettaFecsSummaryTask extends Task {
                	message=message+"<h1>ESA</h1>";
         		message=message+ "<table class=\"gridtable\">\n"
         				+ "<tr>\n"
-        				+ "	<th>Name</th><th>34 m (h/day)</th><th>70 m (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
+        				+ "	<th>Name</th><th>34 m pass duration (h/day)</th><th>34 m dump duration (h/day)</th><th>70 m pass duration (h/day)</th><th>70 m dump duration (h/day)</th><th>BSR duration (h/day)</th><th>Total data dump (bits)</th>\n"
         				+ "</tr>\n";
 
             	for (int i=0;i<segments.length;i++){

@@ -33,7 +33,7 @@ public class Simulation {
 		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		
 	}
-	private Simulation(SimulationContext context){
+	public Simulation(SimulationContext context){
 		this.context=context;
 		//System.out.println("Init script:"+this.context.getInitScript());
 		dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
@@ -80,7 +80,7 @@ public class Simulation {
 				context.log(e.getMessage());
 			}
 		}
-		Sequence[] seqs=context.getPor().getOrderedSequences();
+		AbstractSequence[] seqs=context.getPor().getOrderedSequences();
 		//SsmmSimulator memorySimulator=context.ssmm;
 		SsmmSimulator memorySimulator=new RosettaSsmmSimulator(context);
 		LOG.info("Inserting commands into the model");
