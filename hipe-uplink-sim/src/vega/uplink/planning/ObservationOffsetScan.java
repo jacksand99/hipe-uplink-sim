@@ -9,6 +9,13 @@ public class ObservationOffsetScan extends OffsetScan{
 	private  long startTimeDelta;
 	private Observation parent; 
 	
+	/**
+	 * OffsetScan that is driven by an Observation event instead of times for start time of the offset
+	 * @param parent
+	 * @param startEvent
+	 * @param startDelta
+	 * @param org
+	 */
 	public ObservationOffsetScan (Observation parent,ObservationEvent startEvent,long startDelta,OffsetScan org){
 		//org.gets
 		super(org);

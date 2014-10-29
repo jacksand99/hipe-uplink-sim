@@ -1,5 +1,4 @@
 package vega.uplink.planning;
-import java.text.ParseException;
 import java.util.Date;
 
 import vega.uplink.pointing.PointingBlock;
@@ -10,6 +9,13 @@ public class ObservationOffsetCustom extends OffsetCustom{
 	private  long startTimeDelta;
 	private Observation parent; 
 	
+	/**
+	 * Offsetcustom that is driven by an Observation event instead of times for start time of the offset
+	 * @param parent
+	 * @param startEvent
+	 * @param startDelta
+	 * @param org
+	 */
 	public ObservationOffsetCustom (Observation parent,ObservationEvent startEvent,long startDelta,OffsetCustom org){
 		//org.gets
 		super(org);

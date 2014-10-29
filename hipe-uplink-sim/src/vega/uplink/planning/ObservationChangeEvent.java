@@ -1,8 +1,11 @@
 package vega.uplink.planning;
 
-import herschel.ia.dataset.DatasetEvent;
-import herschel.ia.dataset.Product;
 
+/**
+ * Event generated when an Observation changed
+ * @author jarenas
+ *
+ */
 public class ObservationChangeEvent {
 	Observation source;
 	public ObservationChangeEvent(Observation source){
@@ -11,6 +14,10 @@ public class ObservationChangeEvent {
 	
 
 	
+	/**
+	 * Get the Observation that originates the event
+	 * @return
+	 */
 	public Observation getSource(){
 		return source;
 	}

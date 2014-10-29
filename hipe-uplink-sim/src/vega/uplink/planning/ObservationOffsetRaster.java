@@ -9,6 +9,13 @@ public class ObservationOffsetRaster extends OffsetRaster{
 	private  long startTimeDelta;
 	private Observation parent; 
 	
+	/**
+	 * OffsetRaster that is driven by an Observation event instead of times for start time of the offset
+	 * @param parent
+	 * @param startEvent
+	 * @param startDelta
+	 * @param org
+	 */
 	public ObservationOffsetRaster (Observation parent,ObservationEvent startEvent,long startDelta,OffsetRaster org){
 		//org.gets
 		super(org);

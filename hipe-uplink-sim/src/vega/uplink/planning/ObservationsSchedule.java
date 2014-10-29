@@ -1,23 +1,17 @@
 package vega.uplink.planning;
 
-//import java.io.IOException;
-//import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-/*import java.util.logging.Logger;
-
-import vega.uplink.commanding.AbstractSequence;
-import vega.uplink.planning.Schedule.ObservationScheduleListener;
-import vega.uplink.pointing.PointingBlock;
-import herschel.ia.dataset.DatasetEvent;
-import herschel.ia.dataset.Product;
-import herschel.ia.dataset.ProductListener;*/
-//import vega.uplink.pointing.PtrSegment;
 import herschel.ia.pal.ListContext;
 import herschel.ia.pal.ProductRef;
 
+/**
+ * AN observation Schedule is a timeline of observations
+ * @author jarenas
+ *
+ */
 public class ObservationsSchedule extends ListContext {
 	private HashMap<Observation,ProductRef> map;
 	private java.util.HashSet<ObservationListener> listeners;
@@ -26,8 +20,6 @@ public class ObservationsSchedule extends ListContext {
 		super();
 		listeners=new java.util.HashSet<ObservationListener>();
 		map=new HashMap<Observation,ProductRef>();
-		//this.getRefs().add(0, new ProductRef(ptslSegment));
-		//this.getRefs().add(new ProductRef(ptslSegment));
 	}
 	
 
@@ -46,7 +38,6 @@ public class ObservationsSchedule extends ListContext {
 		}
 		Observation.LISTEN=oldListen;
 		
-		//obs.addProductListener(new ObservationListener(this));
 		
 	}
 	
@@ -77,7 +68,6 @@ public class ObservationsSchedule extends ListContext {
 		Iterator<ObservationListener> it = listeners.iterator();
 		while (it.hasNext()){
 			ObservationListener listener = it.next();
-			//obs.addObservationListener(listener);
 			listener.scheduleChanged();
 		}
 		
@@ -97,8 +87,6 @@ public class ObservationsSchedule extends ListContext {
 				IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 				iae.initCause(e);
 				throw (iae);
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
 			} 
 			
 		}
@@ -120,7 +108,6 @@ public class ObservationsSchedule extends ListContext {
 		result=result+iString+"</observationsSchedule>\n";
 		
 		
-		// TODO Auto-generated method stub
 		return result;
 	}
 	
@@ -128,23 +115,6 @@ public class ObservationsSchedule extends ListContext {
 		return toXml(0);
 	}
 	
-	/*class ObservationListener implements ProductListener{
-		private final Logger LOG = Logger.getLogger(ObservationScheduleListener.class.getName());
-		private ObservationsSchedule parent;
-		public ObservationListener(ObservationsSchedule parent){
-			this.parent=parent;
-		}
-		@Override
-		public void targetChanged(DatasetEvent<Product> arg0) {
-			// TODO Auto-generated method stub
-			
-			LOG.info("Observation Changed");
-			LOG.info(""+arg0);
-			
-			parent.refsChanged();
-		}
-		
-	}*/
 
 	
 	

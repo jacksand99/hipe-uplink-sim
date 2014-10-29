@@ -9,11 +9,15 @@ public class ObservationOffsetFixed extends OffsetFixed{
 	private  long startTimeDelta;
 	private Observation parent; 
 	
+	/**
+	 * OffsetFixed that is driven by an Observation event instead of times for start time of the offset
+	 * @param parent
+	 * @param startEvent
+	 * @param startDelta
+	 * @param org
+	 */
 	public ObservationOffsetFixed (Observation parent,ObservationEvent startEvent,long startDelta,OffsetFixed org){
-		//org.gets
 		super(org);
-		//this.getChild("startTime").setValue(getStartEvent().getName()+ObservationUtil.getOffset(getStartDelta()));
-
 		startTimeEvent=startEvent;
 		startTimeDelta=startDelta;
 		this.parent=parent;

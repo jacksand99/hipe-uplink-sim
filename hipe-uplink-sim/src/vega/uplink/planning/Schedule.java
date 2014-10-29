@@ -1,7 +1,5 @@
 package vega.uplink.planning;
 
-//import java.io.IOException;
-//import java.security.GeneralSecurityException;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -31,25 +29,21 @@ import herschel.ia.pal.Context;
 import herschel.ia.pal.MapContext;
 import herschel.ia.dataset.ProductListener;
 
+/**
+ * An Schedule is a timeline of all spacecraft activities.
+ * It contains an Observation Schedule but also a PTSL with the maintenance activities and a PDFM to be able to decode the PTR
+ * @author jarenas
+ *
+ */
 public class Schedule extends MapContext implements ObservationListener{
-	//private ObservationScheduleListener listener;
 	private final Logger LOG = Logger.getLogger(Schedule.class.getName());
 	private boolean ptrDirty;
 	private boolean porDirty;
 	private Por cachedPor;
 	private Ptr cachedPtr;
-	//protected CompositeDataset fds;
 	public Schedule(PtrSegment ptslSegment,ObservationsSchedule obs){
 
 		super();
-		//LOG.info("Setting both ptr and por dirty");
-		//ptrDirty=true;
-		//porDirty=true;
-		
-		//getPtr();
-		//fds=new CompositeDataset();
-		//this.set("fds", fds);
-		//listener=new ObservationScheduleListener(this);
 		
 		if (ptslSegment==null){
 			throw new IllegalArgumentException("An schedulle must have a PTSL segment");
@@ -68,7 +62,6 @@ public class Schedule extends MapContext implements ObservationListener{
 			setPtslSegment(ptslSegment);
 			getPor();
 		}
-		//if (obs==null) obs=new ObservationsSchedule();
 
 		
 	}
@@ -77,14 +70,9 @@ public class Schedule extends MapContext implements ObservationListener{
 		this (ptslSegment,null);
 	}
 	
-	/*public void addScheduleListener(ObservationListener newListener){
-		this.getObservationsSchedule().addObservationListener(newListener);
-	}*/
 	
 	public void setPtslSegment(PtrSegment ptslSegment){
 		this.setProduct("ptslSegment", ptslSegment);
-		//this.addProductListener(listener);
-		//ptslSegment.aaddProductListener(this);
 	}
 	
 	public void addObservationListener(ObservationListener newListener){
@@ -98,8 +86,7 @@ public class Schedule extends MapContext implements ObservationListener{
 			IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 			iae.initCause(e);
 			throw(iae);
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
+
 		} 
 	}
 	
@@ -109,22 +96,16 @@ public class Schedule extends MapContext implements ObservationListener{
 		this.setProduct("observationsSchedule", obs);
 		obs.addObservationListener(this);
 		
-		//this.addProductListener(listener);
-		//obs.addProductListener(this);
 	}
 	public void setPdfm(Pdfm pdfm){
 		this.setProduct("pdfm", pdfm);
 		
-		//this.addProductListener(listener);
-		//obs.addProductListener(this);
 	}
 	public Pdfm getPdfm(){
 		try {
 			return (Pdfm) this.getProduct("pdfm");
 		} catch (Exception e) {
 			return null;
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
 		} 
 	}
 	public ObservationsSchedule getObservationsSchedule(){
@@ -134,8 +115,6 @@ public class Schedule extends MapContext implements ObservationListener{
 			IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 			iae.initCause(e);
 			throw(iae);
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
 		} 
 	}
 	
@@ -190,8 +169,6 @@ public class Schedule extends MapContext implements ObservationListener{
 
 		doc = dBuilder.parse(stream);
 		doc.getDocumentElement().normalize();
-		//Node node = (Node) doc;
-		//PointingElement pe = PointingElement.readFrom(node.getFirstChild());
 		Ptr tempPtr = PtrUtils.readPTRfromDoc(doc);
 		Observation.LISTEN=oldListen;
 		cachedPtr=tempPtr;
@@ -205,50 +182,34 @@ public class Schedule extends MapContext implements ObservationListener{
 			iae.initCause(e);
 			throw(iae);
 		}
-		//Observation.LISTEN=true;
-		//segment.setSlice(slice);
+
 	}
 	
 	public Por getPor(){
 		if (!porDirty){
-			//LOG.info("POR is not dirty, returnning cahced version");
 			return cachedPor;
 		}
 		Ptr ptr= new Ptr();
-		//LOG.info("Copying PTSL");
 		PtrSegment segment = this.getPtslSegment().copy();
-		//LOG.info("Finsih getting PTSL");
-		//LOG.info("Get Observations");
 		Observation[] orgObservations = getObservations();
-		//LOG.info("Finish getting observations");
-		//LOG.info("Get copy of observations");
 		Observation[] observations=new Observation[orgObservations.length];
 		for (int i=0;i<orgObservations.length;i++){
 			observations[i]=orgObservations[i].copy();
 		}
-		//LOG.info("finish Get copy of observations");
-		//LOG.info("set observations as slices");
 		for (int i=0;i<observations.length;i++){
 			segment.setSlice(observations[i]);
 		}
-		//LOG.info("finish set observations as slices");
-		//LOG.info("add segment to ptr");
 		ptr.addSegment(segment);
-		//LOG.info("finsih add segment to ptr");
 		Ptr ptsl=new Ptr();
 		ptsl.addSegment(this.getPtslSegment().copy());
-		//LOG.info("rebase ptr");
 		Ptr tempPtr =PtrUtils.rebasePtrPtsl(ptr, ptsl);
-		//LOG.info("finsih rebase ptr");
 		cachedPtr=tempPtr;
 		ptrDirty=false;
 		SuperPor result=new SuperPor();
-		//Observation[] observations = getObservations();
 		for (int i=0;i<observations.length;i++){
 			result.addPor(observations[i].getCommanding());
 		}
 		cachedPor=result;
-		//LOG.info("POR cached, dirty=false");
 		porDirty=false;
 		return result;
 	}
@@ -292,14 +253,12 @@ public class Schedule extends MapContext implements ObservationListener{
 
 	@Override
 	public void observationChanged(ObservationChangeEvent event) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void scheduleChanged() {
 		LOG.info("Both POR and PTR dirty");
-		// TODO Auto-generated method stub
 		ptrDirty=true;
 		porDirty=true;
 	}
@@ -307,7 +266,6 @@ public class Schedule extends MapContext implements ObservationListener{
 	@Override
 	public void metadataChanged(ObservationChangeEvent event) {
 		scheduleChanged();
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -315,7 +273,6 @@ public class Schedule extends MapContext implements ObservationListener{
 	public void pointingChanged(ObservationChangeEvent event) {
 		LOG.info("PTR dirty");
 		ptrDirty=true;
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -323,40 +280,11 @@ public class Schedule extends MapContext implements ObservationListener{
 	public void commandingChanged(ObservationChangeEvent event) {
 		LOG.info("POR dirty");
 		porDirty=true;
-		// TODO Auto-generated method stub
 		
 	}
 
-	/*@Override
-	public int compareTo(ObservationListener o) {
-		Schedule other=null;
-		try{
-			other=(Schedule) o;
-		}catch (Exception e){
-			
-		}
-		// TODO Auto-generated method stub
-		return 0;
-	}*/
 	
 	
-	/*class ObservationScheduleListener implements ProductListener{
-		private final Logger LOG = Logger.getLogger(ObservationScheduleListener.class.getName());
-		private Schedule parent;
-		public ObservationScheduleListener(Schedule parent){
-			this.parent=parent;
-		}
-		@Override
-		public void targetChanged(DatasetEvent<Product> arg0) {
-			// TODO Auto-generated method stub
-			
-			LOG.info("ObservationSchedule Changed");
-			LOG.info(""+arg0);
-			
-			parent.refsChanged();
-		}
-		
-	}*/
 
 	
 }

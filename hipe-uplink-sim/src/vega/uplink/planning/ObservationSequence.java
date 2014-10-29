@@ -9,6 +9,11 @@ import vega.uplink.commanding.Sequence;
 import vega.uplink.commanding.SequenceProfile;
 
 
+/**
+ * Commanding Sequence that is driven by an Observation event instead of times for execution time of the sequence
+ * @author jarenas
+ *
+ */
 public class ObservationSequence extends Sequence{
 	private ObservationEvent executionTimeEvent;
 	private long executionTimeDelta;
@@ -21,11 +26,6 @@ public class ObservationSequence extends Sequence{
 		this.parent=parent;
 	}
 	
-	
-	
-	/*public ObservationSequence (Observation parent,ObservationEvent executionEvent,long executionDelta,String sequenceName,String sequenceID,String sequenceFlag,char sequenceSource,char sequenceDestination,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles) throws ParseException{
-		this(parent,executionEvent,executionDelta,sequenceName,sequenceID,sequenceFlag,sequenceSource,sequenceDestination,sequenceParamaters,sequenceProfiles);
-	}*/
 	
 	public ObservationSequence (Observation parent,ObservationEvent executionEvent,long executionDelta,String sequenceName,String sequenceID,String sequenceFlag,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles) throws ParseException{
 		this(parent,executionEvent,executionDelta,sequenceName,sequenceID,sequenceFlag,'P','S',sequenceParamaters,sequenceProfiles);
@@ -77,7 +77,6 @@ public class ObservationSequence extends Sequence{
 	@Override
 	public void setExecutionTime(String time) throws ParseException {
 		throw new IllegalArgumentException("Can not set the time to an observation Sequence");
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -88,14 +87,10 @@ public class ObservationSequence extends Sequence{
 		}
 		String l1=indentString+"<sequence name=\""+getName()+"\">\n";
 		String l6=indentString+"\t<executionTime>\n";
-		/*String l7=indentString+"\t\t<event>"+getExecutionTimeEvent().getName()+"</event>\n";
-		String l71=indentString+"\t\t<delta>"+getExecutionTimeDelta()+"</delta>\n";*/
 		String l7=indentString+"\t\t<actionTime>"+getExecutionTimeEvent().getName()+ObservationUtil.getOffset(this.getExecutionTimeDelta())+"</actionTime>\n";
 
 		String l8=indentString+"\t</executionTime>\n";
-		//String l9="";
 		Parameter[] parameters = getParameters();
-		//if (parameters!=null) l9=indentString+"\t<parameterList count=\""+parameters.length+"\">\n";
 		String l9="";
 		String l10="";
 		String l11="";
@@ -107,7 +102,6 @@ public class ObservationSequence extends Sequence{
 			}
 			l11=indentString+"\t</parameterList>\n";
 		}
-		//String l11=indentString+"\t</parameterList>\n";
 		String l12="";
 		SequenceProfile[] profiles=getProfiles();
 		if (profiles.length>0) l12=indentString+"\t<profileList count=\""+profiles.length+"\">\n";
@@ -120,7 +114,6 @@ public class ObservationSequence extends Sequence{
 			l14=indentString+"\t</profileList>\n";
 
 		}
-		//String l14=indentString+"\t</profileList>\n";
 		String l15=indentString+"</sequence>\n";
 		return l1+l6+l7+l8+l9+l10+l11+l12+l13+l14+l15;
 	}
