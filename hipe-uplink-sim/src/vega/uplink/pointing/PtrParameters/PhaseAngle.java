@@ -44,7 +44,19 @@ public class PhaseAngle extends PointingElement {
 	/**
 	 * flipType
 	 */
-	public static String FLIP_TYPE_TAG="flipType";	
+	public static String FLIP_TYPE_TAG="flipType";
+	/**
+	 * alignYCGSCSunNormal
+	 */
+	public static String ALIGN_YCGSC_SUN_NORMAL_TAG="alignYCGSCSunNormal";
+	/**
+	 * refEpoch
+	 */
+	public static String ALIGN_YCGSC_SUN_NORMAL_START_TIME_TAG="refEpoch";
+	/**
+	 * deltaTime
+	 */
+	public static String ALIGN_YCGSC_SUN_NORMAL_DELTA_TIME_TAG="deltaTime";
 	/**
 	 * powerOptimised
 	 */
@@ -141,7 +153,113 @@ public class PhaseAngle extends PointingElement {
 		this.addChild(flipType);
 		
 	}
+	/**
+	 * Align the SC Y axis with the normal of CGSC-Sun plane:
+	 * The projections of SC +Y-axis and the cross product of the SC to CG and SC to Sun direction
+	 * into the plane perpendicular to the boresights are 
+	 * aligned. The cross product is calculated for a fixed instant in time that is given by the sum
+	 * refEpoch and deltaTime. For that epoch the SC to CG and SC to Sun direction must not be aligned.
+	 * @param rEpoch
+	 * @param deltaTime
+	 * @param deltaTimeUnits
+	 */
+	public PhaseAngle(java.lang.String rEpoch, String deltaTimeUnits,String deltaTime){
+		super(PHASEANGLE_TAG,"");
+		this.addAttribute(new PointingElement(REF_TAG,PhaseAngle.ALIGN_YCGSC_SUN_NORMAL_TAG));
+		//this.addAttribute(new PointingElement(PhaseAngle.ALIGN_YCGSC_SUN_NORMAL_TAG,""));
+		setReferenceEpoch(rEpoch);
+		setDeltaTime(deltaTime,deltaTimeUnits);
+	}
+	/**
+	 * Align the SC Y axis with the normal of CGSC-Sun plane:
+	 * The projections of SC +Y-axis and the cross product of the SC to CG and SC to Sun direction
+	 * into the plane perpendicular to the boresights are 
+	 * aligned. The cross product is calculated for a fixed instant in time that is given by the sum
+	 * refEpoch and deltaTime. For that epoch the SC to CG and SC to Sun direction must not be aligned.
+	 * @param rEpoch
+	 * @param deltaTime
+	 * @param deltaTimeUnits
+	 */
+	public PhaseAngle(Date rEpoch, String deltaTimeUnits,float deltaTime){
+		this(PointingBlock.dateToZulu(rEpoch),""+deltaTime,deltaTimeUnits);
+	}
+	/**
+	 * Align the SC Y axis with the normal of CGSC-Sun plane:
+	 * The projections of SC +Y-axis and the cross product of the SC to CG and SC to Sun direction
+	 * into the plane perpendicular to the boresights are 
+	 * aligned. The cross product is calculated for a fixed instant in time that is given by the sum
+	 * refEpoch and deltaTime. For that epoch the SC to CG and SC to Sun direction must not be aligned.
+	 * The delta time units is assumed to be minutes.
+	 * @param rEpoch
+	 * @param deltaTime
+	 * 
+	 */
+	public PhaseAngle(Date rEpoch, float deltaTime){
+		this(PointingBlock.dateToZulu(rEpoch),""+deltaTime,Units.MINUTES);
+	}
+	/**
+	 * Get the reference epoch for Align the SC Y axis with the normal of CGSC-Sun plane
+	 * @return
+	 */
+	public Date getReferenceEpoch(){
+		try{
+			return PointingBlock.zuluToDate(this.getChild(ALIGN_YCGSC_SUN_NORMAL_START_TIME_TAG).getValue());
+		}catch (Exception e){
+			e.printStackTrace();
+			IllegalArgumentException iae = new IllegalArgumentException("Can not read date for Reference Epoch: "+this.getChild(FLIP_START_TIME_TAG).getValue()+" "+e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+			
+		}
+	}
 	
+	/**
+	 * For Align the SC Y axis with the normal of CGSC-Sun plane, get the delta time
+	 * @return Delta Time
+	 */
+	public float getDeltaTime(){
+		return Float.parseFloat(getChild(ALIGN_YCGSC_SUN_NORMAL_DELTA_TIME_TAG).getValue());
+	}
+	/**
+	 * For Align the SC Y axis with the normal of CGSC-Sun plane, get the delta time in the given unit
+	 * @param unit the desired unit
+	 * @return Delta Time
+	 */
+	public float getDeltaTime(String unit){
+		return Units.convertUnit(Float.parseFloat(getChild(ALIGN_YCGSC_SUN_NORMAL_DELTA_TIME_TAG).getValue()),getDeltaTimeUnit(),unit);
+	}
+	
+	public String getDeltaTimeUnit(){
+		return this.getUnit(ALIGN_YCGSC_SUN_NORMAL_DELTA_TIME_TAG);
+	}
+	
+	public void setDeltaTime(String value,String units){
+		PointingElement deltaElement = new PointingElement(PhaseAngle.ALIGN_YCGSC_SUN_NORMAL_DELTA_TIME_TAG,value);
+		deltaElement.addAttribute(new PointingElement(UNITS_TAG,units));
+		this.addChild(deltaElement);
+	}
+	public void setDeltaTime(long value,String units){
+		setDeltaTime(""+value,units);
+	}
+	public void setDeltaTime(long value){
+		setDeltaTime(""+value,"min");
+	}
+	
+	public void setReferenceEpoch(String epoch){
+		this.addChild(new PointingElement(PhaseAngle.ALIGN_YCGSC_SUN_NORMAL_START_TIME_TAG,epoch));
+	}
+	
+	public void setReferenceEpoch(Date epoch){
+		setReferenceEpoch(PointingBlock.dateToZulu(epoch));
+	}
+
+	public String getUnit(String field){
+		PointingElement deltaTimesCh = getChild(field);
+		if (deltaTimesCh==null) return null;
+		if (deltaTimesCh.getAttribute(UNITS_TAG)==null) return null;
+		return deltaTimesCh.getAttribute(UNITS_TAG).getValue();
+		
+	}
 	/**
 	 * Get the flip type
 	 * @return

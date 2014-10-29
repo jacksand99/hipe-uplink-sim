@@ -37,5 +37,8 @@
 	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_task/13.30/ia_task_13.30.jar"/>
 	<classpathentry kind="lib" path="jars/commons-compress-1.8.1.jar"/>
 	<classpathentry kind="lib" path="jars/commons-lang3-3.3.2.jar"/>
+	<classpathentry kind="lib" path="jars/jaretutil-0.32.jar"/>
+	<classpathentry kind="lib" path="jars/timebars-1.49.jar"/>
+	<classpathentry kind="lib" path="/hus-ros-fd/bin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
