@@ -18,6 +18,7 @@ import vega.uplink.commanding.AbstractSequence;
 import vega.uplink.commanding.HistoryModes;
 import vega.uplink.commanding.ModelState;
 import vega.uplink.commanding.Orcd;
+import vega.uplink.commanding.Por;
 import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationChangeEvent;
 import vega.uplink.planning.ObservationListener;
@@ -41,7 +42,9 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 		super();
 		//System.setProperty("user.timezone", "UTC");
 		this.schedule=schedule;
-		schedule.getPor();
+		
+		Por p = schedule.getPor();
+		//System.out.println("Number of sequences:"+p.getSequences().length);
 		//schedule.addObservationListener(this);
 		JaretDate.setJaretDateFormatter(new DateFormatter());
 		schedule.addObservationListener(this);
@@ -98,6 +101,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
         //LOG.info("adding commanig transitions intervals");
 		DefaultTimeBarRowModel[] newRows=this.createSampleDataset(this.getHistoryModes());
 		for (int i=0;i<newRows.length;i++){
+			//System.out.println("add commanding row");
 			this.addRow(newRows[i]);
 		}
 		//LOG.info("fisnih adding commanig transitions intervals");
@@ -240,6 +244,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
     	HistoryModes result = new HistoryModes();
     	ModelState modelState= new ModelState();
     	AbstractSequence[] seqs = schedule.getPor().getSequences();
+    	//System.out.println(schedule.getPor().toXml());
 		Orcd orcd;
 		try{
 			orcd=Orcd.readORCDfile(Properties.getProperty(Properties.ORCD_FILE));
@@ -248,6 +253,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 
 		}
 		for (int i=0;i<seqs.length;i++){
+			//System.out.println("sequence found");
 			//if (seqs[i].getName())
 			//LOG.info("Sequence "+seqs[i].getName());
 			HashMap<Long,String> newmodes=orcd.getModesAsHistory(seqs[i].getName(),seqs[i].getExecutionDate().getTime());

@@ -10,6 +10,9 @@ import herschel.ia.gui.plot.*;
 import org.jfree.ui.RefineryUtilities;
 //import org.jfree.util.Log;
 
+
+import com.kenai.jffi.Array;
+
 import vega.uplink.Properties;
 import vega.uplink.commanding.gui.HistoryModesPlot;
 import vega.uplink.commanding.itl.*;
@@ -17,6 +20,7 @@ import vega.uplink.commanding.itl.*;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 
 
@@ -261,11 +265,12 @@ public class Simulation {
 		//plot4.addLayer(layerTotalMemory);
 		//plot4.addLayer(layerLimitMemory);
 		LOG.info("Generating Datarate plots");
-		plot4.getXaxis().setTitleText("Time");
-		plot4.getYaxis().setTitleText("Data (bits)");
-		plot4.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
-		plot4.getLegend().setVisible(true);
-		
+		if (instruments.length>0){
+			plot4.getXaxis().setTitleText("Time");
+			plot4.getYaxis().setTitleText("Data (bits)");
+			plot4.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
+			plot4.getLegend().setVisible(true);
+		}
 		HistoryModesPlot plot = new vega.uplink.commanding.gui.HistoryModesPlot("Time line",context.getHistoryModes());
 		JFrame frame=new JFrame("Time line");
 		frame.setContentPane(plot);

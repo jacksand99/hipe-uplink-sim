@@ -151,7 +151,15 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 	public Observation copy(){
 		Observation result = new Observation();
 		result.setMeta(getMeta().copy());
-		result.setProduct("sequences", getCommanding().copy());
+		AbstractSequence[] seq = this.getCommanding().getSequences();
+		ObservationSequence[] newSeq=new ObservationSequence[seq.length];
+		for (int i=0;i<seq.length;i++){
+			newSeq[i]=new ObservationSequence(result,((ObservationSequence)seq[i]).getExecutionTimeEvent(),((ObservationSequence)seq[i]).getExecutionTimeDelta(),(ObservationSequence)seq[i]);
+		}
+		Por por = new Por();
+		por.setSequences(newSeq);
+		//result.getCommanding().setSequences(newSeq);
+		result.setProduct("sequences", por);
 		PointingBlocksSlice newPointing = new PointingBlocksSlice();
 		PointingBlock[] blocks = getPointing().getBlocks();
 		for (int i=0;i<blocks.length;i++){

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.logging.Logger;
@@ -48,9 +50,19 @@ public class ObservationUtil {
 	public static void saveObservation(Observation obs) throws IOException{
 		saveObservationToFile(obs.getFileName(),obs);
 	}
+	private static void saveStringToFile(String file,String str) throws IOException {
+		try{
+			PrintWriter writer = new PrintWriter(file, "UTF-8");
+			writer.print(str);
+			writer.close();
+		}catch (Exception e){
+			IOException io = new IOException(e.getMessage());
+			io.initCause(e);
+			throw(io);
+		}
+	}
 	
 	public static Schedule readScheduleFromFile(String file) throws IOException{
-		//Observation result=new Observation(new Date(),new Date());
 		try {
 			 
 			File fXmlFile = new File(file);
@@ -61,7 +73,6 @@ public class ObservationUtil {
 			result.setFileName(fXmlFile.getName());
 			result.setPath(fXmlFile.getParent());
 
-			//result.setName(newName);
 			return result;
 		    } catch (Exception e) {
 		    	e.printStackTrace();
@@ -93,7 +104,6 @@ public class ObservationUtil {
 	}
 	
 	public static Schedule readScheduleFromDoc(Document doc) throws IOException{
-		//Schedule result=new Schedule();
 		Schedule result;
 		try{
 			doc.getDocumentElement().normalize();
@@ -239,7 +249,6 @@ public class ObservationUtil {
 		
 	}
 	public static Observation readObservationFromDoc(Document doc) throws IOException{
-		//Observation result=new Observation(new Date(),new Date());
 
 		try{
 			doc.getDocumentElement().normalize();
@@ -259,7 +268,6 @@ public class ObservationUtil {
 
 	}
 	public static Observation readObservationFromFile(String file) throws IOException{
-		//Observation result=new Observation(new Date(),new Date());
 		try {
 			 
 			File fXmlFile = new File(file);
@@ -269,8 +277,6 @@ public class ObservationUtil {
 			Observation result = readObservationFromDoc(doc);
 			result.setFileName(fXmlFile.getName());
 			result.setPath(fXmlFile.getParent());
-
-			//result.setName(newName);
 			return result;
 		    } catch (Exception e) {
 		    	e.printStackTrace();
@@ -282,10 +288,8 @@ public class ObservationUtil {
 	}
 	
 	protected static OffsetAngles readOffsetPointing(Observation obs,PointingElement pe){
-		//System.out.println(pe.toXml(0));
 		if (pe.getChild("startTime")!=null){
 			String sStartTime = pe.getChild("startTime").getValue();
-			//System.out.println("********"+sStartTime);
 			String startEventName="";
 			String startOffSet="";
 			String eventTokens[];
@@ -300,25 +304,16 @@ public class ObservationUtil {
 				startOffSet="-"+eventTokens[1];
 		
 			}
-			//System.out.println("********"+startEventName);
-			//System.out.println("********"+startOffSet);
 
 			pe.getChild("startTime").setValue(PointingBlock.dateToZulu(new Date()));
 			try{
 			if (pe.getAttribute("ref").getValue().equals(OffsetAngles.OFFSETANGLES_TYPE_CUSTOM)){
-				//System.out.println("It is custom");
-				//try{
 					result=new ObservationOffsetCustom(obs,new ObservationEvent(startEventName),ObservationUtil.getOffsetMilliSeconds(startOffSet),new OffsetCustom(pe));
 			}
-			/*if (pe.getAttribute("ref").equals(OffsetAngles.OFFSETANGLES_TYPE_FIXED)){
-				result=new ObservationOffsetFixed(obs,new ObservationEvent(startEventName),ObservationUtil.getOffsetMilliSeconds(startOffSet),new OffsetFixed(pe));
-			}*/
 			if (pe.getAttribute("ref").getValue().equals(OffsetAngles.OFFSETANGLES_TYPE_RASTER)){
-				//System.out.println("It is raster");
 				result=new ObservationOffsetRaster(obs,new ObservationEvent(startEventName),ObservationUtil.getOffsetMilliSeconds(startOffSet),new OffsetRaster(pe));
 			}
 			if (pe.getAttribute("ref").getValue().equals(OffsetAngles.OFFSETANGLES_TYPE_SCAN)){
-				//System.out.println("It is scan");
 				result=new ObservationOffsetScan(obs,new ObservationEvent(startEventName),ObservationUtil.getOffsetMilliSeconds(startOffSet),new OffsetScan(pe));
 			}
 			}catch (IllegalArgumentException iae){
@@ -332,7 +327,6 @@ public class ObservationUtil {
 		else return new OffsetFixed(pe);
 	}
 	
-	//private pointingElement
 	private static PointingBlock translatePointingBlock(PointingElement pe,Observation obs){
 		PointingBlock result;
 		pe.getChild("startTime").setValue(PointingBlock.dateToZulu(new Date()));
@@ -341,12 +335,8 @@ public class ObservationUtil {
 		PointingElement os = at.getChild(OffsetAngles.OFFSETANGLES_TAG);
 		if (os!=null){
 			OffsetAngles ofAngles=readOffsetPointing(obs,os);
-			//System.out.println(ofAngles.toXml(0));
-			//OffsetRefAxis axis=new OffsetRefAxis(at.getChild(OffsetRefAxis.OFFSETREFAXIS_TAG));
 			at.remove(OffsetAngles.OFFSETANGLES_TAG);
-			//at.remove(OffsetRefAxis.OFFSETREFAXIS_TAG);
 			PointingAttitude attitude=new PointingAttitude(at);
-			//attitude.SetOffset(axis, ofAngles);
 			attitude.addChild(ofAngles);
 			result=new PointingBlock(pe);
 			result.setAttitude(attitude);
@@ -393,9 +383,6 @@ public class ObservationUtil {
 					endOffSet="-"+eventTokens[1];
 			
 				}
-				/*pe.getChild("startTime").setValue(PointingBlock.dateToZulu(new Date()));
-				pe.getChild("endTime").setValue(PointingBlock.dateToZulu(new Date()));
-				PointingBlock pb = new PointingBlock(pe);*/
 				PointingBlock pb =translatePointingBlock(pe,obs);
 				if (nNode.hasChildNodes()){
 					NodeList children = nNode.getChildNodes();
@@ -405,8 +392,6 @@ public class ObservationUtil {
 						if (children.item(i).getNodeName().equals(PointingMetadata.METADATA_TAG)){
 							child = PointingMetadata.readFrom(children.item(i));
 						}
-						//else child = PointingElement.readFrom(children.item(i));
-						//System.out.println(child);
 						if (child!=null) pb.addChild(child);
 					}			
 				}
@@ -469,10 +454,27 @@ public class ObservationUtil {
 					
 				}
 				ObservationEvent event = new ObservationEvent(eventName);
-				//System.out.println(obs.getDateForEvent(event));
 				result[temp]=new ObservationSequence (obs,event,getOffsetMilliSeconds(offSet),sName,"P"+String.format("%05d", temp),sParameters,sProfiles);
 				
 			}
+		}
+		return result;
+	}
+	
+	public static String scheduleToMappsEvents(Schedule schedule){
+		String result = "";
+		HashSet<String> observationNames=new HashSet<String>();
+		Observation[] observations = schedule.getObservations();
+		for (int i=0;i<observations.length;i++){
+			observationNames.add(observations[i].getName());
+		}
+		Iterator<String> it = observationNames.iterator();
+		int counter=0;
+		while (it.hasNext()){
+			String name=it.next();
+			name=name.replace(" ", "_");
+			result=result+counter+"\t"+name+"_\t"+name+"_"+ObservationEvent.START_OBS.getName()+"\t"+name+"_"+ObservationEvent.END_OBS.getName()+"        -     -   FALSE   -   0   PTB  CONTINUOUS  INACTIVE\n";
+			counter++;
 		}
 		return result;
 	}
@@ -482,8 +484,12 @@ public class ObservationUtil {
 		Por POR = schedule.getPor();
 		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
 		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		String l03="Start_time: "+dateFormat2.format(POR.getValidityDates()[0])+"\n";
-		String l04="End_time: "+dateFormat2.format(POR.getValidityDates()[1])+"\n\n\n";
+		//String l03="Start_time: "+dateFormat2.format(POR.getValidityDates()[0])+"\n";
+		//String l04="End_time: "+dateFormat2.format(POR.getValidityDates()[1])+"\n\n\n";
+		//Rosetta patch
+		String l03="Start_time: 20-January-2013_00:00:00\n";
+		String l04="End_time: 26-December-2018_17:39:40\n";
+		l04=l04+"\n\nInclude: \"EVTF_ROSETTA_TOP______V001.evf\"\n";
 		Observation[] observations = schedule.getObservations();
 		String l05="";
 		for (int i=0;i<observations.length;i++){
@@ -491,8 +497,12 @@ public class ObservationUtil {
 			if (count==null) count=1;
 			else count=count+1;
 			counter.put(observations[i].getName(), count);
-			l05=l05+dateFormat2.format(observations[i].getStartDate().toDate())+" "+observations[i].getName()+"_"+ObservationEvent.START_OBS.getName()+" (COUNT = "+String.format("%06d", count)+" )\n";
-			l05=l05+dateFormat2.format(observations[i].getEndDate().toDate())+" "+observations[i].getName()+"_"+ObservationEvent.END_OBS.getName()+" (COUNT = "+String.format("%06d", count)+" )\n";
+			String itlEventStart=observations[i].getName()+"_"+ObservationEvent.START_OBS.getName();
+			itlEventStart=itlEventStart.replace(" ", "_");
+			l05=l05+dateFormat2.format(observations[i].getStartDate().toDate())+" "+itlEventStart+" (COUNT = "+String.format("%06d", count)+" )\n";
+			String itlEventEnd=observations[i].getName()+"_"+ObservationEvent.END_OBS.getName();
+			itlEventEnd=itlEventEnd.replace(" ", "_");
+			l05=l05+dateFormat2.format(observations[i].getEndDate().toDate())+" "+itlEventEnd+" (COUNT = "+String.format("%06d", count)+" )\n";
 
 		}
 		result=l03+l04+l05;
@@ -505,8 +515,12 @@ public class ObservationUtil {
 		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		String l03="Start_time: "+dateFormat2.format(obs.getStartDate().toDate())+"\n";
 		String l04="End_time: "+dateFormat2.format(obs.getEndDate().toDate())+"\n\n\n";
-		String l05=dateFormat2.format(obs.getStartDate().toDate())+" "+obs.getName()+"_"+ObservationEvent.START_OBS.getName()+" (COUNT = 000001)\n";
-		String l06=dateFormat2.format(obs.getEndDate().toDate())+" "+obs.getName()+"_"+ObservationEvent.END_OBS.getName()+" (COUNT = 000001)\n";
+		String itlEventStart=obs.getName()+"_"+ObservationEvent.START_OBS.getName();
+		itlEventStart=itlEventStart.replace(" ", "_");
+		String l05=dateFormat2.format(obs.getStartDate().toDate())+" "+itlEventStart+" (COUNT = 000001)\n";
+		String itlEventEnd=obs.getName()+"_"+ObservationEvent.END_OBS.getName();
+		itlEventEnd=itlEventEnd.replace(" ", "_");
+		String l06=dateFormat2.format(obs.getEndDate().toDate())+" "+itlEventEnd+" (COUNT = 000001)\n";
 		result=l03+l04+l05+l06;
 		return result;
 	}
@@ -522,9 +536,9 @@ public class ObservationUtil {
 		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
 		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		String l01="Version: 1\n";
-		String l02="Ref_date: "+dateFormat.format(POR.getValidityDates()[0])+"\n\n\n";
-		String l03="Start_time: "+dateFormat2.format(POR.getValidityDates()[0])+"\n";
-		String l04="End_time: "+dateFormat2.format(POR.getValidityDates()[1])+"\n\n\n";
+		String l02="Ref_date: "+dateFormat.format(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
+		String l03="Start_time: "+dateFormat2.format(schedule.getPtslSegment().getStartDate().toDate())+"\n";
+		String l04="End_time: "+dateFormat2.format(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
 		String l045="#========================================================================\n"+
 		"#\n"+
 		"# Name: "+schedule.getFileName()+"\n"+
@@ -548,7 +562,9 @@ public class ObservationUtil {
 			Parameter[] tempParam;
 			SequenceProfile[] tempPro;
 			for (int j=0;j<tempSeq.length;j++){
-				l05=l05+((ObservationSequence)tempSeq[j]).getObservationName()+"_"+((ObservationSequence)tempSeq[j]).getExecutionTimeEvent().getName()+" "+"(COUNT = "+String.format("%06d", count)+" ) "+ObservationUtil.getOffset(((ObservationSequence)tempSeq[j]).getExecutionTimeDelta())+" "+ tempSeq[j].getInstrument()+"\t*\t"+tempSeq[j].getName()+" (\\"+"\n";
+				String itlEvent=((ObservationSequence)tempSeq[j]).getObservationName()+"_"+((ObservationSequence)tempSeq[j]).getExecutionTimeEvent().getName();
+				itlEvent=itlEvent.replace(" ", "_");
+				l05=l05+itlEvent+" "+"(COUNT = "+String.format("%06d", count)+" ) "+ObservationUtil.getOffset(((ObservationSequence)tempSeq[j]).getExecutionTimeDelta())+" "+ tempSeq[j].getInstrument()+"\t*\t"+tempSeq[j].getName()+" (\\"+"\n";
 				tempParam = tempSeq[j].getParameters();
 				tempParam = tempSeq[j].getParameters();
 				for (int z=0;z<tempParam.length;z++){
@@ -563,12 +579,10 @@ public class ObservationUtil {
 					if (tempPro[k].getType().equals(SequenceProfile.PROFILE_TYPE_DR)){
 						dataRateProfile=dataRateProfile+" "+tempPro[k].getOffSetString()+"\t"+new Double(tempPro[k].getValue()).toString()+"\t[bits/sec]";
 						dataRatePresent=true;
-						//l05 =l05+ "\tDATA_RATE_PROFILE = \t\t\t"+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[bits/sec]\\\n"; 
 					}
 					if (tempPro[k].getType().equals(SequenceProfile.PROFILE_TYPE_PW)){
 						powerProfile=powerProfile+" "+tempPro[k].getOffSetString()+"\t"+new Double(tempPro[k].getValue()).toString()+"\t[Watts]";
 						powerProfilePresent=true;
-						//l05 = l05+"\tPOWER_PROFILE = \t\t\t"+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[Watts]\\\n"; 
 					}
 					
 				}
@@ -586,7 +600,12 @@ public class ObservationUtil {
 
 	}
 
-	
+	public static void saveMappsProducts(String file,Schedule sch) throws IOException{
+		saveStringToFile(file+".evf",scheduleToEVF(sch));
+		saveStringToFile(file+".itl",scheduleToITL(sch));
+		saveStringToFile(file+".def",scheduleToMappsEvents(sch));
+		
+	}
 	public static String OBStoITL(Observation obs){
 		TreeMap<String,Integer> counter=new TreeMap<String,Integer>();
 		Por POR = obs.getCommanding();
@@ -623,8 +642,9 @@ public class ObservationUtil {
 			if (count==null) count=0;
 			else count=count+1;
 			counter.put(eventName, count);
-			//l05=l05+obs.getName()+"_"+((ObservationSequence)tempSeq[i]).getExecutionTimeEvent().getName()+" "+"(COUNT = "+String.format("%06d", count)+" ) "+ObservationUtil.getOffset(((ObservationSequence)tempSeq[i]).getExecutionTimeDelta())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\"+"\n";
-			l05=l05+obs.getName()+"_"+((ObservationSequence)tempSeq[i]).getExecutionTimeEvent().getName()+" "+"(COUNT = 000001 ) "+ObservationUtil.getOffset(((ObservationSequence)tempSeq[i]).getExecutionTimeDelta())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\"+"\n";
+			String itlEvent=obs.getName()+"_"+((ObservationSequence)tempSeq[i]).getExecutionTimeEvent().getName();
+			itlEvent=itlEvent.replace(" ", "_");
+			l05=l05+itlEvent+" "+"(COUNT = 000001 ) "+ObservationUtil.getOffset(((ObservationSequence)tempSeq[i]).getExecutionTimeDelta())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\"+"\n";
 			tempParam = tempSeq[i].getParameters();
 			for (int z=0;z<tempParam.length;z++){
 				l05=l05+"\t"+tempParam[z].getName()+"="+tempParam[z].getStringValue()+" ["+tempParam[z].getRepresentation()+"] \\ \n";
@@ -638,12 +658,10 @@ public class ObservationUtil {
 				if (tempPro[j].getType().equals(SequenceProfile.PROFILE_TYPE_DR)){
 					dataRateProfile=dataRateProfile+" "+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[bits/sec]";
 					dataRatePresent=true;
-					//l05 =l05+ "\tDATA_RATE_PROFILE = \t\t\t"+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[bits/sec]\\\n"; 
 				}
 				if (tempPro[j].getType().equals(SequenceProfile.PROFILE_TYPE_PW)){
 					powerProfile=powerProfile+" "+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[Watts]";
 					powerProfilePresent=true;
-					//l05 = l05+"\tPOWER_PROFILE = \t\t\t"+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[Watts]\\\n"; 
 				}
 				
 			}

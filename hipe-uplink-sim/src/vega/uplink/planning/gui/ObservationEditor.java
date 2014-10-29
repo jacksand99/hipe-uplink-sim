@@ -52,7 +52,6 @@ public class ObservationEditor extends AbstractVariableEditorComponent<Observati
 	public ObservationEditor(){
 		super(new BorderLayout());
 		obs=new Observation(new Date(),new Date());
-		//init();
 
 	}
 	public void init(){
@@ -109,14 +108,10 @@ public class ObservationEditor extends AbstractVariableEditorComponent<Observati
 		editor = new JEditorPane();
 		editor.setEditorKitForContentType(XMLEditorKit.XML_MIME_TYPE, new XMLEditorKit());
 		editor.setContentType(XMLEditorKit.XML_MIME_TYPE);
-		//editor.setPreferredSize(new Dimension(100,100));
 		JScrollPane scroll=new JScrollPane(editor,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-
-		//this.add(scroll,BorderLayout.CENTER);
 		this.add(new BottomPanel(this, scroll),BorderLayout.CENTER);
 
 		initialized=true;
-		//System.out.println(this.getParent().getLayout());
 	}
 	
 	public void setObservation(Observation obs){
@@ -127,28 +122,18 @@ public class ObservationEditor extends AbstractVariableEditorComponent<Observati
 		if (!initialized) init();
 		classLabel.setText(obs.getClass().getName());
 		editor.setText(obs.toXml());
-		//System.out.println(obs.toXml());
 		Observation.LISTEN=oldListen;
-		//editor.setText("hola\n\nn\n\n\nadios\n\n\n\n\n\nque tal\n\n\n\n\n\n");
 		
 	}
     public boolean makeEditorContent() {
-    	//setGlobalScroll(false);
-    	//this.setGlobalScroll(true, false);
     	setObservation(getValue());
     	this.setGlobalScroll(false);
-    	//this.setPreferredSize(new Dimension(100,100));
-    	//System.out.println(this.getParent().getLayout());
     	return true;
     }
-    /*public void setGlobalScroll(boolean horizontalEnabled, boolean verticalEnabled){
-    	super.setGlobalScroll(horizontalEnabled,verticalEnabled);
-    }*/
 
 
 	
 	public Icon getComponentIcon() {
-		// TODO Auto-generated method stub
         try {
             URL resource = PtrXmlEditor.class.getResource("/vega/vega.gif");
             BufferedImage imageIcon = ImageIO.read(resource);
@@ -162,7 +147,6 @@ public class ObservationEditor extends AbstractVariableEditorComponent<Observati
 	@Override
 	protected Class<? extends Observation> getVariableType() {
 		return Observation.class;
-		// TODO Auto-generated method stub
 	}
 	
     public final void setGlobalScroll(boolean enabled) {

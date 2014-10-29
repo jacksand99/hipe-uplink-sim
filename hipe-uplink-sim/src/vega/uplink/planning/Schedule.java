@@ -13,21 +13,16 @@ import org.w3c.dom.Document;
 
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.SuperPor;
-import vega.uplink.planning.gui.ScheduleViewer;
 import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.PointingBlockInterface;
 import vega.uplink.pointing.PointingMetadata;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
-import herschel.ia.dataset.CompositeDataset;
 import herschel.ia.dataset.Dataset;
 import herschel.ia.dataset.DatasetEvent;
-import herschel.ia.dataset.Product;
 import herschel.ia.dataset.StringParameter;
-import herschel.ia.pal.Context;
 import herschel.ia.pal.MapContext;
-import herschel.ia.dataset.ProductListener;
 
 /**
  * An Schedule is a timeline of all spacecraft activities.
@@ -44,7 +39,7 @@ public class Schedule extends MapContext implements ObservationListener{
 	public Schedule(PtrSegment ptslSegment,ObservationsSchedule obs){
 
 		super();
-		
+		//System.out.println("The schedule is crated with observation schedule");
 		if (ptslSegment==null){
 			throw new IllegalArgumentException("An schedulle must have a PTSL segment");
 		}
@@ -60,9 +55,12 @@ public class Schedule extends MapContext implements ObservationListener{
 			porDirty=false;
 		}else{
 			setPtslSegment(ptslSegment);
+			setObservationsSchedule(obs);
 			getPor();
 		}
-
+		//System.out.println(porDirty);
+		//ptrDirty=true;
+		//porDirty=true;
 		
 	}
 	
@@ -91,6 +89,7 @@ public class Schedule extends MapContext implements ObservationListener{
 	}
 	
 	public void setObservationsSchedule(ObservationsSchedule obs){
+		//System.out.println("setObservationSchedule");
 		ptrDirty=true;
 		porDirty=true;
 		this.setProduct("observationsSchedule", obs);
@@ -187,6 +186,9 @@ public class Schedule extends MapContext implements ObservationListener{
 	
 	public Por getPor(){
 		if (!porDirty){
+			//System.out.println("POR is not dirty, returnning cached por");
+			//Thread.dumpStack();
+			//LOG.info("Number of sequences (cached):"+cachedPor.getSequences().length);
 			return cachedPor;
 		}
 		Ptr ptr= new Ptr();
@@ -207,10 +209,15 @@ public class Schedule extends MapContext implements ObservationListener{
 		ptrDirty=false;
 		SuperPor result=new SuperPor();
 		for (int i=0;i<observations.length;i++){
+			//System.out.println(i);
 			result.addPor(observations[i].getCommanding());
+			//LOG.info("Number of sequences in observation "+i+":"+observations[i].getCommanding().getSequences().length);
+			//System.out.println(observations[i].getCommanding().toXml());
 		}
 		cachedPor=result;
 		porDirty=false;
+		//System.out.println(result.toXml());
+		//LOG.info("Number of sequences:"+result.getSequences().length);
 		return result;
 	}
 	

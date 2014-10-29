@@ -69,7 +69,7 @@ public class Test {
 			ObservationUtil.saveScheduleToFile("/Users/jarenas 1/Rosetta/testing/SCH_example.ROS", sch);
 			//Schedule sch2=ObservationUtil.readScheduleFromFile("/Users/jarenas 1/Rosetta/testing/SCH_example_2.ROS");
 			LOG.info("Start reading schedule");
-			Schedule sch2=ObservationUtil.readScheduleFromFile("/Users/jarenas 1/Rosetta/hack 11/SCH_MTP_11_H_3.ROS");
+			Schedule sch2=ObservationUtil.readScheduleFromFile("/Users/jarenas 1/Rosetta/hack 11/SCH_MTP_11_H_4.ROS");
 			LOG.info("Finish reading schedule");
 			//System.out.println(ObservationUtil.scheduleToITL(sch2));
 			//System.out.println(ObservationUtil.scheduleToEVF(sch2));

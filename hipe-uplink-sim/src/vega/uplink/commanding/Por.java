@@ -32,7 +32,19 @@ import vega.uplink.Properties;
 public class Por extends MapContext implements SequenceTimelineInterface{
 	static private String AUTHOR="Rosetta Testing Team";
 	TreeMap<String,AbstractSequence> sequenceMap;
-	
+	public Por copy(){
+		Por result = new Por();
+		//result.setSequences(porSequences);
+		AbstractSequence[] seqs = this.getSequences();
+		AbstractSequence[] newSeq=new AbstractSequence[seqs.length] ;
+		for (int i=0;i<seqs.length;i++){
+			newSeq[i]=(AbstractSequence) seqs[i].copy();
+		}
+		result.setSequences(newSeq);
+		return result;
+		//for (int i=0;i<seqs)
+		
+	}
 	public Por (){
 		super();
 		setCreator(AUTHOR);

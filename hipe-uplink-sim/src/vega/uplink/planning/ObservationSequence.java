@@ -40,6 +40,9 @@ public class ObservationSequence extends Sequence{
 		this(parent,executionEvent,executionDelta,sequenceName,sequenceID,INSERT_FLAG,'P','S',null,null);
 	
 	}
+	/*public ObservationSequence copy(){
+		ObservationSequence result=new ObservationSequence(parent,executionEvent
+	}*/
 	public ObservationSequence (Observation parent,ObservationEvent executionEvent,long executionDelta,Sequence seq){
 		this(parent,executionEvent,executionDelta,seq.getName(),seq.getUniqueID(),seq.getFlag(),seq.getSource(),seq.getDestination(),seq.getParameters(),seq.getProfiles());
 	}
