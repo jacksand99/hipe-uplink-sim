@@ -1,0 +1,136 @@
+<observation>
+	<name>OSIRIS 20aW</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>OSIRIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="ASRF050A">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="ASRS027A">
+			<executionTime>
+				<actionTime>START_OBS+00:01:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VSRGT001" position="1">
+						<value representation="Raw">10135300</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="ASRS029A">
+			<executionTime>
+				<actionTime>START_OBS+00:02:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VSRGT001" position="1">
+						<value representation="Raw">10135300</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="ASRS028A">
+			<executionTime>
+				<actionTime>END_OBS-00:02:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VSRGT001" position="1">
+						<value representation="Raw">10135300</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="ASRS030A">
+			<executionTime>
+				<actionTime>END_OBS-00:01:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VSRGT001" position="1">
+						<value representation="Raw">10135300</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="ASRF051A">
+			<executionTime>
+				<actionTime>END_OBS+00:00:00</actionTime>
+			</executionTime>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+			<attitude ref='track'>
+				<boresight ref='Nadir_Nav_Boresight'/>
+				<offsetRefAxis ref='CG2Sun'/>
+				<target ref='CG'/>
+				<offsetAngles ref='fixed'>
+					<xAngle units='deg'>5.5</xAngle>
+					<yAngle units='deg'>0.0</yAngle>
+				</offsetAngles>
+			</attitude>
+			<metadata>
+				<comment>OWNER=OSIRIS</comment>
+				<comment>020a - 020e, regular gas monitoring</comment>
+				<comment>repeated 12 times, every hour</comment>
+				<comment>xAngle offset depends on distance (4 degree sunward from limb)</comment>
+				<comment>SR.PROCESSED=FALSE</comment>
+				<comment>SR.OBS000.START=START_TIME</comment>
+				<comment>SR.OBS001.START=START_TIME+01:00:00</comment>
+				<comment>SR.OBS002.START=START_TIME+02:00:00</comment>
+				<comment>SR.OBS003.START=START_TIME+03:00:00</comment>
+				<comment>SR.OBS004.START=START_TIME+04:00:00</comment>
+				<comment>SR.OBS005.START=START_TIME+05:00:00</comment>
+				<comment>SR.OBS006.START=START_TIME+06:00:00</comment>
+				<comment>SR.OBS007.START=START_TIME+07:00:00</comment>
+				<comment>SR.OBS008.START=START_TIME+08:00:00</comment>
+				<comment>SR.OBS009.START=START_TIME+09:00:00</comment>
+				<comment>SR.OBS010.START=START_TIME+10:00:00</comment>
+				<comment>SR.OBS011.START=START_TIME+11:00:00</comment>
+				<comment>SR.OBS012.START=START_TIME+12:00:00</comment>
+				<comment>SR.OBS013.START=START_TIME+00:10:00</comment>
+				<comment>SR.OBS014.START=START_TIME+01:10:00</comment>
+				<comment>SR.OBS015.START=START_TIME+02:10:00</comment>
+				<comment>SR.OBS016.START=START_TIME+03:10:00</comment>
+				<comment>SR.OBS017.START=START_TIME+04:10:00</comment>
+				<comment>SR.OBS018.START=START_TIME+05:10:00</comment>
+				<comment>SR.OBS019.START=START_TIME+06:10:00</comment>
+				<comment>SR.OBS020.START=START_TIME+07:10:00</comment>
+				<comment>SR.OBS021.START=START_TIME+08:10:00</comment>
+				<comment>SR.OBS022.START=START_TIME+09:10:00</comment>
+				<comment>SR.OBS023.START=START_TIME+10:10:00</comment>
+				<comment>SR.OBS024.START=START_TIME+11:10:00</comment>
+				<comment>SR.OBS025.START=START_TIME+12:10:00</comment>
+				<comment>SR.OBS000.ACTIVITY_NAME=GAS_MONITORING_1</comment>
+				<comment>SR.OBS001.ACTIVITY_NAME=GAS_MONITORING_1</comment>
+				<comment>SR.OBS002.ACTIVITY_NAME=GAS_MONITORING_1</comment>
+				<comment>SR.OBS003.ACTIVITY_NAME=GAS_MONITORING_1</comment>
+				<comment>SR.OBS004.ACTIVITY_NAME=GAS_MONITORING_1</comment>
+				<comment>SR.OBS005.ACTIVITY_NAME=GAS_MONITORING_1</comment>
+				<comment>SR.OBS006.ACTIVITY_NAME=GAS_MONITORING_1</comment>
+				<comment>SR.OBS007.ACTIVITY_NAME=GAS_MONITORING_1</comment>
+				<comment>SR.OBS008.ACTIVITY_NAME=GAS_MONITORING_1</comment>
+				<comment>SR.OBS009.ACTIVITY_NAME=GAS_MONITORING_1</comment>
+				<comment>SR.OBS010.ACTIVITY_NAME=GAS_MONITORING_1</comment>
+				<comment>SR.OBS011.ACTIVITY_NAME=GAS_MONITORING_1</comment>
+				<comment>SR.OBS012.ACTIVITY_NAME=GAS_MONITORING_1</comment>
+				<comment>SR.OBS013.ACTIVITY_NAME=GAS_MONITORING_2</comment>
+				<comment>SR.OBS014.ACTIVITY_NAME=GAS_MONITORING_2</comment>
+				<comment>SR.OBS015.ACTIVITY_NAME=GAS_MONITORING_2</comment>
+				<comment>SR.OBS016.ACTIVITY_NAME=GAS_MONITORING_2</comment>
+				<comment>SR.OBS017.ACTIVITY_NAME=GAS_MONITORING_2</comment>
+				<comment>SR.OBS018.ACTIVITY_NAME=GAS_MONITORING_2</comment>
+				<comment>SR.OBS019.ACTIVITY_NAME=GAS_MONITORING_2</comment>
+				<comment>SR.OBS020.ACTIVITY_NAME=GAS_MONITORING_2</comment>
+				<comment>SR.OBS021.ACTIVITY_NAME=GAS_MONITORING_2</comment>
+				<comment>SR.OBS022.ACTIVITY_NAME=GAS_MONITORING_2</comment>
+				<comment>SR.OBS023.ACTIVITY_NAME=GAS_MONITORING_2</comment>
+				<comment>SR.OBS024.ACTIVITY_NAME=GAS_MONITORING_2</comment>
+				<comment>SR.OBS025.ACTIVITY_NAME=GAS_MONITORING_2</comment>
+			</metadata>
+		</block>
+	</pointingBlocks>
+</observation>

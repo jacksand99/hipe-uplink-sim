@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/MibAsciiTableImporter"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_io/12.24.6/ia_io_12.24.6.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/share/1.387.2/share_1.387.2.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/ext/xerces/2.9.1.1/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_numeric/3.38/ia_numeric_3.38.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/ext/jython/2.5.2/jython.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/share_interpreter/12.12/share_interpreter_12.12.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_gui_kernel/12.82.2/ia_gui_kernel_12.82.2.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_gui_apps/12.43.2/ia_gui_apps_12.43.2.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/ext/idw.gpl/1.5.0/idw-gpl.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/share_io/1.22/share_io_1.22.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/ext/apache.commons.io/1.3.1/commons-io-1.3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/share_predicate/0.7/share_predicate_0.7.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/devel/1.303/devel_1.303.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/ext/apache.commons.net/3.0.1/commons-net-3.0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/share_fltdyn/1.57/share_fltdyn_1.57.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_pal/2.166/ia_pal_2.166.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ccm/1.248/ccm_1.248.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/Downloads/hcss-12.0.2524/lib/jcommon-1.0.21.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/Downloads/hcss-12.0.2524/lib/jfreechart-1.0.17.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_gui_plot/2.384.3/ia_gui_plot_2.384.3.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_gui_renderer/0.11/ia_gui_renderer_0.11.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_dataset_gui/12.16/ia_dataset_gui_12.16.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_gui_apps/12.43.4/ia_gui_apps_12.43.4.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_pal_gui/3.45/ia_pal_gui_3.45.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_dataset/2.32/ia_dataset_2.32.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/binstruct/12.6.1/binstruct_12.6.1.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/workspace/hipe-uplink-sim/jars/doc.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/jre7/lib/jfxrt.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

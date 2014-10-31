@@ -1,0 +1,81 @@
+<observation>
+	<name>OSIRIS 4cO</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>OSIRIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="ASRF050A">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="ASRS027A">
+			<executionTime>
+				<actionTime>START_OBS+00:01:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VSRGT001" position="1">
+						<value representation="Raw">10135300</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="ASRS029A">
+			<executionTime>
+				<actionTime>START_OBS+00:02:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VSRGT001" position="1">
+						<value representation="Raw">10135300</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="ASRS028A">
+			<executionTime>
+				<actionTime>END_OBS-00:02:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VSRGT001" position="1">
+						<value representation="Raw">10135300</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="ASRS030A">
+			<executionTime>
+				<actionTime>END_OBS-00:01:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VSRGT001" position="1">
+						<value representation="Raw">10135300</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="ASRF051A">
+			<executionTime>
+				<actionTime>END_OBS+00:00:00</actionTime>
+			</executionTime>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+			<attitude ref='track'>
+				<boresight ref='Nadir_Nav_Boresight'/>
+				<offsetRefAxis ref='SC_Xaxis'/>
+				<target ref='CG'/>
+			</attitude>
+			<metadata>
+				<comment>OWNER=OSIRIS</comment>
+				<comment>004c, global color map</comment>
+				<comment>repeated 8 times, every 85 minutes</comment>
+				<comment>SR.PROCESSED=FALSE</comment>
+				<comment>SR.OBS000.START=START_TIME</comment>
+				<comment>SR.OBS000.ACTIVITY_NAME=COLOR_MAP</comment>
+			</metadata>
+		</block>
+	</pointingBlocks>
+</observation>

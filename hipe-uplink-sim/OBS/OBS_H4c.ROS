@@ -1,0 +1,62 @@
+<observation>
+	<name>VIRTIS H4c</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>VIRTIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="AVRF001A">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AVRF004D">
+			<executionTime>
+				<actionTime>START_OBS+00:00:11</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AVRF016A">
+			<executionTime>
+				<actionTime>END_OBS-00:02:00</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AVRF006A">
+			<executionTime>
+				<actionTime>END_OBS-00:01:00</actionTime>
+			</executionTime>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+			<attitude ref='limb'>
+				<boresight ref='VirtisH'/>
+				<targetDir ref='CG2Sun'/>
+				<height units='km'>0.</height>
+				<surface ref='CG'/>
+				<offsetRefAxis ref='SC_Xaxis'/>
+				<offsetAngles ref='raster'>
+					<startTime>START_OBS+00:01:30</startTime>
+					<xPoints>1</xPoints>
+					<yPoints>1</yPoints>
+					<xStart units='deg'>0.</xStart>
+					<yStart units='deg'>0.</yStart>
+					<xDelta units='deg'>0.</xDelta>
+					<yDelta units='deg'>0.</yDelta>
+					<pointSlewTime units='sec'>1.</pointSlewTime>
+					<lineSlewTime units='sec'>1.</lineSlewTime>
+					<dwellTime units='min'>1.</dwellTime>
+					<lineAxis>x</lineAxis>
+					<keepLineDir>false</keepLineDir>
+				</offsetAngles>
+			</attitude>
+			<metadata>
+				<comment>VR_PTRM_Template_Limb_RasterOffset_v01</comment>
+			</metadata>
+		</block>
+	</pointingBlocks>
+</observation>

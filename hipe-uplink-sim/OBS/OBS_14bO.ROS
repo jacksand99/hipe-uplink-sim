@@ -1,0 +1,113 @@
+<observation>
+	<name>OSIRIS 14bO</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>OSIRIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="ASRF050A">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="ASRS027A">
+			<executionTime>
+				<actionTime>START_OBS+00:01:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VSRGT001" position="1">
+						<value representation="Raw">10135300</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="ASRS029A">
+			<executionTime>
+				<actionTime>START_OBS+00:02:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VSRGT001" position="1">
+						<value representation="Raw">10135300</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="ASRS028A">
+			<executionTime>
+				<actionTime>END_OBS-00:02:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VSRGT001" position="1">
+						<value representation="Raw">10135300</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="ASRS030A">
+			<executionTime>
+				<actionTime>END_OBS-00:01:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VSRGT001" position="1">
+						<value representation="Raw">10135300</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="ASRF051A">
+			<executionTime>
+				<actionTime>END_OBS+00:00:00</actionTime>
+			</executionTime>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+			<attitude ref='track'>
+				<boresight ref='OsirisNAC'/>
+				<offsetRefAxis ref='SC_Xaxis'/>
+				<target ref='CG'/>
+				<offsetAngles ref='custom'>
+					<startTime>START_OBS+00:05:00</startTime>
+					<deltaTimes units='min'>0.0 1.0 5.0 1.0 5.0 1.0 5.0 1.0 5.0 1.0 5.0 1.0 5.0 1.0 5.0 1.0 5.0 1.0 5.0 1.0 5.0 1.0 5.0 1.0 5.0 1.0 </deltaTimes>
+					<xAngles units='deg'>0.0 0.0 1.8 1.8 3.6 3.6 5.4 5.4 3.6 3.6 5.4 5.4 5.4 5.4 5.4 5.4 5.4 5.4 3.6 3.6 0.0 0.0 1.8 1.8 3.6 3.6 </xAngles>
+					<xRates units='deg/min'>0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 </xRates>
+					<yAngles units='deg'>5.4 5.4 5.4 5.4 5.4 5.4 3.6 3.6 3.6 3.6 1.8 1.8 0.0 0.0 -1.8 -1.8 -3.6 -3.6 -3.6 -3.6 -5.4 -5.4 -5.4 -5.4 -5.4 -5.4 </yAngles>
+					<yRates units='deg/min'>0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 </yRates>
+				</offsetAngles>
+			</attitude>
+			<metadata>
+				<comment>SR.OWNER=TRUE</comment>
+				<comment>014b, high resolution limb scan</comment>
+				<comment>13 stations at lit limb from approx 20 km distance</comment>
+				<comment>SR.PROCESSED=FALSE</comment>
+				<comment>SR.OBS000.START=BLOCK_START_TIME+00:05:00</comment>
+				<comment>SR.OBS000.ACTIVITY_NAME=SR_LIMB_SCAN_14b</comment>
+				<comment>SR.OBS001.START=BLOCK_START_TIME+00:11:00</comment>
+				<comment>SR.OBS001.ACTIVITY_NAME=SR_LIMB_SCAN_14b</comment>
+				<comment>SR.OBS002.START=BLOCK_START_TIME+00:17:00</comment>
+				<comment>SR.OBS002.ACTIVITY_NAME=SR_LIMB_SCAN_14b</comment>
+				<comment>SR.OBS003.START=BLOCK_START_TIME+00:23:00</comment>
+				<comment>SR.OBS003.ACTIVITY_NAME=SR_LIMB_SCAN_14b</comment>
+				<comment>SR.OBS004.START=BLOCK_START_TIME+00:29:00</comment>
+				<comment>SR.OBS004.ACTIVITY_NAME=SR_LIMB_SCAN_14b</comment>
+				<comment>SR.OBS005.START=BLOCK_START_TIME+00:35:00</comment>
+				<comment>SR.OBS005.ACTIVITY_NAME=SR_LIMB_SCAN_14b</comment>
+				<comment>SR.OBS006.START=BLOCK_START_TIME+00:41:00</comment>
+				<comment>SR.OBS006.ACTIVITY_NAME=SR_LIMB_SCAN_14b</comment>
+				<comment>SR.OBS007.START=BLOCK_START_TIME+00:47:00</comment>
+				<comment>SR.OBS007.ACTIVITY_NAME=SR_LIMB_SCAN_14b</comment>
+				<comment>SR.OBS008.START=BLOCK_START_TIME+00:53:00</comment>
+				<comment>SR.OBS008.ACTIVITY_NAME=SR_LIMB_SCAN_14b</comment>
+				<comment>SR.OBS009.START=BLOCK_START_TIME+00:59:00</comment>
+				<comment>SR.OBS009.ACTIVITY_NAME=SR_LIMB_SCAN_14b</comment>
+				<comment>SR.OBS010.START=BLOCK_START_TIME+01:05:00</comment>
+				<comment>SR.OBS010.ACTIVITY_NAME=SR_LIMB_SCAN_14b</comment>
+				<comment>SR.OBS011.START=BLOCK_START_TIME+01:11:00</comment>
+				<comment>SR.OBS011.ACTIVITY_NAME=SR_LIMB_SCAN_14b</comment>
+				<comment>SR.OBS012.START=BLOCK_START_TIME+01:17:00</comment>
+				<comment>SR.OBS012.ACTIVITY_NAME=SR_LIMB_SCAN_14b</comment>
+			</metadata>
+		</block>
+	</pointingBlocks>
+</observation>
