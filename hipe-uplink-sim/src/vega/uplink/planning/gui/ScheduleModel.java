@@ -37,6 +37,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 	Schedule schedule;
 	private final Logger LOG = Logger.getLogger(ScheduleModel.class.getName());
 	boolean initialized=false;
+	boolean recalculate=true;
 	//boolean STOP_LISTENING
 	public ScheduleModel(Schedule schedule){
 		super();
@@ -145,6 +146,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 		
 	}
 	public void recualculatePtr(){
+		if (!recalculate) return;
 		LOG.info("Start recalculating PTR");
 		//Thread.dumpStack();
 		DefaultTimeBarRowModel ptrRow = ((DefaultTimeBarRowModel) this.getRow(2));
@@ -214,6 +216,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 
 	@Override
 	public void commandingChanged(ObservationChangeEvent event) {
+		if (!recalculate) return;
 		//LOG.info("Observation commanding Changed");
 		// TODO Auto-generated method stub
 		//LOG.info("Observation pointing Changed");

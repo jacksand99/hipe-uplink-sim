@@ -60,5 +60,9 @@ public class ObservationListModel extends DefaultListModel<Observation> implemen
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void addObservation(Observation obs){
+		schedule.addObservation(obs);
+	}
 
 }

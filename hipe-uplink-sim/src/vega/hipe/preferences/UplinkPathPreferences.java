@@ -29,6 +29,7 @@ public class UplinkPathPreferences extends PreferencesPanel {
     private FilePathPanel _fieldF;
     private FilePathPanel _fieldH;
     private FilePathPanel _fieldI;
+    private FilePathPanel _fieldJ;
 
     private JTextField _fieldG;
 
@@ -45,7 +46,8 @@ public class UplinkPathPreferences extends PreferencesPanel {
     	registerHandler(Properties.PWPL_FILE,new FilePreferenceHandler(Configuration.getProperty(Properties.PWPL_FILE, ""),_fieldB,Properties.PWPL_FILE));
     	registerHandler(Properties.ORCD_FILE,new FilePreferenceHandler(Configuration.getProperty(Properties.ORCD_FILE, ""),_fieldC,Properties.ORCD_FILE));
     	registerHandler(Properties.DEFAULT_PLANNING_DIRECTORY,new FilePreferenceHandler(Configuration.getProperty(Properties.DEFAULT_PLANNING_DIRECTORY, Configuration.getProperty("user.home")),_fieldD,Properties.DEFAULT_PLANNING_DIRECTORY));
-       	registerHandler(Properties.DEFAULT_EVT_DIRECTORY,new FilePreferenceHandler(Configuration.getProperty(Properties.DEFAULT_EVT_DIRECTORY, Configuration.getProperty("user.home")),_fieldE,Properties.DEFAULT_EVT_DIRECTORY));
+    	registerHandler(Properties.DEFAULT_OBSERVATIONS_DIRECTORY,new FilePreferenceHandler(Configuration.getProperty(Properties.DEFAULT_OBSERVATIONS_DIRECTORY, Configuration.getProperty("user.home")),_fieldJ,Properties.DEFAULT_OBSERVATIONS_DIRECTORY));
+    	registerHandler(Properties.DEFAULT_EVT_DIRECTORY,new FilePreferenceHandler(Configuration.getProperty(Properties.DEFAULT_EVT_DIRECTORY, Configuration.getProperty("user.home")),_fieldE,Properties.DEFAULT_EVT_DIRECTORY));
        	registerHandler(Properties.MIB_LOCATION,new FilePreferenceHandler(Configuration.getProperty(Properties.MIB_LOCATION, Configuration.getProperty("user.home")),_fieldF,Properties.MIB_LOCATION));
     	registerHandler(Properties.ANTENNA_PRIORITY_COMMAND,new StringPreferenceHandler(Configuration.getProperty(Properties.ANTENNA_PRIORITY_COMMAND, ""),_fieldG,Properties.ANTENNA_PRIORITY_COMMAND));
     	registerHandler(Properties.DEFAULT_INIT_SCRIPT,new FilePreferenceHandler(Configuration.getProperty(Properties.DEFAULT_INIT_SCRIPT, ""),_fieldH,Properties.DEFAULT_INIT_SCRIPT));
@@ -171,6 +173,15 @@ public class UplinkPathPreferences extends PreferencesPanel {
         vGroup.addGroup(vPropsGroup.addComponent(labelI).addComponent(_fieldI));
         hLabelGroup.addComponent(labelI);
         hComboGroup.addComponent(_fieldI);
+        
+        JLabel    labelJ = new JLabel("Default Observations Directory:");
+        _fieldJ = new FilePathPanel(FileSelectionMode.DIRECTORY);
+        _fieldJ.setMaximumSize(new Dimension(400,20));
+        vPropsGroup = layout.createParallelGroup(BASELINE);
+        vGroup.addGroup(vPropsGroup.addComponent(labelJ).addComponent(_fieldJ));
+        hLabelGroup.addComponent(labelJ);
+        hComboGroup.addComponent(_fieldJ);
+
 
 
         hGroup.addGroup(hLabelGroup);

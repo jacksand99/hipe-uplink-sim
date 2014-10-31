@@ -15,6 +15,7 @@ public class Properties {
 	public static String SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX="vega.instrument.acronyms.";
 	public static String SUBINSTRUMENT_COLOR_PROPERTY_PREFIX="vega.instrument.color.";
 	public static String DEFAULT_PLANNING_DIRECTORY="vega.default.planningDirectory";
+	public static String DEFAULT_OBSERVATIONS_DIRECTORY="vega.default.observationsDirectory";
 	public static String DEFAULT_FECS_FILE="vega.default.FECS.file";
 	public static String DEFAULT_EVT_DIRECTORY="vega.default.evtDirectory";
 	public static String PWPL_FILE="vega.pwpl.file";

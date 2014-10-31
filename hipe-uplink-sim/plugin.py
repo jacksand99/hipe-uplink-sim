@@ -135,6 +135,9 @@ from vega.uplink.pointing.task import PtrSanityCheckTask
 from vega.uplink.pointing.task import RebasePtslTask
 
 from vega.uplink.commanding.task import SimulateTask
+
+from vega.uplink.planning.task import SaveMappsProductsTask
+
 toolRegistry.register(FecsSummaryTask());
 toolRegistry.register(RosettaFecsSummaryTask());
 toolRegistry.register(CreateTimelineTask());
@@ -150,14 +153,16 @@ toolRegistry.register(ComparePtrsTask())
 toolRegistry.register(MergePtrsTask())
 toolRegistry.register(PtrSanityCheckTask())
 toolRegistry.register(RebasePtslTask())
+toolRegistry.register(SaveMappsProductsTask())
 
-del(toolRegistry)
 
 instruments=Configuration.getList("vega.instrument.names")
 for ins in instruments:
 	REGISTRY.register(UserPreferences.CATEGORY, Extension("Mission Planning/Instruments/"+ins,"vega.hipe.preferences.InstrumentPreferences",None,None))  # unused
 
 del(REGISTRY,ins, instruments)
+
+del(toolRegistry)
 
 
 

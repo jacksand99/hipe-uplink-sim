@@ -213,6 +213,7 @@ public class ObservationPanel extends JTabbedPane implements ObservationListener
 		}
 		
 		public void setObservation(Observation obs){
+			if (obs==null) return;
 			if (this.obs!=null)this.obs.removeObservationListener(this);
 			this.obs=obs;
 			obs.addObservationListener(this);

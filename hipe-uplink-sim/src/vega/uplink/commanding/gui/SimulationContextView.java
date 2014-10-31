@@ -1,5 +1,12 @@
 package vega.uplink.commanding.gui;
 
+import vega.uplink.commanding.Fecs;
+import vega.uplink.commanding.HistoryModes;
+import vega.uplink.commanding.Orcd;
+import vega.uplink.commanding.Por;
+import vega.uplink.commanding.SimulationContext;
+import vega.uplink.planning.Observation;
+import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.Ptr;
 import herschel.ia.gui.apps.views.variables.VariablesView;
 import herschel.share.interpreter.InterpreterUtil;
@@ -37,13 +44,30 @@ public class SimulationContextView extends VariablesView {
 	public SimulationContextView(){
 		super();
 		//super
-		super.registerCondition("Simulation Context", new CommandingCondition());
+		//super.registerCondition("Simulation Context", new CommandingCondition());
+		super.registerCondition("Observations", new ObservationCondition());
 	}
 	public static void registerCondition(String title,Condition condition){
 		/*if (InterpreterUtil.isInstance(CommandingCondition.class, condition)){
 			super.registerCondition("Simulation Context", condition);
 		}*/
 		//Do nothing
+	}
+	public class ObservationCondition implements Condition {
+
+		@Override
+		public boolean satisfy(String arg0, Object arg1) {
+
+			boolean result=false;
+			if (InterpreterUtil.isInstance(Observation.class, arg1)){
+				result=true;
+			}
+
+			
+			
+			return result;
+		}
+
 	}
 }
 

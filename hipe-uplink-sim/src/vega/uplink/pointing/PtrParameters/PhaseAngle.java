@@ -181,7 +181,7 @@ public class PhaseAngle extends PointingElement {
 	 * @param deltaTimeUnits
 	 */
 	public PhaseAngle(Date rEpoch, String deltaTimeUnits,float deltaTime){
-		this(PointingBlock.dateToZulu(rEpoch),""+deltaTime,deltaTimeUnits);
+		this(PointingBlock.dateToZulu(rEpoch),deltaTimeUnits,""+deltaTime);
 	}
 	/**
 	 * Align the SC Y axis with the normal of CGSC-Sun plane:
@@ -195,7 +195,7 @@ public class PhaseAngle extends PointingElement {
 	 * 
 	 */
 	public PhaseAngle(Date rEpoch, float deltaTime){
-		this(PointingBlock.dateToZulu(rEpoch),""+deltaTime,Units.MINUTES);
+		this(PointingBlock.dateToZulu(rEpoch),Units.MINUTES,""+deltaTime);
 	}
 	/**
 	 * Get the reference epoch for Align the SC Y axis with the normal of CGSC-Sun plane

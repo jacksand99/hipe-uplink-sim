@@ -31,9 +31,11 @@ import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.DropMode;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 //import javax.swing.JEditorPane;
@@ -234,29 +236,23 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 
             }
         });
-		/*JButton recalculatePTR=new JButton("Recalculate PTR");
-		recalculatePTR.addActionListener(new ActionListener() {
+		JCheckBox recalculate = new JCheckBox("Recalculate");
+		recalculate.setSelected(true);
+		/*JButton recalculatePTR=new JButton("Recalculate PTR");*/
+		recalculate.addActionListener(new ActionListener() {
        	 
             public void actionPerformed(ActionEvent e)
             {
             	//String text = editor.getText();
-				try {
-					model.recualculatePtr();
-
-				}
-				catch (Exception e1) {
-					JOptionPane.showMessageDialog(ScheduleViewer.this,
-						    e1.getMessage(),
-						    "Error",
-						    JOptionPane.ERROR_MESSAGE);
-					e1.printStackTrace();
-				} 
+            	model.recalculate=((JCheckBox)e.getSource()).isSelected();
+            	model.commandingChanged(null);
+            	model.recualculatePtr();
 				
     		 
     			
 
             }
-        });*/
+        });
 		/*JButton createObservation=new JButton("Create Observation");
 		createObservation.addActionListener(new ActionListener() {
 	       	 
@@ -283,6 +279,7 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 		topPanel.add(quickCheckPtr);
 		topPanel.add(fdCheckPtr);
 		topPanel.add(commandingCheck);
+		topPanel.add(recalculate);
 		//topPanel.add(recalculatePTR);
 		//topPanel.add(createObservation);
 
@@ -292,7 +289,8 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 		midPanel.setLayout(new BorderLayout());
 		JaretDate.setJaretDateFormatter(new DateFormatter());
 		//LOG.info("Creating model");
-		TimeBarModel model= new ScheduleModel(schedule);
+		//TimeBarModel model= new ScheduleModel(schedule);
+		model= new ScheduleModel(schedule);
 		//LOG.info("finsih Creating model");
         TimeBarViewer tbv = new TimeBarViewer(model);
         tbv.setTimeScaleRenderer(new PlanningTimeScaleRenderer());
@@ -327,8 +325,11 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
         Vector<Observation> vector = new Vector<Observation>();
         Observation[] obs = schedule.getObservations();
         //DefaultListModel<Observation> listModel = new DefaultListModel<Observation>();
-        list = new JList<Observation>(new ObservationListModel(schedule));
+        //list = new JList<Observation>(new ObservationListModel(schedule));
+        list = new ObservationList(new ObservationListModel(schedule));
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        list.setDropMode(DropMode.ON);
+        //list.setTransferHandler(new ObservationListTransferHandler());
         list.setSelectedIndex(0);
         //list.addListSelectionListener(this);
         list.setVisibleRowCount(5);
