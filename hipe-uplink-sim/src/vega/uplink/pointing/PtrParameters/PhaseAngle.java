@@ -153,6 +153,9 @@ public class PhaseAngle extends PointingElement {
 		this.addChild(flipType);
 		
 	}
+	/*public String getType(){
+		return this.getAttribute(REF_TAG).getValue();
+	}*/
 	/**
 	 * Align the SC Y axis with the normal of CGSC-Sun plane:
 	 * The projections of SC +Y-axis and the cross product of the SC to CG and SC to Sun direction

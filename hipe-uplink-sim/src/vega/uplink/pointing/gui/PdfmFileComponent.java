@@ -66,7 +66,9 @@ public class PdfmFileComponent extends AbstractFileCommandComponent{
     @Override
     public void setTargetEditor(EditorComponent editor) {}*/
 	public String getCommandStatement() {
-        return PtrUtils.class.getSimpleName()+".readPdfmfromFile(\""+getFile().getAbsolutePath()+"\")";
+		String path=getFile().getAbsolutePath();
+		path=path.replace("\\", "\\\\");
+        return PtrUtils.class.getSimpleName()+".readPdfmfromFile(\""+path+"\")";
 	}
 }
 

@@ -67,7 +67,9 @@ public class FecsFileComponent extends AbstractFileCommandComponent{
     @Override
     public void setTargetEditor(EditorComponent editor) {}*/
 	public String getCommandStatement() {
-        return PorUtils.class.getSimpleName()+".readFecsFromFile(\""+getFile().getAbsolutePath()+"\")";
+		String path=getFile().getAbsolutePath();
+		path=path.replace("\\", "\\\\");
+        return PorUtils.class.getSimpleName()+".readFecsFromFile(\""+path+"\")";
 	}
 }
 

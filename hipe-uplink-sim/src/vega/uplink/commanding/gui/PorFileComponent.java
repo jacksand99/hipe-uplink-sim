@@ -148,7 +148,9 @@ public class PorFileComponent extends AbstractFileCommandComponent{
     }
     
 	public String getCommandStatement() {
-        return PorUtils.class.getSimpleName()+".readPORfromFile(\""+getFile().getAbsolutePath()+"\")";
+		String path=getFile().getAbsolutePath();
+		path=path.replace("\\", "\\\\");
+        return PorUtils.class.getSimpleName()+".readPORfromFile(\""+path+"\")";
 	}
 
 

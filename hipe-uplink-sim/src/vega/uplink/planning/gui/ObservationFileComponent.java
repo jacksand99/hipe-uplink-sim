@@ -66,7 +66,9 @@ public class ObservationFileComponent extends AbstractFileCommandComponent{
 
 	@Override
 	public String getCommandStatement() {
-        return ObservationUtil.class.getSimpleName()+".readObservationFromFile(\""+getFile().getAbsolutePath()+"\")";
+		String path=getFile().getAbsolutePath();
+		path=path.replace("\\", "\\\\");
+        return ObservationUtil.class.getSimpleName()+".readObservationFromFile(\""+path+"\")";
 	}
 
 

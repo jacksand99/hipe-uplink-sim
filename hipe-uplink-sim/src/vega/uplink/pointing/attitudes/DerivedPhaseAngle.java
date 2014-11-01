@@ -37,6 +37,8 @@ public class DerivedPhaseAngle extends PointingAttitude {
 		setAttitude(att);
 	}
 	
+	
+	
 	/**
 	 * Set the definition of the attitude profile i.e. a basic pointing and optionally offset angles
 	 * @param newAttitude

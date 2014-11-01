@@ -11,7 +11,9 @@ import herschel.ia.gui.kernel.util.IconLoader;
 //import java.io.File;
 //import java.io.IOException;
 
+
 import javax.swing.Icon;
+
 
 //import vega.uplink.planning.ObservationUtil;
 //import vega.uplink.pointing.Ptr;
@@ -68,7 +70,9 @@ public class PtrFileComponent extends AbstractFileCommandComponent{
     @Override
     public void setTargetEditor(EditorComponent editor) {}*/
 	public String getCommandStatement() {
-        return PtrUtils.class.getSimpleName()+".readPTRfromFile(\""+getFile().getAbsolutePath()+"\")";
+		String path=getFile().getAbsolutePath();
+		path=path.replace("\\", "\\\\");
+        return PtrUtils.class.getSimpleName()+".readPTRfromFile(\""+path+"\")";
 	}
 
 }

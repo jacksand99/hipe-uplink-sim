@@ -11,7 +11,9 @@ import herschel.ia.gui.kernel.util.IconLoader;
 //import java.io.File;
 //import java.io.IOException;
 
+
 import javax.swing.Icon;
+
 
 
 
@@ -60,7 +62,9 @@ public class PorgFileComponent extends AbstractFileCommandComponent{
     @Override
     public void setTargetEditor(EditorComponent editor) {}*/
 	public String getCommandStatement() {
-        return PorUtils.class.getSimpleName()+".readPORGfromFile(\""+getFile().getAbsolutePath()+"\")";
+		String path=getFile().getAbsolutePath();
+		path=path.replace("\\", "\\\\");
+        return PorUtils.class.getSimpleName()+".readPORGfromFile(\""+path+"\")";
 	}
 
 }

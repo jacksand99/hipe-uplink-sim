@@ -15,6 +15,7 @@ import javax.swing.Icon;
 
 
 
+
 //import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationUtil;
 import vega.uplink.planning.Schedule;
@@ -72,7 +73,9 @@ public class ScheduleFileComponent extends AbstractFileCommandComponent{
         variableName = variableName.replaceAll("[.]ROS$", "");
         variableName = variableName.replaceAll("[.]xml$", "");
         variableName = InterpreterUtil.makeVariableName(variableName);*/
-        return ObservationUtil.class.getSimpleName()+".readScheduleFromFile(\""+getFile().getAbsolutePath()+"\")";
+		String path=getFile().getAbsolutePath();
+		path=path.replace("\\", "\\\\");
+        return ObservationUtil.class.getSimpleName()+".readScheduleFromFile(\""+path+"\")";
 		// TODO Auto-generated method stub
 		//return null;
 	}
