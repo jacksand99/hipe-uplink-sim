@@ -18,6 +18,11 @@ public class Specular extends PointingAttitude {
 		super(org);
 	}
 	
+	public Specular copy(){
+		Specular result = new Specular(super.copy());
+		return result;
+	}
+	
 	/**
 	 * Generates an attitude that points the boresight to the specular point wrt. Earth on an elliptical surface defined relative to the centre of CG.
 	 * @param boresight Vector defined in SC frame that shall be pointed to the target

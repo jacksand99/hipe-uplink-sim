@@ -97,5 +97,10 @@ public class IlluminatedPoint extends PointingAttitude {
 	public Surface getSurface(){
 		return (Surface) this.getChild("surface");
 	}
+	
+	public IlluminatedPoint copy(){
+		IlluminatedPoint result = new IlluminatedPoint(super.copy());
+		return result;
+	}
 
 }

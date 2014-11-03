@@ -33,6 +33,10 @@ public class TargetInert extends DirectionVector {
 	public TargetInert(PointingElement pm){
 		super(TARGET_TAG,pm);
 	}
+	public TargetInert copy(){
+		TargetInert result = new TargetInert(super.copy());
+		return result;
+	}
 	/**
 	 * Creates a target Direction vector referenced to another direction vector
 	 * Direction vectors can be defined by referencing to

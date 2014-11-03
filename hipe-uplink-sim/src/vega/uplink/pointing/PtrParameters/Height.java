@@ -21,6 +21,10 @@ public class Height extends PointingElement {
 	public Height(PointingElement org){
 		super(org);
 	}
+	public Height copy(){
+		Height result = new Height(super.copy());
+		return result;
+	}
 
 		/**
 		 * Creates a height with units and value

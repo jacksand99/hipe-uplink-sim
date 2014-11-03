@@ -109,11 +109,11 @@ public class PointingElement extends CompositeDataset  {
 		//result.setValue(getValue());
 		PointingElement[] ch = getChildren();
 		for (int i=0;i<ch.length;i++){
-			result.addChild(ch[i]);
+			result.addChild(ch[i].copy());
 		}
 		PointingElement[] att = getAttributes();
 		for (int i=0;i<att.length;i++){
-			result.addAttribute(att[i]);
+			result.addAttribute(att[i].copy());
 		}
 		return result;
 	}

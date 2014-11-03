@@ -44,6 +44,11 @@ public class OffsetRefAxis extends DirectionVector {
 	public OffsetRefAxis(PointingElement pm){
 		super(OFFSETREFAXIS_TAG,pm);
 	}
+	
+	public OffsetRefAxis copy(){
+		OffsetRefAxis result = new OffsetRefAxis(super.copy());
+		return result;
+	}
 	/**
 	 * Creates a offsetRefAxis Direction vector referenced to another direction vector
 	 * Direction vectors can be defined by referencing to

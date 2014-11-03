@@ -17,6 +17,11 @@ public class Terminator extends PointingAttitude {
 	public Terminator(PointingElement org){
 		super(org);
 	}
+	
+	public Terminator copy(){
+		Terminator result = new Terminator(super.copy());
+		return result;
+	}
 	/**
 	 * Generate an attitude that points the boresight to the point on the terminator that is in the comet-sun-SC plane and visible from the SC.
 	 * @param boresight Vector defined in SC frame that shall be pointed to the target

@@ -34,6 +34,11 @@ public class TargetDir extends DirectionVector {
 	public TargetDir(PointingElement pm){
 		super(TARGETDIR_TAG,pm);
 	}
+	
+	public TargetDir copy(){
+		TargetDir result = new TargetDir(super.copy());
+		return result;
+	}
 	/**
 	 * Creates a targetDir Direction vector referenced to another direction vector
 	 * Direction vectors can be defined by referencing to

@@ -69,6 +69,14 @@ public class DirectionVector extends PointingElement{
 		this.copyFrom(pm);
 		//super(pm);
 	}
+	
+	public DirectionVector copy(){
+		DirectionVector result = new DirectionVector(super.copy());
+		return result;
+	}
+	public DirectionVector(PointingElement org){
+		super(org);
+	}
 	public DirectionVector(String type){
 		super(type,"");
 	}

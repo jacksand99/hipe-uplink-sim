@@ -2,6 +2,7 @@ package vega.uplink.pointing.PtrParameters;
 
 
 import vega.uplink.pointing.PointingElement;
+import vega.uplink.pointing.attitudes.Velocity;
 
 /**
  * Vector defined in SC frame that shall be pointed to the target
@@ -17,6 +18,11 @@ public class Boresight extends DirectionVector{
 	public Boresight(){
 		//super("boresight");
 		this("SC",0,0,1);
+	}
+	
+	public Boresight copy(){
+		Boresight result = new Boresight(super.copy());
+		return result;
 	}
 	/**
 	 * Creates a boresight fixed direction vector expressed in spherical coordinates

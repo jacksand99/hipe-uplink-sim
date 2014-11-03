@@ -34,7 +34,7 @@ import vega.uplink.pointing.attitudes.Track;
  * @author jarenas
  *
  */
-public class Observation extends MapContext implements PointingBlockSetInterface,SequenceTimelineInterface{
+public class Observation extends MapContext implements PointingBlockSetInterface,SequenceTimelineInterface,java.lang.Comparable<Observation>{
 	private java.util.HashSet<ObservationListener> listeners;
 	private final Logger LOG = Logger.getLogger(Observation.class.getName());
 	public static boolean LISTEN=true;
@@ -540,6 +540,12 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 	}
 	public String toString(){
 		return this.getName();
+	}
+	@Override
+	public int compareTo(Observation o) {
+		if (this.getObsStartDate().before(o.getObsStartDate())) return -1;
+		if (this.getObsStartDate().after(o.getObsStartDate())) return 1;
+		return 1;
 	}
 	
 

@@ -24,6 +24,8 @@ public class DerivedPhaseAngle extends PointingAttitude {
 	 */
 	public DerivedPhaseAngle(PointingAttitude att){
 		super(att.getAttitudeType()+PointingAttitude.POWEROPTIMIZED_TAG);
+		//if (powerOptimized) return;
+		//else this(PointingElement)
 	}
 	/**
 	 * The derived pointing phaseAngle allows to modify the phaseAngle of an attitude. This is
@@ -36,6 +38,12 @@ public class DerivedPhaseAngle extends PointingAttitude {
 		//att.setBoresight(boresight);
 		setAttitude(att);
 	}
+	
+	public DerivedPhaseAngle copy(){
+		DerivedPhaseAngle result = new DerivedPhaseAngle((PointingElement)super.copy());
+		return result;
+	}
+
 	
 	
 	

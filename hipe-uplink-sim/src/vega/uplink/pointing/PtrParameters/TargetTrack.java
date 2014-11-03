@@ -7,6 +7,10 @@ public class TargetTrack extends StateVector {
 	public TargetTrack(PointingElement org){
 		super(org);
 	}
+	public TargetTrack copy(){
+		TargetTrack result = new TargetTrack(super.copy());
+		return result;
+	}
 	/**
 	 * Creates a new target refereed to a solar system object or landmarks defined in the PDFM
 	 * @param ref solar system object or landmarks defined in the PDFM

@@ -3,6 +3,7 @@ package vega.uplink.planning;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 import herschel.ia.pal.ListContext;
 import herschel.ia.pal.ProductRef;
@@ -75,13 +76,16 @@ public class ObservationsSchedule extends ListContext {
 	
 	public Observation[] getObservations(){
 		Set<ProductRef> allRefs = this.getAllRefs();
+		TreeSet<Observation> ordered=new TreeSet<Observation>();
+		//TreeSet<ProductRef> ordered=new TreeSet<ProductRef>(allRefs);
 		Observation[] result=new Observation[allRefs.size()];
 		Iterator<ProductRef> it = allRefs.iterator();
-		int locator=0;
+		//int locator=0;
 		while (it.hasNext()){
 			try {
-				result[locator]=(Observation) it.next().getProduct();
-				locator++;
+				ordered.add((Observation) it.next().getProduct());
+				//result[locator]=(Observation) it.next().getProduct();
+				//locator++;
 				
 			} catch (Exception e) {
 				IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
@@ -90,6 +94,7 @@ public class ObservationsSchedule extends ListContext {
 			} 
 			
 		}
+		result=ordered.toArray(result);
 		return result;
 	}
 	

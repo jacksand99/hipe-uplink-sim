@@ -56,6 +56,10 @@ public class StateVector extends PointingElement {
 	public StateVector(PointingElement org){
 		super(org);
 	}
+	public StateVector copy(){
+		StateVector result = new StateVector(super.copy());
+		return result;
+	}
 
 	/**
 	 * Creates a new StateVector refereed to a solar system object or landmarks defined in the PDFM

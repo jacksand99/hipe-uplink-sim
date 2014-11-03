@@ -8,6 +8,12 @@ public class PointedAxis extends DirectionVector{
         public PointedAxis(PointingElement pm){
                 super(POINTED_AXIS_TAG,pm);
         }
+        
+    	public PointedAxis copy(){
+    		PointedAxis result = new PointedAxis(super.copy());
+    		return result;
+    	}
+
     	/**
     	 * Creates a pointedAxis fixed direction vector expressed in spherical coordinates
     	 * For spherical coordinates the element must

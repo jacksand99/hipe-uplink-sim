@@ -20,6 +20,11 @@ public class Velocity extends PointingAttitude {
 	public Velocity(){
 		super(PointingAttitude.POINTING_ATTITUDE_TYPE_VELOCITY);
 	}
+	
+	public Velocity copy(){
+		Velocity result = new Velocity(super.copy());
+		return result;
+	}
 	/**
 	 * Creates an attitude pointing the boresight along the velocity vector of the SC relative to CG.
 	 * @param boresight Vector defined in SC frame that shall be pointed to the target

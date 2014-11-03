@@ -18,6 +18,11 @@ public class Track extends PointingAttitude {
 	public Track(PointingElement org){
 		super(org);
 	}
+	
+	public Track copy(){
+		Track result = new Track(super.copy());
+		return result;
+	}
 	/**
 	 * Creates an Attitude where the target is given by a solar system object or landmark.
 	 * @param boresight Vector defined in SC frame that shall be pointed to the target

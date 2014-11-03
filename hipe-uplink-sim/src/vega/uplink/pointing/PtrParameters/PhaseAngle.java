@@ -110,6 +110,11 @@ public class PhaseAngle extends PointingElement {
 	public PhaseAngle(PointingElement org){
 		super(org);
 	}
+	
+	public PhaseAngle copy(){
+		PhaseAngle result = new PhaseAngle(super.copy());
+		return result;
+	}
 
 	/**
 	 * Flip: This phase angle is used to support comet fly-bys

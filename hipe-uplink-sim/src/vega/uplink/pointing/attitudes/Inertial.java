@@ -20,6 +20,11 @@ public class Inertial extends PointingAttitude {
 	public Inertial(PointingElement org){
 		super(org);
 	}
+	
+	public Inertial copy(){
+		Inertial result = new Inertial(super.copy());
+		return result;
+	}
 	/**
 	 * Creates an Attitude where the boresight is aligned with a fixed vector given relative to inertialframe.
 	 * @param boresight Vector defined in SC frame that shall be pointed to the target

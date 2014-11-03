@@ -12,6 +12,11 @@ public class Surface extends PointingElement {
 		
 		super(org);
 	}
+	
+	public Surface copy(){
+		Surface result = new Surface(super.copy());
+		return result;
+	}
 	/**
 	 * Creates a surface referenced to the CG surface
 	 */

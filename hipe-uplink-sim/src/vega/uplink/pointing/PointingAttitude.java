@@ -57,6 +57,11 @@ public class PointingAttitude extends PointingElement{
 	public PointingAttitude(PointingElement org){
 		super(org);
 	}
+	
+	public PointingAttitude copy(){
+		PointingAttitude result = new PointingAttitude(super.copy());
+		return result;
+	}
 
 	/**
 	 * Creates a pointing attitude of the given type
@@ -175,7 +180,7 @@ public class PointingAttitude extends PointingElement{
 	}
 
 	
-	public PointingAttitude copy() {
+	/*public PointingAttitude copy() {
 		PointingAttitude result = new PointingAttitude(getAttitudeType());
 		PointingElement[] ch = getChildren();
 		for (int i=0;i<ch.length;i++){
@@ -183,7 +188,7 @@ public class PointingAttitude extends PointingElement{
 		}
 		
 		return result;
-	}
+	}*/
 
 
 }

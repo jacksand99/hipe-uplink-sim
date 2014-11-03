@@ -4,6 +4,7 @@ import java.util.Date;
 
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingElement;
+import vega.uplink.pointing.PtrParameters.TargetTrack;
 
 public abstract class OffsetAngles extends PointingElement {
 	/**
@@ -33,6 +34,11 @@ public abstract class OffsetAngles extends PointingElement {
 	public OffsetAngles(PointingElement org){
 		super(org);
 	}
+	
+	/*public OffsetAngles copy(){
+		OffsetAngles result = new OffsetAngles(super.copy());
+		return result;
+	}*/
 
 	/**
 	 * Creates an offset rotation referenced to another offset rotation

@@ -29,6 +29,11 @@ public class Capture extends PointingAttitude {
 		//this.addChild(new PointingMetadata("captureTime",PointingBlock.dateToZulu(captureDate)));
 	}
 	
+	public Capture copy(){
+		Capture result = new Capture(super.copy());
+		return result;
+	}
+	
 	/**
 	 * Get the time at which the attitude is evaluated
 	 * @return

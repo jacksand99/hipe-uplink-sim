@@ -19,6 +19,11 @@ public class Limb extends PointingAttitude {
 	public Limb(PointingElement org){
 		super(org);
 	}
+	
+	public Limb copy(){
+		Limb result = new Limb(super.copy());
+		return result;
+	}
 	/**
 	 * Creates an Attitude that points the boresight to an user-selected point relative to the limb of CG.
 	 * @param boresight Vector defined in SC frame that shall be pointed to the target

@@ -393,6 +393,10 @@ public class OffsetCustom extends OffsetAngles {
 
 		return result;
 	}
+	/*public OffsetCustom copy(){
+		OffsetCustom result = new OffsetCustom(super.copy());
+		return result;
+	}*/
 	
 	private void normalize(){
 		try{
