@@ -20,13 +20,14 @@ public class TestCommanding {
     	herschel.share.util.Configuration.setProperty("var.hcss.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
     	herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
     	herschel.share.util.Configuration.setProperty("vega.mib.location", "/Users/jarenas 1/Downloads/MAPPS/MIB");
+    	System.out.println(Properties.getProperty("vega.file.type.POR"));
 
     	Fecs older;
 		try {
 			Date MTP_008_start = PointingBlock.zuluToDate("2014-09-23T10:00:00");
 			Date MTP_008_end = PointingBlock.zuluToDate("2014-10-24T10:00:00");
 			
-			older = PorUtils.readFecsFromFile("/Users/jarenas 1/OPS/FECS/FECS_DL_001_02_______00032.ROS");
+			older = PorUtils.readFecsFromFile("/Users/jarenas 1/OPS/FECS/FECS_DL_003_01_______00043.ROS");
 			Fecs newer = PorUtils.readFecsFromFile("/Users/jarenas 1/OPS/FECS/FECS_DL_001_02_______00033.ROS");
 			Fecs older_mtp008 = older.getSubFecs(MTP_008_start, MTP_008_end).getSubFecs("DSS");
 			Fecs newer_mtp008 = newer.getSubFecs(MTP_008_start, MTP_008_end).getSubFecs("DSS");

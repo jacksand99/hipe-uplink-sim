@@ -9,6 +9,19 @@ public class ObservationOffsetFixed extends OffsetFixed{
 	private  long startTimeDelta;
 	private Observation parent; 
 	
+	public ObservationOffsetFixed(PointingElement pm){
+		super(pm);
+	}
+	
+	public ObservationOffsetFixed copy(){
+		ObservationOffsetFixed result = new ObservationOffsetFixed(parent,startTimeEvent,startTimeDelta,super.copy());
+		return result;
+
+		/*ObservationOffsetFixed result = new ObservationOffsetFixed(super.copy());
+		return result;*/
+	}
+
+	
 	/**
 	 * OffsetFixed that is driven by an Observation event instead of times for start time of the offset
 	 * @param parent

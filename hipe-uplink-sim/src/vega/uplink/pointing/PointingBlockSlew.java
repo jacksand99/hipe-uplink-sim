@@ -21,7 +21,7 @@ public class PointingBlockSlew extends PointingBlock {
 	 * @param before
 	 */
 	public void setBlockBefore(PointingBlockInterface before){
-		if (before!=null) if (before.getType().equals("SLEW")) throw new IllegalArgumentException("Trying to put two consecutive slews");
+		if (before!=null) if (before.getType().equals("SLEW")) throw new IllegalArgumentException("Trying to put two consecutive slews "+PointingBlock.dateToZulu(before.getStartTime()));
 		blockBefore=before;
 	}
 	/**
@@ -29,7 +29,7 @@ public class PointingBlockSlew extends PointingBlock {
 	 * @param before
 	 */
 	public void setBlockAfter(PointingBlockInterface after){
-		if (after!=null) if (after.getType().equals("SLEW")) throw new IllegalArgumentException("Trying to put to consecutive slews");
+		if (after!=null) if (after.getType().equals("SLEW")) throw new IllegalArgumentException("Trying to put to consecutive slews "+PointingBlock.dateToZulu(after.getEndTime()));
 		blockAfter=after;
 	}
 	
@@ -47,10 +47,13 @@ public class PointingBlockSlew extends PointingBlock {
 	}
 	
 	public java.util.Date getStartTime(){
+		if (blockBefore==null) throw new IllegalArgumentException("Trying to get the start time of slew with no block before");
+
 		return blockBefore.getEndTime();
 	}
 	
 	public java.util.Date getEndTime(){
+		if (blockAfter==null) throw new IllegalArgumentException("Trying to get the end time of slew with no block after");
 		return blockAfter.getStartTime();
 	}
 	

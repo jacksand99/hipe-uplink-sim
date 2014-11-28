@@ -9,7 +9,8 @@ import herschel.ia.dataset.StringParameter;
 import herschel.ia.dataset.TableDataset;
 import herschel.ia.numeric.String1d;
 import herschel.share.fltdyn.time.FineTime;
-import herschel.share.io.FileUtil;
+//import herschel.share.io.FileUtil;
+import vega.hipe.FileUtil;
 
 
 import herschel.share.io.archive.ArchiveReader;
@@ -47,6 +48,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 
 
 
@@ -565,15 +567,38 @@ public class PorUtils {
 			while (it.hasNext()){
 				Date passStart=it.next();
 				Date passEnd=eotNodes.ceilingKey(passStart);
+				Node endNode = eotNodes.get(passEnd);
+				String stationEnd = endNode.getAttributes().getNamedItem("ems:station").getNodeValue();
+				Node startNode=botNodes.get(passStart);
+				String stationStart=startNode.getAttributes().getNamedItem("ems:station").getNodeValue();
+				if (!stationEnd.equals(stationStart)){
+					LOG.severe("Pass not included. Overlapping passes BOT station "+stationStart+" EOT station "+stationEnd);
+					LOG.severe("BOT count "+startNode.getAttributes().getNamedItem("count").getNodeValue());
+					LOG.severe("EOT count "+endNode.getAttributes().getNamedItem("count").getNodeValue());
+					//throw new IllegalArgumentException("FECS format invalid. Overlapping passes BOT count "+countStart+" EOT count "+countEnd);
+				}
+				else{
 				SortedMap<Date, Node> subStadMap = stadNodes.subMap(passStart, passEnd);
 				Iterator<Date> it2 = subStadMap.keySet().iterator();
-				while(it2.hasNext()){
-					Date dumpStart=it2.next();
-					Date dumpEnd=stodNodes.ceilingKey(dumpStart);
-					String station=botNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
-					float tmRate=Float.parseFloat(stadNodes.get(dumpStart).getAttributes().getNamedItem("tm_rate").getTextContent());
-					GsPass pass=new GsPass(passStart,passEnd,dumpStart,dumpEnd,station,tmRate);
-					result.addPass(pass);
+					while(it2.hasNext()){
+						Date dumpStart=it2.next();
+						Date dumpEnd=stodNodes.ceilingKey(dumpStart);
+						//Node dumpStartNode=subStadMap.get(dumpStart);
+						//Node dumpStopNode=
+						String station=botNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
+						float tmRate=Float.parseFloat(stadNodes.get(dumpStart).getAttributes().getNamedItem("tm_rate").getTextContent());
+						String stadStation = stadNodes.get(dumpStart).getAttributes().getNamedItem("ems:station").getTextContent();
+						String stodStation = stodNodes.get(dumpEnd).getAttributes().getNamedItem("ems:station").getTextContent();
+						if (stadStation.equals(stodStation)){
+							GsPass pass=new GsPass(passStart,passEnd,dumpStart,dumpEnd,station,tmRate);
+							result.addPass(pass);
+						}else{
+							LOG.severe("Pass not included. Overlapping passes STAD station "+stadStation+" STOD station "+stodStation);
+							LOG.severe("STAD count "+stadNodes.get(dumpStart).getAttributes().getNamedItem("count").getTextContent());
+							LOG.severe("STOD count "+stodNodes.get(dumpEnd).getAttributes().getNamedItem("count").getTextContent());
+							
+						}
+					}
 				}
 			}
 			/*Iterator<Date> it2 = botbNodes.keySet().iterator();
@@ -590,7 +615,14 @@ public class PorUtils {
 				Date passStart=it3.next();
 				Date passEnd=eoabNodes.ceilingKey(passStart);
 				String station=boabNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
-				result.addPass(new GsPassOAB(passStart,passEnd,station));
+				String endStation=eoabNodes.get(passEnd).getAttributes().getNamedItem("ems:station").getTextContent();
+				if (station.equals(endStation)){
+					result.addPass(new GsPassOAB(passStart,passEnd,station));
+				}else{
+					LOG.severe("Pass not included. Overlapping passes BOAB station "+station+" EOAB station "+endStation);
+					LOG.severe("STAD count "+boabNodes.get(passStart).getAttributes().getNamedItem("count").getTextContent());
+					LOG.severe("STOD count "+eoabNodes.get(passEnd).getAttributes().getNamedItem("count").getTextContent());
+				}
 				
 			}
 

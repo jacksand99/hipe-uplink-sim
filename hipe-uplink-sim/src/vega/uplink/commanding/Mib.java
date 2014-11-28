@@ -29,7 +29,8 @@ import herschel.ia.io.ascii.CsvParser;
 import herschel.ia.io.ascii.TableTemplate;
 import herschel.ia.numeric.String1d;
 import herschel.share.interpreter.InterpreterUtil;
-import herschel.share.io.FileUtil;
+//import herschel.share.io.FileUtil;
+import vega.hipe.FileUtil;
 import herschel.share.util.Configuration;
 import herschel.share.util.ObjectUtil;
 

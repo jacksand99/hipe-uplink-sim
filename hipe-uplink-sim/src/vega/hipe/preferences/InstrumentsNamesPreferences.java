@@ -22,6 +22,11 @@ public class InstrumentsNamesPreferences extends PreferencesPanel{
 	 */
 	private static final long serialVersionUID = 1L;
 	private JTextField _fieldA;
+	public InstrumentsNamesPreferences(){
+		super();
+		//Thread.dumpStack();
+		//System.out.println("InstrumentsNamesPreferences constructor");
+	}
 	//TableScrollPane table;
 	@Override
 	protected void makeContent() {

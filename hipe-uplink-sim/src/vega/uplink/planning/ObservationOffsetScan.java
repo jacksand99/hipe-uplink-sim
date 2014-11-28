@@ -9,6 +9,17 @@ public class ObservationOffsetScan extends OffsetScan{
 	private  long startTimeDelta;
 	private Observation parent; 
 	
+	public ObservationOffsetScan(PointingElement pm){
+		super(pm);
+	}
+	
+	public ObservationOffsetScan copy(){
+		ObservationOffsetScan result = new ObservationOffsetScan(parent,startTimeEvent,startTimeDelta,super.copy());
+		return result;
+		/*ObservationOffsetScan result = new ObservationOffsetScan(super.copy());
+		return result;*/
+	}
+	
 	/**
 	 * OffsetScan that is driven by an Observation event instead of times for start time of the offset
 	 * @param parent

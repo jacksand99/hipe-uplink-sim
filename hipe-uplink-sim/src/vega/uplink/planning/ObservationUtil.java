@@ -236,7 +236,7 @@ public class ObservationUtil {
 			for (int i=0;i<blocks.length;i++){
 				result.addObservationBlock(blocks[i]);
 			}
-
+			//System.out.println(result.getPointing().toXml(0));
 			return result;
 			
 		    } catch (Exception e) {
@@ -329,8 +329,8 @@ public class ObservationUtil {
 	
 	private static PointingBlock translatePointingBlock(PointingElement pe,Observation obs){
 		PointingBlock result;
-		pe.getChild("startTime").setValue(PointingBlock.dateToZulu(new Date()));
-		pe.getChild("endTime").setValue(PointingBlock.dateToZulu(new Date()));
+		pe.getChild("startTime").setValue(PointingBlock.dateToZulu(obs.getObsStartDate()));
+		pe.getChild("endTime").setValue(PointingBlock.dateToZulu(obs.getObsEndDate()));
 		PointingElement at = pe.getChild(PointingAttitude.ATTITUDE_TAG);
 		PointingElement os = at.getChild(OffsetAngles.OFFSETANGLES_TAG);
 		if (os!=null){
@@ -340,12 +340,14 @@ public class ObservationUtil {
 			attitude.addChild(ofAngles);
 			result=new PointingBlock(pe);
 			result.setAttitude(attitude);
+			//System.out.println(result.toXml(0));
 		}else{
 			PointingAttitude attitude=new PointingAttitude(at);
 			
 			result=new PointingBlock(pe);
 			result.setAttitude(attitude);
 		}
+		//System.out.println(result.toXml(0));
 		return result;
 
 	}
@@ -397,6 +399,7 @@ public class ObservationUtil {
 				}
 				try{
 					result[temp]=new ObservationPointingBlock(obs,new ObservationEvent(startEventName),ObservationUtil.getOffsetMilliSeconds(startOffSet),new ObservationEvent(endEventName),ObservationUtil.getOffsetMilliSeconds(endOffSet),pb);
+					//System.out.println(result[temp].toXml(0));
 				}catch (Exception e){
 					IllegalArgumentException iae = new IllegalArgumentException("Could not read ObservationPointingBlock "+pe.toXml(0)+" "+e.getMessage());
 					iae.initCause(e);

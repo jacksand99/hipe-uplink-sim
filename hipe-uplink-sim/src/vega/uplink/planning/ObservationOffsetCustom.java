@@ -3,6 +3,7 @@ import java.util.Date;
 
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingElement;
+import vega.uplink.pointing.PtrParameters.TargetDir;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetCustom;
 public class ObservationOffsetCustom extends OffsetCustom{
 	private ObservationEvent startTimeEvent;
@@ -83,6 +84,18 @@ public class ObservationOffsetCustom extends OffsetCustom{
 
 		return tempElement.toXml(indent);
 		
+	}
+	
+	public ObservationOffsetCustom(PointingElement pm){
+		super(pm);
+	}
+	
+	public ObservationOffsetCustom copy(){
+		ObservationOffsetCustom result = new ObservationOffsetCustom(parent,startTimeEvent,startTimeDelta,super.copy());
+		return result;
+
+		/*ObservationOffsetCustom result = new ObservationOffsetCustom(super.copy());
+		return result;*/
 	}
 
 

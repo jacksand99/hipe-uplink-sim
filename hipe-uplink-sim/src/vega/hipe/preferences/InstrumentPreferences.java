@@ -2,10 +2,12 @@ package vega.hipe.preferences;
 
 import static javax.swing.GroupLayout.Alignment.BASELINE;
 
-import java.awt.Color;
+
+//import java.awt.Color;
 import java.awt.Dimension;
-import java.util.List;
+//import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
@@ -14,31 +16,40 @@ import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JTextField;
 
 import vega.uplink.Properties;
+//import vega.uplink.planning.gui.ScheduleViewer;
 import herschel.ia.gui.kernel.prefs.PreferencesPanel;
-import herschel.ia.gui.kernel.prefs.handler.LongPreferenceHandler;
+//import herschel.ia.gui.kernel.prefs.handler.LongPreferenceHandler;
 import herschel.ia.gui.kernel.prefs.handler.StringPreferenceHandler;
-import herschel.ia.gui.kernel.prefs.handler.IntegerPreferenceHandler;
+//import herschel.ia.gui.kernel.prefs.handler.IntegerPreferenceHandler;
 import herschel.ia.gui.kernel.prefs.handler.ColorPreferenceHandler;
-import herschel.ia.gui.kernel.util.component.FilePathPanel;
+//import herschel.ia.gui.kernel.util.component.FilePathPanel;
 import herschel.ia.gui.kernel.util.component.ColorButton;
-import herschel.ia.gui.kernel.util.field.FileSelectionMode;
-import herschel.ia.gui.kernel.util.field.LongField;
-import herschel.share.swing.JIntegerField;
+//import herschel.ia.gui.kernel.util.field.FileSelectionMode;
+//import herschel.ia.gui.kernel.util.field.LongField;
+//import herschel.share.swing.JIntegerField;
 import herschel.share.swing.JLongField;
 import herschel.share.util.Configuration;
 
 public class InstrumentPreferences extends PreferencesPanel {
 	private String instrument;
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5L;
     private JTextField _fieldA;
     private JTextField _fieldB;
     private ColorButton _fieldC;
     private JLongField _fieldD;
     private JTextField _fieldE;
+    private static final Logger LOG = Logger.getLogger(InstrumentPreferences.class.getName());
     //private FilePathPanel _fieldF;
-
+    public InstrumentPreferences(){
+    	super();
+    	//Thread.dumpStack();
+		//LOG.info("Instrument Preferences constructor");
+		//System.out.println("Instrument Preferences constructor");
+    }
 	@Override
 	protected void makeContent() {
+		LOG.info("Make content for config panel of instrument "+instrument);
+		System.out.println("Make content for config panel of instrument "+instrument);
 		// TODO Auto-generated method stub
 		//System.out.println("makeContent");
 		String categoryPath = this.getCategoryPath();
@@ -106,6 +117,7 @@ public class InstrumentPreferences extends PreferencesPanel {
 
 	@Override
 	protected void registerHandlers() {
+		LOG.info("registering handlers for "+instrument);
     	registerHandler(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument,new StringPreferenceHandler(Configuration.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument, ""),_fieldA,Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument));
        	registerHandler(Properties.SUBINSTRUMENT_MODE_START_PROPERTY_PREFIX+instrument,new StringPreferenceHandler(Configuration.getProperty(Properties.SUBINSTRUMENT_MODE_START_PROPERTY_PREFIX+instrument, ""),_fieldB,Properties.SUBINSTRUMENT_MODE_START_PROPERTY_PREFIX+instrument));
        	registerHandler(Properties.ANTENNA_PRIORITY_PARAMETER_PREFIX+instrument,new StringPreferenceHandler(Configuration.getProperty(Properties.ANTENNA_PRIORITY_PARAMETER_PREFIX+instrument, ""),_fieldE,Properties.ANTENNA_PRIORITY_PARAMETER_PREFIX+instrument));
@@ -125,6 +137,7 @@ public class InstrumentPreferences extends PreferencesPanel {
 	}
 	
 	public void setInstrument(String instrument){
+		LOG.info("Setting instrument "+instrument);
 		this.instrument=instrument;
 	}
 	/*private int getColor(String preference){

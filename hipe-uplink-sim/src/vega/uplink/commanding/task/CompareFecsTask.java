@@ -66,7 +66,11 @@ public class CompareFecsTask extends Task {
         if (newerFecs == null) {
             throw (new NullPointerException("Missing newerFecs value"));
         }
-        olderFecs=olderFecs.getSubFecs(newerFecs.getValidityStart(), newerFecs.getValidityEnd());
+        String oldName = olderFecs.getName();
+        Date startDate = newerFecs.getValidityStart();
+        //if (new Date().after(startDate)) startDate=new Date();
+        olderFecs=olderFecs.getSubFecs(startDate, newerFecs.getValidityEnd());
+        olderFecs.setName(oldName);
         String station=(String) getParameter("station").getValue();
         if (station!=null) {
         	if (station.equals("ESA")){
@@ -96,14 +100,23 @@ public class CompareFecsTask extends Task {
         		message=message+newerFecs.getName()+" 70 m (h/day):"+newerFecs.getHoursDay70m()+"\n";
         		message=message+olderFecs.getName()+" BSR (h):"+olderFecs.getBSRHours()+"\n";
         		message=message+newerFecs.getName()+" BSR (h):"+newerFecs.getBSRHours()+"\n";*/
-        		message=message+ "<table class=\"gridtable\">\n"
+        		/*message=message+ "<table class=\"gridtable\">\n"
         				+ "<tr>\n"
         				+ "	<th>FECS</th><th>34 m pass (h/day)</th><th>34 m dump (h/day)</th><th>70 m pass (h/day)</th><th>70 m dump (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
         				+ "</tr>\n";
         		message=message+ "<tr>\n"
         				+ "	<td>"+olderFecs.getName()+"</td><td>"+olderFecs.getPassHoursDay35m()+"</td><td>"+olderFecs.getDumpHoursDay35m()+"</td><td>"+olderFecs.getPassHoursDay70m()+"</td><td>"+olderFecs.getDumpHoursDay70m()+"</td><td>"+olderFecs.getBSRHoursDay()+"</td><td>"+olderFecs.getTotalDataDump()+"</td></tr>\n"
         				+ "	<td>"+newerFecs.getName()+"</td><td>"+newerFecs.getPassHoursDay35m()+"</td><td>"+newerFecs.getDumpHoursDay35m()+"</td><td>"+newerFecs.getPassHoursDay70m()+"</td><td>"+newerFecs.getDumpHoursDay70m()+"</td><td>"+newerFecs.getBSRHoursDay()+"</td><td>"+newerFecs.getTotalDataDump()+"</td>\n"
-        				+ "</tr></table>\n";      		
+        				+ "</tr></table>\n";    */
+	        	message=message+ "<table class=\"gridtable\">\n"
+        				+ "<tr>\n"
+        				+ "	<th>FECS</th><th>ESA pass duration (h/day)</th><th>ESA dump duration (h/day)</th><th>DSN 34m pass duration (h/day)</th><th>DSN 34m dump duration (h/day)</th><th>DSN 70m pass duration (h/day)</th><th>DSN 70m dump duration (h/day)</th><th>BSR/LBS/USO passes (h/day)</th>\n"
+        				+ "</tr>\n";
+        		message=message+ "<tr>\n"
+        				+ "	<td>"+olderFecs.getName()+"</td><td>"+olderFecs.getSubFecsESA().getPassHoursDay35m()+"</td><td>"+olderFecs.getSubFecsESA().getDumpHoursDay35m()+"</td><td>"+olderFecs.getSubFecsDSN().getPassHoursDay35m()+"</td><td>"+olderFecs.getSubFecsDSN().getDumpHoursDay35m()+"</td><td>"+olderFecs.getSubFecsDSN().getPassHoursDay70m()+"</td><td>"+olderFecs.getSubFecsDSN().getDumpHoursDay70m()+"</td><td>"+olderFecs.getBSRHoursDay()+"</td></tr>\n"
+        				+ "	<td>"+newerFecs.getName()+"</td><td>"+newerFecs.getSubFecsESA().getPassHoursDay35m()+"</td><td>"+newerFecs.getSubFecsESA().getDumpHoursDay35m()+"</td><td>"+newerFecs.getSubFecsDSN().getPassHoursDay35m()+"</td><td>"+newerFecs.getSubFecsDSN().getDumpHoursDay35m()+"</td><td>"+newerFecs.getSubFecsDSN().getPassHoursDay70m()+"</td><td>"+newerFecs.getSubFecsDSN().getDumpHoursDay70m()+"</td><td>"+newerFecs.getBSRHoursDay()+"</td></tr>\n"
+        				+ "</tr></table>\n";  
+
 
         		
         		
@@ -118,7 +131,8 @@ public class CompareFecsTask extends Task {
         }else{
         	PtrSegment[] segments = ptsl.getSegments();
         	for (int i=0;i<segments.length;i++){
-        		if (segments[i].getEndDate().toDate().after(newerFecs.getValidityStart())){
+        		//if (segments[i].getEndDate().toDate().after(newerFecs.getValidityStart())){
+        		if (segments[i].getEndDate().toDate().after(new Date())){
 	        		String name=segments[i].getName();
 	        		Date start=segments[i].getSegmentStartDate();
 	        		Date end=segments[i].getSegmentEndDate();
@@ -139,7 +153,7 @@ public class CompareFecsTask extends Task {
 	        				+ "</tr>\n"
 	        				+ "</table>\n";
 	        		message=message+"<br><br>";
-	        		message=message+ "<table class=\"gridtable\">\n"
+	        		/*message=message+ "<table class=\"gridtable\">\n"
 	        				+ "<tr>\n"
 	        				+ "	<th>FECS</th><th>34 m pass (h/day)</th><th>34 m dump (h/day)</th><th>70 m pass (h/day)</th><th>70 m dump (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
 	        				+ "</tr>\n";
@@ -148,7 +162,24 @@ public class CompareFecsTask extends Task {
 	        				+ "	<td>"+newFecs.getName()+"</td><td>"+newFecs.getPassHoursDay35m()+"</td><td>"+newFecs.getDumpHoursDay35m()+"</td><td>"+newFecs.getPassHoursDay70m()+"</td><td>"+newFecs.getDumpHoursDay70m()+"</td><td>"+newFecs.getBSRHoursDay()+"</td><td>"+newFecs.getTotalDataDump()+"</td>\n"
 	        				+ "</tr></table>\n";      		
 	
-	        		message=message+"<br><br>";
+	        		message=message+"<br><br>";*/
+	        	message=message+ "<table class=\"gridtable\">\n"
+	        				+ "<tr>\n"
+	        				+ "	<th>FECS</th><th>ESA pass duration (h/day)</th><th>ESA dump duration (h/day)</th><th>DSN 34m pass duration (h/day)</th><th>DSN 34m dump duration (h/day)</th><th>DSN 70m pass duration (h/day)</th><th>DSN 70m dump duration (h/day)</th><th>BSR/LBS/USO passes (h/day)</th>\n"
+	        				+ "</tr>\n";
+	        		message=message+ "<tr>\n"
+	        				+ "	<td>"+oldFecs.getName()+"</td><td>"+oldFecs.getSubFecsESA().getPassHoursDay35m()+"</td><td>"+oldFecs.getSubFecsESA().getDumpHoursDay35m()+"</td><td>"+oldFecs.getSubFecsDSN().getPassHoursDay35m()+"</td><td>"+oldFecs.getSubFecsDSN().getDumpHoursDay35m()+"</td><td>"+oldFecs.getSubFecsDSN().getPassHoursDay70m()+"</td><td>"+oldFecs.getSubFecsDSN().getDumpHoursDay70m()+"</td><td>"+oldFecs.getBSRHoursDay()+"</td></tr>\n"
+	        				+ "	<td>"+newFecs.getName()+"</td><td>"+newFecs.getSubFecsESA().getPassHoursDay35m()+"</td><td>"+newFecs.getSubFecsESA().getDumpHoursDay35m()+"</td><td>"+newFecs.getSubFecsDSN().getPassHoursDay35m()+"</td><td>"+newFecs.getSubFecsDSN().getDumpHoursDay35m()+"</td><td>"+newFecs.getSubFecsDSN().getPassHoursDay70m()+"</td><td>"+newFecs.getSubFecsDSN().getDumpHoursDay70m()+"</td><td>"+newFecs.getBSRHoursDay()+"</td></tr>\n"
+	        				+ "</tr></table>\n";  
+	           		/*message=message+ "<table class=\"gridtable\">\n"
+	        				+ "<tr>\n"
+	        				+ "	<th>FECS</th><th>34 m pass (h/day)</th><th>34 m dump (h/day)</th><th>70 m pass (h/day)</th><th>70 m dump (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
+	        				+ "</tr>\n";
+	        		message=message+ "<tr>\n"
+	        				+ "	<td>"+olderFecs.getName()+"</td><td>"+olderFecs.getPassHoursDay35m()+"</td><td>"+olderFecs.getDumpHoursDay35m()+"</td><td>"+olderFecs.getPassHoursDay70m()+"</td><td>"+olderFecs.getDumpHoursDay70m()+"</td><td>"+olderFecs.getBSRHoursDay()+"</td><td>"+olderFecs.getTotalDataDump()+"</td></tr>\n"
+	        				+ "	<td>"+newerFecs.getName()+"</td><td>"+newerFecs.getPassHoursDay35m()+"</td><td>"+newerFecs.getDumpHoursDay35m()+"</td><td>"+newerFecs.getPassHoursDay70m()+"</td><td>"+newerFecs.getDumpHoursDay70m()+"</td><td>"+newerFecs.getBSRHoursDay()+"</td><td>"+newerFecs.getTotalDataDump()+"</td>\n"
+	        				+ "</tr></table>\n"; */     		
+
 	
 	        		
 	            	try{

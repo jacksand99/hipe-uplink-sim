@@ -432,7 +432,11 @@ public class PtrSegment extends PointingBlocksSlice{
 					if (before_is_slew){
 						//The last object is a slew
 						if (new_is_slew){
-							throw new IllegalArgumentException("Two consecutives slews are not accepted at "+PointingBlock.dateToZulu(before.getEndTime()));
+							try{
+								throw new IllegalArgumentException("Two consecutives slews are not accepted at "+PointingBlock.dateToZulu(before.getEndTime()));
+							}catch (IllegalArgumentException e){
+								throw new IllegalArgumentException("Two consecutives slews are not accepted at "+PointingBlock.dateToZulu(before.getStartTime()));							
+							}
 							//return; //can not insert a slew after a slew
 						}
 						((PointingBlockSlew) before).setBlockAfter(newBlock);
@@ -715,6 +719,16 @@ public class PtrSegment extends PointingBlocksSlice{
 		pbs.setBlocks(resultArray);
 		pbs.setName(blockType);
 		return pbs;
+	}
+	public PointingBlock[] getAllSlews(){
+		java.util.Vector<PointingBlock> result=new java.util.Vector<PointingBlock>();
+		PointingBlock[] blocks = getBlocks();
+		for (int i=0;i<blocks.length;i++){
+			if (blocks[i].getType().equals("SLEW")) result.add(blocks[i]);
+		}
+		PointingBlock[] resultArray=new PointingBlock[result.size()];
+		result.toArray(resultArray);
+		return resultArray;
 	}
 	public PointingBlocksSlice getAllBlocksOfVstp(int vstp){
 		TreeMap<Integer, Date> vstpMap = getVstpMap();

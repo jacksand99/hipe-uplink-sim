@@ -9,6 +9,18 @@ public class ObservationOffsetRaster extends OffsetRaster{
 	private  long startTimeDelta;
 	private Observation parent; 
 	
+	public ObservationOffsetRaster(PointingElement pm){
+		super(pm);
+	}
+	
+	public ObservationOffsetRaster copy(){
+		ObservationOffsetRaster result = new ObservationOffsetRaster(parent,startTimeEvent,startTimeDelta,super.copy());
+		return result;
+
+		/*ObservationOffsetRaster result = new ObservationOffsetRaster(super.copy());
+		return result;*/
+	}
+
 	/**
 	 * OffsetRaster that is driven by an Observation event instead of times for start time of the offset
 	 * @param parent
