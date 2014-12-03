@@ -8,7 +8,9 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,14 +20,18 @@ import java.util.logging.Logger;
 
 import herschel.ia.gui.kernel.parts.ViewPart;
 import herschel.ia.gui.kernel.parts.Viewable;
+import herschel.ia.gui.kernel.menus.ActionBars;
 import herschel.ia.gui.kernel.menus.ActionBarsHolder;
 import herschel.ia.gui.kernel.menus.ActionMaker;
+import herschel.ia.gui.kernel.menus.Insert;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -42,10 +48,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 
+import herschel.ia.gui.kernel.AbstractSiteAction;
+import herschel.ia.gui.kernel.SiteAction;
 import herschel.ia.gui.kernel.SiteEvent;
 import herschel.ia.gui.kernel.SiteEventListener;
 import herschel.share.interpreter.InterpreterFactory;
 import herschel.share.interpreter.InterpreterNameSpaceUtil;
+import vega.hipe.git.HipeGit;
 //import herschel.share.util.Configuration;
 import vega.uplink.Properties;
 //import rosetta.uplink.commanding.Simulation;
@@ -61,8 +70,11 @@ import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
 
 import java.lang.Runnable;
+import java.net.URL;
 
 import javax.swing.*; 
+
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 
 public class SimulationView extends JPanel implements Viewable, ActionMaker, SiteEventListener {
@@ -100,6 +112,7 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 	
     public SimulationView(){
     	super();
+    	//this.registerGitMenus();
     	context=new SimulationContext();
     	itlFile=null;
     	evtFile=null;
@@ -882,11 +895,14 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 	@Override
 	public void init(ViewPart arg0) {
 		_part=arg0;
+		//registerGitMenus();
 
 	}
 	
 	private interface ActionRunnable extends ActionListener,Runnable{
 		
 	}
+	
+
 
 }

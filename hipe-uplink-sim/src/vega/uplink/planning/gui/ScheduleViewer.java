@@ -292,7 +292,8 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 		//TimeBarModel model= new ScheduleModel(schedule);
 		model= new ScheduleModel(schedule);
 		//LOG.info("finsih Creating model");
-        TimeBarViewer tbv = new TimeBarViewer(model);
+        //TimeBarViewer tbv = new TimeBarViewer(model);
+		ScheduleTimeBarViewer tbv = new ScheduleTimeBarViewer(model);
         tbv.setTimeScaleRenderer(new PlanningTimeScaleRenderer());
         //System.out.println(tbv.getTimeScaleRenderer());
         tbv.setPixelPerSecond(0.005);

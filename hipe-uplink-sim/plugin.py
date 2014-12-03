@@ -67,14 +67,21 @@ from vega.uplink.planning import ObservationSequence
 from vega.uplink.planning import ObservationPointingBlock
 from vega.hipe.preferences import PreferencePanelRegistrator
 from vega.uplink import Properties
+from vega.hipe.git import HipeGit
 PreferencePanelRegistrator.registerPanels();
 
 from vega.help import HelpMenuFactory
+from vega.hipe.git import GitMenuFactory
 
 REGISTRY = ExtensionRegistry.getInstance()
 REGISTRY.register(ActionMaker.ID, Extension(
                  HelpMenuFactory.ID,
                  "vega.help.HelpMenuFactory",
+                  None,    # not used
+                  None))   # not used
+REGISTRY.register(ActionMaker.ID, Extension(
+                 GitMenuFactory.ID,
+                 "vega.hipe.git.GitMenuFactory",
                   None,    # not used
                   None))   # not used
 
@@ -161,7 +168,8 @@ toolRegistry.register(MergePtrsTask())
 toolRegistry.register(PtrSanityCheckTask())
 toolRegistry.register(RebasePtslTask())
 toolRegistry.register(SaveMappsProductsTask())
-
+def gitPull():
+	HipeGit.getInstance().gitPull()
 
 
 #del(ins, instruments)

@@ -245,8 +245,11 @@ public class Orcd extends TableDataset{
 		try{
 			return readORCDBuffer(new BufferedReader(new FileReader(csvFile)));
 		}catch(Exception e){
-			e.printStackTrace();
-			return new Orcd();
+			IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
+			e.initCause(e);
+			throw(iae);
+			//e.printStackTrace();
+			//return new Orcd();
 		}
 	  
 	}

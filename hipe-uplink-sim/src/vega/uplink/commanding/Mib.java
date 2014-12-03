@@ -295,7 +295,7 @@ public class Mib extends CompositeDataset{
 				MIB=Mib.getMibFromFiles();
 				LOG.info("MIB read from files");
 			}
-			catch(IOException ioe){
+			catch(Exception ioe){
 					LOG.info("MIB failed read from files:"+ioe.getMessage());
 
 					try{

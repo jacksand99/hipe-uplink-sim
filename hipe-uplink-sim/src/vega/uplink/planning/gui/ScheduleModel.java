@@ -110,6 +110,10 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 
 	}
 	
+	public void addObservation(Observation obs){
+		schedule.addObservation(obs);
+	}
+	
 	public de.jaret.util.date.JaretDate getMaxDate(){
 		return new JaretDate(schedule.getPtslSegment().getEndDate().toDate());
 	}

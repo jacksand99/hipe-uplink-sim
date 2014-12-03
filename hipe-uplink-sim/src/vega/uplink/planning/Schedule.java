@@ -143,7 +143,7 @@ public class Schedule extends MapContext implements ObservationListener{
 		for (int i=0;i<observations.length;i++){
 			Observation c = observations[i].copy();
 			PointingBlockInterface[] b = c.getBlocks();
-			for (int j=0;j<b.length;j++){
+			/*for (int j=0;j<b.length;j++){
 				//b[j].addMetadata(new PointingMetadata());
 				PointingMetadata meta = b[j].getMetadataElement();
 				if (meta==null) meta=new PointingMetadata();
@@ -153,7 +153,9 @@ public class Schedule extends MapContext implements ObservationListener{
 				meta.addComment(c.getCreator());
 				b[j].setMetadata(meta);
 				
-			}
+			}*/
+			
+			
 			segment.setSlice(c);
 		}
 		ptr.addSegment(segment);
