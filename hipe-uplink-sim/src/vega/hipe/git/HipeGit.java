@@ -124,9 +124,9 @@ public class HipeGit {
     }
 
     
-    public void gitCommit() throws IOException, GitAPIException,
+    public void gitCommit(String message) throws IOException, GitAPIException,
             JGitInternalException {
-        git.commit().setMessage("Added ").call();
+        git.commit().setMessage(message).call();
     }
 
     
