@@ -39,9 +39,17 @@ public class Fecs extends TableDataset{
 			+ "<tr>\n"
 			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th>\n"
 			+ "</tr>\n";
-	private static String PASS_TABLE_HEADER_DURATION=""
+	private static String DUMP_TABLE_HEADER_DURATION=""
+			+ "<tr>\n"
+			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Dump is (s)</th><th>Dump was (s)</th>\n"
+			+ "</tr>\n";
+	private static String PASS_DURATION_TABLE_HEADER=""
 			+ "<tr>\n"
 			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Duration is (s)</th><th>Duration was (s)</th>\n"
+			+ "</tr>\n";
+	private static String BITRATE_CHANGE_TABLE_HEADER=""
+			+ "<tr>\n"
+			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Bitrate is </th><th>Bitrate was </th>\n"
 			+ "</tr>\n";
 
 	//private Date generationTime;
@@ -334,7 +342,7 @@ public class Fecs extends TableDataset{
 			GsPass pass = it.next();
 			boolean con1=false;
 			boolean con2=false;
-			if (pass.getStartPass().after(endDate)) con1=true;
+			if (pass.getStartPass().after(endDate) ) con1=true;
 			if (pass.getEndPass().before(startDate)) con2=true;
 			if (!con1 && !con2) affected.add(pass);
 			
@@ -362,8 +370,11 @@ public class Fecs extends TableDataset{
 		//TreeSet<GsPass> passes1 = larger.getPasses();*/
 		TreeSet<GsPass> added=new TreeSet<GsPass>();
 		TreeSet<GsPass> removed=new TreeSet<GsPass>();
-		TreeSet<GsPass> shorter=new TreeSet<GsPass>();
-		TreeSet<GsPass> larger=new TreeSet<GsPass>();
+		TreeSet<GsPass> shorterDump=new TreeSet<GsPass>();
+		TreeSet<GsPass> largerDump=new TreeSet<GsPass>();
+		TreeSet<GsPass> shorterPass=new TreeSet<GsPass>();
+		TreeSet<GsPass> largerPass=new TreeSet<GsPass>();
+		TreeSet<GsPass> bitrateChanged=new TreeSet<GsPass>();
 		
 		Iterator<GsPass> it = newer.getPasses().iterator();
 		while (it.hasNext()){
@@ -372,10 +383,22 @@ public class Fecs extends TableDataset{
 			if (olderPasses.length==1){
 				if (!newerPass.equals(olderPasses[0])){
 					if (newerPass.getDumpDurationSecs()<olderPasses[0].getDumpDurationSecs()){
-						shorter.add(newerPass);
+						shorterDump.add(newerPass);
 					}
 					if (newerPass.getDumpDurationSecs()>olderPasses[0].getDumpDurationSecs()){
-						larger.add(newerPass);
+						largerDump.add(newerPass);
+						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
+					}
+					if (newerPass.getPassDurationSecs()<olderPasses[0].getPassDurationSecs()){
+						shorterPass.add(newerPass);
+					}
+					if (newerPass.getPassDurationSecs()>olderPasses[0].getPassDurationSecs()){
+						largerPass.add(newerPass);
+						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
+					}
+					if (newerPass.getTmRate()!=olderPasses[0].getTmRate()){
+						bitrateChanged.add(newerPass);
+						System.out.println("bitrate changed");
 						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
 					}
 
@@ -438,13 +461,54 @@ public class Fecs extends TableDataset{
 
 		}
 
-		if (shorter.size()>0){
-			result=result+"<h2>GS passes shortened in "+newer.getName()+"</h2>\n";
+		if (shorterDump.size()>0){
+			result=result+"<h2>GS passes dump shortened in "+newer.getName()+"</h2>\n";
 			result=result+"<br>\n";
 			
-			result=result+"<table class=\"gridtable\">\n"+PASS_TABLE_HEADER_DURATION;
+			result=result+"<table class=\"gridtable\">\n"+DUMP_TABLE_HEADER_DURATION;
 
-			Iterator<GsPass> shortIt = shorter.iterator();
+			Iterator<GsPass> shortIt = shorterDump.iterator();
+			while (shortIt.hasNext()){
+				GsPass pass = shortIt.next();
+				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
+				String row = passToHTMLRow(pass);
+				row=row.replace("</tr>", "");
+				row=row+"<td>"+pass.getDumpDurationSecs()+"</td>"+"<td>"+oldPass.getDumpDurationSecs()+"</td></tr>";
+				result=result+row;
+				
+			}
+			result=result+"</table><br>";
+
+		}
+		if (largerDump.size()>0){
+			result=result+"<h2>GS passes dump enlarged in "+newer.getName()+"</h2>\n";
+			result=result+"<br>\n";
+			
+			result=result+"<table class=\"gridtable\">\n"+DUMP_TABLE_HEADER_DURATION;
+
+
+			Iterator<GsPass> largerIt = largerDump.iterator();
+			while (largerIt.hasNext()){
+				GsPass pass = largerIt.next();
+				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
+				String row = passToHTMLRow(pass);
+				row=row.replace("</tr>", "");
+				row=row+"<td>"+pass.getDumpDurationSecs()+"</td>"+"<td>"+oldPass.getDumpDurationSecs()+"</td></tr>";
+				result=result+row;
+
+				
+			}
+			result=result+"</table><br>";
+
+		}
+
+		if (shorterPass.size()>0){
+			result=result+"<h2>GS passes duration shortened in "+newer.getName()+"</h2>\n";
+			result=result+"<br>\n";
+			
+			result=result+"<table class=\"gridtable\">\n"+PASS_DURATION_TABLE_HEADER;
+
+			Iterator<GsPass> shortIt = shorterPass.iterator();
 			while (shortIt.hasNext()){
 				GsPass pass = shortIt.next();
 				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
@@ -457,20 +521,41 @@ public class Fecs extends TableDataset{
 			result=result+"</table><br>";
 
 		}
-		if (larger.size()>0){
-			result=result+"<h2>GS passes enlarged in "+newer.getName()+"</h2>\n";
+		if (largerPass.size()>0){
+			result=result+"<h2>GS passes duration enlarged in "+newer.getName()+"</h2>\n";
 			result=result+"<br>\n";
 			
-			result=result+"<table class=\"gridtable\">\n"+PASS_TABLE_HEADER_DURATION;
+			result=result+"<table class=\"gridtable\">\n"+PASS_DURATION_TABLE_HEADER;
 
 
-			Iterator<GsPass> largerIt = larger.iterator();
+			Iterator<GsPass> largerIt = largerPass.iterator();
 			while (largerIt.hasNext()){
 				GsPass pass = largerIt.next();
 				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
 				String row = passToHTMLRow(pass);
 				row=row.replace("</tr>", "");
 				row=row+"<td>"+pass.getPassDurationSecs()+"</td>"+"<td>"+oldPass.getPassDurationSecs()+"</td></tr>";
+				result=result+row;
+
+				
+			}
+			result=result+"</table><br>";
+
+		}
+		if (bitrateChanged.size()>0){
+			result=result+"<h2>GS passes bitrate changed in "+newer.getName()+"</h2>\n";
+			result=result+"<br>\n";
+			
+			result=result+"<table class=\"gridtable\">\n"+BITRATE_CHANGE_TABLE_HEADER;
+
+
+			Iterator<GsPass> largerIt = bitrateChanged.iterator();
+			while (largerIt.hasNext()){
+				GsPass pass = largerIt.next();
+				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
+				String row = passToHTMLRow(pass);
+				row=row.replace("</tr>", "");
+				row=row+"<td>"+pass.getTmRate()+"</td>"+"<td>"+oldPass.getTmRate()+"</td></tr>";
 				result=result+row;
 
 				
@@ -497,8 +582,11 @@ public class Fecs extends TableDataset{
 		//TreeSet<GsPass> passes1 = larger.getPasses();*/
 		TreeSet<GsPass> added=new TreeSet<GsPass>();
 		TreeSet<GsPass> removed=new TreeSet<GsPass>();
-		TreeSet<GsPass> shorter=new TreeSet<GsPass>();
-		TreeSet<GsPass> larger=new TreeSet<GsPass>();
+		TreeSet<GsPass> shorterDump=new TreeSet<GsPass>();
+		TreeSet<GsPass> largerDump=new TreeSet<GsPass>();
+		TreeSet<GsPass> shorterPass=new TreeSet<GsPass>();
+		TreeSet<GsPass> largerPass=new TreeSet<GsPass>();
+		TreeSet<GsPass> bitrateChanged=new TreeSet<GsPass>();
 		
 		Iterator<GsPass> it = newer.getPasses().iterator();
 		while (it.hasNext()){
@@ -507,12 +595,24 @@ public class Fecs extends TableDataset{
 			if (olderPasses.length==1){
 				if (!newerPass.equals(olderPasses[0])){
 					if (newerPass.getDumpDurationSecs()<olderPasses[0].getDumpDurationSecs()){
-						shorter.add(newerPass);
+						shorterDump.add(newerPass);
 					}
 					if (newerPass.getDumpDurationSecs()>olderPasses[0].getDumpDurationSecs()){
-						larger.add(newerPass);
+						largerDump.add(newerPass);
 						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
 					}
+					if (newerPass.getPassDurationSecs()<olderPasses[0].getPassDurationSecs()){
+						shorterPass.add(newerPass);
+					}
+					if (newerPass.getPassDurationSecs()>olderPasses[0].getPassDurationSecs()){
+						largerPass.add(newerPass);
+						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
+					}
+					if (newerPass.getTmRate()!=olderPasses[0].getTmRate()){
+						bitrateChanged.add(newerPass);
+						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
+					}
+
 
 				}
 			}
@@ -567,11 +667,11 @@ public class Fecs extends TableDataset{
 
 		}
 
-		if (shorter.size()>0){
+		if (shorterDump.size()>0){
 			result=result+"**************************\n";
 			result=result+"GS passes shortened in "+newer.getName()+":\n";
 			result=result+"**************************\n";
-			Iterator<GsPass> shortIt = shorter.iterator();
+			Iterator<GsPass> shortIt = shorterDump.iterator();
 			while (shortIt.hasNext()){
 				GsPass pass = shortIt.next();
 				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
@@ -584,11 +684,11 @@ public class Fecs extends TableDataset{
 			}
 
 		}
-		if (larger.size()>0){
+		if (largerDump.size()>0){
 			result=result+"**************************\n";
 			result=result+"GS passes enlarged in "+newer.getName()+":\n";
 			result=result+"**************************\n";
-			Iterator<GsPass> largerIt = larger.iterator();
+			Iterator<GsPass> largerIt = largerDump.iterator();
 			while (largerIt.hasNext()){
 				GsPass pass = largerIt.next();
 				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];

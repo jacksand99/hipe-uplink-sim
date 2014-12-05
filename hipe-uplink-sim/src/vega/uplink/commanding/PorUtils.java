@@ -566,7 +566,7 @@ public class PorUtils {
 			Iterator<Date> it = botNodes.keySet().iterator();
 			while (it.hasNext()){
 				Date passStart=it.next();
-				Date passEnd=eotNodes.ceilingKey(passStart);
+				Date passEnd=eotNodes.ceilingKey(new Date(passStart.getTime()+1));
 				Node endNode = eotNodes.get(passEnd);
 				String stationEnd = endNode.getAttributes().getNamedItem("ems:station").getNodeValue();
 				Node startNode=botNodes.get(passStart);
@@ -582,7 +582,7 @@ public class PorUtils {
 				Iterator<Date> it2 = subStadMap.keySet().iterator();
 					while(it2.hasNext()){
 						Date dumpStart=it2.next();
-						Date dumpEnd=stodNodes.ceilingKey(dumpStart);
+						Date dumpEnd=stodNodes.ceilingKey(new Date(dumpStart.getTime()+1));
 						//Node dumpStartNode=subStadMap.get(dumpStart);
 						//Node dumpStopNode=
 						String station=botNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
@@ -613,7 +613,7 @@ public class PorUtils {
 			Iterator<Date> it3 = boabNodes.keySet().iterator();
 			while (it3.hasNext()){
 				Date passStart=it3.next();
-				Date passEnd=eoabNodes.ceilingKey(passStart);
+				Date passEnd=eoabNodes.ceilingKey(new Date(passStart.getTime()+1));
 				String station=boabNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
 				String endStation=eoabNodes.get(passEnd).getAttributes().getNamedItem("ems:station").getTextContent();
 				if (station.equals(endStation)){

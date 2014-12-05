@@ -136,8 +136,8 @@ public class CompareFecsTask extends Task {
 	        		String name=segments[i].getName();
 	        		Date start=segments[i].getSegmentStartDate();
 	        		Date end=segments[i].getSegmentEndDate();
-	        		String oldFecsName=olderFecs.getName()+"_"+name;
-	        		String newFecsName=newerFecs.getName()+"_"+name;
+	        		String oldFecsName=olderFecs.getName();
+	        		String newFecsName=newerFecs.getName();
 	        		Fecs oldFecs = olderFecs.getSubFecs(start, end);
 	        		oldFecs.setName(oldFecsName);
 	        		Fecs newFecs = newerFecs.getSubFecs(start, end);

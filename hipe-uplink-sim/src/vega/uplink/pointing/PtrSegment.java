@@ -817,7 +817,7 @@ public class PtrSegment extends PointingBlocksSlice{
 		java.util.Vector<PointingBlock> result=new java.util.Vector<PointingBlock>();
 		PointingBlock[] blocks = getBlocks();
 		for (int i=0;i<blocks.length;i++){
-			if (instrument.equals(blocks[i].getInstrument())) result.add(blocks[i]);
+			if (blocks[i].getType().equals(PointingBlock.TYPE_OBS) && instrument.equals(blocks[i].getInstrument())) result.add(blocks[i]);
 		}
 		
 		PointingBlock[] resultArray=new PointingBlock[result.size()];

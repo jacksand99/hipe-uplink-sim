@@ -14,6 +14,7 @@ public class GsPass implements Comparable<GsPass>{
 	private Date endDump;
 	private String groundStation;
 	private float tmRate;
+	public static String[] DSN70m={"DSS-14","DSS-43","DSS-63"};
 	
 	/**
 	 * Constructor of the Ground Station pass, taking as parameters all the required information
@@ -145,7 +146,10 @@ public class GsPass implements Comparable<GsPass>{
 		return false;
 	}
 	public boolean is70m(){
-		if (this.getTmRate()<90000) return false;
-		else return true;
+		for (int i=0;i<DSN70m.length;i++){
+			if (this.getGroundStation().equals(DSN70m[i])) return true;
+		}
+		//if (this.getTmRate()<90000) return false;
+		return false;
 	}
 }

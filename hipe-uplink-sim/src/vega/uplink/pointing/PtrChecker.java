@@ -691,7 +691,10 @@ public class PtrChecker {
 					//Date offsetstarttime
 					if (offset.isScan()){
 						offsetendtime = ((OffsetScan) offset).getEndDate();
-						offsetstarttime =((OffsetScan) offset).getStartDate();
+						long borderSlewTime = new Float(((OffsetScan) offset).getBorderSlewTime(Units.SECONDS)).longValue()*1000;
+						offsetstarttime =new Date(((OffsetScan) offset).getStartDate().getTime()-borderSlewTime);
+
+						//offsetstarttime =((OffsetScan) offset).getStartDate();
 
 					}
 					if (offset.isRaster()){
@@ -700,7 +703,11 @@ public class PtrChecker {
 					}
 					if (offset.isCustom()){
 						offsetendtime = ((OffsetCustom) offset).getEndDate();
-						offsetstarttime =((OffsetCustom) offset).getStartDate();
+						//float deltaTime = ((OffsetCustom) offset).getDeltaTimes(Units.SECONDS)[0]))*1000;
+						//offsetstarttime =new Date(new Float(((OffsetCustom) offset).getStartDate().getTime()-deltaTime).longValue());
+						//offsetstarttime =((OffsetCustom) offset).getStartDate();
+						long deltaTime = new Float(((OffsetCustom) offset).getDeltaTimes(Units.SECONDS)[0]).longValue()*1000;
+						offsetstarttime =new Date(((OffsetCustom) offset).getStartDate().getTime()+deltaTime);
 
 					}
 					if (blocks[j].getEndTime().before(new Date(offsetendtime.getTime()+90000))){
@@ -714,7 +721,7 @@ public class PtrChecker {
 						
 					}
 					if (blocks[j].getStartTime().after(new Date(offsetstarttime.getTime()-90000))){
-						messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j].toXml(0))+"</pre></td><td>PTR:The offset period starts less than 90 seconds after the block starts for block at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
+						messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j].toXml(0))+"</pre></td><td>PTR:The offset period starts less than 90 seconds after the block starts for block at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"<br>"+"Offset starts at:"+PointingBlock.dateToZulu(offsetstarttime)+"</td></tr>";
 
 						//messages=messages+"PTR:The offset period starts less than 90 seconds after the block starts for block at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
 						//messages=messages+"--------------------------------------\n";
@@ -742,7 +749,10 @@ public class PtrChecker {
 					//Date offsetstarttime
 					if (offset.isScan()){
 						offsetendtime = ((OffsetScan) offset).getEndDate();
-						offsetstarttime =((OffsetScan) offset).getStartDate();
+						long borderSlewTime = new Float(((OffsetScan) offset).getBorderSlewTime(Units.SECONDS)).longValue()*1000;
+						offsetstarttime =new Date(((OffsetScan) offset).getStartDate().getTime()-borderSlewTime);
+
+						//offsetstarttime =((OffsetScan) offset).getStartDate();
 
 					}
 					if (offset.isRaster()){
@@ -751,7 +761,9 @@ public class PtrChecker {
 					}
 					if (offset.isCustom()){
 						offsetendtime = ((OffsetCustom) offset).getEndDate();
-						offsetstarttime =((OffsetCustom) offset).getStartDate();
+						//offsetstarttime =((OffsetCustom) offset).getStartDate();
+						long deltaTime = new Float(((OffsetCustom) offset).getDeltaTimes(Units.SECONDS)[0]).longValue()*1000;
+						offsetstarttime =new Date(((OffsetCustom) offset).getStartDate().getTime()+deltaTime);
 
 					}
 					if (blocks[j].getEndTime().before(new Date(offsetendtime.getTime()+90000))){

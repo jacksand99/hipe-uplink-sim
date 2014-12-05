@@ -1,6 +1,7 @@
 package vega.simplewebserver;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 
 import vega.uplink.commanding.Por;
@@ -31,8 +32,8 @@ public class Utils {
 	
 	public static void log(String text){
 		try{
-			PrintWriter writer = new PrintWriter("/home/jarenas/Rosetta/hus/log.txt", "UTF-8");
-			writer.print(text);
+			FileWriter writer = new FileWriter("/home/jarenas/Rosetta/hus/log.txt", true);
+			writer.write("\n"+text);
 			writer.close();
 		}catch (Exception e){
 			e.printStackTrace();
