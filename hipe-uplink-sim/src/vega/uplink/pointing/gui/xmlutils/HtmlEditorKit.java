@@ -80,7 +80,7 @@ public class HtmlEditorKit extends JFrame
               + "</body>\n";
     new HtmlEditorKit("Report",text);
   }
-  private String getRulesHTML(){
+ private String getRulesHTML(){
 	  String result="";
 	  result=result+"<head><title>Internal stylesheet</title>\n"+
 			  "<style type=\"text/css\">\n";
@@ -100,6 +100,9 @@ public class HtmlEditorKit extends JFrame
 		//}catch (Exception e){
 			//e.printStackTrace();
 		//}
+  }
+  public HtmlEditorKit(HtmlDocument doc){
+	  this(doc.getTitle(),doc.getHtmlString());
   }
   public HtmlEditorKit(String titleText,String text)
   {

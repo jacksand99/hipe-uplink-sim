@@ -10,6 +10,7 @@ import vega.uplink.commanding.Fecs;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
+import vega.uplink.pointing.gui.xmlutils.HtmlDocument;
 import vega.uplink.pointing.gui.xmlutils.HtmlEditorKit;
 
 public class FecsSummaryTask extends Task {
@@ -36,6 +37,11 @@ public class FecsSummaryTask extends Task {
 		station.setMandatory(false);
 		station.setDescription("The name of the station to extract"); //6
         addTaskParameter(station);
+        
+		TaskParameter report = new TaskParameter("fecsSummaryReport", HtmlDocument.class);
+		report.setType(TaskParameter.OUT);
+		 addTaskParameter(report);
+
 
 	}
 	
@@ -114,7 +120,9 @@ public class FecsSummaryTask extends Task {
         	message=message+"</table>";
         }
         message="<html><body>"+message+"</body><html>";
-        HtmlEditorKit frame = new HtmlEditorKit("Summary FECS",message);
+        HtmlDocument result=new HtmlDocument("Summary FECS",message);
+        HtmlEditorKit frame = new HtmlEditorKit(result);
+        this.getParameter("fecsSummaryReport").setValue(result);
        	//MessagesFrame frame = new MessagesFrame(message);
     	//frame.setVisible(true);
 		

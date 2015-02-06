@@ -22,6 +22,7 @@ import vega.uplink.pointing.PointingBlock;
 //import vega.uplink.commanding.PorChecker;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
+import vega.uplink.pointing.gui.xmlutils.HtmlDocument;
 //import vega.uplink.commanding.task.PorCheckTask.MessagesFrame;
 import vega.uplink.pointing.gui.xmlutils.HtmlEditorKit;
 
@@ -54,6 +55,10 @@ public class CompareFecsTask extends Task {
 		station.setMandatory(false);
 		station.setDescription("The name of the station to compare"); //6
         addTaskParameter(station);
+        
+		TaskParameter report = new TaskParameter("fecsCompareReport", HtmlDocument.class);
+		report.setType(TaskParameter.OUT);
+		 addTaskParameter(report);
 
 	}
 	
@@ -195,7 +200,10 @@ public class CompareFecsTask extends Task {
         	}
         }
         message="<html><body>"+message+"</body><html>";
-        HtmlEditorKit frame = new HtmlEditorKit("Compare FECS",message);
+        HtmlDocument result=new HtmlDocument("Compare Fecs",message);
+        //HtmlEditorKit frame = new HtmlEditorKit("Compare FECS",message);
+        HtmlEditorKit frame = new HtmlEditorKit(result);
+        this.getParameter("fecsCompareReport").setValue(result);
        	//MessagesFrame frame = new MessagesFrame(message);
     	//frame.setVisible(true);
 		

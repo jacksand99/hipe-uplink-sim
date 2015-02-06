@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.logging.Logger;
@@ -23,6 +24,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import vega.uplink.Properties;
 import vega.uplink.commanding.AbstractSequence;
 import vega.uplink.commanding.Parameter;
 import vega.uplink.commanding.Por;
@@ -30,6 +32,8 @@ import vega.uplink.commanding.PorUtils;
 import vega.uplink.commanding.Sequence;
 import vega.uplink.commanding.SequenceProfile;
 import vega.uplink.planning.gui.ScheduleModel;
+import vega.uplink.planning.period.Plan;
+import vega.uplink.planning.period.Stp;
 import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.PointingAttitude;
 import vega.uplink.pointing.PointingBlock;
@@ -469,19 +473,43 @@ public class ObservationUtil {
 		HashSet<String> observationNames=new HashSet<String>();
 		Observation[] observations = schedule.getObservations();
 		for (int i=0;i<observations.length;i++){
-			observationNames.add(observations[i].getName());
+			observationNames.add(getEventString(observations[i]));
 		}
 		Iterator<String> it = observationNames.iterator();
-		int counter=0;
+		int mtpNumber=Integer.parseInt(schedule.getPtslSegment().getName().replace("MTP_", ""));;
+		int counter=mtpNumber*1000;
 		while (it.hasNext()){
+		//for (int i=0;i<observations.length;i++){
 			String name=it.next();
-			name=name.replace(" ", "_");
-			result=result+counter+"\t"+name+"_\t"+name+"_"+ObservationEvent.START_OBS.getName()+"\t"+name+"_"+ObservationEvent.END_OBS.getName()+"        -     -   FALSE   -   0   PTB  CONTINUOUS  INACTIVE\n";
+			//name=name.replace(" ", "_");
+			//name=getEventString(observations[i]);
+			result=result+counter+"\t"+name+"_\t"+name+"_"+"SO"+"\t"+name+"_"+"EO"+"        -     -   FALSE   -   0   PTB  CONTINUOUS  INACTIVE\n";
 			counter++;
 		}
 		return result;
 	}
+	public static String getEventString(Observation obs){
+		String event=obs.getName().toUpperCase();
+		String insAc=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+obs.getInstrument());
+		event=event.replace(obs.getInstrument(), insAc);
+		event=event.replace(" ", "_");
+		event=event.replace("-", "_");
+		event=event.replace("(", "");
+		event=event.replace(")", "");
+		event=event.replace("/", "_");
+		event=event.replace("\\", "_");
+		event=event.replace(".", "_");
+		event=event.replace("=", "_");
+		event=event.replace(",", "_");
+		event=event+"______________________________";	
+		event=event.substring(0,26);	
+		return event;
+	}
 	public static String scheduleToEVF(Schedule schedule){
+		return scheduleToEVF(schedule,Integer.parseInt(schedule.getPtslSegment().getName().replace("MTP_", ""))*10000);
+	}
+	public static String scheduleToEVF(Schedule schedule,int sed){
+		//int mtpNumber=Integer.parseInt(schedule.getPtslSegment().getName().replace("MTP_", ""));
 		TreeMap<String,Integer> counter=new TreeMap<String,Integer>();
 		String result="";
 		Por POR = schedule.getPor();
@@ -490,25 +518,29 @@ public class ObservationUtil {
 		//String l03="Start_time: "+dateFormat2.format(POR.getValidityDates()[0])+"\n";
 		//String l04="End_time: "+dateFormat2.format(POR.getValidityDates()[1])+"\n\n\n";
 		//Rosetta patch
-		String l03="Start_time: 20-January-2013_00:00:00\n";
-		String l04="End_time: 26-December-2018_17:39:40\n";
-		l04=l04+"\n\nInclude: \"EVTF_ROSETTA_TOP______V001.evf\"\n";
+		//String l03="Start_time: 01-January-2014_00:00:00\n";
+		//String l04="Start_time: 01-January-2017_00:00:00\n";
+		//l04=l04+"\n\nInclude: \"EVTF_ROSETTA_TOP______V001.evf\"\n";
 		Observation[] observations = schedule.getObservations();
 		String l05="";
 		for (int i=0;i<observations.length;i++){
-			Integer count = counter.get(observations[i].getName());
-			if (count==null) count=1;
+			String eventName=getEventString(observations[i]);
+			Integer count = counter.get(eventName);
+			if (count==null) count=sed;
 			else count=count+1;
-			counter.put(observations[i].getName(), count);
-			String itlEventStart=observations[i].getName()+"_"+ObservationEvent.START_OBS.getName();
-			itlEventStart=itlEventStart.replace(" ", "_");
+			counter.put(eventName, count);
+			//String itlEventStart=observations[i].getName()+"_"+ObservationEvent.START_OBS.getName();
+			String itlEventStart=eventName+"_SO";
+			//itlEventStart=itlEventStart.replace(" ", "_");
 			l05=l05+dateFormat2.format(observations[i].getStartDate().toDate())+" "+itlEventStart+" (COUNT = "+String.format("%06d", count)+" )\n";
-			String itlEventEnd=observations[i].getName()+"_"+ObservationEvent.END_OBS.getName();
-			itlEventEnd=itlEventEnd.replace(" ", "_");
+			//String itlEventEnd=observations[i].getName()+"_"+ObservationEvent.END_OBS.getName();
+			String itlEventEnd=eventName+"_EO";
+			//itlEventEnd=itlEventEnd.replace(" ", "_");
 			l05=l05+dateFormat2.format(observations[i].getEndDate().toDate())+" "+itlEventEnd+" (COUNT = "+String.format("%06d", count)+" )\n";
 
 		}
-		result=l03+l04+l05;
+		//result=l03+l04+l05;
+		result=l05;
 		return result;
 	}
 	
@@ -527,8 +559,10 @@ public class ObservationUtil {
 		result=l03+l04+l05+l06;
 		return result;
 	}
-	
 	public static String scheduleToITL(Schedule schedule){
+		return scheduleToITL(schedule,Integer.parseInt(schedule.getPtslSegment().getName().replace("MTP_", ""))*10000);
+	}
+	public static String scheduleToITL(Schedule schedule, int sed){
 		TreeMap<String,Integer> counter=new TreeMap<String,Integer>();
 		LOG.info("Getting the POR");
 		Por POR = schedule.getPor();
@@ -557,17 +591,28 @@ public class ObservationUtil {
 		Observation[] observations = schedule.getObservations();		
 		String l05="";
 		for (int i=0;i<observations.length;i++){
-			Integer count = counter.get(observations[i].getName());
-			if (count==null) count=1;
+			String eventName=getEventString(observations[i]);
+			Integer count = counter.get(eventName);
+			if (count==null) count=sed;
 			else count=count+1;
-			counter.put(observations[i].getName(), count);
+			counter.put(eventName, count);
 			AbstractSequence[] tempSeq = observations[i].getCommanding().getSequences();
 			Parameter[] tempParam;
 			SequenceProfile[] tempPro;
 			for (int j=0;j<tempSeq.length;j++){
-				String itlEvent=((ObservationSequence)tempSeq[j]).getObservationName()+"_"+((ObservationSequence)tempSeq[j]).getExecutionTimeEvent().getName();
-				itlEvent=itlEvent.replace(" ", "_");
-				l05=l05+itlEvent+" "+"(COUNT = "+String.format("%06d", count)+" ) "+ObservationUtil.getOffset(((ObservationSequence)tempSeq[j]).getExecutionTimeDelta())+" "+ tempSeq[j].getInstrument()+"\t*\t"+tempSeq[j].getName()+" (\\"+"\n";
+				//String eventName=getEventString(((ObservationSequence)tempSeq[j]).getObs());
+				//String itlEvent=((ObservationSequence)tempSeq[j]).getObservationName()+"_"+((ObservationSequence)tempSeq[j]).getExecutionTimeEvent().getName();
+				String itlEvent="";
+				if (((ObservationSequence)tempSeq[j]).getExecutionTimeEvent().getName().equals("START_OBS")){
+					itlEvent=eventName+"_SO";
+				}
+				if (((ObservationSequence)tempSeq[j]).getExecutionTimeEvent().getName().equals("END_OBS")){
+					itlEvent=eventName+"_EO";
+				}
+
+				//String itlEvent=eventName+"_"+((ObservationSequence)tempSeq[j]).getExecutionTimeEvent().getName();
+				//itlEvent=itlEvent.replace(" ", "_");
+				l05=l05+itlEvent+" "+"(COUNT = "+String.format("%06d", count)+" ) "+ObservationUtil.getOffset(((ObservationSequence)tempSeq[j]).getExecutionTimeDelta())+" "+ tempSeq[j].getInstrumentName()+"\t*\t"+tempSeq[j].getName()+" (\\"+"\n";
 				tempParam = tempSeq[j].getParameters();
 				tempParam = tempSeq[j].getParameters();
 				for (int z=0;z<tempParam.length;z++){
@@ -602,12 +647,295 @@ public class ObservationUtil {
 		return result;
 
 	}
+	public static void saveMappsProducts(String file,Schedule sch,Plan plan) throws IOException{
+		String mtpName = sch.getPtslSegment().getName();
+		int mtpNumber=Integer.parseInt(mtpName.replace("MTP_", ""));
+		Stp[] stps = plan.getMtp(mtpNumber).getStps();
+		File f=new File(file);
+		String dir = f.getParent();
+		String fn=f.getName();
+		for (int i=0;i<stps.length;i++){
+			int sed=((mtpNumber*10)+i)*1000;
+			File stpDir = new File(dir+"/STP"+String.format("%03d", stps[i].getNumber()));
+			stpDir.mkdir();
+			String prefix="M"+String.format("%03d", mtpNumber)+"_S"+String.format("%03d", stps[i].getNumber())+"_"+fn;
+			Schedule subSch = sch.getPeriodSchedule(stps[i].getStartDate().toDate(), stps[i].getEndDate().toDate());
+			//saveMappsProducts(stpDir.getAbsolutePath()+"/"+prefix,subSch);
+			List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
+			Iterator<String> it = ins.iterator();
+			while(it.hasNext()){
+				String instrument = it.next();
+				String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
+				Schedule insSch=subSch.getInstrumentSchedule(instrument);
+				saveStringToFile(stpDir.getAbsolutePath()+"/EVF__"+acro+"_"+prefix+".evf",scheduleToEVF(insSch,sed));
+				saveStringToFile(stpDir.getAbsolutePath()+"/ITLS_"+acro+"_"+prefix+".itl",scheduleToITL(insSch,sed));
+
+			}
+			saveStringToFile(stpDir.getAbsolutePath()+"/TLIS_PL_"+prefix+".itl",schToTLISITL(prefix,sch,"STP"+String.format("%03d", stps[i].getNumber())));
+			saveStringToFile(stpDir.getAbsolutePath()+"/TLIS_PL_"+prefix+".evf",schToTLISEVF(prefix,sch,"STP"+String.format("%03d", stps[i].getNumber())));
+
+		}
+		saveStringToFile(dir+"/TLIS_PL_"+"M"+String.format("%03d", mtpNumber)+"______"+fn+".itl",schToTLISITL(fn,sch,mtpNumber,stps));
+		saveStringToFile(dir+"/TLIS_PL_"+"M"+String.format("%03d", mtpNumber)+"______"+fn+".evf",schToTLISEVF(fn,sch,mtpNumber,stps));
+		saveStringToFile(file+".def",scheduleToMappsEvents(sch));
+	}
 
 	public static void saveMappsProducts(String file,Schedule sch) throws IOException{
+		File f=new File(file);
+		String dir = f.getParent();
+		String fn=f.getName();
 		saveStringToFile(file+".evf",scheduleToEVF(sch));
 		saveStringToFile(file+".itl",scheduleToITL(sch));
 		saveStringToFile(file+".def",scheduleToMappsEvents(sch));
+		List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
+		Iterator<String> it = ins.iterator();
+		while(it.hasNext()){
+			String instrument = it.next();
+			String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
+			Schedule insSch=sch.getInstrumentSchedule(instrument);
+			saveStringToFile(dir+"/EVF__"+acro+"_"+fn+".evf",scheduleToEVF(insSch));
+			saveStringToFile(dir+"/ITLS_"+acro+"_"+fn+".itl",scheduleToITL(insSch));
+
+		}
+		saveStringToFile(dir+"/TLIS_PL_"+fn+".itl",schToTLISITL(fn,sch));
+		saveStringToFile(dir+"/TLIS_PL_"+fn+".evf",schToTLISEVF(fn,sch));
 		
+	}
+	
+	public static String schToTLISEVF(String file,Schedule schedule,int mtp,Stp[] stps){
+		String l03="Start_time: 01-January-2014_00:00:00\n";
+		String l04="End_time:   01-January-2017_00:00:00\n";
+		String result="";
+		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
+		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
+		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+
+		String l05="";
+		//List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
+		//Iterator<String> it = ins.iterator();
+		for (int i=0;i<stps.length;i++){
+		//while(it.hasNext()){
+			//String instrument = it.next();
+			//String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
+			//Schedule insSch=sch.getInstrumentSchedule(instrument);
+			String prefix="M"+String.format("%03d", mtp)+"_S"+String.format("%03d", stps[i].getNumber());
+			l05=l05+"Include: \"STP"+String.format("%03d", stps[i].getNumber())+"/TLIS_PL_"+prefix+"_"+file+".evf\""+"\n";
+
+		}
+		/*while(it.hasNext()){
+			String instrument = it.next();
+			String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
+			//Schedule insSch=sch.getInstrumentSchedule(instrument);
+			l05=l05+"Include: \"EVF__"+acro+"_"+file+".evf\""+"\n";
+
+		}*/
+		result=l03+l04+l05;
+		return result;
+
+
+	}
+	public static String schToTLISEVF(String file,Schedule schedule,String dir){
+		String l03="Start_time: 01-January-2014_00:00:00\n";
+		String l04="End_time:   01-January-2017_00:00:00\n";
+		
+		String result="";
+		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
+		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
+		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		//String l01="Version: 1\n";
+		//String l02="Ref_date: "+dateFormat.format(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
+		//String l03="Start_time: "+dateFormat2.format(schedule.getPtslSegment().getStartDate().toDate())+"\n";
+		//String l04="End_time: "+dateFormat2.format(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
+		//String l045="#========================================================================\n"+
+		//"#\n"+
+		//"# Name: "+schedule.getFileName()+"\n"+
+		//"#\n"+ 
+		//"# Description: "+schedule.getDescription()+"\n"+
+		//"#\n"+ 
+		//"# Author: "+schedule.getCreator()+"\n"+ 
+		//"#\n"+ 
+		//"# Type: "+schedule.getType()+"\n"+ 
+		//"#\n"+ 
+		//"# Date: "+dateFormat2.format(new Date())+"\n"+
+		//"#======================================================================== \n\n\n";
+
+		String l05="";
+		List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
+		Iterator<String> it = ins.iterator();
+		while(it.hasNext()){
+			String instrument = it.next();
+			String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
+			//Schedule insSch=sch.getInstrumentSchedule(instrument);
+			l05=l05+"Include: \""+dir+"/EVF__"+acro+"_"+file+".evf\""+"\n";
+
+		}
+		result=l03+l04+l05;
+		//result=l05;
+		return result;
+
+
+	}
+	
+	public static String schToTLISEVF(String file,Schedule schedule){
+		String l03="Start_time: 20-January-2013_00:00:00\n";
+		String l04="End_time: 26-December-2018_17:39:40\n";
+
+		String result="";
+		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
+		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
+		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		//String l01="Version: 1\n";
+		//String l02="Ref_date: "+dateFormat.format(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
+		//String l03="Start_time: "+dateFormat2.format(schedule.getPtslSegment().getStartDate().toDate())+"\n";
+		//String l04="End_time: "+dateFormat2.format(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
+		//String l045="#========================================================================\n"+
+		//"#\n"+
+		//"# Name: "+schedule.getFileName()+"\n"+
+		//"#\n"+ 
+		//"# Description: "+schedule.getDescription()+"\n"+
+		//"#\n"+ 
+		//"# Author: "+schedule.getCreator()+"\n"+ 
+		//"#\n"+ 
+		//"# Type: "+schedule.getType()+"\n"+ 
+		//"#\n"+ 
+		//"# Date: "+dateFormat2.format(new Date())+"\n"+
+		//"#======================================================================== \n\n\n";
+
+		String l05="";
+		List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
+		Iterator<String> it = ins.iterator();
+		while(it.hasNext()){
+			String instrument = it.next();
+			String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
+			//Schedule insSch=sch.getInstrumentSchedule(instrument);
+			l05=l05+"Include: \"EVF__"+acro+"_"+file+".evf\""+"\n";
+
+		}
+		result=l03+l04+l05;
+		return result;
+
+
+	}
+	
+	public static String schToTLISITL(String file,Schedule schedule,int mtp,Stp[] stps){
+		
+		String result="";
+		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
+		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
+		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		String l01="Version: 1\n";
+		String l02="Ref_date: "+dateFormat.format(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
+		String l03="Start_time: "+dateFormat2.format(schedule.getPtslSegment().getStartDate().toDate())+"\n";
+		String l04="End_time: "+dateFormat2.format(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
+		String l045="#========================================================================\n"+
+		"#\n"+
+		"# Name: "+schedule.getFileName()+"\n"+
+		"#\n"+ 
+		"# Description: "+schedule.getDescription()+"\n"+
+		"#\n"+ 
+		"# Author: "+schedule.getCreator()+"\n"+ 
+		"#\n"+ 
+		"# Type: "+schedule.getType()+"\n"+ 
+		"#\n"+ 
+		"# Date: "+dateFormat2.format(new Date())+"\n"+
+		"#======================================================================== \n\n\n";
+
+		String l05="";
+		//List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
+		//Iterator<String> it = ins.iterator();
+		for (int i=0;i<stps.length;i++){
+		//while(it.hasNext()){
+			//String instrument = it.next();
+			//String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
+			//Schedule insSch=sch.getInstrumentSchedule(instrument);
+			String prefix="M"+String.format("%03d", mtp)+"_S"+String.format("%03d", stps[i].getNumber());
+			l05=l05+"Include: \"STP"+String.format("%03d", stps[i].getNumber())+"/TLIS_PL_"+prefix+"_"+file+".itl\""+"\n";
+
+		}
+		result=l01+l02+l03+l04+l045+l05;
+		return result;
+
+
+	}
+	public static String schToTLISITL(String file,Schedule schedule,String dir){
+		String result="";
+		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
+		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
+		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		String l01="Version: 1\n";
+		String l02="Ref_date: "+dateFormat.format(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
+		String l03="Start_time: "+dateFormat2.format(schedule.getPtslSegment().getStartDate().toDate())+"\n";
+		String l04="End_time: "+dateFormat2.format(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
+		String l045="#========================================================================\n"+
+		"#\n"+
+		"# Name: "+schedule.getFileName()+"\n"+
+		"#\n"+ 
+		"# Description: "+schedule.getDescription()+"\n"+
+		"#\n"+ 
+		"# Author: "+schedule.getCreator()+"\n"+ 
+		"#\n"+ 
+		"# Type: "+schedule.getType()+"\n"+ 
+		"#\n"+ 
+		"# Date: "+dateFormat2.format(new Date())+"\n"+
+		"#======================================================================== \n\n\n";
+
+		String l05="";
+		List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
+		Iterator<String> it = ins.iterator();
+		while(it.hasNext()){
+			String instrument = it.next();
+			String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
+			//Schedule insSch=sch.getInstrumentSchedule(instrument);
+			l05=l05+"Include: \""+dir+"/ITLS_"+acro+"_"+file+".itl\""+"\n";
+
+		}
+		result=l01+l02+l03+l04+l045+l05;
+		return result;
+
+
+	}
+	public static String schToTLISITL(String file,Schedule schedule){
+		String result="";
+		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
+		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
+		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		String l01="Version: 1\n";
+		String l02="Ref_date: "+dateFormat.format(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
+		String l03="Start_time: "+dateFormat2.format(schedule.getPtslSegment().getStartDate().toDate())+"\n";
+		String l04="End_time: "+dateFormat2.format(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
+		String l045="#========================================================================\n"+
+		"#\n"+
+		"# Name: "+schedule.getFileName()+"\n"+
+		"#\n"+ 
+		"# Description: "+schedule.getDescription()+"\n"+
+		"#\n"+ 
+		"# Author: "+schedule.getCreator()+"\n"+ 
+		"#\n"+ 
+		"# Type: "+schedule.getType()+"\n"+ 
+		"#\n"+ 
+		"# Date: "+dateFormat2.format(new Date())+"\n"+
+		"#======================================================================== \n\n\n";
+
+		String l05="";
+		List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
+		Iterator<String> it = ins.iterator();
+		while(it.hasNext()){
+			String instrument = it.next();
+			String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
+			//Schedule insSch=sch.getInstrumentSchedule(instrument);
+			l05=l05+"Include: \"ITLS_"+acro+"_"+file+".itl\""+"\n";
+
+		}
+		result=l01+l02+l03+l04+l045+l05;
+		return result;
+
+
 	}
 	public static String OBStoITL(Observation obs){
 		TreeMap<String,Integer> counter=new TreeMap<String,Integer>();

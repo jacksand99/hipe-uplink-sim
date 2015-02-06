@@ -22,7 +22,7 @@ public class TestCommanding {
     	herschel.share.util.Configuration.setProperty("vega.mib.location", "/Users/jarenas 1/Downloads/MAPPS/MIB");
     	System.out.println(Properties.getProperty("vega.file.type.POR"));
 
-    	Fecs older;
+    	/*Fecs older;
 		try {
 			Date MTP_008_start = PointingBlock.zuluToDate("2014-09-23T10:00:00");
 			Date MTP_008_end = PointingBlock.zuluToDate("2014-10-24T10:00:00");
@@ -33,6 +33,12 @@ public class TestCommanding {
 			Fecs newer_mtp008 = newer.getSubFecs(MTP_008_start, MTP_008_end).getSubFecs("DSS");
 
 			System.out.println(Fecs.compareFecs(older_mtp008, newer_mtp008));
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}*/
+    	try {
+			Fecs FECS_XXXXX = PorUtils.readFecsFromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/RMOC/FCT/FECS_________________XXXXX.ROS");
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -100,12 +106,12 @@ public class TestCommanding {
 			System.out.println(test[i]);
 		}*/
 
-		ParameterFloat param1 = new ParameterFloat("VAL01341",Parameter.REPRESENTATION_RAW,Parameter.RADIX_DECIMAL,65535);
-        ParameterString param2 = new ParameterString("VAL01340",Parameter.REPRESENTATION_ENGINEERING,"PROM");
+		/*ParameterFloat param1 = new ParameterFloat("VAL01341",Parameter.REPRESENTATION_RAW,Parameter.RADIX_DECIMAL,65535);
+        ParameterString param2 = new ParameterString("VAL01340",Parameter.REPRESENTATION_ENGINEERING,"PROM");*/
         //System.out.println(param1.toXML(1,5));
         //System.out.println(param2.toXML(2));
         
-        SequenceProfile profile = new SequenceProfile(SequenceProfile.PROFILE_TYPE_DR,"00:00:00",1.104);
+        /*SequenceProfile profile = new SequenceProfile(SequenceProfile.PROFILE_TYPE_DR,"00:00:00",1.104);
         //System.out.println(profile.toXml());
         try{
         	Sequence command=new Sequence ("AALS102A","P000010002","2014-083T06:15:00Z");
@@ -136,7 +142,7 @@ public class TestCommanding {
         	
         } catch (Exception e){
         	e.printStackTrace();
-        }
+        }*/
         
         /*Por exPor=PorUtils.readPORfromFile("C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP004A\\PORM\\POR__DM_004_01_VR_A1_00010.ROS");
         //Por exPor2=PorUtils.readPORfromFile("Z:\\MAPPS\\POR\\POR__DV_034_03_MD_A1_00001.ROS");

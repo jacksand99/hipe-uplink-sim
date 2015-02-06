@@ -1,0 +1,80 @@
+<observation>
+	<name>OSIRIS 015aW</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>015aW, snowball tracking (2x2 WAC raster)</description>
+	<instrument>OSIRIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="OBS_START">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="OBS_END">
+			<executionTime>
+				<actionTime>END_OBS-00:00:01</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>26.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+			<attitude ref='track'>
+				<boresight ref='Nadir_Nav_Boresight'/>
+				<offsetRefAxis ref='SC_Xaxis'/>
+				<target ref='CG'/>
+				<offsetAngles ref='raster'>
+					<startTime>START_OBS+00:01:30</startTime>
+					<xPoints>2</xPoints>
+					<yPoints>2</yPoints>
+					<xStart units='deg'>-5</xStart>
+					<yStart units='deg'>-5</yStart>
+					<xDelta units='deg'>10</xDelta>
+					<yDelta units='deg'>10</yDelta>
+					<pointSlewTime units='min'>5</pointSlewTime>
+					<lineSlewTime units='min'>5</lineSlewTime>
+					<dwellTime units='min'>10</dwellTime>
+					<lineAxis>x</lineAxis>
+					<keepLineDir>false</keepLineDir>
+				</offsetAngles>
+			</attitude>
+			<metadata>
+				<comment>OWNER=OSIRIS</comment>
+				<comment>015aW, snowball tracking (2x2 WAC raster)</comment>
+				<comment>SR.PROCESSED=FALSE</comment>
+				<comment>SR.OBS000.START=START_TIME+00:01:30</comment>
+				<comment>SR.OBS000.ACTIVITY_NAME=SNOWBALL_TRACKING</comment>
+				<comment>SR.OBS001.START=START_TIME+00:16:30</comment>
+				<comment>SR.OBS001.ACTIVITY_NAME=SNOWBALL_TRACKING</comment>
+				<comment>SR.OBS002.START=START_TIME+00:31:30</comment>
+				<comment>SR.OBS002.ACTIVITY_NAME=SNOWBALL_TRACKING</comment>
+				<comment>SR.OBS003.START=START_TIME+00:46:30</comment>
+				<comment>SR.OBS003.ACTIVITY_NAME=SNOWBALL_TRACKING</comment>
+			</metadata>
+		</block>
+	</pointingBlocks>
+</observation>

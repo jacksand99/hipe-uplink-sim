@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import vega.uplink.commanding.Fecs;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
+import vega.uplink.pointing.gui.xmlutils.HtmlDocument;
 import vega.uplink.pointing.gui.xmlutils.HtmlEditorKit;
 
 public class RosettaFecsSummaryTask extends Task {
@@ -29,6 +30,11 @@ public class RosettaFecsSummaryTask extends Task {
 		ptsl.setMandatory(false);
 		ptsl.setDescription("The PTSL to extract the MTP dates"); //6
         addTaskParameter(ptsl);
+        
+		TaskParameter report = new TaskParameter("fecsRosettaSummaryReport", HtmlDocument.class);
+		report.setType(TaskParameter.OUT);
+		 addTaskParameter(report);
+
 
 
 	}
@@ -184,7 +190,9 @@ public class RosettaFecsSummaryTask extends Task {
 
         }
         message="<html><body>"+message+"</body><html>";
-        HtmlEditorKit frame = new HtmlEditorKit("Summary FECS",message);
+        HtmlDocument result=new HtmlDocument("Summary FECS", message);
+        HtmlEditorKit frame = new HtmlEditorKit(result);
+        this.getParameter("fecsRosettaSummaryReport").setValue(result);
        	//MessagesFrame frame = new MessagesFrame(message);
     	//frame.setVisible(true);
 		

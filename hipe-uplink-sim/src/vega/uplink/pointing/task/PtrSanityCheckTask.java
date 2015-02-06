@@ -16,6 +16,7 @@ import javax.swing.JTextPane;
 
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
+import vega.uplink.pointing.gui.xmlutils.HtmlDocument;
 //import vega.uplink.pointing.task.ComparePtrsTask.MessagesFrame;
 import vega.uplink.pointing.gui.xmlutils.HtmlEditorKit;
 
@@ -34,7 +35,9 @@ public class PtrSanityCheckTask extends Task {
         parameter2.setType(TaskParameter.IN);
         parameter2.setMandatory(false);
         parameter2.setDescription("The ptsl to be check againts"); //6
-
+		TaskParameter report = new TaskParameter("ptrSanityReport", HtmlDocument.class);
+		report.setType(TaskParameter.OUT);
+		 addTaskParameter(report);
 
 
         addTaskParameter(parameter1);
@@ -52,15 +55,20 @@ public class PtrSanityCheckTask extends Task {
 		if (ptsl==null){
         	String result = PtrChecker.checkPtrHTML(ptr);
         	LOGGER.warning(result);
-        	HtmlEditorKit htmlEditor=new HtmlEditorKit("PTR sanity Check",result);
+        	HtmlDocument re=new HtmlDocument("PTR sanity Check",result);
+        	HtmlEditorKit htmlEditor=new HtmlEditorKit(re);
+        	this.getParameter("ptrSanityReport").setValue(re);
         	//MessagesFrame frame = new MessagesFrame(result);
         	//frame.setVisible(true);
 		}else{
 	       	String result = PtrChecker.checkPtrHTML(ptr, ptsl);
 	       	result="<html><body>"+result+"</body><html>";
         	LOGGER.warning(result);
-        	HtmlEditorKit htmlEditor=new HtmlEditorKit("PTR sanity Check",result);
-			
+        	//HtmlEditorKit htmlEditor=new HtmlEditorKit("PTR sanity Check",result);
+           	HtmlDocument re=new HtmlDocument("PTR sanity Check",result);
+        	HtmlEditorKit htmlEditor=new HtmlEditorKit(re);
+        	this.getParameter("ptrSanityReport").setValue(re);
+ 
 		}
 	}
 	

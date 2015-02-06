@@ -364,7 +364,8 @@ public class OffsetCustom extends OffsetAngles {
 	public Date getEndDate(){
 		float[] deltaTimes=getDeltaTimes(DELTATIMES_DEFAULT_UNIT);
 		float result=0;
-		for (int i=1;i<deltaTimes.length;i++){
+		//for (int i=1;i<deltaTimes.length;i++){
+		for (int i=0;i<deltaTimes.length;i++){
 			result=result+deltaTimes[i];
 		}
 		long duration = new Float(result*1000*60).longValue();

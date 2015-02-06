@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+encoding//src/vega/uplink/pointing/PtrParameters/Offset/OffsetCustom.java=UTF-8
+encoding//src/vega/uplink/pointing/PtrParameters/Offset/OffsetFixed.java=UTF-8
+encoding//src/vega/uplink/pointing/PtrParameters/Offset/OffsetRaster.java=UTF-8
+encoding//src/vega/uplink/pointing/PtrParameters/Offset/OffsetScan.java=UTF-8
+encoding//src/vega/uplink/pointing/PtrParameters/PhaseAngle.java=UTF-8

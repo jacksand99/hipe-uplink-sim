@@ -1,0 +1,67 @@
+<observation>
+	<name>RPC SUN</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>RPC</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="ARPF801A">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>12.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="ARPF806A">
+			<executionTime>
+				<actionTime>END_OBS-00:15:11</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:15:11</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+			<metadata>
+				<comment>RPC active pointing. SAA=90, CG as close as possible from the IES-ICA detector virtual plane</comment>
+			</metadata>
+			<attitude ref='track'>
+				<boresight frame='SC'>
+					<x>1.</x>
+					<y>0.</y>
+					<z>0.</z>
+				</boresight>
+				<phaseAngle ref='align'>
+					<SCAxis frame='SC'>
+						<x>0.</x>
+						<y>-0.40825</y>
+						<z>0.86603</z>
+					</SCAxis>
+					<inertialAxis ref='SC2CG'/>
+				</phaseAngle>
+				<target ref='Sun'/>
+			</attitude>
+		</block>
+	</pointingBlocks>
+</observation>

@@ -1,0 +1,73 @@
+<observation>
+	<name>RN_GAS_DYN</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>ROSINA</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2015-02-05T15:23:55</startDate>
+	<endDate>2015-02-05T16:23:55</endDate>
+	<sequences>
+		<sequence name="ARNF050A">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>54.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>1300.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="ARNF051A">
+			<executionTime>
+				<actionTime>END_OBS-00:00:01</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>6.2</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+			<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+			<attitude ref='track_pwropt'>
+				<boresight ref='SC_Zaxis'/>
+				<target ref='CG'/>
+				<offsetRefAxis ref='SC_Yaxis'/>
+				<offsetAngles ref='scan'>
+					<startTime>START_OBS+00:20:09</startTime>
+					<numberOfLines>1</numberOfLines>
+					<numberOfScansPerLine>2</numberOfScansPerLine>
+					<xStart units='deg'>-30</xStart>
+					<yStart units='deg'>0</yStart>
+					<scanDelta units='deg'>60</scanDelta>
+					<lineDelta units='deg'>0.</lineDelta>
+					<scanSpeed units='deg/min'>1</scanSpeed>
+					<scanSlewTime units='min'>5</scanSlewTime>
+					<lineSlewTime units='min'>1</lineSlewTime>
+					<borderSlewTime units='min'>18</borderSlewTime>
+					<lineAxis>x</lineAxis>
+					<keepLineDir>false</keepLineDir>
+					<keepScanDir>false</keepScanDir>
+				</offsetAngles>
+			</attitude>
+			<metadata>
+				<comment>ROSINA Gas_dyn</comment>
+				<comment>RPC RPCROSINAVelocityCalibration</comment>
+			</metadata>
+		</block>
+	</pointingBlocks>
+</observation>

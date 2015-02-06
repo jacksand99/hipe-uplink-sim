@@ -108,10 +108,32 @@ public void actionPerformed(ActionEvent e) {
 }
 };
 
+AbstractSiteAction gitTunnel = new AbstractSiteAction(SiteAction.Style.AS_PUSH, "GIT_TUNNEL", "Git Tunnel Server", getGitIcon()) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+public void actionPerformed(ActionEvent e) {
+	try {
+		HipeGitSshTunnel.startTunnel();
+		//HipeGit.getInstance().gitClone();
+	} catch (Exception e1) {
+		// TODO Auto-generated catch block
+		IllegalArgumentException iae = new IllegalArgumentException(e1.getMessage());
+		iae.initCause(e1);
+		throw(iae);
+		//e1.printStackTrace();
+	} 
+}
+};
+
 	ActionBars mainMenu = getPart().getActionBars(herschel.ia.gui.kernel.menus.Insert.MAIN);
 	mainMenu.insert(new Insert(Insert.Scheme.MENU, herschel.ia.gui.kernel.menus.Insert.MAIN, Insert.Extension.TOOLS_ADDON),gitPull);
 	mainMenu.insert(new Insert(Insert.Scheme.MENU, herschel.ia.gui.kernel.menus.Insert.MAIN, Insert.Extension.TOOLS_ADDON),gitPush);
 	mainMenu.insert(new Insert(Insert.Scheme.MENU, herschel.ia.gui.kernel.menus.Insert.MAIN, Insert.Extension.TOOLS_ADDON),gitClone);
+	mainMenu.insert(new Insert(Insert.Scheme.MENU, herschel.ia.gui.kernel.menus.Insert.MAIN, Insert.Extension.TOOLS_ADDON),gitTunnel);
 
 	}
 	

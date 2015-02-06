@@ -795,7 +795,9 @@ public class Fecs extends TableDataset{
 		Fecs result=new Fecs(startDate,endDate);
 		GsPass[] passes = this.findOverlapingPasses(startDate, endDate);
 		for (int i=0;i<passes.length;i++){
-			result.addPass(passes[i]);
+			if (passes[i].getStartPass().after(startDate) || passes[i].getStartPass().equals(startDate)){
+				result.addPass(passes[i]);
+			}
 		}
 		
 		return result;

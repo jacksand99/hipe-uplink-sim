@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 import vega.uplink.commanding.Orcd;
@@ -16,10 +17,135 @@ import vega.uplink.commanding.ParameterString;
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.Sequence;
 import vega.uplink.commanding.SequenceProfile;
+import vega.uplink.planning.Observation;
+import vega.uplink.planning.ObservationEvent;
+import vega.uplink.planning.ObservationSequence;
 
 public class ItlParser {
 	public static String path="";
 	public static String dEvtPath="";
+	public static Observation itlToObs(String itlFile,Date startDate,Date endDate) throws ParseException{
+		Observation result=new Observation(startDate,endDate);
+		String[] itllines;
+		String name=new File(itlFile).getName().toUpperCase().replace(".ITL", "");
+		try {
+			itllines = readFile(itlFile);
+		} catch (IOException e1) {
+			ParseException e2=new ParseException(e1.getMessage(),0);
+			throw e2;
+		}
+		java.util.Vector<String> commandLines=new java.util.Vector<String>();
+		int uIDSed=1;
+		
+		for (int i=0;i<itllines.length;i++){
+			if(itllines[i].startsWith("Comment") || itllines[i].startsWith("comment")){
+				itllines[i]="";
+			}
+
+				itllines[i]=itllines[i].replace("#POWER_ON#", "0");
+				itllines[i]=itllines[i].replace("#DATA_ON#", "0");
+				if (!itllines[i].equals("")) commandLines.add(itllines[i]);
+			
+		}
+		try{
+			for (int i=0;i<commandLines.size();i++){
+				try{
+					String cl=commandLines.get(i);
+					String[] parts=cl.split(Pattern.quote("("));
+					String sComm=parts[0];
+					String[] pComm=sComm.split(" ");
+					String commandName=pComm[pComm.length-1];
+					/*if (commandName==null | commandName.equals("")){
+						System.out.println(cl);
+					}*/
+					/*if (i==0){
+						System.out.println(cl);
+					}*/
+					String commandTime=pComm[0];
+					String executionevent=commandTime;
+					//java.util.Date exTime=parseExDate(commandTime);
+					String commandDelta="";
+					if (pComm.length>4){
+						commandDelta=pComm[1];
+					}
+					String instrument="UNKNOWN";
+					instrument=pComm[2].toUpperCase();
+					String sParam="";
+					if (parts.length>1){
+						sParam=parts[1].replace(")", "");
+					}
+					String[] sParamArr=separateParameters(sParam);
+					DecimalFormat df=new DecimalFormat("000000000");
+					//String uid="P"+new Integer((uIDSed*10000)+(i*100)).toString();
+					String uid="P"+df.format((uIDSed*10000)+(i*100));
+					/*if (uid.equals("P000010000")){
+						System.out.println(sComm);
+						System.out.println("Command name:"+commandName);
+	
+					}*/
+					if (commandName.equals("")){
+						System.out.println("DEBUG :"+cl);
+					}
+					ObservationSequence seq=new ObservationSequence (result,new ObservationEvent(executionevent),deltaToMilli(commandDelta),commandName,uid);
+					//Sequence seq=new Sequence(commandName,uid,Sequence.dateToZulu(addDelta(exTime,commandDelta)));
+					int repeat=1;
+					long separation=0;
+	
+					for (int j=0;j<sParamArr.length;j++){
+						if (!sParamArr[j].startsWith("DATA_RATE") && !sParamArr[j].startsWith("POWER") && !sParamArr[j].startsWith("REPEAT") && !sParamArr[j].startsWith("SEPARATION")){
+							try{
+								seq.addParameter(parseParameter(sParamArr[j]));
+							}catch (ParseException e){
+								ParseException nex = new ParseException("At line:"+cl+"."+e.getMessage(),0);
+								nex.initCause(e);
+								throw nex;
+							}
+						}
+						if (sParamArr[j].startsWith("DATA_RATE") || sParamArr[j].startsWith("POWER")){
+							SequenceProfile[] profs=parseProfile(sParamArr[j]);
+							for (int k=0;k<profs.length;k++){
+								seq.addProfile(profs[k]);
+							}
+						}
+						if (sParamArr[j].startsWith("REPEAT")){
+							String[] temp=sParamArr[j].split("=");
+							repeat=Integer.parseInt(temp[1].replace(" ", ""));
+							
+	
+						}
+						if (sParamArr[j].startsWith("SEPARATION")){
+							String[] temp=sParamArr[j].split("=");
+							temp[1]=temp[1].replace(" ", "");
+							String temp2[]=temp[1].split(":");
+							separation=((Integer.parseInt(temp2[0])*3600)+(Integer.parseInt(temp2[1])*60)+Integer.parseInt(temp2[2]))*1000;
+						}
+					}
+					for (int k=0;k<repeat;k++){
+						//Sequence newSeq=new Sequence(seq);//=seq.copy();
+						//Sequence newSeq=new Sequence(new String(seq.getName()),new String(seq.getUniqueID()),new String(seq.getFlag()),new Character(seq.getSource()),new Character(seq.getDestination()),new String(seq.getExecutionTime()),seq.getParameters(),seq.getProfiles());
+						ObservationSequence newSeq=new ObservationSequence (result,new ObservationEvent(executionevent),deltaToMilli(commandDelta)+(separation*k),commandName,uid);
+						newSeq.setParameters(seq.getParameters());
+						newSeq.setProfiles(seq.getProfiles());
+						result.setInstrument(instrument);
+						//newSeq.setInstrument(instrument);
+						//newSeq.setExecutionDate(new java.util.Date(seq.getExecutionDate().getTime()+(separation*k)));
+						//newSeq.setUniqueID("P"+new Integer((uIDSed*10000)+(i*100)+k).toString());
+						newSeq.setUniqueID("P"+df.format((uIDSed*10000)+(i*100)+k));
+						result.addObservationSequence(newSeq);
+	
+					}
+				}catch (ParseException e){
+					System.out.println("Could not parse line");
+					e.printStackTrace();
+				}
+			}
+		}catch (Exception e){
+			System.out.println("Could not parse line");
+			e.printStackTrace();
+		}
+		result.setName(name);
+		return result;
+	}
 	public static Por parseItl(String itlFile,String evtFile,String defaultEvtPath,int uIDSed) throws ParseException{
 		dEvtPath=defaultEvtPath;
 		Por result = new Por();
@@ -306,6 +432,40 @@ public class ItlParser {
 		
 	}
 	
+	private static long deltaToMilli(String delta){
+		//if (delta.equals("")) return initial;
+		//long ms=initial.getTime();
+		long ms=0;
+		boolean symbol=true;
+		int days=0;
+		int hours=0;
+		int minutes=0;
+		int seconds=0;
+		if (delta.startsWith("-")) symbol=false;
+		delta=delta.replace("+", "");
+		delta=delta.replace("-", "");
+		if (delta.contains("_")){
+			String sDays=delta.substring(0,3);
+			days=Integer.parseInt(sDays);
+			delta=delta.replace(sDays+"_","");
+		}
+		String[] sTimes=delta.split(":");
+		hours=Integer.parseInt(sTimes[0]);
+		minutes=Integer.parseInt(sTimes[1]);
+		seconds=Integer.parseInt(sTimes[2]);
+		long deltams=((days*86400)+(hours*3600)+(minutes*60)+seconds)*1000;
+		if (symbol){
+			ms=ms+deltams;
+		}
+		else{
+			ms=ms-deltams;
+		}
+		//java.util.Date result=new java.util.Date(ms);
+
+		return ms;
+		
+	}
+	
 	private static java.util.Date parseExDate(String exDate) throws ParseException{
 		java.util.Date result=new java.util.Date();
 		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
@@ -421,6 +581,9 @@ public class ItlParser {
 		
 				br = new BufferedReader(new FileReader(file));
 			while ((line = br.readLine()) != null){
+				line=line.replace("#POWER_ON#", "0");
+				line=line.replace("#DATA_ON#", "0");
+
 				lines.add(line);
 			}
 		

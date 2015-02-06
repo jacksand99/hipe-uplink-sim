@@ -1,0 +1,90 @@
+<observation>
+	<name>OSIRIS 014cO 7 stations at lit limb from approx 30 km distance</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>014c, high resolution limb scan </description>
+	<instrument>OSIRIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="OBS_START">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="OBS_END">
+			<executionTime>
+				<actionTime>END_OBS-00:00:01</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>26.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+  <attitude ref='track_pwropt'>
+    <boresight ref='OsirisNAC'/>
+    <offsetRefAxis ref='SC_Xaxis'/>
+    <target ref='CG'/>
+				<offsetAngles ref='custom'>
+					<startTime>START_OBS+00:05:00</startTime>
+     <deltaTimes units='min'> 0.0 2.0 5.0 2.0 5.0 2.0 5.0 2.0 5.0 2.0 5.0 2.0 5.0 2.0</deltaTimes>
+      <xAngles units='deg'> 1.8 1.8 0.0 0.0 3.6 3.6 3.6 3.6 3.6 3.6 1.8 1.8 0.0 0.0</xAngles>
+      <xRates units='deg/min'> 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.</xRates>
+      <yAngles units='deg'> 3.6 3.6 3.6 3.6 1.8 1.8 0.0 0.0 -1.8 -1.8 -3.6 -3.6 -3.6 -3.6</yAngles>
+      <yRates units='deg/min'> 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.</yRates>
+    </offsetAngles>
+			</attitude>
+  <metadata>
+  <comment>OSIRIS 014cO</comment>
+    <comment>014cO, high resolution limb scan</comment>
+    <comment>7 stations at lit limb from approx 30 km distance</comment>
+    <comment>SR.SNIPPET_VERSION=001</comment>
+    <comment>SR.OWNER=TRUE</comment>
+    <comment>SR.PROCESSED=FALSE</comment>
+    <comment>SR.DURATION=59.0min,SR.DATA_VOLUME=79.19MB,SR.CADENCE=0min,SR.REPETITIONS=1</comment>
+    <comment>SR.OBS100.START=BLOCK_START_TIME+00:12:02</comment>
+    <comment>SR.OBS100.ACTIVITY_NAME=SR_W_LIMB_SCAN_014cW</comment>
+    <comment>SR.OBS101.START=BLOCK_START_TIME+00:26:02</comment>
+    <comment>SR.OBS101.ACTIVITY_NAME=SR_W_LIMB_SCAN_014cW</comment>
+    <comment>SR.OBS102.START=BLOCK_START_TIME+00:40:02</comment>
+    <comment>SR.OBS102.ACTIVITY_NAME=SR_W_LIMB_SCAN_014cW</comment>
+    <comment>SR.OBS000.START=BLOCK_START_TIME+00:05:00</comment>
+    <comment>SR.OBS000.ACTIVITY_NAME=SR_N_LIMB_SCAN_014cN</comment>
+    <comment>SR.OBS001.START=BLOCK_START_TIME+00:12:00</comment>
+    <comment>SR.OBS001.ACTIVITY_NAME=SR_N_LIMB_SCAN_014cN</comment>
+    <comment>SR.OBS002.START=BLOCK_START_TIME+00:19:00</comment>
+    <comment>SR.OBS002.ACTIVITY_NAME=SR_N_LIMB_SCAN_014cN</comment>
+    <comment>SR.OBS003.START=BLOCK_START_TIME+00:26:00</comment>
+    <comment>SR.OBS003.ACTIVITY_NAME=SR_N_LIMB_SCAN_014cN</comment>
+    <comment>SR.OBS004.START=BLOCK_START_TIME+00:33:00</comment>
+    <comment>SR.OBS004.ACTIVITY_NAME=SR_N_LIMB_SCAN_014cN</comment>
+    <comment>SR.OBS005.START=BLOCK_START_TIME+00:40:00</comment>
+    <comment>SR.OBS005.ACTIVITY_NAME=SR_N_LIMB_SCAN_014cN</comment>
+    <comment>SR.OBS006.START=BLOCK_START_TIME+00:47:00</comment>
+    <comment>SR.OBS006.ACTIVITY_NAME=SR_N_LIMB_SCAN_014cN</comment>
+  </metadata>
+		</block>
+	</pointingBlocks>
+</observation>

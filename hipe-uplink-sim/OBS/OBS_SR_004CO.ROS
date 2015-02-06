@@ -1,0 +1,60 @@
+<observation>
+	<name>OSIRIS 004cO</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>OSIRIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="OBS_START">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="OBS_END">
+			<executionTime>
+				<actionTime>END_OBS-00:00:01</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>26.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+  <attitude ref='illuminatedPoint_pwropt'>
+    <boresight ref='OsirisNAC'/>
+  </attitude>
+  <metadata>
+    <comment>004cO, global color map</comment>
+    <comment>SR.SNIPPET_VERSION=001</comment>
+    <comment>SR.OWNER=TRUE</comment>
+    <comment>SR.PROCESSED=FALSE</comment>
+    <comment>SR.DURATION=10min,SR.DATA_VOLUME=9.44MB,SR.CADENCE=42.4min,SR.REPETITIONS=18</comment>
+    <comment>SR.OBS000.START=BLOCK_START_TIME</comment>
+    <comment>SR.OBS000.ACTIVITY_NAME=SR_O_COLOR_MAP_004cO</comment>
+  </metadata>
+		</block>
+	</pointingBlocks>
+</observation>

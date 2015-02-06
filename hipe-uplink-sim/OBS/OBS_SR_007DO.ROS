@@ -1,0 +1,79 @@
+<observation>
+	<name>OSIRIS 007dO</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>007d, dawn movie looking to evening terminator from terminator orbit</description>
+	<instrument>OSIRIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="OBS_START">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="OBS_END">
+			<executionTime>
+				<actionTime>END_OBS-00:00:01</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>26.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+			<attitude ref='track'>
+				<boresight ref='Nadir_Nav_Boresight'/>
+				<offsetRefAxis ref='CG2Sun'/>
+				<target ref='CG'/>
+				<offsetAngles ref='fixed'>
+					<xAngle units='deg'>-0.5</xAngle>
+					<yAngle units='deg'>0.0</yAngle>
+				</offsetAngles>
+			</attitude>
+			<metadata>
+				<comment>OWNER=OSIRIS</comment>
+				<comment>007d, dawn movie</comment>
+				<comment>looking to evening terminator from terminator orbit</comment>
+				<comment>SR.PROCESSED=FALSE</comment>
+				<comment>SR.OBS000.START=BLOCK_START_TIME</comment>
+				<comment>SR.OBS001.START=BLOCK_START_TIME+00:08:00</comment>
+				<comment>SR.OBS002.START=BLOCK_START_TIME+00:16:00</comment>
+				<comment>SR.OBS003.START=BLOCK_START_TIME+00:24:00</comment>
+				<comment>SR.OBS004.START=BLOCK_START_TIME+00:32:00</comment>
+				<comment>SR.OBS005.START=BLOCK_START_TIME+00:40:00</comment>
+				<comment>SR.OBS006.START=BLOCK_START_TIME+00:48:00</comment>
+				<comment>SR.OBS007.START=BLOCK_START_TIME+00:56:00</comment>
+				<comment>SR.OBS000.ACTIVITY_NAME=DAWN_MOVIE</comment>
+				<comment>SR.OBS001.ACTIVITY_NAME=DAWN_MOVIE</comment>
+				<comment>SR.OBS002.ACTIVITY_NAME=DAWN_MOVIE</comment>
+				<comment>SR.OBS003.ACTIVITY_NAME=DAWN_MOVIE</comment>
+				<comment>SR.OBS004.ACTIVITY_NAME=DAWN_MOVIE</comment>
+				<comment>SR.OBS005.ACTIVITY_NAME=DAWN_MOVIE</comment>
+				<comment>SR.OBS006.ACTIVITY_NAME=DAWN_MOVIE</comment>
+				<comment>SR.OBS007.ACTIVITY_NAME=DAWN_MOVIE</comment>
+			</metadata>
+		</block>
+	</pointingBlocks>
+</observation>

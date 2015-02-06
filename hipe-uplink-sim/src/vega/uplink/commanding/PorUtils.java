@@ -522,6 +522,10 @@ public class PorUtils {
 			//TreeMap<Date,Node> eotbNodes=new TreeMap<Date,Node>();
 			TreeMap<Date,Node> boabNodes=new TreeMap<Date,Node>();
 			TreeMap<Date,Node> eoabNodes=new TreeMap<Date,Node>();
+			TreeMap<Date,Node> boalNodes=new TreeMap<Date,Node>();
+			TreeMap<Date,Node> eoalNodes=new TreeMap<Date,Node>();
+			TreeMap<Date,Node> botrNodes=new TreeMap<Date,Node>();
+			TreeMap<Date,Node> eotrNodes=new TreeMap<Date,Node>();
 			
 			int size=fcsNodeList.getLength();
 			for (int i=0;i<size;i++){
@@ -559,6 +563,20 @@ public class PorUtils {
 					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOAB")){
 						eoabNodes.put(time,item);
 					}
+					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOAL")){
+						boalNodes.put(time,item);
+					}
+					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOAL")){
+						eoalNodes.put(time,item);
+					}
+					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOTR")){
+						//System.out.println("Detected BOTR");
+						botrNodes.put(time,item);
+					}
+					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOTR")){
+						eotrNodes.put(time,item);
+					}
+
 					
 
 				}
@@ -625,6 +643,39 @@ public class PorUtils {
 				}
 				
 			}
+			Iterator<Date> it4 = boalNodes.keySet().iterator();
+			while (it4.hasNext()){
+				Date passStart=it4.next();
+				Date passEnd=eoalNodes.ceilingKey(new Date(passStart.getTime()+1));
+				String station=boalNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
+				String endStation=eoalNodes.get(passEnd).getAttributes().getNamedItem("ems:station").getTextContent();
+				if (station.equals(endStation)){
+					result.addPass(new GsPassOAL(passStart,passEnd,station));
+				}else{
+					LOG.severe("Pass not included. Overlapping passes BOAL station "+station+" EOAL station "+endStation);
+					LOG.severe("STAD count "+boalNodes.get(passStart).getAttributes().getNamedItem("count").getTextContent());
+					LOG.severe("STOD count "+eoalNodes.get(passEnd).getAttributes().getNamedItem("count").getTextContent());
+				}
+				
+			}
+			
+			Iterator<Date> it5 = botrNodes.keySet().iterator();
+			while (it5.hasNext()){
+				Date passStart=it5.next();
+				Date passEnd=eotrNodes.ceilingKey(new Date(passStart.getTime()+1));
+				String station=botrNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
+				String endStation=eotrNodes.get(passEnd).getAttributes().getNamedItem("ems:station").getTextContent();
+				if (station.equals(endStation)){
+					result.addPass(new GsPassOTR(passStart,passEnd,station));
+					//System.out.println("Inster BOTR");
+				}else{
+					LOG.severe("Pass not included. Overlapping passes BOTR station "+station+" EOTR station "+endStation);
+					LOG.severe("STAD count "+botrNodes.get(passStart).getAttributes().getNamedItem("count").getTextContent());
+					LOG.severe("STOD count "+eotrNodes.get(passEnd).getAttributes().getNamedItem("count").getTextContent());
+				}
+				
+			}
+
 
 			
 		}catch (Exception e){

@@ -1,0 +1,24 @@
+<observation>
+	<name>AL_MAINTENANCE_RIDER</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>ALICE</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2015-02-05T15:23:55</startDate>
+	<endDate>2015-02-05T16:23:55</endDate>
+	<sequences>
+		<sequence name="AALS501A">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VALG0027" position="1">
+						<value representation="Raw" radix="Decimal">600</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+	</pointingBlocks>
+</observation>

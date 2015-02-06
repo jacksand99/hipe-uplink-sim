@@ -1,0 +1,174 @@
+<observation>
+	<name>AL_STARCAL_VEGA</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>ALICE</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2015-02-05T15:23:55</startDate>
+	<endDate>2015-02-05T16:23:55</endDate>
+	<sequences>
+		<sequence name="AALS302C">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS608A">
+			<executionTime>
+				<actionTime>START_OBS+00:05:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VALD1702" position="1">
+						<value representation="Raw" radix="Decimal">1</value>
+					</parameter>
+			</parameterList>
+			<profileList count="1">
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>1500.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="AALS501A">
+			<executionTime>
+				<actionTime>START_OBS+00:05:15</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VALG0027" position="1">
+						<value representation="Raw" radix="Decimal">30</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="AALS502A">
+			<executionTime>
+				<actionTime>START_OBS+00:07:46</actionTime>
+			</executionTime>
+			<parameterList count="3">
+					<parameter name="VALG0027" position="1">
+						<value representation="Raw" radix="Decimal">500</value>
+					</parameter>
+					<parameter name="VALD2802" position="2">
+						<value representation="Raw" radix="Decimal">3</value>
+					</parameter>
+					<parameter name="VALG0029" position="3">
+						<value representation="Raw" radix="Decimal">0</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="AALS591A">
+			<executionTime>
+				<actionTime>START_OBS+00:30:00</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS501A">
+			<executionTime>
+				<actionTime>START_OBS+00:35:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VALG0027" position="1">
+						<value representation="Raw" radix="Decimal">30</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="AALS502A">
+			<executionTime>
+				<actionTime>START_OBS+00:37:31</actionTime>
+			</executionTime>
+			<parameterList count="3">
+					<parameter name="VALG0027" position="1">
+						<value representation="Raw" radix="Decimal">500</value>
+					</parameter>
+					<parameter name="VALD2802" position="2">
+						<value representation="Raw" radix="Decimal">3</value>
+					</parameter>
+					<parameter name="VALG0029" position="3">
+						<value representation="Raw" radix="Decimal">0</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="AALS591A">
+			<executionTime>
+				<actionTime>END_OBS-00:03:15</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS402A">
+			<executionTime>
+				<actionTime>END_OBS-00:00:30</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS303A">
+			<executionTime>
+				<actionTime>END_OBS-00:00:20</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS608A">
+			<executionTime>
+				<actionTime>END_OBS-00:00:10</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VALD1702" position="1">
+						<value representation="Raw" radix="Decimal">30</value>
+					</parameter>
+			</parameterList>
+			<profileList count="1">
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="AALS591A">
+			<executionTime>
+				<actionTime>START_OBS+01:00:00</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS501A">
+			<executionTime>
+				<actionTime>START_OBS+01:05:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VALG0027" position="1">
+						<value representation="Raw" radix="Decimal">30</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="AALS502A">
+			<executionTime>
+				<actionTime>START_OBS+01:07:31</actionTime>
+			</executionTime>
+			<parameterList count="3">
+					<parameter name="VALG0027" position="1">
+						<value representation="Raw" radix="Decimal">500</value>
+					</parameter>
+					<parameter name="VALD2802" position="2">
+						<value representation="Raw" radix="Decimal">3</value>
+					</parameter>
+					<parameter name="VALG0029" position="3">
+						<value representation="Raw" radix="Decimal">0</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+			<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+			<attitude ref='inertial_pwropt'>
+				<boresight ref='AliceNC'/>
+				<target ref='Vega'/>
+				<offsetAngles ref='custom'>
+					<startTime>START_OBS+00:03:00</startTime>
+					<deltaTimes units='min'>0.0 29.0 2.0 29.0 2.0 29.0 </deltaTimes>
+					<xAngles units='deg'>-1.98796 -1.98796 0.0 0.0 2.01203 2.01203 </xAngles>
+					<xRates units='deg/sec'>0.0 0.0 0.0 0.0 0.0 0.0 </xRates>
+					<yAngles units='deg'>0.003 0.003 0.0 0.0 0.031 0.031 </yAngles>
+					<yRates units='deg/sec'>0.0 0.0 0.0 0.0 0.0 0.0 </yRates>
+				</offsetAngles>
+			</attitude>
+			<metadata>
+				<comment>ALICE STARCAL_VEGA</comment>
+				<comment>Alice stellar calibration Vega</comment>
+			</metadata>
+		</block>
+	</pointingBlocks>
+</observation>

@@ -1,0 +1,61 @@
+<observation>
+	<name>AL_BIMONTHLY_CAL</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>ALICE</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2015-02-05T15:23:53</startDate>
+	<endDate>2015-02-05T16:23:53</endDate>
+	<sequences>
+		<sequence name="AALS302C">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS608A">
+			<executionTime>
+				<actionTime>START_OBS+00:05:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VALD1702" position="1">
+						<value representation="Raw" radix="Decimal">1</value>
+					</parameter>
+			</parameterList>
+			<profileList count="1">
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>1600.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="AALS402A">
+			<executionTime>
+				<actionTime>END_OBS-00:00:30</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS303A">
+			<executionTime>
+				<actionTime>END_OBS-00:00:20</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS608A">
+			<executionTime>
+				<actionTime>END_OBS-00:00:10</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VALD1702" position="1">
+						<value representation="Raw" radix="Decimal">30</value>
+					</parameter>
+			</parameterList>
+			<profileList count="1">
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+	</pointingBlocks>
+</observation>

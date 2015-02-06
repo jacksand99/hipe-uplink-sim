@@ -1,0 +1,61 @@
+<observation>
+	<name>OSIRIS 013e</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>regular monitoring looking for changes in rotational elements to be repeated 24 times, every 30 minutes</description>
+	<instrument>OSIRIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="OBS_START">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="OBS_END">
+			<executionTime>
+				<actionTime>END_OBS-00:00:01</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>26.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+			<attitude ref='track'>
+				<boresight ref='Nadir_Nav_Boresight'/>
+				<offsetRefAxis ref='SC_Xaxis'/>
+				<target ref='CG'/>
+			</attitude>
+			<metadata>
+				<comment>OWNER=OSIRIS</comment>
+				<comment>013e, regular monitoring looking for changes in rotational elements</comment>
+				<comment>to be repeated 24 times, every 30 minutes</comment>
+				<comment>SR.PROCESSED=FALSE</comment>
+				<comment>SR.OBS000.START=BLOCK_START_TIME</comment>
+				<comment>SR.OBS000.ACTIVITY_NAME=ROTATIONAL_ELEMENTS</comment>
+			</metadata>
+		</block>
+	</pointingBlocks>
+</observation>

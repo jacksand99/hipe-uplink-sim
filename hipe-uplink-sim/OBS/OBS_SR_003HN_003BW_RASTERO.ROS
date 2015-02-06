@@ -1,0 +1,84 @@
+<observation>
+	<name>OSIRIS 003hN_003bW_rasterO</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>OSIRIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="OBS_START">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="OBS_END">
+			<executionTime>
+				<actionTime>END_OBS-00:00:01</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>26.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+ <attitude ref='track_pwropt'>
+    <boresight ref='OsirisNAC'/>
+    <offsetRefAxis ref='SC_Xaxis'/>
+    <target ref='CG'/>
+    <offsetAngles ref='raster'>
+      <startTime>START_OBS+00:02:00</startTime>
+      <xPoints>2</xPoints>
+      <yPoints>2</yPoints>
+      <xStart units='deg'>-1.0</xStart>
+      <yStart units='deg'>-1.0</yStart>
+      <xDelta units='deg'>2.0</xDelta>
+      <yDelta units='deg'>2.0</yDelta>
+      <pointSlewTime units='min'>4.0</pointSlewTime>
+      <lineSlewTime units='min'>4.0</lineSlewTime>
+      <dwellTime units='min'>2</dwellTime>
+      <lineAxis>x</lineAxis>
+      <keepLineDir>false</keepLineDir>
+    </offsetAngles>
+  </attitude>
+  <metadata>
+    <comment>SR.SNIPPET_VERSION=001</comment>
+    <comment>SR.OWNER=TRUE</comment>
+    <comment>003hN_003bW_rasterO, mapping raster</comment>
+    <comment>SR.PROCESSED=FALSE</comment>
+    <comment>SR.DURATION=25min,SR.DATA_VOLUME=7MB,SR.CADENCE=60min,SR.REPETITIONS=10</comment>
+    <comment>SR.OBS000.START=OBS_START_TIME+00:00:00</comment>
+    <comment>SR.OBS000.ACTIVITY_NAME=SR_N_MAPPING_003hN</comment>
+    <comment>SR.OBS001.START=OBS_START_TIME+00:06:00</comment>
+    <comment>SR.OBS001.ACTIVITY_NAME=SR_N_MAPPING_003hN</comment>
+    <comment>SR.OBS002.START=OBS_START_TIME+00:12:00</comment>
+    <comment>SR.OBS002.ACTIVITY_NAME=SR_N_MAPPING_003hN</comment>
+    <comment>SR.OBS003.START=OBS_START_TIME+00:18:00</comment>
+    <comment>SR.OBS003.ACTIVITY_NAME=SR_N_MAPPING_003hN</comment>
+    <comment>SR.OBS100.START=OBS_START_TIME+00:00:02</comment>
+    <comment>SR.OBS100.ACTIVITY_NAME=SR_W_MAPPING_003bW</comment>
+  </metadata>
+		</block>
+	</pointingBlocks>
+</observation>

@@ -1,10 +1,15 @@
 package vega.hipe.git;
+import herschel.ia.gui.apps.components.util.PopupMessageHandler;
 import herschel.ia.gui.kernel.menus.ActionBars;
 import herschel.share.interpreter.InterpreterUtil;
 import herschel.share.util.Configuration;
 
 import java.io.File;
 import java.io.IOException;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.*;
@@ -28,17 +33,20 @@ import com.jcraft.jsch.UserInfo;
 import vega.uplink.Properties;
 
 public class HipeGit {
-    private String localPath, remotePath, password;
+    private String localPath;
+    private String remotePath;
+    private String password;
     private Repository localRepo;
-    private Git git;
+    protected Git git;
     public static String LOCAL_PATH_PROPERTY="vega.hipe.git.localPath";
     public static String REMOTE_PATH_PROPERTY="vega.hipe.git.remotePath";
     public static String PASSWORD_PROPERTY="vega.hipe.git.password";
+    public static boolean TUNNEL=false;
 
     private static HipeGit instance;
     //public static String LOCAL_REPOSITORY_PROPERTY="vega.hipe.git.localPath";
     
-    private HipeGit(){
+    protected HipeGit(){
     	try {
 			init();
 		} catch (Exception e) {
@@ -51,14 +59,40 @@ public class HipeGit {
     }
     
     public static HipeGit getInstance(){
+    	if (TUNNEL) return getTunnelInstance();
     	if (instance==null) instance=new HipeGit();
     	return instance;
     }
     
+    public static HipeGit getTunnelInstance(){
+    	if (instance==null) instance=new HipeGitSshTunnel();
+    	return instance;
+    }
+    
     public void init() throws IOException {
-    	localPath=Properties.getProperty(LOCAL_PATH_PROPERTY);
-    	remotePath=Properties.getProperty(REMOTE_PATH_PROPERTY);
-    	password=Properties.getProperty(PASSWORD_PROPERTY);
+	      try{
+	    	  localPath=Properties.getProperty(LOCAL_PATH_PROPERTY);
+  	      }catch (Exception e){
+  	    	localPath=null;
+  	      }
+    	  if (localPath==null || localPath.equals("")){
+    		  PopupMessageHandler popup = new PopupMessageHandler();
+    		  localPath=popup.askForInput(null,"Local git path",System.getProperty("user.home")); 
+    	  }
+
+    	//localPath=Properties.getProperty(LOCAL_PATH_PROPERTY);
+	      try{
+	    	  remotePath=Properties.getProperty(REMOTE_PATH_PROPERTY);
+  	      }catch (Exception e){
+  	    	remotePath=null;
+  	      }
+    	  if (remotePath==null || remotePath.equals("")){
+    		  PopupMessageHandler popup = new PopupMessageHandler();
+    		  remotePath=popup.askForInput(null,"Remote git path",System.getProperty("user.name")+"@localhost:"+System.getProperty("user.home")+"/GIT.git"); 
+    	  }
+
+    	  //remotePath=Properties.getProperty(REMOTE_PATH_PROPERTY);
+    	//password=Properties.getProperty(PASSWORD_PROPERTY);
         /*localPath = "/home/me/repos/mytest";
         remotePath = "git@github.com:me/mytestrepo.git";*/
         localRepo = new FileRepository(localPath + "/.git");
@@ -78,6 +112,26 @@ public class HipeGit {
 
         	        @Override
         	        public boolean get(URIish uri, CredentialItem... items) throws UnsupportedCredentialItem {
+        	        	//uri.setPort(n)
+        	  	      try{
+        		    	  password=Properties.getProperty(PASSWORD_PROPERTY);
+        	  	      }catch (Exception e){
+        	  	    	password=null;
+        	  	      }
+        	    	  if (password==null || password.equals("")){
+        	    		  JTextField passwordField=(JTextField)new JPasswordField(20);
+        	    		  PopupMessageHandler popup = new PopupMessageHandler();
+        	    	      int result=popup.showConfirm(null, passwordField,JOptionPane.OK_CANCEL_OPTION,"Password for "+uri.getHost());
+        	    	      if(result==JOptionPane.OK_OPTION){
+        	    	    	  password=passwordField.getText();
+        	    	    	  //return true;
+        	    	      }
+        	    	      else{
+        	    	    	  return false;
+        	    	      }
+        	        }
+
+
         	            for (CredentialItem item : items) {
         	            	if (InterpreterUtil.isInstance(CredentialItem.Password.class, item)){
         	            		((CredentialItem.Password) item).setValue(password.toCharArray());

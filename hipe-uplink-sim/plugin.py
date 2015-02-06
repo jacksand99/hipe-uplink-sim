@@ -68,6 +68,14 @@ from vega.uplink.planning import ObservationPointingBlock
 from vega.hipe.preferences import PreferencePanelRegistrator
 from vega.uplink import Properties
 from vega.hipe.git import HipeGit
+from vega.hipe.git import Tunnel
+from vega.hipe.git import HipeGitSshTunnel
+from vega.uplink.planning.period import Plan
+from vega.uplink.planning.period import Ltp
+from vega.uplink.planning.period import Mtp
+from vega.uplink.planning.period import Stp
+from vega.uplink.planning.period import Vstp
+
 PreferencePanelRegistrator.registerPanels();
 
 from vega.help import HelpMenuFactory
@@ -110,6 +118,7 @@ REGISTRY.register(REGISTRY.COMPONENT,Extension("Pointing Metadata Editor","vega.
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Observation Editor","vega.uplink.planning.gui.ObservationEditor","factory.editor.variable","vega.uplink.planning.Observation"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Scheduler Viewer","vega.uplink.planning.gui.ScheduleViewer","factory.editor.variable","vega.uplink.planning.Schedule"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Power Plot Viewer","vega.uplink.commanding.gui.PowerPlotViewer","factory.editor.variable","vega.uplink.commanding.SimulationContext"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("HTML Document viewer","vega.uplink.pointing.gui.xmlutils.HtmlDocumentViewer","factory.editor.variable","vega.uplink.pointing.gui.xmlutils.HtmlDocument"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("PTR Reader","vega.uplink.pointing.gui.PtrFileComponent","factory.editor.file","vega.uplink.pointing.gui.PtrFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("PDFM Reader","vega.uplink.pointing.gui.PdfmFileComponent","factory.editor.file","vega.uplink.pointing.gui.PdfmFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("EVTM Reader","vega.uplink.pointing.gui.EvtmFileComponent","factory.editor.file","vega.uplink.pointing.gui.EvtmFile"))
@@ -119,6 +128,8 @@ REGISTRY.register(REGISTRY.COMPONENT,Extension("MIB Reader","vega.uplink.command
 REGISTRY.register(REGISTRY.COMPONENT,Extension("FECS Reader","vega.uplink.commanding.gui.FecsFileComponent","factory.editor.file","vega.uplink.commanding.gui.FecsFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Planning Observation Reader","vega.uplink.planning.gui.ObservationFileComponent","factory.editor.file","vega.uplink.planning.gui.ObservationFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Planning Schedule Reader","vega.uplink.planning.gui.ScheduleFileComponent","factory.editor.file","vega.uplink.planning.gui.ScheduleFile"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("Planning Period Reader","vega.uplink.planning.gui.PeriodsFileComponent","factory.editor.file","vega.uplink.planning.gui.PeriodsFile"))
+
 
 REGISTRY.register("site.fileType",Extension("site.file.ptr","vega.uplink.pointing.gui.PtrFile",Configuration.getProperty("vega.file.type.PTR"),"vega/vega.gif"));
 REGISTRY.register("site.fileType",Extension("site.file.ptsl","vega.uplink.pointing.gui.PtrFile",Configuration.getProperty("vega.file.type.PTSL"),"vega/vega.gif"));
@@ -129,6 +140,7 @@ REGISTRY.register("site.fileType",Extension("site.file.fecs","vega.uplink.comman
 REGISTRY.register("site.fileType",Extension("site.file.porg","vega.uplink.commanding.gui.PorgFile",Configuration.getProperty("vega.file.type.PORG"),"vega/vega.gif"));
 REGISTRY.register("site.fileType",Extension("site.file.obs","vega.uplink.planning.gui.ObservationFile",Configuration.getProperty("vega.file.type.OBS"),"vega/vega.gif"));
 REGISTRY.register("site.fileType",Extension("site.file.schedule","vega.uplink.planning.gui.ScheduleFile",Configuration.getProperty("vega.file.type.SCH"),"vega/vega.gif"));
+REGISTRY.register("site.fileType",Extension("site.file.period","vega.uplink.planning.gui.PeriodsFile",Configuration.getProperty("vega.file.type.PER"),"vega/vega.gif"));
 
 
 toolRegistry = TaskToolRegistry.getInstance()
@@ -168,8 +180,8 @@ toolRegistry.register(MergePtrsTask())
 toolRegistry.register(PtrSanityCheckTask())
 toolRegistry.register(RebasePtslTask())
 toolRegistry.register(SaveMappsProductsTask())
-def gitPull():
-	HipeGit.getInstance().gitPull()
+def tunnel():
+	HipeGitSshTunnel.startTunnel()
 
 
 #del(ins, instruments)

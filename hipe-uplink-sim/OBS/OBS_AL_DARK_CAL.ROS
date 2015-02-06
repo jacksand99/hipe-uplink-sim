@@ -1,0 +1,76 @@
+<observation>
+	<name>AL_DARK_CAL</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>ALICE</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2015-02-05T15:23:54</startDate>
+	<endDate>2015-02-05T16:23:54</endDate>
+	<sequences>
+		<sequence name="AALS302C">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS531A">
+			<executionTime>
+				<actionTime>START_OBS+00:05:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VALG0027" position="1">
+						<value representation="Raw" radix="Decimal">1800</value>
+					</parameter>
+			</parameterList>
+			<profileList count="1">
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>215.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="AALS531A">
+			<executionTime>
+				<actionTime>START_OBS+00:37:30</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VALG0027" position="1">
+						<value representation="Raw" radix="Decimal">1800</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="AALS531A">
+			<executionTime>
+				<actionTime>START_OBS+01:10:00</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VALG0027" position="1">
+						<value representation="Raw" radix="Decimal">3600</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="AALS531A">
+			<executionTime>
+				<actionTime>START_OBS+02:12:40</actionTime>
+			</executionTime>
+			<parameterList count="1">
+					<parameter name="VALG0027" position="1">
+						<value representation="Raw" radix="Decimal">3600</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="AALS303A">
+			<executionTime>
+				<actionTime>START_OBS+03:15:20</actionTime>
+			</executionTime>
+			<profileList count="1">
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+	</pointingBlocks>
+</observation>

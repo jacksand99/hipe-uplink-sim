@@ -1,0 +1,40 @@
+<observation>
+	<name>MR_SCI_FILLIN</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>MIRO</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2015-02-05T15:23:55</startDate>
+	<endDate>2015-02-05T16:23:55</endDate>
+	<sequences>
+		<sequence name="AMRF011A">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<parameterList count="3">
+					<parameter name="VMRD2002" position="1">
+						<value representation="Engineering">"30 sec"</value>
+					</parameter>
+					<parameter name="VMRD2003" position="2">
+						<value representation="Engineering">"Sum 10"</value>
+					</parameter>
+					<parameter name="VMRD2004" position="3">
+						<value representation="Engineering">"Smooth 1"</value>
+					</parameter>
+			</parameterList>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>81.3</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>1772.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+	</pointingBlocks>
+</observation>

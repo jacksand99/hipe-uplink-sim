@@ -25,6 +25,7 @@ public class FileTypesPreferences extends PreferencesPanel {
     private JTextField _fieldG;
     private JTextField _fieldH;
     private JTextField _fieldI;
+    private JTextField _fieldJ;
 
 
 	@Override
@@ -111,6 +112,14 @@ public class FileTypesPreferences extends PreferencesPanel {
         hLabelGroup.addComponent(labelI);
         hComboGroup.addComponent(_fieldI);
 
+        JLabel    labelJ = new JLabel("Periods:");
+        _fieldJ = new JTextField();
+        _fieldJ.setMaximumSize(new Dimension(400,20));
+        vPropsGroup = layout.createParallelGroup(BASELINE);
+        vGroup.addGroup(vPropsGroup.addComponent(labelJ).addComponent(_fieldJ));
+        hLabelGroup.addComponent(labelJ);
+        hComboGroup.addComponent(_fieldJ);
+
         hGroup.addGroup(hLabelGroup);
         hGroup.addGroup(hComboGroup);
         layout.setHorizontalGroup(hGroup);
@@ -129,6 +138,7 @@ public class FileTypesPreferences extends PreferencesPanel {
     	registerHandler("vega.file.type.FECS",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.FECS", ""),_fieldG,"vega.file.type.FECS"));
     	registerHandler("vega.file.type.OBS",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.OBS", ""),_fieldH,"vega.file.type.OBS"));
     	registerHandler("vega.file.type.SCH",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.SCH", ""),_fieldI,"vega.file.type.SCH"));
+    	registerHandler("vega.file.type.PER",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.PER", ""),_fieldJ,"vega.file.type.PER"));
 
 		
 	}

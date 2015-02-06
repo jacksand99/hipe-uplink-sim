@@ -4,6 +4,7 @@ package vega.uplink.planning;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -23,6 +24,7 @@ import herschel.ia.dataset.Dataset;
 import herschel.ia.dataset.DatasetEvent;
 import herschel.ia.dataset.StringParameter;
 import herschel.ia.pal.MapContext;
+import herschel.share.fltdyn.time.FineTime;
 
 /**
  * An Schedule is a timeline of all spacecraft activities.
@@ -290,6 +292,31 @@ public class Schedule extends MapContext implements ObservationListener{
 		LOG.info("POR dirty");
 		porDirty=true;
 		
+	}
+	public Schedule getPeriodSchedule(Date startDate,Date endDate){
+		Schedule result= new Schedule(this.getPtslSegment());
+		result.setPdfm(this.getPdfm());
+		result.setFileName(this.getFileName());
+		Observation[] allObs = this.getObservations();
+		for (int i=0;i<allObs.length;i++){
+			if (allObs[i].getStartDate().atOrAfter(new FineTime(startDate)) && allObs[i].getEndDate().atOrBefore(new FineTime(endDate))){
+				result.addObservation(allObs[i].copy());
+			}
+		}
+		return result;
+		
+	}
+	public Schedule getInstrumentSchedule(String instrument){
+		Schedule result= new Schedule(this.getPtslSegment());
+		result.setPdfm(this.getPdfm());
+		result.setFileName(this.getFileName());
+		Observation[] allObs = this.getObservations();
+		for (int i=0;i<allObs.length;i++){
+			if (allObs[i].getInstrument().equals(instrument)){
+				result.addObservation(allObs[i].copy());
+			}
+		}
+		return result;
 	}
 
 	

@@ -10,6 +10,7 @@ import java.util.Map;
 import vega.uplink.Properties;
 import vega.uplink.planning.ObservationUtil;
 import vega.uplink.planning.Schedule;
+import vega.uplink.planning.period.Plan;
 import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
@@ -36,6 +37,11 @@ public class SaveMappsProductsTask extends Task {
         pdfm.setMandatory(false);
         pdfm.setDescription("The PDFM to be included unt the PTR"); //6*/
 
+        TaskParameter plan = new TaskParameter("planning", Plan.class);
+        plan.setType(TaskParameter.IN);
+        plan.setMandatory(false);
+        plan.setDescription("The file name where the schedule will be exported"); //6
+
         
         TaskParameter name = new TaskParameter("name", String.class);
         name.setType(TaskParameter.IN);
@@ -47,7 +53,7 @@ public class SaveMappsProductsTask extends Task {
         path.setDescription("The path where the files will be saved"); //6
 
         addTaskParameter(parameter);
-        //addTaskParameter(pdfm);
+        addTaskParameter(plan);
 
         addTaskParameter(name);
         addTaskParameter(path);
@@ -56,6 +62,7 @@ public class SaveMappsProductsTask extends Task {
 	
 	public void execute() { 
 		Schedule schedule = (Schedule) getParameter("schedule").getValue();
+		Plan plan = (Plan) getParameter("planning").getValue();
 		Ptr ptr=schedule.getPtr();
 		Pdfm pdfm=schedule.getPdfm();
 		//Pdfm pdfm=(Pdfm) getParameter("pdfm").getValue();
@@ -86,7 +93,11 @@ public class SaveMappsProductsTask extends Task {
         
         PtrUtils.writePTRtofile(path+"/"+ptrName, ptr);
         try {
-			ObservationUtil.saveMappsProducts(path+"/"+name, schedule);
+        	if (plan==null){
+        		ObservationUtil.saveMappsProducts(path+"/"+name, schedule);
+        	}else{
+        		ObservationUtil.saveMappsProducts(path+"/"+name, schedule,plan);
+        	}
 		} catch (IOException e) {
 			IllegalArgumentException ioe = new IllegalArgumentException(e.getMessage());
 			ioe.initCause(e);

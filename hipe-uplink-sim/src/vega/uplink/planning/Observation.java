@@ -286,6 +286,7 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 	 * @param sequence
 	 */
 	public void addObservationSequence(ObservationSequence sequence) {
+		sequence.setObservation(this);
 		getCommanding().addSequence(sequence);
 		
 	}
@@ -363,6 +364,7 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 	 * @param newBlock
 	 */
 	public void addObservationBlock(ObservationPointingBlock newBlock) {
+		newBlock.setParent(this);
 		getPointing().addBlock(newBlock);
 		
 	}

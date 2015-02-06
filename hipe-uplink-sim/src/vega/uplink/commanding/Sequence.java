@@ -304,7 +304,7 @@ public class Sequence extends AbstractSequence {
 		String result = acronyms.get(acronim);
 		if (result!=null) return acronyms.get(acronim);
 		else {
-			System.out.println("Acronim for "+acronim+" not known");
+			System.out.println("Acronim for "+acronim+"in command "+getName()+" not known");
 			return "UNKNOWN";
 		}
 

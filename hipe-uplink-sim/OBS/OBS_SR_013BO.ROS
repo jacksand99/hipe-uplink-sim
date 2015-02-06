@@ -1,0 +1,64 @@
+<observation>
+	<name>OSIRIS 013bO</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>013b (013bN and 013bW), regular dust monitoring repeated 12 times, every hour</description>
+	<instrument>OSIRIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="OBS_START">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="OBS_END">
+			<executionTime>
+				<actionTime>END_OBS-00:00:01</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>26.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+  <attitude ref='illuminatedPoint_pwropt'>
+    <boresight ref='OsirisNAC'/>
+  </attitude>
+			<metadata>
+				<comment>OWNER=OSIRIS</comment>
+				<comment>013b (013bN and 013bW), regular dust monitoring</comment>
+				<comment>repeated 12 times, every hour</comment>
+    <comment>SR.SNIPPET_VERSION=001</comment>
+    <comment>SR.OWNER=TRUE</comment>
+    <comment>SR.PROCESSED=FALSE</comment>
+    <comment>SR.DURATION=20.0min,SR.DATA_VOLUME=13.4MB,SR.CADENCE=63.6min,SR.REPETITIONS=12</comment>
+    <comment>SR.OBS000.START=BLOCK_START_TIME+00:00:00</comment>
+    <comment>SR.OBS001.START=BLOCK_START_TIME+00:00:02</comment>
+    <comment>SR.OBS000.ACTIVITY_NAME=SR_N_DUST_MONITORING_013bN</comment>
+    <comment>SR.OBS001.ACTIVITY_NAME=SR_W_DUST_MONITORING_013bW</comment>
+			</metadata>
+		</block>
+	</pointingBlocks>
+</observation>

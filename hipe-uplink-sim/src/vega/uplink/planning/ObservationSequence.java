@@ -56,6 +56,10 @@ public class ObservationSequence extends Sequence{
 		executionTimeEvent=event;
 	}
 	
+	protected void setObservation(Observation obs){
+		parent=obs;
+	}
+	
 	public void setExecutionTimeDelta(long delta){
 		executionTimeDelta=delta;
 	}
@@ -66,6 +70,11 @@ public class ObservationSequence extends Sequence{
 	
 	public String getObservationName(){
 		return parent.getName();
+	}
+	public String getInstrumentName(){
+		String result=super.getInstrumentName();
+		if (result.equals("UNKNOWN") && this.getObs()!=null) return this.getObs().getInstrument();
+		return result;
 	}
 
 	@Override

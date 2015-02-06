@@ -1,0 +1,110 @@
+<observation>
+	<name>ALICE GREAT_CIRCLE</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>ALICE</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="AALS591A">
+			<executionTime>
+				<actionTime>END_OBS-00:03:00</actionTime>
+			</executionTime>
+			<profileList count="1">
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="AALS402A">
+			<executionTime>
+				<actionTime>END_OBS-00:00:15</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS303A">
+			<executionTime>
+				<actionTime>END_OBS-00:00:05</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS302C">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS502A">
+			<executionTime>
+				<actionTime>START_OBS+00:05:00</actionTime>
+			</executionTime>
+			<parameterList count="3">
+					<parameter name="VALG0027" position="1">
+						<value representation="Raw">600</value>
+					</parameter>
+					<parameter name="VALD2802" position="2">
+						<value representation="Raw">18</value>
+					</parameter>
+					<parameter name="VALG0029" position="3">
+						<value representation="Raw">0</value>
+					</parameter>
+			</parameterList>
+			<profileList count="1">
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>906.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="AALS591A">
+			<executionTime>
+				<actionTime>START_OBS+03:05:00</actionTime>
+			</executionTime>
+		</sequence>
+		<sequence name="AALS502A">
+			<executionTime>
+				<actionTime>START_OBS+03:08:00</actionTime>
+			</executionTime>
+			<parameterList count="3">
+					<parameter name="VALG0027" position="1">
+						<value representation="Raw">600</value>
+					</parameter>
+					<parameter name="VALD2802" position="2">
+						<value representation="Raw">18</value>
+					</parameter>
+					<parameter name="VALG0029" position="3">
+						<value representation="Raw">0</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+			<attitude ref='track_pwropt'>
+				<boresight ref='AliceNC'/>
+				<target ref='CG'/>
+				<offsetRefAxis ref='CG2Sun'/>
+				<offsetAngles ref='scan'>
+					<startTime>START_OBS+00:02:00</startTime>
+					<numberOfLines>1</numberOfLines>
+					<numberOfScansPerLine>1</numberOfScansPerLine>
+					<xStart units='deg'>0.5</xStart>
+					<yStart units='deg'>0.0</yStart>
+					<scanDelta units='deg'>360</scanDelta>
+					<lineDelta units='deg'>0.0</lineDelta>
+					<scanSpeed units='deg/min'>1.8</scanSpeed>
+					<lineSlewTime units='min'>1</lineSlewTime>
+					<borderSlewTime units='min'>6</borderSlewTime>
+					<lineAxis>y</lineAxis>
+					<keepLineDir>false</keepLineDir>
+					<keepScanDir>false</keepScanDir>
+				</offsetAngles>
+			</attitude>
+			<metadata>
+				<comment>GREAT_CIRCLE for HAC LTP4. With slit aligned along CG2Sun line, scan 360 degrees in Y at maximum 1.8 degrees/minute.</comment>
+			</metadata>
+		</block>
+	</pointingBlocks>
+</observation>
