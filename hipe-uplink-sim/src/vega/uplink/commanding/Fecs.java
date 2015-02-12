@@ -39,6 +39,11 @@ public class Fecs extends TableDataset{
 			+ "<tr>\n"
 			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th>\n"
 			+ "</tr>\n";
+	private static String GLOBAL_CHANGE_TABLE_HEADER_DURATION=""
+			+ "<tr>\n"
+			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Change</th>\n"
+			+ "</tr>\n";
+
 	private static String DUMP_TABLE_HEADER_DURATION=""
 			+ "<tr>\n"
 			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Dump is (s)</th><th>Dump was (s)</th>\n"
@@ -375,7 +380,7 @@ public class Fecs extends TableDataset{
 		TreeSet<GsPass> shorterPass=new TreeSet<GsPass>();
 		TreeSet<GsPass> largerPass=new TreeSet<GsPass>();
 		TreeSet<GsPass> bitrateChanged=new TreeSet<GsPass>();
-		
+		HashMap<GsPass,String> globalChanges=new HashMap<GsPass,String>();
 		Iterator<GsPass> it = newer.getPasses().iterator();
 		while (it.hasNext()){
 			GsPass newerPass = it.next();
@@ -384,21 +389,45 @@ public class Fecs extends TableDataset{
 				if (!newerPass.equals(olderPasses[0])){
 					if (newerPass.getDumpDurationSecs()<olderPasses[0].getDumpDurationSecs()){
 						shorterDump.add(newerPass);
+						String m = globalChanges.get(newerPass);
+						if (m==null) m="";
+						m=m+"Dump shortened. Dump was "+olderPasses[0].getDumpDurationSecs()+" s, new dump duration is "+newerPass.getDumpDurationSecs()+" s\n<br>";
+						globalChanges.put(newerPass, m);
 					}
 					if (newerPass.getDumpDurationSecs()>olderPasses[0].getDumpDurationSecs()){
 						largerDump.add(newerPass);
+						String m = globalChanges.get(newerPass);
+						if (m==null) m="";
+						m=m+"Dump enlarged. Dump was "+olderPasses[0].getDumpDurationSecs()+" s, new dump duration is "+newerPass.getDumpDurationSecs()+" s\n<br>";
+						globalChanges.put(newerPass, m);
+	
 						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
 					}
 					if (newerPass.getPassDurationSecs()<olderPasses[0].getPassDurationSecs()){
 						shorterPass.add(newerPass);
+						String m = globalChanges.get(newerPass);
+						if (m==null) m="";
+						m=m+"Pass shortened. Pass was "+olderPasses[0].getPassDurationSecs()+" s, new pass is "+newerPass.getPassDurationSecs()+" s\n<br>";
+						globalChanges.put(newerPass, m);
+	
 					}
 					if (newerPass.getPassDurationSecs()>olderPasses[0].getPassDurationSecs()){
 						largerPass.add(newerPass);
+						String m = globalChanges.get(newerPass);
+						if (m==null) m="";
+						m=m+"Pass enlarged. Pass was "+olderPasses[0].getPassDurationSecs()+" s, new pass is "+newerPass.getPassDurationSecs()+" s\n<br>";
+						globalChanges.put(newerPass, m);
+
 						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
 					}
 					if (newerPass.getTmRate()!=olderPasses[0].getTmRate()){
 						bitrateChanged.add(newerPass);
-						System.out.println("bitrate changed");
+						//System.out.println("bitrate changed");
+						String m = globalChanges.get(newerPass);
+						if (m==null) m="";
+						m=m+"Bitrate changed. Bitrate was "+olderPasses[0].getTmRate()+" bits/s, new pass is "+newerPass.getTmRate()+" bits/s\n<br>";
+						globalChanges.put(newerPass, m);
+
 						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
 					}
 
@@ -460,8 +489,25 @@ public class Fecs extends TableDataset{
 			result=result+"</table><br>";
 
 		}
+		if (globalChanges.size()>0){
+			result=result+"<h2>GS passes changed in "+newer.getName()+"</h2>\n";
+			result=result+"<br>\n";
+			
+			result=result+"<table class=\"gridtable\">\n"+GLOBAL_CHANGE_TABLE_HEADER_DURATION;
+			Iterator<GsPass> changedIt = globalChanges.keySet().iterator();
+			while (changedIt.hasNext()){
+				GsPass pass = changedIt.next();
+				//GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
+				String row = passToHTMLRow(pass);
+				row=row.replace("</tr>", "");
+				row=row+"<td>"+globalChanges.get(pass)+"</td></tr>";
+				result=result+row;
+				
+			}
+			result=result+"</table><br>";
 
-		if (shorterDump.size()>0){
+		}
+		/*if (shorterDump.size()>0){
 			result=result+"<h2>GS passes dump shortened in "+newer.getName()+"</h2>\n";
 			result=result+"<br>\n";
 			
@@ -562,7 +608,7 @@ public class Fecs extends TableDataset{
 			}
 			result=result+"</table><br>";
 
-		}
+		}*/
 
 		return result;
 		
@@ -709,7 +755,11 @@ public class Fecs extends TableDataset{
 		String result="";
 		String type="-";
 		if (pass.is70m()) type="70 m";
-		else type="34 m";
+		else {
+			if (pass.getGroundStation().startsWith("DSS")) type="34 m";
+			else type="35 m";
+			
+		}
 		if (!pass.isBSR()){
 			result=result+ "<tr>\n"
 					+ "	<td>"+type+"</td><td>"+pass.getGroundStation()
