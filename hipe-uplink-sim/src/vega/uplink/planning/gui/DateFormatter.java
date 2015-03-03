@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Logger;
 
+import vega.uplink.DateUtil;
 import vega.uplink.planning.Schedule;
 import vega.uplink.pointing.PointingBlock;
 import de.jaret.util.date.JaretDate;
@@ -121,7 +122,6 @@ public class DateFormatter extends JaretDateFormatter implements IIteratorFormat
      * @return JaretDate to format
      */
     public String generateDisplayString(JaretDate date) {
-    	//LOG.info(PointingBlock.dateToZulu(date.getDate())+" "+_df.format(date.getDate()));
         return _df.format(date.getDate());
     }
 
@@ -132,7 +132,6 @@ public class DateFormatter extends JaretDateFormatter implements IIteratorFormat
      * @return textual represantation of the date (day)
      */
     public String generateDisplayStringDate(JaretDate date) {
-    	//LOG.info(PointingBlock.dateToZulu(date.getDate())+" "+_df2.format(date.getDate()));
     	
         return _df2.format(date.getDate());
     }
@@ -202,7 +201,6 @@ public class DateFormatter extends JaretDateFormatter implements IIteratorFormat
             _dfTimeNoSeconds.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
         }
         if (seconds) {
-        	//LOG.info(PointingBlock.dateToZulu(date.getDate())+" "+_dfTimeSeconds.format(date.getDate()));
 
             return _dfTimeSeconds.format(date.getDate());
         } else {
@@ -213,7 +211,7 @@ public class DateFormatter extends JaretDateFormatter implements IIteratorFormat
 	@Override
 	public String getLabel(JaretDate arg0, Format arg1) {
 		// TODO Auto-generated method stub
-		return PointingBlock.dateToZulu(arg0.getDate());
+		return DateUtil.dateToZulu(arg0.getDate());
 	}
 
 

@@ -58,7 +58,7 @@
 			</attitude>
 			<metadata>
 				<comment>OWNER=OSIRIS</comment>
-				<comment>027b, grain sizes</comment>
+				<comment>OSIRIS 027b, grain sizes</comment>
 				<comment>SR.PROCESSED=FALSE</comment>
 				<comment>SR.OBS000.START=BLOCK_START_TIME+00:05:00</comment>
 				<comment>SR.OBS001.START=BLOCK_START_TIME+00:35:00</comment>

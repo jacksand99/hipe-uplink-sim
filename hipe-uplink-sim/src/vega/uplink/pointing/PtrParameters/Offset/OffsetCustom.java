@@ -3,6 +3,7 @@ package vega.uplink.pointing.PtrParameters.Offset;
 import java.text.ParseException;
 import java.util.Date;
 
+import vega.uplink.DateUtil;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.Units;
@@ -172,7 +173,7 @@ public class OffsetCustom extends OffsetAngles {
 	 */
 	public OffsetCustom (String startTime,String deltaTimes,String xAngles,String xRates,String yAngles,String yRates) throws ParseException{
 		super(OffsetAngles.OFFSETANGLES_TYPE_CUSTOM);
-		setStartDate(PointingBlock.zuluToDate(startTime));
+		setStartDate(DateUtil.zuluToDate(startTime));
 		setDeltaTimesUnit(DELTATIMES_DEFAULT_UNIT);
 		setDeltaTimes(stringToFloatArray(deltaTimes));
 		setXAnglesUnit(XANGLES_DEFAULT_UNIT);
@@ -306,14 +307,14 @@ public class OffsetCustom extends OffsetAngles {
 	
 	
 	public void setStartDate(Date date){
-		PointingElement startTimeCh = new PointingElement(STARTTIME_FIELD,PointingBlock.dateToZulu(date));
+		PointingElement startTimeCh = new PointingElement(STARTTIME_FIELD,DateUtil.dateToZulu(date));
 		this.addChild(startTimeCh);
 
 	}
 	
 	public Date getStartDate(){
 		try {
-			return PointingBlock.zuluToDate(getChild(STARTTIME_FIELD).getValue());
+			return DateUtil.zuluToDate(getChild(STARTTIME_FIELD).getValue());
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			

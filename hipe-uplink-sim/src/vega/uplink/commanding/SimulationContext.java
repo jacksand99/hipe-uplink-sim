@@ -54,7 +54,8 @@ public class SimulationContext extends MapContext{
 			set("mocPower",MocPower.ReadFromJar());
 
 		}
-		set("modelState",ModelState.getModelState());
+		//set("modelState",ModelState.getModelState());
+		set("modelState",new ModelState());
 		set("fecs",new Fecs());
 		setProduct("ptr",new Ptr());
 		setProduct("pdfm",new Pdfm());

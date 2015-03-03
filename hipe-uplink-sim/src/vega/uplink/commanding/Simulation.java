@@ -11,8 +11,10 @@ import org.jfree.ui.RefineryUtilities;
 //import org.jfree.util.Log;
 
 
+
 import com.kenai.jffi.Array;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.commanding.gui.HistoryModesPlot;
 import vega.uplink.commanding.itl.*;
@@ -24,24 +26,25 @@ import java.util.logging.Logger;
 
 
 
+
 //import javax.naming.ConfigurationException;
 import javax.swing.JFrame;
 //import java.lang.Runnable ;
 public class Simulation {
-	java.text.SimpleDateFormat dateFormat2;
+	//java.text.SimpleDateFormat dateFormat2;
 	SimulationContext context;
 	private static final Logger LOG = Logger.getLogger(Simulation.class.getName());
 	private Simulation(){
 		context=new SimulationContext();
-		dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		/*dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
+		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));*/
 		
 	}
 	public Simulation(SimulationContext context){
 		this.context=context;
 		//System.out.println("Init script:"+this.context.getInitScript());
-		dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		/*dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
+		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));*/
 		
 	}
 
@@ -146,7 +149,7 @@ public class Simulation {
 			String oldmode=context.getModelState().getStateForMode(context.getHistoryModes().get(j));
 			String newmode=context.getHistoryModes().get(j);
 			if (!context.getOrcd().checkTransion(oldmode, newmode)){
-				String mess="Forbidden transition "+oldmode+"--->"+newmode+" at "+dateFormat2.format(new Date(j))+" via "+context.getHistoryModes().getCommand(j)+" executed at "+dateFormat2.format(new Date(context.getHistoryModes().getOriginalTime(j)));
+				String mess="Forbidden transition "+oldmode+"--->"+newmode+" at "+DateUtil.dateToZulu(new Date(j))+" via "+context.getHistoryModes().getCommand(j)+" executed at "+DateUtil.dateToZulu(new Date(context.getHistoryModes().getOriginalTime(j)));
 				//messages=messages+mess;
 				context.log(mess);
 				Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
@@ -159,7 +162,7 @@ public class Simulation {
 			float mPower = context.getMocPower().getPowerAt(new Date(j));
 			context.getMocPowerHistory().append(mPower);
 			if (modelPower>mPower){
-				String mess="ALARM: Power over due via sequence "+context.getHistoryModes().getCommand(j)+" executed at "+dateFormat2.format(new Date(context.getHistoryModes().getOriginalTime(j)));
+				String mess="ALARM: Power over due via sequence "+context.getHistoryModes().getCommand(j)+" executed at "+DateUtil.dateToZulu(new Date(context.getHistoryModes().getOriginalTime(j)));
 				//messages=messages+mess;
 				context.log(mess);
 				Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
@@ -226,7 +229,7 @@ public class Simulation {
 			for (int j=0;j<array.length;j++){
 				if (array[j]==packetStoreSize){
 					if (!inMemoryFull){
-						String mess2="Packet store for instrument "+instruments[i]+" full at "+dateFormat2.format(new java.util.Date(times[j]));
+						String mess2="Packet store for instrument "+instruments[i]+" full at "+DateUtil.dateToZulu(new java.util.Date(times[j]));
 						if (!mess.equals(mess2)){
 							mess=mess2;
 							context.log(mess);

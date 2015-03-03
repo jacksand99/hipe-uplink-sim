@@ -17,6 +17,8 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.Arrays;
 
+import vega.uplink.DateUtil;
+
 import com.kenai.jffi.Array;
 
 public class MocPower extends TableDataset{
@@ -103,7 +105,7 @@ public class MocPower extends TableDataset{
 	 
 			        // use comma as separator
 				String[] fields = line.split(cvsSplitBy);
-				long newTime=zuluToDate(fields[0]).getTime();
+				long newTime=DateUtil.DOYToDate(fields[0]).getTime();
 				float newPower=Float.parseFloat(fields[1]);
 				//System.out.println(zuluToDate(fields[0]).toString()+","+fields[1]);
 				result.addRecord(newTime, newPower);
@@ -209,10 +211,6 @@ public class MocPower extends TableDataset{
 		return result;
 	}
 	
-	static java.util.Date zuluToDate(String zuluTime) throws ParseException{
-		java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yy-D'T'HH:mm:ss'Z'");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		return dateFormat.parse(zuluTime);
-	}
+
 
 }

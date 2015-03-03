@@ -25,6 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 
 
@@ -75,7 +76,22 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 			calculateValidity();
 		}else{
 			addSequence(new Sequence(sequence));
+			
 		}
+	}
+	public void removeSequence(SequenceInterface sequence){
+		this.getRefs().remove(sequence.getUniqueID());
+		sequenceMap.remove(sequence.getUniqueID());
+	}
+	private void removeAllSequences(){
+		AbstractSequence[] seqs = this.getSequences();
+		for (int i=0;i<seqs.length;i++){
+			removeSequence(seqs[i]);
+		}
+	}
+	public void regenerate(Por por){
+		this.removeAllSequences();
+		this.setSequences(por.getSequences());
 	}
 
 	/*public void addSequence(AbstractSequence sequence){
@@ -114,20 +130,56 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 		vector.toArray(result);
 		return result;
 	}
+	public Por getSubPor(Date startDate,Date endDate){
+		Por result=new Por();
+		AbstractSequence[] seqs = this.findOverlapingSequences(startDate, endDate);
+		result.setSequences(seqs);
+		return result;
+	}
+	public Por getSubPor(String instrument){
+		Vector<AbstractSequence> vector= new Vector<AbstractSequence>();
+		
+		AbstractSequence[] seqs=getSequences();
+		for (int i=0;i<seqs.length;i++){
+			if (seqs[i].getInstrumentName().equals(instrument)) vector.add(seqs[i]);
+		}
+		Sequence[] array=new Sequence[vector.size()];
+		vector.toArray(array);
+		Por result = new Por();
+		result.setSequences(array);
+		return result;
+	}
+	public AbstractSequence[] findOverlapingSequences(Date startDate,Date endDate){
+		java.util.Vector<AbstractSequence> affected=new java.util.Vector<AbstractSequence>();
+		AbstractSequence[] seqs=getSequences();
+		for (int i=0;i<seqs.length;i++){
+			AbstractSequence cs = seqs[i];
+			//if (seqs[i].getExecutionDate().equals(date)) vector.add(seqs[i]);
+			boolean con1=false;
+			boolean con2=false;
+			if (cs.getExecutionDate().after(endDate) ) con1=true;
+			if (cs.getExecutionDate().before(startDate)) con2=true;
+			if (!con1 && !con2) affected.add(cs);
+		}
+
+		AbstractSequence[] result= new AbstractSequence[affected.size()];
+		result=affected.toArray(result);
+		return result;
+	}
 	
 	public void setGenerationDate(java.util.Date date){
 		this.setCreationDate(new FineTime(date));
 	}
 	
 	public void setGenerationTime(String time) throws ParseException{
-		setGenerationDate(Sequence.zuluToDate(time));
+		setGenerationDate(DateUtil.DOYToDate(time));
 	}
 	public java.util.Date getGenerationDate(){
 		return getCreationDate().toDate();
 	}
 	
 	public String getGenerationTime(){
-		return Sequence.dateToZulu(getCreationDate().toDate());
+		return DateUtil.dateToDOY(getCreationDate().toDate());
 	}
 	
 	public java.util.Date[] getValidityDates(){
@@ -144,14 +196,14 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 	}
 	
 	public void setValidityTimes(String[] times) throws ParseException{
-		setStartDate(new FineTime(Sequence.zuluToDate(times[0])));
-		setEndDate(new FineTime(Sequence.zuluToDate(times[1])));
+		setStartDate(new FineTime(DateUtil.DOYToDate(times[0])));
+		setEndDate(new FineTime(DateUtil.DOYToDate(times[1])));
 	}
 	
 	public String[] getValidityTimes(){
 		String[] result=new String[2];
-		result[0]=Sequence.dateToZulu(getStartDate().toDate());
-		result[1]=Sequence.dateToZulu(getEndDate().toDate());
+		result[0]=DateUtil.dateToDOY(getStartDate().toDate());
+		result[1]=DateUtil.dateToDOY(getEndDate().toDate());
 		return result;
 	}
 	

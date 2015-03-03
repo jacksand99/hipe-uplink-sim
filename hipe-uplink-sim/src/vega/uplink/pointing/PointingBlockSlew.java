@@ -1,5 +1,7 @@
 package vega.uplink.pointing;
 
+import vega.uplink.DateUtil;
+
 /**
  * An attitude slew is implemented by inserting a slew block in the PTR. A slew block must be
  * placed in between two observation blocks. The duration of slew blocks is defined implicitly
@@ -21,7 +23,7 @@ public class PointingBlockSlew extends PointingBlock {
 	 * @param before
 	 */
 	public void setBlockBefore(PointingBlockInterface before){
-		if (before!=null) if (before.getType().equals("SLEW")) throw new IllegalArgumentException("Trying to put two consecutive slews "+PointingBlock.dateToZulu(before.getStartTime()));
+		if (before!=null) if (before.getType().equals("SLEW")) throw new IllegalArgumentException("Trying to put two consecutive slews "+DateUtil.dateToZulu(before.getStartTime()));
 		blockBefore=before;
 	}
 	/**
@@ -29,7 +31,7 @@ public class PointingBlockSlew extends PointingBlock {
 	 * @param before
 	 */
 	public void setBlockAfter(PointingBlockInterface after){
-		if (after!=null) if (after.getType().equals("SLEW")) throw new IllegalArgumentException("Trying to put to consecutive slews "+PointingBlock.dateToZulu(after.getEndTime()));
+		if (after!=null) if (after.getType().equals("SLEW")) throw new IllegalArgumentException("Trying to put to consecutive slews "+DateUtil.dateToZulu(after.getEndTime()));
 		blockAfter=after;
 	}
 	
@@ -74,7 +76,7 @@ public class PointingBlockSlew extends PointingBlock {
 	}
 	
 	public String toString(){
-		return "SlewBlock startTime:"+PointingBlock.dateToZulu(getStartTime())+" endTime:"+PointingBlock.dateToZulu(getEndTime());
+		return "SlewBlock startTime:"+DateUtil.dateToZulu(getStartTime())+" endTime:"+DateUtil.dateToZulu(getEndTime());
 	}
 
 }

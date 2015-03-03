@@ -9,6 +9,8 @@ import herschel.share.fltdyn.time.FineTime;
 import java.text.ParseException;
 import java.util.Date;
 
+import vega.uplink.DateUtil;
+
 public class EvtmEvent  extends CompositeDataset implements Comparable<EvtmEvent>{
 	//private Date time;
 	public static String EVENT_TYPE_AOS="aos";
@@ -75,15 +77,12 @@ public class EvtmEvent  extends CompositeDataset implements Comparable<EvtmEvent
 	}
 	
 	public static java.util.Date zuluToDate(String zuluTime) throws ParseException{
-		java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-D'T'HH:mm:ss.SSS'Z'");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		return dateFormat.parse(zuluTime);
+	
+		return DateUtil.DOYToDate(zuluTime);
 	}
 
 	public static String dateToZulu(java.util.Date date){
-		java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-D'T'HH:mm:ss.SSS'Z'");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		return dateFormat.format(date);
+		return DateUtil.dateToDOY(date);
 	}
 	
 	public String toString(){

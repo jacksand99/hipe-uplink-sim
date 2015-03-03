@@ -13,6 +13,7 @@ import org.jfree.data.gantt.Task;
 import org.jfree.data.gantt.TaskSeries;
 import org.jfree.data.gantt.TaskSeriesCollection;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.commanding.AbstractSequence;
 import vega.uplink.commanding.HistoryModes;
@@ -35,12 +36,14 @@ import de.jaret.util.ui.timebars.model.TimeBarRow;
 
 public class ScheduleModel extends DefaultTimeBarModel implements ObservationListener{
 	Schedule schedule;
+	protected ScheduleViewer viewer;
 	private final Logger LOG = Logger.getLogger(ScheduleModel.class.getName());
 	boolean initialized=false;
 	boolean recalculate=true;
 	//boolean STOP_LISTENING
 	public ScheduleModel(Schedule schedule){
 		super();
+		viewer=null;
 		//System.setProperty("user.timezone", "UTC");
 		this.schedule=schedule;
 		
@@ -112,6 +115,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 	
 	public void addObservation(Observation obs){
 		schedule.addObservation(obs);
+		if (viewer!=null) viewer.list.setSelectedValue(obs, true);
 	}
 	
 	public de.jaret.util.date.JaretDate getMaxDate(){
@@ -179,7 +183,8 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 	    		oi.addObservationListener(this);
 	    		schRow.addInterval(oi);
 	    	}
-	    	recualculatePtr();	    	
+	    	recualculatePtr();
+	    	commandingChanged(null);
 
 		}catch (Exception e){
 			e.printStackTrace();
@@ -201,7 +206,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 	@Override
 	public void pointingChanged(ObservationChangeEvent event) {
 		//if (!Observation.LISTEN) return;
-		//LOG.info("Observation pointing Changed");
+		LOG.info("Observation pointing Changed");
 		//Thread.dumpStack();
 		if (initialized){
 			try{
@@ -220,6 +225,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 
 	@Override
 	public void commandingChanged(ObservationChangeEvent event) {
+		LOG.info("Listenerd change in pointing");
 		if (!recalculate) return;
 		//LOG.info("Observation commanding Changed");
 		// TODO Auto-generated method stub
@@ -250,6 +256,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
     private HistoryModes getHistoryModes(){
     	HistoryModes result = new HistoryModes();
     	ModelState modelState= new ModelState();
+    	
     	AbstractSequence[] seqs = schedule.getPor().getSequences();
     	//System.out.println(schedule.getPor().toXml());
 		Orcd orcd;
@@ -267,6 +274,15 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 			result.putAll(newmodes, seqs[i].getName(), seqs[i].getExecutionDate().getTime());
 
 		}
+		String[] states = modelState.getStateNames();
+		long startTime = this.schedule.getPtslSegment().getSegmentStartDate().getTime();
+		HashMap<Long, String> hm = new HashMap<Long,String>();
+		for (int i=0;i<states.length;i++){
+			hm.put(startTime, states[i]+"Off");
+			//modelState.gets
+		}
+		result.putAll(hm, "init", startTime);
+		//result.getSets().entrySet().
 		long[] times=result.getTimes();
 		//java.util.Vector<Long> temp=new java.util.Vector<Long>();
 		/*for (int i=0;i<timess.length;i++){
@@ -282,7 +298,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 			String oldmode=modelState.getStateForMode(result.get(j));
 			String newmode=result.get(j);
 			if (!orcd.checkTransion(oldmode, newmode)){
-				String mess="Forbidden transition "+oldmode+"--->"+newmode+" at "+PointingBlock.dateToZulu(new Date(j))+" via "+result.getCommand(j)+" executed at "+PointingBlock.dateToZulu(new Date(result.getOriginalTime(j)));
+				String mess="Forbidden transition "+oldmode+"--->"+newmode+" at "+DateUtil.dateToZulu(new Date(j))+" via "+result.getCommand(j)+" executed at "+DateUtil.dateToZulu(new Date(result.getOriginalTime(j)));
 				//messages=messages+mess;
 				//context.log(mess);
 				Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
@@ -304,7 +320,15 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 			}*/
 			
 		}
-    	
+		long endTime = this.schedule.getPtslSegment().getSegmentEndDate().getTime();
+		String[] as = modelState.getAllStates();
+		HashMap<Long, String> hm2 = new HashMap<Long,String>();
+		for (int i=0;i<as.length;i++){
+			hm2.put(endTime, as[i]);
+			//modelState.gets
+		}
+		result.putAll(hm2, "end", endTime);
+		result.addStates(endTime,modelState.clone());
     	return result;
     	
     }

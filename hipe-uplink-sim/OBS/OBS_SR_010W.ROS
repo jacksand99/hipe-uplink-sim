@@ -54,7 +54,7 @@
 			</attitude>
 			<metadata>
 				<comment>SR.OWNER=TRUE</comment>
-				<comment>010, dust jets</comment>
+				<comment>OSIRIS 010, dust jets</comment>
 				<comment>xAngle offset depends on distance, slightly off-limb</comment>
 				<comment>SR.PROCESSED=FALSE</comment>
 				<comment>SR.OBS000.START=BLOCK_START_TIME</comment>

@@ -63,7 +63,7 @@
 			<metadata>
 				<comment>OSIRIS 25</comment>
 				<comment>SR.OWNER=TRUE</comment>
-				<comment>025W (same as 025), dust phase function</comment>
+				<comment>OSIRIS 025W (same as 025), dust phase function</comment>
 				<comment>continuous slew from zero phase pointing (towards the coma, not nucleus) to max. possible phase angle.</comment>
 				<comment>SR.PROCESSED=FALSE</comment>
 				<comment>SR.OBS000.START=BLOCK_START_TIME+00:05:00</comment>

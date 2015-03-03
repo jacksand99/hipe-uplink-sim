@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 
 
@@ -14,7 +15,7 @@ import vega.uplink.Properties;
 public class PrioritySequence extends Sequence {
 	
 	public PrioritySequence() throws ParseException{
-		super("ASYF033A","P0001",Sequence.dateToZulu(new Date()));
+		super("ASYF033A","P0001",DateUtil.dateToDOY(new Date()));
 		this.setUniqueID((""+new Date().getTime()).substring(5));
 		try{
 			setName(Properties.getProperty(Properties.ANTENNA_PRIORITY_COMMAND));

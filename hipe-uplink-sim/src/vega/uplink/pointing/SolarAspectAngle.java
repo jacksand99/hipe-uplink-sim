@@ -2,6 +2,8 @@ package vega.uplink.pointing;
 
 import java.util.Date;
 
+import vega.uplink.DateUtil;
+
 //import rosetta.uplink.pointing.SolarAspectAngle;
 
 public class SolarAspectAngle implements Comparable<SolarAspectAngle>{
@@ -29,9 +31,7 @@ public int compareTo(SolarAspectAngle o) {
 }
 
 public String toString(){
-	java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-	dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-	return dateFormat.format(time)+" "+saa_yp+" "+saa_yn+" "+saa_xaxis+" "+saa_yaxis+" "+saa_zaxis;
+	return DateUtil.dateToZulu(time)+" "+saa_yp+" "+saa_yn+" "+saa_xaxis+" "+saa_yaxis+" "+saa_zaxis;
 }
 
 public Date getTime(){

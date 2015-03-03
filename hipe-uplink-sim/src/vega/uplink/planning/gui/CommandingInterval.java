@@ -2,6 +2,7 @@ package vega.uplink.planning.gui;
 
 import java.util.Date;
 
+import vega.uplink.DateUtil;
 import vega.uplink.pointing.PointingBlock;
 import de.jaret.util.date.IntervalImpl;
 import de.jaret.util.date.JaretDate;
@@ -23,7 +24,7 @@ class CommandingInterval extends IntervalImpl{
 	}
 	
 	public String toString(){
-		return name+" ["+PointingBlock.dateToZulu(startDate)+"-"+PointingBlock.dateToZulu(endDate)+"]";
+		return name+" ["+DateUtil.dateToZulu(startDate)+"-"+DateUtil.dateToZulu(endDate)+"]";
 	}
 	
 	public String getInstrument(){

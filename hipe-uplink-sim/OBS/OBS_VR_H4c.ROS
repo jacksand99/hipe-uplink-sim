@@ -103,7 +103,7 @@
 				</offsetAngles>
 			</attitude>
 			<metadata>
-				<comment>VR_PTRM_Template_Limb_RasterOffset_v01</comment>
+				<comment>VIRTIS VR_PTRM_Template_Limb_RasterOffset_v01</comment>
 			</metadata>
 		</block>
 	</pointingBlocks>

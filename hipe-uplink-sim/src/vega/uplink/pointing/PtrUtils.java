@@ -607,22 +607,25 @@ public class PtrUtils {
 		//Thread.dumpStack();
 		PtrSegment ptrSegment = ptr.getSegments()[0];
 		PtrSegment ptslSegment = ptsl.getSegment(ptrSegment.getName());
+		//LOG.info("Starting get all maintenance blocks");
 		PointingBlocksSlice maintenance = ptslSegment.getAllMaintenanceBlocks().copy();
-		/*PointingBlocksSlice manv = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MNAV).copy();
-		PointingBlocksSlice mocm = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MOCM).copy();
-		PointingBlocksSlice mslw = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MSLW).copy();
-		PointingBlocksSlice mwnv = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MWNV).copy();
-		PointingBlocksSlice mwol = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MWOL).copy();
-		PointingBlocksSlice mwac = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_MWAC).copy();*/
+		//LOG.info("stop get all maintenance blocks");
+		//LOG.info("Starting get all blocks of type");
 		PointingBlocksSlice ptslObs = ptslSegment.getAllBlocksOfType(PointingBlock.TYPE_OBS).copy();
-		
+		//LOG.info("stop get all blocks of type");
+		//LOG.info("Starting get all blocks of type II");
 		PointingBlocksSlice obs = ptrSegment.getAllBlocksOfType(PointingBlock.TYPE_OBS);
+		//LOG.info("stop get all blocks of type II");	
 		
-		
-		PointingBlocksSlice merged=new PointingBlocksSlice();
-		
-		merged.setSlice(ptslObs);
+		//PointingBlocksSlice merged=new PointingBlocksSlice();
+		PointingBlocksSlice merged=ptslObs.copy();
+		//LOG.info("Starting setslice");
+		//merged.setSlice(ptslObs);
+		//LOG.info("stop setslice");
+		//LOG.info("Starting get all obs blocks");
 		PointingBlock[] allObsBlocks = obs.getBlocks();
+		//LOG.info("stop get all obs blocks");
+		//LOG.info("Starting loop");
 		for (int i=0;i<allObsBlocks.length;i++){
 			PointingBlock o = allObsBlocks[i];
 			PointingBlock ptslBlockAtStart = ptslSegment.getBlockAt(o.getStartTime());
@@ -632,24 +635,32 @@ public class PtrUtils {
 			if (ptslBlockAtEnd!=null && ptslBlockAtEnd.isMaintenance()) o.setEndTime(ptslBlockAtEnd.getStartTime());
 			
 		}
+		//LOG.info("end loop");
+		//LOG.info("Starting setslice II");
 		merged.setSlice(obs);
+		//LOG.info("stop setslice II");
+		//LOG.info("Starting setslice III");
 		merged.setSlice(maintenance);
-		/*merged.setSlice(manv);
-		merged.setSlice(mocm);
-		merged.setSlice(mslw);
-		merged.setSlice(mwnv);
-		merged.setSlice(mwol);
-		merged.setSlice(mwac);*/
+		//LOG.info("stop setslice III");
 		
 		
 		PtrSegment newSegment = new PtrSegment(ptrSegment.getName());
-
-		newSegment.setSlice(merged);
+		//LOG.info("Starting setslice IV");
+		//newSegment.setSlice(merged);
+		newSegment.hardSetSlice(merged);
+		//LOG.info("stop setslice IV");
+		//LOG.info("Starting repair mocm");
 		newSegment.repairMocm();
+		//LOG.info("stop repair mocm");
+		//LOG.info("Starting repair slews");
 		newSegment.repairSlews();
+		//LOG.info("stop repair slews");
+		//LOG.info("Starting repair consecitive blocks");
 		newSegment.repairConsecutiveBlocks();
+		//LOG.info("stop repair consecitive blocks");
+		//LOG.info("Starting repair gaps");
 		repairGaps(newSegment);
-
+		//LOG.info("stoping repair gaps");
 		ptr.remove(ptrSegment.getName());
 		
 		ptr.addSegment(newSegment);

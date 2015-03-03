@@ -30,7 +30,7 @@
 			<endTime>END_OBS+00:00:00</endTime>
 			<attitude ref='limb'/>
 			<metadata>
-				<comment>MR PLACE-HOLDER: limb</comment>
+				<comment>MIRO PLACE-HOLDER: limb</comment>
 			</metadata>
 		</block>
 	</pointingBlocks>

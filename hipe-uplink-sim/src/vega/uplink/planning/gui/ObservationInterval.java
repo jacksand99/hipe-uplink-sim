@@ -5,6 +5,7 @@ import java.util.Iterator;
 import herschel.ia.dataset.DatasetEvent;
 import herschel.ia.dataset.Product;
 import herschel.ia.dataset.ProductListener;
+import vega.uplink.DateUtil;
 import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationChangeEvent;
 import vega.uplink.planning.ObservationListener;
@@ -20,11 +21,8 @@ public class ObservationInterval extends IntervalImpl implements ObservationList
 		super();
 		observation=obs;
 		observation.addObservationListener(this);
-		//obs.addProductListener(this);
-		//System.out.println(PointingBlock.dateToZulu(obs.getStartDate().toDate())+" "+new JaretDate(obs.getStartDate().toDate()).toDisplayStringTime(true));
 		this.setBegin(new JaretDate(obs.getObsStartDate()));
 		this.setEnd(new JaretDate(obs.getObsEndDate()));
-		//listeners=new java.util.Vector<ObservationListener>();
 	}
 
 	@Override
@@ -39,7 +37,7 @@ public class ObservationInterval extends IntervalImpl implements ObservationList
 		
 	}*/
 	public String toString(){
-		return observation.getName()+" ["+PointingBlock.dateToZulu(observation.getObsStartDate())+"-"+PointingBlock.dateToZulu(observation.getObsEndDate())+"]";
+		return observation.getName()+" ["+DateUtil.dateToZulu(observation.getObsStartDate())+"-"+DateUtil.dateToZulu(observation.getObsEndDate())+"]";
 	}
 	
 	public void addObservationListener(ObservationListener listener){

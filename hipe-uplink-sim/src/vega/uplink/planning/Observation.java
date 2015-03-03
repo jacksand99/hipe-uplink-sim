@@ -1,6 +1,7 @@
 package vega.uplink.planning;
 
 import herschel.ia.dataset.DatasetEvent;
+import herschel.ia.dataset.EventType;
 import herschel.ia.dataset.MetaData;
 import herschel.ia.dataset.Product;
 import herschel.ia.dataset.ProductListener;
@@ -9,16 +10,21 @@ import herschel.ia.pal.MapContext;
 import herschel.share.fltdyn.time.FineTime;
 import herschel.share.interpreter.InterpreterUtil;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.commanding.AbstractSequence;
+import vega.uplink.commanding.Mib;
+import vega.uplink.commanding.Parameter;
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.SequenceInterface;
+import vega.uplink.commanding.SequenceProfile;
 import vega.uplink.commanding.SequenceTimelineInterface;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingBlockInterface;
@@ -38,6 +44,14 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 	private java.util.HashSet<ObservationListener> listeners;
 	private final Logger LOG = Logger.getLogger(Observation.class.getName());
 	public static boolean LISTEN=true;
+	//public long uid;
+	/*public boolean equals(Observation obs){
+		boolean result=true;
+		if (!this.getName().equals(obs.getName())) return false;
+		if (!this.getObsStartDate().equals(obs.getObsStartDate())) return false;
+		if (!this.getObsEndDate().equals(obs.getObsEndDate())) return false;
+		return result;
+	}*/
 	private Observation(){
 		super();
 		listeners=new java.util.HashSet<ObservationListener>();
@@ -52,8 +66,8 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 		listeners=new java.util.HashSet<ObservationListener>();
 		this.setStartDate(new FineTime(startDate));
 		this.setEndDate(new FineTime(endDate));
-		this.setProduct("sequences", new Por());
-		this.setProduct("pointing", new PointingBlocksSlice());
+		this.setProduct("sequences", new ObservationPor(this));
+		this.setProduct("pointing", new ObservationPointingSlice(this));
 		this.setName(""+new Date().getTime());
 		setFileName("OBS_"+getName()+".ROS");
 		setPath(Properties.getProperty("user.home"));
@@ -102,7 +116,23 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 	public void removeObservationListener(ObservationListener listener){
 		listeners.remove(listener);
 	}
-	
+	/*protected void fireCommandingChange(DatasetEvent<Product> source){
+		LOG.info("Firing Observation change");
+		ObservationChangeEvent ev = new ObservationChangeEvent(this);
+		Iterator<ObservationListener> it = new Vector<ObservationListener>(listeners).iterator();
+		while (it.hasNext()){
+			it.next().commandingChanged(ev);
+		}
+	}
+	protected void firePointingChange(DatasetEvent<Product> source){
+		LOG.info("Firing Observation change");
+		ObservationChangeEvent ev = new ObservationChangeEvent(this);
+		Iterator<ObservationListener> it = new Vector<ObservationListener>(listeners).iterator();
+		while (it.hasNext()){
+			it.next().pointingChanged(ev);
+		}
+	}*/
+
 	protected void fireChange(DatasetEvent<Product> source){
 		LOG.info("Firing Observation change");
 		ObservationChangeEvent ev = new ObservationChangeEvent(this);
@@ -156,11 +186,11 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 		for (int i=0;i<seq.length;i++){
 			newSeq[i]=new ObservationSequence(result,((ObservationSequence)seq[i]).getExecutionTimeEvent(),((ObservationSequence)seq[i]).getExecutionTimeDelta(),(ObservationSequence)seq[i]);
 		}
-		Por por = new Por();
+		ObservationPor por = new ObservationPor(result);
 		por.setSequences(newSeq);
 		//result.getCommanding().setSequences(newSeq);
 		result.setProduct("sequences", por);
-		PointingBlocksSlice newPointing = new PointingBlocksSlice();
+		ObservationPointingSlice newPointing = new ObservationPointingSlice(result);
 		PointingBlock[] blocks = getPointing().getBlocks();
 		for (int i=0;i<blocks.length;i++){
 			blocks[i]=blocks[i].copy();
@@ -260,6 +290,27 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 		}
 
 	}
+	
+	public Por getCommanding(int sed){
+		ObservationPor result=(ObservationPor) getCommanding();
+		//result.sed(sed);
+		return result;
+	}
+	
+	public void setPointing(ObservationPointingSlice slice){
+		slice.setObservation(this);
+		this.setProduct("pointing", slice);
+		DatasetEvent<Product> event = new DatasetEvent<Product>(this,EventType.DATA_CHANGED,null,null);
+		this.pointingChange(null);
+	}
+	public void setCommanding(ObservationPor por){
+		por.setObservation(this);
+		this.setProduct("commanding", por);
+		//DatasetEvent<Product> event = new DatasetEvent<Product>(this,EventType.DATA_CHANGED,null,null);
+		this.commandingChange(null);
+	}
+	
+	
 	
 	/**
 	 * Get the pointing part of this Observation
@@ -404,8 +455,8 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 		result=result+iString+"\t<description>"+getDescription()+"</description>\n";
 		result=result+iString+"\t<instrument>"+getInstrument()+"</instrument>\n";
 		result=result+iString+"\t<formatVersion>"+getFormatVersion()+"</formatVersion>\n";		
-		result=result+iString+"\t<startDate>"+PointingBlock.dateToZulu(getObsStartDate())+"</startDate>\n";
-		result=result+iString+"\t<endDate>"+PointingBlock.dateToZulu(getObsEndDate())+"</endDate>\n";
+		result=result+iString+"\t<startDate>"+DateUtil.dateToZulu(getObsStartDate())+"</startDate>\n";
+		result=result+iString+"\t<endDate>"+DateUtil.dateToZulu(getObsEndDate())+"</endDate>\n";
 		result=result+iString+"\t<sequences>\n";
 		AbstractSequence[] seq = getCommanding().getOrderedSequences();
 		for (int i=0;i<seq.length;i++){
@@ -422,6 +473,65 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 		result=result+iString+"</observation>";
 		
 		return result;
+	}
+	
+	public String toItl(){
+		Mib mib;
+			try {
+				mib=Mib.getMib();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				IllegalArgumentException iae = new IllegalArgumentException("Could not init mib "+e.getMessage());
+				iae.initCause(e);
+				throw(iae);
+			}
+			TreeMap<String,Integer> counter=new TreeMap<String,Integer>();
+			Por POR = this.getCommanding();
+			String result="";
+
+			String l05="";
+			AbstractSequence[] tempSeq=POR.getSequences();
+			Parameter[] tempParam;
+			SequenceProfile[] tempPro;
+			for (int i=0;i<tempSeq.length;i++){
+				String eventName=((ObservationSequence)tempSeq[i]).getExecutionTimeEvent().getName();
+				Integer count = counter.get(eventName);
+				if (count==null) count=0;
+				else count=count+1;
+				counter.put(eventName, count);
+				String itlEvent=((ObservationSequence)tempSeq[i]).getExecutionTimeEvent().getName();
+				itlEvent=itlEvent.replace(" ", "_");
+				l05=l05+itlEvent+" "+ObservationUtil.getOffset(((ObservationSequence)tempSeq[i]).getExecutionTimeDelta())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\ #"+mib.getSequenceDescription(tempSeq[i].getName())+"\n";
+				tempParam = tempSeq[i].getParameters();
+				for (int z=0;z<tempParam.length;z++){
+					l05=l05+"\t"+tempParam[z].getName()+"="+tempParam[z].getStringValue()+" ["+tempParam[z].getRepresentation()+"] \\ #"+mib.getParameterDescription(tempParam[z].getName())+"\n";
+				}
+				tempPro=tempSeq[i].getProfiles();
+				String dataRateProfile="\tDATA_RATE_PROFILE = \t\t\t";
+				String powerProfile="\tPOWER_PROFILE = \t\t\t";
+				boolean dataRatePresent=false;
+				boolean powerProfilePresent=false;
+				for (int j=0;j<tempPro.length;j++){
+					if (tempPro[j].getType().equals(SequenceProfile.PROFILE_TYPE_DR)){
+						dataRateProfile=dataRateProfile+" "+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[bits/sec]";
+						dataRatePresent=true;
+					}
+					if (tempPro[j].getType().equals(SequenceProfile.PROFILE_TYPE_PW)){
+						powerProfile=powerProfile+" "+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[Watts]";
+						powerProfilePresent=true;
+					}
+					
+				}
+				if (dataRatePresent) l05 =l05+dataRateProfile+"\\\n";
+				if (powerProfilePresent) l05 =l05+powerProfile+"\\\n";
+
+				l05=l05+"\t\t\t\t)\n";
+
+			}
+			result=l05;
+			return result;
+		
 	}
 
 	@Override

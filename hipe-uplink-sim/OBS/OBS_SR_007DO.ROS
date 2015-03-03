@@ -54,7 +54,7 @@
 			</attitude>
 			<metadata>
 				<comment>OWNER=OSIRIS</comment>
-				<comment>007d, dawn movie</comment>
+				<comment>OSIRIS 007d, dawn movie</comment>
 				<comment>looking to evening terminator from terminator orbit</comment>
 				<comment>SR.PROCESSED=FALSE</comment>
 				<comment>SR.OBS000.START=BLOCK_START_TIME</comment>

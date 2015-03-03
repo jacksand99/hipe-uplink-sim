@@ -1,11 +1,12 @@
 package vega.uplink.planning;
 import java.util.Date;
 
+import vega.uplink.DateUtil;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.PtrParameters.TargetDir;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetCustom;
-public class ObservationOffsetCustom extends OffsetCustom{
+public class ObservationOffsetCustom extends OffsetCustom implements ObservationOffset{
 	private ObservationEvent startTimeEvent;
 	private  long startTimeDelta;
 	private Observation parent; 
@@ -40,7 +41,7 @@ public class ObservationOffsetCustom extends OffsetCustom{
 		return new Date(parent.getDateForEvent(startTimeEvent).getTime()+startTimeDelta);
 	}
 	public String getStartTime() {
-		return PointingBlock.dateToZulu(getStartDate());
+		return DateUtil.dateToZulu(getStartDate());
 		// TODO Auto-generated method stub
 		//return null;
 	}
@@ -96,6 +97,12 @@ public class ObservationOffsetCustom extends OffsetCustom{
 
 		/*ObservationOffsetCustom result = new ObservationOffsetCustom(super.copy());
 		return result;*/
+	}
+	@Override
+	public void setParent(Observation obs) {
+		// TODO Auto-generated method stub
+		parent=obs;
+		
 	}
 
 

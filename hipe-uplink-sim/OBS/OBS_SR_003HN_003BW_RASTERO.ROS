@@ -65,7 +65,7 @@
   <metadata>
     <comment>SR.SNIPPET_VERSION=001</comment>
     <comment>SR.OWNER=TRUE</comment>
-    <comment>003hN_003bW_rasterO, mapping raster</comment>
+    <comment>OSIRIS 003hN_003bW_rasterO, mapping raster</comment>
     <comment>SR.PROCESSED=FALSE</comment>
     <comment>SR.DURATION=25min,SR.DATA_VOLUME=7MB,SR.CADENCE=60min,SR.REPETITIONS=10</comment>
     <comment>SR.OBS000.START=OBS_START_TIME+00:00:00</comment>

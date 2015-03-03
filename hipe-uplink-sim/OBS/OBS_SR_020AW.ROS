@@ -54,7 +54,7 @@
 			</attitude>
 			<metadata>
 				<comment>OWNER=OSIRIS</comment>
-				<comment>020a - 020e, regular gas monitoring</comment>
+				<comment>OSIRIS 020a - 020e, regular gas monitoring</comment>
 				<comment>repeated 12 times, every hour</comment>
 				<comment>xAngle offset depends on distance (4 degree sunward from limb)</comment>
 				<comment>SR.PROCESSED=FALSE</comment>

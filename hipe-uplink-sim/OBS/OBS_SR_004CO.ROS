@@ -47,7 +47,7 @@
     <boresight ref='OsirisNAC'/>
   </attitude>
   <metadata>
-    <comment>004cO, global color map</comment>
+    <comment>OSIRIS 004cO, global color map</comment>
     <comment>SR.SNIPPET_VERSION=001</comment>
     <comment>SR.OWNER=TRUE</comment>
     <comment>SR.PROCESSED=FALSE</comment>

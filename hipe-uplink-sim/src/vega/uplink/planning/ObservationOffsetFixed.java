@@ -1,10 +1,11 @@
 package vega.uplink.planning;
 import java.util.Date;
 
+import vega.uplink.DateUtil;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetFixed;
-public class ObservationOffsetFixed extends OffsetFixed{
+public class ObservationOffsetFixed extends OffsetFixed implements ObservationOffset{
 	private ObservationEvent startTimeEvent;
 	private  long startTimeDelta;
 	private Observation parent; 
@@ -50,7 +51,7 @@ public class ObservationOffsetFixed extends OffsetFixed{
 		return new Date(parent.getDateForEvent(startTimeEvent).getTime()+startTimeDelta);
 	}
 	public String getStartTime() {
-		return PointingBlock.dateToZulu(getStartDate());
+		return DateUtil.dateToZulu(getStartDate());
 		// TODO Auto-generated method stub
 		//return null;
 	}
@@ -88,6 +89,11 @@ public class ObservationOffsetFixed extends OffsetFixed{
 		//this.getChild("endTime").setValue(getEndEvent().getName()+ObservationUtil.getOffset(getEndDelta()));
 
 		return tempElement.toXml(indent);
+		
+	}
+	public void setParent(Observation obs) {
+		// TODO Auto-generated method stub
+		parent=obs;
 		
 	}
 

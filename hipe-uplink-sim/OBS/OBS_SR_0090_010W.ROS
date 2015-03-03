@@ -54,7 +54,7 @@
   </attitude>
   <metadata>
   <comment>OSIRIS 009O_010W</comment>
-    <comment>009O, dust jets </comment>
+    <comment>OSIRIS 009O, dust jets </comment>
     <comment>010W, jets movie</comment>
     <comment>xAngle offset depends on distance, slightly off-limb</comment>
     <comment>SR.SNIPPET_VERSION=001</comment>

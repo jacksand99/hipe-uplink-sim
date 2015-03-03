@@ -3,6 +3,7 @@ package vega.uplink.pointing;
 import java.util.Date;
 import java.util.NoSuchElementException;
 
+import vega.uplink.DateUtil;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetAngles;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetCustom;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetRaster;
@@ -416,7 +417,7 @@ public class PtrChecker {
 		String messages="";
 		for (int j=0;j<blocks.length;j++){
 			if (blocks[j].getDuration()<300000){
-				messages=messages+"PTR:Pointing Block too short: "+PointingBlock.dateToZulu(blocks[j].getStartTime())+" - "+PointingBlock.dateToZulu(blocks[j].getEndTime())+"\n";
+				messages=messages+"PTR:Pointing Block too short: "+DateUtil.dateToZulu(blocks[j].getStartTime())+" - "+DateUtil.dateToZulu(blocks[j].getEndTime())+"\n";
 				messages=messages+"--------------------------------------\n";
 			}
 		}
@@ -440,12 +441,6 @@ public class PtrChecker {
 		for (int i=0;i<segs.length;i++){
 			PtrSegment segment = segs[i];
 			PointingBlock[] blocks = segment.getBlocks();
-			/*for (int j=0;j<blocks.length;j++){
-				if (blocks[j].getDuration()<300000){
-					messages=messages+"PTR:Pointing Block too short: "+PointingBlock.dateToZulu(blocks[j].getStartTime())+" - "+PointingBlock.dateToZulu(blocks[j].getEndTime())+"\n";
-					messages=messages+"--------------------------------------\n";
-				}
-			}*/
 			messages=messages+checkBlockDuration(blocks);
 		}
 		if (messages.equals("")) return messages;
@@ -463,7 +458,7 @@ public class PtrChecker {
 			PointingBlock[] slews = segment.getAllBlocksOfType(PointingBlock.TYPE_SLEW).getBlocks();
 			for (int j=0;j<slews.length;j++){
 				if (slews[j].getDuration()<300000){
-					messages=messages+"PTR:Slew too short: "+PointingBlock.dateToZulu(slews[j].getStartTime())+" - "+PointingBlock.dateToZulu(slews[j].getEndTime())+"\n";
+					messages=messages+"PTR:Slew too short: "+DateUtil.dateToZulu(slews[j].getStartTime())+" - "+DateUtil.dateToZulu(slews[j].getEndTime())+"\n";
 					messages=messages+"--------------------------------------\n";
 				}
 			}
@@ -485,28 +480,19 @@ public class PtrChecker {
 				PointingBlock blockBefore = blocks[j-1];
 				//PointingBlock blockAfter = blocks[j+1];
 				if (!blockBefore.getEndTime().equals(blocks[j].getStartTime())){
-					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0))+"</pre></td><td>PTR:Gap detected between "+PointingBlock.dateToZulu(blockBefore.getEndTime())+" and "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
-
-					//messages=messages+"PTR:Gap detected between "+PointingBlock.dateToZulu(blockBefore.getEndTime())+" and "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
-					//messages=messages+"--------------------------------------\n";
+					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0))+"</pre></td><td>PTR:Gap detected between "+DateUtil.dateToZulu(blockBefore.getEndTime())+" and "+DateUtil.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
 				}
 				if (blockBefore.isSlew() && blocks[j].isSlew()){
-					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0))+"</pre></td><td>Two consecutive slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
+					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0))+"</pre></td><td>Two consecutive slews detected at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
 
-					//messages=messages+"PTR:Two consecutive slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
-					//messages=messages+"--------------------------------------\n";
 				}
 				if (!blockBefore.isSlew() && !blocks[j].isSlew()){
-					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0))+"</pre></td><td>Two consecutive blocks without slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
+					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0))+"</pre></td><td>Two consecutive blocks without slews detected at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
 
-					//messages=messages+"PTR:Two consecutive blocks without slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
-					//messages=messages+"--------------------------------------\n";
 				}
 				if (blockBefore.getEndTime().after(blocks[j].getStartTime())){
-					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0))+"</pre></td><td>Two overlaping blocks detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
+					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1].toXml(0)+blocks[j].toXml(0))+"</pre></td><td>Two overlaping blocks detected at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
 
-					//messages=messages+"PTR:Two overlaping blocks detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
-					//messages=messages+"--------------------------------------\n";
 					
 				}
 			}
@@ -527,19 +513,19 @@ public class PtrChecker {
 				PointingBlock blockBefore = blocks[j-1];
 				//PointingBlock blockAfter = blocks[j+1];
 				if (!blockBefore.getEndTime().equals(blocks[j].getStartTime())){
-					messages=messages+"PTR:Gap detected between "+PointingBlock.dateToZulu(blockBefore.getEndTime())+" and "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+					messages=messages+"PTR:Gap detected between "+DateUtil.dateToZulu(blockBefore.getEndTime())+" and "+DateUtil.dateToZulu(blocks[j].getStartTime())+"\n";
 					messages=messages+"--------------------------------------\n";
 				}
 				if (blockBefore.isSlew() && blocks[j].isSlew()){
-					messages=messages+"PTR:Two consecutive slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+					messages=messages+"PTR:Two consecutive slews detected at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"\n";
 					messages=messages+"--------------------------------------\n";
 				}
 				if (!blockBefore.isSlew() && !blocks[j].isSlew()){
-					messages=messages+"PTR:Two consecutive blocks without slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+					messages=messages+"PTR:Two consecutive blocks without slews detected at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"\n";
 					messages=messages+"--------------------------------------\n";
 				}
 				if (blockBefore.getEndTime().after(blocks[j].getStartTime())){
-					messages=messages+"PTR:Two overlaping blocks detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+					messages=messages+"PTR:Two overlaping blocks detected at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"\n";
 					messages=messages+"--------------------------------------\n";
 					
 				}
@@ -574,7 +560,7 @@ public class PtrChecker {
 			try{
 				blocks[j].validate();
 			}catch (Exception e){
-				messages=messages+"PTR:Incorrect Block detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+				messages=messages+"PTR:Incorrect Block detected at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"\n";
 				messages=messages+e.getMessage();
 				messages=messages+"--------------------------------------\n";
 				
@@ -607,7 +593,7 @@ public class PtrChecker {
 				try{
 					blocks[j].validate();
 				}catch (Exception e){
-					messages=messages+"PTR:Incorrect Block detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+					messages=messages+"PTR:Incorrect Block detected at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"\n";
 					messages=messages+e.getMessage();
 					messages=messages+"--------------------------------------\n";
 					
@@ -641,10 +627,8 @@ public class PtrChecker {
 				PointingBlock blockBefore = blocks[j-1];
 				//PointingBlock blockAfter = blocks[j+1];
 				if (blockBefore.isSlew() && blocks[j].isSlew()){
-					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1]+blocks[j].toXml(0))+"</pre></td><td>Two consecutive slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
+					messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j-1]+blocks[j].toXml(0))+"</pre></td><td>Two consecutive slews detected at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
 
-					//messages=messages+"PTR:Two consecutive slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
-					//messages=messages+"--------------------------------------\n";
 				}
 			}
 		}
@@ -665,7 +649,7 @@ public class PtrChecker {
 				PointingBlock blockBefore = blocks[j-1];
 				//PointingBlock blockAfter = blocks[j+1];
 				if (blockBefore.isSlew() && blocks[j].isSlew()){
-					messages=messages+"PTR:Two consecutive slews detected at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+					messages=messages+"PTR:Two consecutive slews detected at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"\n";
 					messages=messages+"--------------------------------------\n";
 				}
 			}
@@ -711,20 +695,13 @@ public class PtrChecker {
 
 					}
 					if (blocks[j].getEndTime().before(new Date(offsetendtime.getTime()+90000))){
-						messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j].toXml(0))+"</pre></td><td>PTR:The offset period ends less than 90 seconds before the block ends for block at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"<br>"+"Offset ends at:"+PointingBlock.dateToZulu(offsetendtime)+"</td></tr>";
+						messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j].toXml(0))+"</pre></td><td>PTR:The offset period ends less than 90 seconds before the block ends for block at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"<br>"+"Offset ends at:"+DateUtil.dateToZulu(offsetendtime)+"</td></tr>";
 
-						//messages=messages+"PTR:The offset period ends less than 90 seconds before the block ends for block at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
-						//messages=messages+"Block:\n";
-						//messages=messages+blocks[j].toXml(0)+"\n";
-						//messages=messages+"Offset ends at:"+PointingBlock.dateToZulu(offsetendtime)+"\n";
-						//messages=messages+"--------------------------------------\n";
 						
 					}
 					if (blocks[j].getStartTime().after(new Date(offsetstarttime.getTime()-90000))){
-						messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j].toXml(0))+"</pre></td><td>PTR:The offset period starts less than 90 seconds after the block starts for block at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"<br>"+"Offset starts at:"+PointingBlock.dateToZulu(offsetstarttime)+"</td></tr>";
+						messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j].toXml(0))+"</pre></td><td>PTR:The offset period starts less than 90 seconds after the block starts for block at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"<br>"+"Offset starts at:"+DateUtil.dateToZulu(offsetstarttime)+"</td></tr>";
 
-						//messages=messages+"PTR:The offset period starts less than 90 seconds after the block starts for block at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
-						//messages=messages+"--------------------------------------\n";
 					}
 					
 				}
@@ -767,15 +744,15 @@ public class PtrChecker {
 
 					}
 					if (blocks[j].getEndTime().before(new Date(offsetendtime.getTime()+90000))){
-						messages=messages+"PTR:The offset period ends less than 90 seconds before the block ends for block at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+						messages=messages+"PTR:The offset period ends less than 90 seconds before the block ends for block at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"\n";
 						messages=messages+"Block:\n";
 						messages=messages+blocks[j].toXml(0)+"\n";
-						messages=messages+"Offset ends at:"+PointingBlock.dateToZulu(offsetendtime)+"\n";
+						messages=messages+"Offset ends at:"+DateUtil.dateToZulu(offsetendtime)+"\n";
 						messages=messages+"--------------------------------------\n";
 						
 					}
 					if (blocks[j].getStartTime().after(new Date(offsetstarttime.getTime()-90000))){
-						messages=messages+"PTR:The offset period starts less than 90 seconds after the block starts for block at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+						messages=messages+"PTR:The offset period starts less than 90 seconds after the block starts for block at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"\n";
 						messages=messages+"--------------------------------------\n";
 					}
 					
@@ -830,12 +807,8 @@ public class PtrChecker {
 						float lineSlew = ((OffsetScan) offset).getLineSlewTime(Units.SECONDS);
 						//offsetstarttime =((OffsetScan) offset).getStartDate();
 						if (lineSlew<30){
-							messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j].toXml(0))+"</pre></td><td>PTR:The line slew is less than 30 seconds at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
+							messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j].toXml(0))+"</pre></td><td>PTR:The line slew is less than 30 seconds at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
 
-							//messages=messages+"PTR:The line slew is less than 30 seconds at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
-							//messages=messages+"Block:\n";
-							//messages=messages+blocks[j].toXml(0)+"\n";
-							//messages=messages+"--------------------------------------\n";
 						}
 
 					}
@@ -843,20 +816,12 @@ public class PtrChecker {
 						float lineSlew = ((OffsetRaster) offset).getLineSlewTime(Units.SECONDS);
 						float pointSlew = ((OffsetRaster) offset).getPointSlewTime(Units.SECONDS);
 						if (lineSlew<30){
-							messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j].toXml(0))+"</pre></td><td>PTR:The line slew is less than 30 seconds at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
+							messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j].toXml(0))+"</pre></td><td>PTR:The line slew is less than 30 seconds at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
 
-							//messages=messages+"PTR:The line slew is less than 30 seconds at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
-							//messages=messages+"Block:\n";
-							//messages=messages+blocks[j].toXml(0)+"\n";
-							//messages=messages+"--------------------------------------\n";
 						}
 						if (pointSlew<30){
-							messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j].toXml(0))+"</pre></td><td>PTR:The point slew is less than 30 seconds at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
+							messages=messages+"<tr><td><pre>"+HtmlEditorKit.escapeHTML(blocks[j].toXml(0))+"</pre></td><td>PTR:The point slew is less than 30 seconds at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"</td></tr>";
 
-							//messages=messages+"PTR:The point slew is less than 30 seconds at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
-							//messages=messages+"Block:\n";
-							//messages=messages+blocks[j].toXml(0)+"\n";
-							//messages=messages+"--------------------------------------\n";
 						}
 
 
@@ -885,7 +850,7 @@ public class PtrChecker {
 						float lineSlew = ((OffsetScan) offset).getLineSlewTime(Units.SECONDS);
 						//offsetstarttime =((OffsetScan) offset).getStartDate();
 						if (lineSlew<30){
-							messages=messages+"PTR:The line slew is less than 30 seconds at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+							messages=messages+"PTR:The line slew is less than 30 seconds at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"\n";
 							messages=messages+"Block:\n";
 							messages=messages+blocks[j].toXml(0)+"\n";
 							messages=messages+"--------------------------------------\n";
@@ -896,13 +861,13 @@ public class PtrChecker {
 						float lineSlew = ((OffsetRaster) offset).getLineSlewTime(Units.SECONDS);
 						float pointSlew = ((OffsetRaster) offset).getPointSlewTime(Units.SECONDS);
 						if (lineSlew<30){
-							messages=messages+"PTR:The line slew is less than 30 seconds at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+							messages=messages+"PTR:The line slew is less than 30 seconds at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"\n";
 							messages=messages+"Block:\n";
 							messages=messages+blocks[j].toXml(0)+"\n";
 							messages=messages+"--------------------------------------\n";
 						}
 						if (pointSlew<30){
-							messages=messages+"PTR:The point slew is less than 30 seconds at "+PointingBlock.dateToZulu(blocks[j].getStartTime())+"\n";
+							messages=messages+"PTR:The point slew is less than 30 seconds at "+DateUtil.dateToZulu(blocks[j].getStartTime())+"\n";
 							messages=messages+"Block:\n";
 							messages=messages+blocks[j].toXml(0)+"\n";
 							messages=messages+"--------------------------------------\n";

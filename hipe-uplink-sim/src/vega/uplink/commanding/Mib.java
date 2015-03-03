@@ -342,4 +342,27 @@ public class Mib extends CompositeDataset{
 
 	    return untaredFiles;
 	}
+	
+	public String getParameterDescription(String parameterName){
+		try{
+			TableDataset resultTable=findInTable((TableDataset)this.get("csp_table"),"CSP_FPNAME",parameterName);
+			java.util.List<Object> row = resultTable.getRow(0);
+			String description=(String) row.get(3);
+			return description;
+		}catch (Exception e){
+			return "UNKNOWN";
+		}
+	}
+	
+	public String getSequenceDescription(String sequenceName){
+		try{
+			TableDataset resultTable=findInTable((TableDataset)this.get("css_table"),"CSS_SQNAME",sequenceName);
+			java.util.List<Object> row = resultTable.getRow(0);
+			String description=(String) row.get(1);
+			return description;
+		}catch (Exception e){
+			return "UNKNOWN";
+		}
+	}
+
 }

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import vega.uplink.planning.Observation;
+import vega.uplink.pointing.PointingBlock;
 import herschel.ia.gui.kernel.VariableSelection;
 import herschel.ia.gui.kernel.dnd.DnDSelection;
 import herschel.ia.gui.kernel.dnd.DragSelection;
@@ -164,11 +165,14 @@ public class ScheduleTimeBarViewer extends TimeBarViewer implements DropSelectio
 			Observation obs=((Observation) value).copy();
 			System.out.println("Loccation is "+location);
 			JaretDate date = this.getDelegate().dateForXY(new Double(location.getX()).intValue(), new Double(location.getY()).intValue());
-			long duration = obs.getDurationMilliSecs();
-			obs.setObsStartDate(date.getDate());
-			obs.setObsEndDate(new Date(date.getDate().getTime()+duration));
+			PointingBlock ptslBlock = model.schedule.getPtslSegment().getBlockAt(date.getDate());
+			obs.setObsStartDate(ptslBlock.getStartTime());
+			obs.setObsEndDate(ptslBlock.getEndTime());
+			//long duration = obs.getDurationMilliSecs();
+			//obs.setObsStartDate(date.getDate());
+			//obs.setObsEndDate(new Date(date.getDate().getTime()+duration));
 			model.addObservation(obs);
-			
+			//model.
 			//TimeBarRow overRow = this.getRowForXY(new Double(location.getX()).intValue(), new Double(location.getY()).intValue());
 			//overRow.
 //this.get

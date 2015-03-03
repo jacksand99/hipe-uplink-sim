@@ -3,6 +3,7 @@ package vega.uplink.pointing.PtrParameters.Offset;
 import java.text.ParseException;
 import java.util.Date;
 
+import vega.uplink.DateUtil;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.Units;
@@ -204,7 +205,7 @@ public class OffsetRaster extends OffsetAngles {
 	public OffsetRaster(String startTime,String xPoints,String yPoints,String xStart,String yStart,String xDelta,String yDelta,String pointSlewTime,String lineSlewTime,String dwellTime,String lineAxis,String keepLineDir) throws ParseException{
 		super(OffsetAngles.OFFSETANGLES_TYPE_RASTER);
 		
-		setStartDate(PointingBlock.zuluToDate(startTime));
+		setStartDate(DateUtil.zuluToDate(startTime));
 		setIntegerField(XPOINTS_FIELD,Integer.parseInt(xPoints));
 		setIntegerField(YPOINTS_FIELD,Integer.parseInt(yPoints));
 		setFloatField(XSTART_FIELD,Float.parseFloat(xStart));
@@ -456,14 +457,14 @@ public class OffsetRaster extends OffsetAngles {
 	}
 	
 	public void setStartDate(Date date){
-		PointingElement startTimeCh = new PointingElement("startTime",PointingBlock.dateToZulu(date));
+		PointingElement startTimeCh = new PointingElement("startTime",DateUtil.dateToZulu(date));
 		this.addChild(startTimeCh);
 
 	}
 	
 	public Date getStartDate(){
 		try {
-			return PointingBlock.zuluToDate(getChild("startTime").getValue().trim());
+			return DateUtil.zuluToDate(getChild("startTime").getValue().trim());
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

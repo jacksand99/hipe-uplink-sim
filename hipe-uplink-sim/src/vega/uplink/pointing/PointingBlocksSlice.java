@@ -22,6 +22,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 
+import vega.uplink.DateUtil;
+
 public class PointingBlocksSlice extends Product implements PointingBlockSetInterface{
 	/*private String name;
 	private String[] includes;
@@ -34,6 +36,8 @@ public class PointingBlocksSlice extends Product implements PointingBlockSetInte
 	public static String DATA_TAG="data";
 	public static String TIMELINE_TAG="timeline";
 	public static String FRAME_TAG="frame";*/
+	private TreeMap<Date, PointingBlock> blMapCache;
+	private boolean cacheDirty;
 	public void regenerate(PointingBlockSetInterface slice){
 		Set<String> ks = keySet();
 		String[] obs=new String[ks.size()] ;
@@ -46,41 +50,19 @@ public class PointingBlocksSlice extends Product implements PointingBlockSetInte
 	
 	public PointingBlocksSlice copy(){
 		PointingBlocksSlice result = new PointingBlocksSlice();
-		/*Set<String> ks = keySet();
-		String[] obs=new String[ks.size()] ;
-		obs=ks.toArray(obs);
-		for (int i=0;i<obs.length;i++){
-			remove(obs[i]);
-		}*/
+
 		PointingBlock[] blocks = this.getBlocks();
 		for (int i=0;i<blocks.length;i++){
 			blocks[i]=blocks[i].copy();
 		}
 		result.setBlocks(blocks);
 		return result;
-		/*try{
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			String tempText="<slice>\n"+this.toXml(0)+"</slice>\n";
-			InputStream stream = new ByteArrayInputStream(tempText.getBytes(StandardCharsets.UTF_8));
-			Document doc;
-	
-			doc = dBuilder.parse(stream);
-			doc.getDocumentElement().normalize();
-			//Node node = (Node) doc;
-			//PointingElement pe = PointingElement.readFrom(node.getFirstChild());
-			PointingBlocksSlice tempSlice = PtrUtils.readBlocksfromDoc(doc);
-			return tempSlice;
-		}catch (Exception e){
-			IllegalArgumentException iae = new IllegalArgumentException("Could not replicate slice:"+e.getMessage());
-			iae.initCause(e);
-			throw(iae);
-		}*/
+
 
 	}
 	
-	private String getBlockName(PointingBlock block){
-		String result=block.getType()+" "+PointingBlock.dateToZulu(block.getStartTime());
+	private String getBlockName(PointingBlockInterface block){
+		String result=block.getType()+" "+DateUtil.dateToZulu(block.getStartTime());
 		return result;
 				
 	}
@@ -103,12 +85,15 @@ public class PointingBlocksSlice extends Product implements PointingBlockSetInte
 	}
 
 	private TreeMap<Date,PointingBlock> getBlMap(){
+		if (cacheDirty==false) return blMapCache;
 		TreeMap<Date, PointingBlock> result = new TreeMap<Date,PointingBlock>();
 		Iterator<Dataset> it = this.getSets().values().iterator();
 		while (it.hasNext()){
 			PointingBlock block = (PointingBlock) it.next();
 			result.put(block.getStartTime(), block);
 		}
+		blMapCache=result;
+		cacheDirty=false;
 		return result;
 		
 	}
@@ -121,6 +106,8 @@ public class PointingBlocksSlice extends Product implements PointingBlockSetInte
 	public PointingBlocksSlice(){
 		super();
 		setName(""+new Date().getTime());
+		blMapCache=new TreeMap<Date, PointingBlock>();
+		cacheDirty=true;
 		//blMap=new TreeMap<Date,PointingBlock>();
 	}
 	
@@ -149,11 +136,16 @@ public class PointingBlocksSlice extends Product implements PointingBlockSetInte
 		//blMap.remove(block.getStartTime());
 	}
 	
-	protected void hardInsertBlock(PointingBlock block){
-		set(getBlockName(block),block);
+	protected void hardInsertBlock(PointingBlockInterface block){
+
+		if (!InterpreterUtil.isInstance(PointingBlock.class, block)){
+			block=PointingBlock.toPointingBlock(block);
+		}
+		set(getBlockName(block),(PointingBlock)block);
 		//blMap.put(block.getStartTime(), block);
 		//System.out.println("inserted "+block.toXml(0));
-		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		//TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		cacheDirty=true;
 	}
 	
 	/**
@@ -201,6 +193,7 @@ public class PointingBlocksSlice extends Product implements PointingBlockSetInte
 			}
 		}
 		hardRemoveBlock((PointingBlock)block);
+		cacheDirty=true;
 		
 	}
 	
@@ -306,11 +299,13 @@ public class PointingBlocksSlice extends Product implements PointingBlockSetInte
 	 * @param newBlock Block to be added
 	 */
 	public void addBlock(PointingBlockInterface newBlock){
+		
 		if (!InterpreterUtil.isInstance(PointingBlock.class, newBlock)){
 			newBlock=PointingBlock.toPointingBlock(newBlock);
 		}
 		boolean new_is_slew = newBlock.getType().equals(PointingBlock.TYPE_SLEW);
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		cacheDirty=true;
 		Entry<Date, PointingBlock> lastEntry = blMap.lastEntry();
 		PointingBlockInterface before;
 		if (new_is_slew &&((PointingBlockSlew) newBlock).getBlockBefore()==null){
@@ -357,7 +352,7 @@ public class PointingBlocksSlice extends Product implements PointingBlockSetInte
 					if (before_is_slew){
 						//The last object is a slew
 						if (new_is_slew){
-							throw new IllegalArgumentException("Two consecutives slews are not accepted at "+PointingBlock.dateToZulu(before.getEndTime()));
+							throw new IllegalArgumentException("Two consecutives slews are not accepted at "+DateUtil.dateToZulu(before.getEndTime()));
 							//return; //can not insert a slew after a slew
 						}
 						((PointingBlockSlew) before).setBlockAfter(newBlock);
@@ -442,6 +437,7 @@ public class PointingBlocksSlice extends Product implements PointingBlockSetInte
 		for (int i=0;i<newBlocks.length;i++){
 			addBlock(newBlocks[i]);
 		}
+		cacheDirty=true;
 	}
 	
 
@@ -624,14 +620,55 @@ public class PointingBlocksSlice extends Product implements PointingBlockSetInte
 	
 	public void setSlice(PointingBlockSetInterface slice){
 		PointingBlockInterface[] obs = slice.getBlocks();
-		for (int i=0;i<obs.length;i++){
+		/*for (int i=0;i<obs.length;i++){
 			PointingBlock[] blocksToRemove = this.getBlocksAt(obs[i].getStartTime(), obs[i].getEndTime()).getBlocks();
 			this.removeBlocks(blocksToRemove);
 			this.addBlock(obs[i]);
 			//PtrUtils.repairGaps(this);
 
+		}*/
+		//PointingBlock[] obs = slice.getBlocks();
+		
+		for (int i=0;i<obs.length;i++){
+			PointingBlock[] blocksToRemove = this.getBlocksAt(obs[i].getStartTime(), obs[i].getEndTime()).getBlocks();
+			this.hardRemoveBlocks(blocksToRemove);	
+			this.hardInsertBlock(obs[i]);
+			//this.addBlock(obs[i]);
 		}
+		/*for (int i=0;i<obs.length;i++){
+			//PointingBlock[] blocksToRemove = this.getBlocksAt(obs[i].getStartTime(), obs[i].getEndTime()).getBlocks();
+			this.addBlock(obs[i]);
+		}*/
+		//this.hardInsertBlocks(obs);
 	}
+	
+	protected void hardRemoveBlocks(PointingBlock[] blocks){
+		for (int i=0;i<blocks.length;i++){
+		//cacheDirty=true;
+			remove(getBlockName(blocks[i]));
+		}
+		cacheDirty=true;
+		//blMap.remove(block.getStartTime());
+	}
+	
+	/*protected void hardInsertBlocks(PointingBlockInterface[] blocks){
+		cacheDirty=true;
+		//TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		//PointingBlock block;
+		PointingBlock lastBlock=null;
+		for (int i=0;i<blocks.length;i++){
+			PointingBlockInterface block=blocks[i];
+			if (block.getType().equals("SLEW")) ((PointingBlockSlew) block).setBlockBefore(lastBlock);
+			if (lastBlock!=null && lastBlock.getType().equals("SLEW")) ((PointingBlockSlew) lastBlock).setBlockAfter(block);
+			set(getBlockName(block),block);
+			lastBlock=block;
+
+		}
+		cacheDirty=true;
+
+		
+
+	}*/
 
 
 	

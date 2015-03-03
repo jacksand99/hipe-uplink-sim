@@ -10,17 +10,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -30,20 +33,25 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 
+import vega.uplink.Properties;
 import vega.uplink.planning.Observation;
+import vega.uplink.planning.ObservationChangeEvent;
+import vega.uplink.planning.ObservationListener;
 import vega.uplink.planning.ObservationUtil;
+import vega.uplink.planning.Schedule;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
 import vega.uplink.pointing.PtrUtils;
 import vega.uplink.pointing.gui.PtrXmlEditor;
 import vega.uplink.pointing.gui.xmlutils.XMLEditorKit;
 
-public class ObservationEditor extends AbstractVariableEditorComponent<Observation> {
+public class ObservationEditor extends AbstractVariableEditorComponent<Observation> implements ObservationListener{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+	private final Logger LOG = Logger.getLogger(ObservationEditor.class.getName());
+
 	Observation obs;
 	
 	JEditorPane editor;
@@ -101,7 +109,26 @@ public class ObservationEditor extends AbstractVariableEditorComponent<Observati
 
 		button.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+		
+		JButton saveButton=new JButton("Save");
+		saveButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+		
+		saveButton.addActionListener(new ActionListener() {
+        	 
+            public void actionPerformed(ActionEvent e)
+            {
+            	saveAs();
+    			
+            }
+        });
+
+		saveButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		
+		
 		buttonsPanel.add(button,BorderLayout.EAST);
+		buttonsPanel.add(saveButton,BorderLayout.WEST);
+		
 		topPanel.add(buttonsPanel,BorderLayout.WEST);
 		topPanel.add(classLabel,BorderLayout.EAST);
 		this.add(topPanel,BorderLayout.NORTH);
@@ -114,7 +141,49 @@ public class ObservationEditor extends AbstractVariableEditorComponent<Observati
 		initialized=true;
 	}
 	
+	public void saveAs(){
+        try{
+	          JFileChooser chooser = new JFileChooser();
+	          try{
+	        	  chooser.setSelectedFile(new File(obs.getPath()+"/"+obs.getFileName()));
+	          }catch (Exception e3){
+	        	chooser.setCurrentDirectory(new File(Properties.getProperty(Properties.DEFAULT_OBSERVATIONS_DIRECTORY)));
+	          }
+	          chooser.setMultiSelectionEnabled(false);
+	          
+	          int option = chooser.showSaveDialog(ObservationEditor.this);
+	          //File sf;
+	          if (option == JFileChooser.APPROVE_OPTION) {
+	            File sf = chooser.getSelectedFile();
+	            obs.setFileName(sf.getName());
+	            obs.setPath(sf.getParent());
+ 
+	            save();
+	            
+	          }
+	          else {
+	            //itlbar.setText("You canceled.");
+	          }
+	         
+
+          } catch (Exception e1) {
+					JOptionPane.showMessageDialog(ObservationEditor.this,
+						    e1.getMessage(),
+						    "Error",
+						    JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+					//editor.setText(ptr.toXml());
+				}	
+	}
+	
+	public void save() throws IOException{
+		ObservationUtil.saveObservation(obs);
+	}
+
+	
 	public void setObservation(Observation obs){
+		if (this.obs!=null) this.obs.removeObservationListener(this);
+		obs.addObservationListener(this);
 		boolean oldListen=Observation.LISTEN;
 		Observation.LISTEN=false;
 		this.obs=obs;
@@ -154,5 +223,31 @@ public class ObservationEditor extends AbstractVariableEditorComponent<Observati
 	
         setGlobalScroll(enabled, enabled); // horizontal scroll bar not disabled: HCSS-13801
     }
+	@Override
+	public void observationChanged(ObservationChangeEvent event) {
+		setObservation(obs);
+		
+	}
+	@Override
+	public void scheduleChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void metadataChanged(ObservationChangeEvent event) {
+		setObservation(obs);
+		
+	}
+	@Override
+	public void pointingChanged(ObservationChangeEvent event) {
+		LOG.info("Listenerd change in pointing");
+		setObservation(obs);
+		
+	}
+	@Override
+	public void commandingChanged(ObservationChangeEvent event) {
+		setObservation(obs);
+		
+	}
 
 }

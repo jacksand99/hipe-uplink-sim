@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import herschel.share.interpreter.InterpreterFactory;
 import herschel.share.interpreter.InterpreterNameSpaceUtil;
 import herschel.share.interpreter.InterpreterNameSpaceUtil.And;
+import vega.uplink.DateUtil;
 import vega.uplink.commanding.Mib;
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.Sequence;
@@ -32,7 +33,7 @@ public class TestGui {
 		//herschel.share.util.Configuration.setProperty("rosetta.orcd.file", "Z:\\MAPPS\\MIB\\orcd.csv");
 		//herschel.share.util.Configuration.setProperty("rosetta.default.planningDirectory", "C:\\ROS_SGS\\PLANNING\\");
     	try {
-			Sequence seq=new Sequence("AGDF060A", "P1009090", Sequence.dateToZulu(new java.util.Date()));
+			Sequence seq=new Sequence("AGDF060A", "P1009090", DateUtil.dateToDOY(new java.util.Date()));
 			JFrame frame=new JFrame();
 			SequenceEditor editor=new SequenceEditor();
 			editor.setSequence(seq);

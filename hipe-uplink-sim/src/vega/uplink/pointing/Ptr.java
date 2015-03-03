@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 
 
@@ -180,7 +181,7 @@ public class Ptr extends MapContext{
 	 * @throws ParseException if the string can not converted to a date
 	 */
 	public PointingBlock getBlockAt(String time) throws ParseException{
-			return this.getBlockAt(PointingBlock.zuluToDate(time));
+			return this.getBlockAt(DateUtil.zuluToDate(time));
 	}
 	
 	

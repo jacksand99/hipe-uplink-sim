@@ -64,6 +64,9 @@ import org.w3c.dom.NodeList;
 
 
 
+
+
+import vega.uplink.DateUtil;
 //import vega.uplink.pointing.Evtm;
 import vega.uplink.pointing.EvtmEvent;
 
@@ -203,7 +206,7 @@ public class PorUtils {
 				Element el3=(Element) proList;
 				NodeList profiles=el3.getElementsByTagName("profile");
 				SequenceProfile[] sProfiles=readProfiles(profiles);			
-				result[temp]=new Sequence (sName,sUniqueID,sFlag,sSource.charAt(0),sDestination.charAt(0),Sequence.zuluToDate(sExecutionTime),sParameters,sProfiles);
+				result[temp]=new Sequence (sName,sUniqueID,sFlag,sSource.charAt(0),sDestination.charAt(0),DateUtil.DOYToDate(sExecutionTime),sParameters,sProfiles);
 				
 			}
 		}
@@ -349,24 +352,33 @@ public class PorUtils {
 	}
 	
 	public static String PORtoITL(Por POR){
+		Mib mib;
+		try{
+			mib=Mib.getMib();
+		}catch (Exception e){
+			IllegalArgumentException iae = new IllegalArgumentException("Could not get MIB "+e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+			
+		}
 		String result="";
-		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
+		/*java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
 		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));*/
 		String l01="Version: 1\n";
-		String l02="Ref_date: "+dateFormat.format(POR.getValidityDates()[0])+"\n\n\n";
-		String l03="Start_time: "+dateFormat2.format(POR.getValidityDates()[0])+"\n";
-		String l04="End_time: "+dateFormat2.format(POR.getValidityDates()[1])+"\n\n\n";
+		String l02="Ref_date: "+DateUtil.dateToLiteralNoTime(POR.getValidityDates()[0])+"\n\n\n";
+		String l03="Start_time: "+DateUtil.dateToLiteral(POR.getValidityDates()[0])+"\n";
+		String l04="End_time: "+DateUtil.dateToLiteral(POR.getValidityDates()[1])+"\n\n\n";
 		String l05="";
 		AbstractSequence[] tempSeq=POR.getSequences();
 		Parameter[] tempParam;
 		SequenceProfile[] tempPro;
 		for (int i=0;i<tempSeq.length;i++){
-			l05=l05+dateFormat2.format(tempSeq[i].getExecutionDate())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\"+"\n";
+			l05=l05+DateUtil.dateToLiteral(tempSeq[i].getExecutionDate())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\ #"+mib.getSequenceDescription(tempSeq[i].getName())+"\n";
 			tempParam = tempSeq[i].getParameters();
 			for (int z=0;z<tempParam.length;z++){
-				l05=l05+"\t"+tempParam[z].getName()+"="+tempParam[z].getStringValue()+" ["+tempParam[z].getRepresentation()+"] \\ \n";
+				l05=l05+"\t"+tempParam[z].getName()+"="+tempParam[z].getStringValue()+" ["+tempParam[z].getRepresentation()+"] \\ #"+mib.getParameterDescription(tempParam[z].getName())+"\n";
 			}
 			tempPro=tempSeq[i].getProfiles();
 			String dataRateProfile="\tDATA_RATE_PROFILE = \t\t\t";

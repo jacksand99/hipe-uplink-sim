@@ -5,11 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import vega.uplink.DateUtil;
 import vega.uplink.commanding.Orcd;
 import vega.uplink.commanding.Parameter;
 import vega.uplink.commanding.ParameterFloat;
@@ -24,16 +26,32 @@ import vega.uplink.planning.ObservationSequence;
 public class ItlParser {
 	public static String path="";
 	public static String dEvtPath="";
-	public static Observation itlToObs(String itlFile,Date startDate,Date endDate) throws ParseException{
-		Observation result=new Observation(startDate,endDate);
+	public static Observation itlToObs(String st,Date startDate,Date endDate) throws ParseException{
+		//Observation result=new Observation(startDate,endDate);
 		String[] itllines;
-		String name=new File(itlFile).getName().toUpperCase().replace(".ITL", "");
+		//String name=file.getName().toUpperCase().replace(".ITL", "");
 		try {
-			itllines = readFile(itlFile);
+			itllines = readString(st);
 		} catch (IOException e1) {
 			ParseException e2=new ParseException(e1.getMessage(),0);
 			throw e2;
 		}
+		return itlToObs(itllines,startDate,endDate);	
+	}
+	public static Observation itlToObs(File file,Date startDate,Date endDate) throws ParseException{
+		//Observation result=new Observation(startDate,endDate);
+		String[] itllines;
+		//String name=file.getName().toUpperCase().replace(".ITL", "");
+		try {
+			itllines = readFile(file);
+		} catch (IOException e1) {
+			ParseException e2=new ParseException(e1.getMessage(),0);
+			throw e2;
+		}
+		return itlToObs(itllines,startDate,endDate);
+	}
+	public static Observation itlToObs(String[] itllines,Date startDate,Date endDate) throws ParseException{
+		Observation result=new Observation(startDate,endDate);
 		java.util.Vector<String> commandLines=new java.util.Vector<String>();
 		int uIDSed=1;
 		
@@ -143,7 +161,7 @@ public class ItlParser {
 			System.out.println("Could not parse line");
 			e.printStackTrace();
 		}
-		result.setName(name);
+		//result.setName(name);
 		return result;
 	}
 	public static Por parseItl(String itlFile,String evtFile,String defaultEvtPath,int uIDSed) throws ParseException{
@@ -208,15 +226,13 @@ public class ItlParser {
 			if (itllines[i].startsWith("Version") || itllines[i].startsWith("Start") || itllines[i].startsWith("End") || itllines[i].startsWith("Init") || itllines[i].startsWith("Source_file") ||itllines[i].contains("ANTENNA")){
 				if (itllines[i].startsWith("Start")){
 					String sSD=itllines[i].replace("Start_time:", "");
-					java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-					dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-						vDates[0]=dateFormat2.parse(sSD);
+
+					vDates[0]=DateUtil.literalToDate(sSD);
 				}
 				if (itllines[i].startsWith("End")){
 					String sSD=itllines[i].replace("End_time:", "");
-					java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-					dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-						vDates[1]=dateFormat2.parse(sSD);
+
+					vDates[1]=DateUtil.literalToDate(sSD);
 				}
 				
 			}else{
@@ -259,7 +275,7 @@ public class ItlParser {
 					if (commandName.equals("")){
 						System.out.println("DEBUG :"+cl);
 					}
-					Sequence seq=new Sequence(commandName,uid,Sequence.dateToZulu(addDelta(exTime,commandDelta)));
+					Sequence seq=new Sequence(commandName,uid,DateUtil.dateToDOY(addDelta(exTime,commandDelta)));
 					int repeat=1;
 					long separation=0;
 	
@@ -468,19 +484,20 @@ public class ItlParser {
 	
 	private static java.util.Date parseExDate(String exDate) throws ParseException{
 		java.util.Date result=new java.util.Date();
-		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		java.text.SimpleDateFormat dateFormat3=new java.text.SimpleDateFormat("yyyy-D'T'HH:mm:ss'Z'");
-		dateFormat3.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+
 			try {
-				result=dateFormat2.parse(exDate);
+				//result=dateFormat2.parse(exDate);
+				result=DateUtil.literalToDate(exDate);
 			} catch (ParseException e1) {
 				try {
-					result=dateFormat3.parse(exDate);
-					if (result.getYear()<2000) result=dateFormat3.parse("20"+exDate);
+					//result=dateFormat3.parse(exDate);
+					result=DateUtil.DOYToDate(exDate);
+					//if (result.getYear()<2000) result=dateFormat3.parse("20"+exDate);
+					if (result.getYear()<2000) result=DateUtil.DOYToDate("20"+exDate);
 				} catch (ParseException e2) {
 					try {
-						result=dateFormat3.parse("20"+exDate);
+						//result=dateFormat3.parse("20"+exDate);
+						result=DateUtil.DOYToDate("20"+exDate);
 					} catch (ParseException e3) {
 						ParseException pae=new ParseException("Could not parse "+exDate+". "+e3.getMessage(),0);
 						pae.setStackTrace(e3.getStackTrace());
@@ -572,7 +589,59 @@ public class ItlParser {
 		lines.toArray(result);
 		return result;
 	}
-	
+	private static String[] readString(String st) throws IOException, ParseException{
+		BufferedReader br = null;
+
+		//java.util.Vector<String> lines=new java.util.Vector<String>();
+		
+				br = new BufferedReader(new StringReader(st));
+				try{
+					return readFile(br);
+				}catch (java.text.ParseException pex){
+					ParseException nEx = new ParseException("In string "+st+"."+pex.getMessage(),0);
+					nEx.initCause(pex);
+					throw nEx;
+				}		
+	}
+	private static String[] readFile(BufferedReader br) throws IOException, ParseException{
+		//BufferedReader br = null;
+		String line = "";
+		String[] result;
+		java.util.Vector<String> lines=new java.util.Vector<String>();
+		
+				//br = new BufferedReader(new FileReader(f));
+			while ((line = br.readLine()) != null){
+				line=line.replace("#POWER_ON#", "0");
+				line=line.replace("#DATA_ON#", "0");
+
+				lines.add(line);
+			}
+		
+		result = new String[lines.size()];
+		lines.toArray(result);
+		br.close();
+		try{
+			return clean(result);
+		}catch (java.text.ParseException pex){
+			ParseException nEx = new ParseException(pex.getMessage(),0);
+			nEx.initCause(pex);
+			throw nEx;
+		}
+	}
+	private static String[] readFile(File f) throws IOException, ParseException{
+		BufferedReader br = null;
+
+		//java.util.Vector<String> lines=new java.util.Vector<String>();
+		
+				br = new BufferedReader(new FileReader(f));
+				try{
+					return readFile(br);
+				}catch (java.text.ParseException pex){
+					ParseException nEx = new ParseException("In file "+f+"."+pex.getMessage(),0);
+					nEx.initCause(pex);
+					throw nEx;
+				}
+	}
 	private static String[] readFile(String file) throws IOException, ParseException{
 		BufferedReader br = null;
 		String line = "";

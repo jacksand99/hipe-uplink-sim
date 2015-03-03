@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
+import vega.uplink.DateUtil;
 import vega.uplink.commanding.Fecs;
 import vega.uplink.pointing.PointingBlock;
 //import vega.uplink.commanding.Por;
@@ -154,7 +155,7 @@ public class CompareFecsTask extends Task {
 	        				+ "	<th>Start Date</th><th>End Date</th>\n"
 	        				+ "</tr>\n";
 	        		message=message+ "<tr>\n"
-	        				+ "	<td>"+PointingBlock.dateToZulu(start)+"</td><td>"+PointingBlock.dateToZulu(end)+"</td>\n"
+	        				+ "	<td>"+DateUtil.defaultDateToString(start)+"</td><td>"+DateUtil.defaultDateToString(end)+"</td>\n"
 	        				+ "</tr>\n"
 	        				+ "</table>\n";
 	        		message=message+"<br><br>";

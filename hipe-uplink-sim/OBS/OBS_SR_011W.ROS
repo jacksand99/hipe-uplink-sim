@@ -50,7 +50,7 @@
 			</attitude>
 			<metadata>
 				<comment>OWNER=OSIRIS</comment>
-				<comment>011, activity monitoring above pole</comment>
+				<comment>OSIRIS 011, activity monitoring above pole</comment>
 				<comment>to be repeated 36 times, every 20 minutes</comment>
 				<comment>SR.PROCESSED=FALSE</comment>
 				<comment>SR.OBS000.START=BLOCK_START_TIME</comment>

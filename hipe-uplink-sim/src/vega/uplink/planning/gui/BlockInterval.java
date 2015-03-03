@@ -1,5 +1,6 @@
 package vega.uplink.planning.gui;
 
+import vega.uplink.DateUtil;
 import vega.uplink.pointing.PointingBlock;
 import de.jaret.util.date.IntervalImpl;
 import de.jaret.util.date.JaretDate;
@@ -18,7 +19,7 @@ class BlockInterval extends IntervalImpl{
 	}
 	
 	public String toString(){
-		return block.getType()+" ["+PointingBlock.dateToZulu(block.getStartTime())+"-"+PointingBlock.dateToZulu(block.getEndTime())+"]";
+		return block.getType()+" ["+DateUtil.dateToZulu(block.getStartTime())+"-"+DateUtil.dateToZulu(block.getEndTime())+"]";
 	}
 	
 	public PointingBlock getBlock(){

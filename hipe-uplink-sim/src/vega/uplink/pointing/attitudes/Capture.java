@@ -3,6 +3,7 @@ package vega.uplink.pointing.attitudes;
 import java.text.ParseException;
 import java.util.Date;
 
+import vega.uplink.DateUtil;
 import vega.uplink.pointing.PointingAttitude;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingElement;
@@ -26,7 +27,6 @@ public class Capture extends PointingAttitude {
 	public Capture(Date captureDate){
 		super(PointingAttitude.POINTING_ATTITUDE_TYPE_CAPTURE);
 		setCaptureDate(captureDate);
-		//this.addChild(new PointingMetadata("captureTime",PointingBlock.dateToZulu(captureDate)));
 	}
 	
 	public Capture copy(){
@@ -40,7 +40,7 @@ public class Capture extends PointingAttitude {
 	 */
 	public Date getCaptureDate(){
 		try {
-			return PointingBlock.zuluToDate(this.getChild("captureTime").getValue());
+			return DateUtil.zuluToDate(this.getChild("captureTime").getValue());
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -52,7 +52,7 @@ public class Capture extends PointingAttitude {
 	 * @return
 	 */	
 	public void setCaptureDate(Date captureDate){
-		this.addChild(new PointingElement("captureTime",PointingBlock.dateToZulu(captureDate)));
+		this.addChild(new PointingElement("captureTime",DateUtil.dateToZulu(captureDate)));
 	}
 	
 	

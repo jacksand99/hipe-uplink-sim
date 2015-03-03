@@ -16,10 +16,12 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import org.jfree.util.Log;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 
 /**
@@ -68,7 +70,6 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		public static String TYPE_GSEP="GSEP";
 		public static String BLOCK_TAG="block";
 		private java.util.HashMap<String, PointingElement> metadata;
-		//private String id;
 		
 		public PointingBlock(PointingElement org){
 			super(org);
@@ -77,7 +78,6 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 			return new PointingBlock(super.copy());
 		}
 		public static PointingBlock toPointingBlock(PointingBlockInterface pb){
-			//PointingBlock result = new PointingBlock();
 			PointingBlock result = new PointingBlock(pb.getType(),pb.getStartTime(),pb.getEndTime());
 			result.setAttitude(pb.getAttitude());
 			result.setMetadata(pb.getMetadataElement());
@@ -100,8 +100,8 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 			super(BLOCK_TAG,"");
 			
 			this.addAttribute(new PointingElement("ref",blockType));
-			this.addChild(new PointingElement(STARTTIME_TAG,dateToZulu(startDate)));
-			this.addChild(new PointingElement(ENDTIME_TAG,dateToZulu(endDate)));
+			this.addChild(new PointingElement(STARTTIME_TAG,DateUtil.dateToZulu(startDate)));
+			this.addChild(new PointingElement(ENDTIME_TAG,DateUtil.dateToZulu(endDate)));
 			this.addChild(new PointingMetadata());
 			
 		}
@@ -122,13 +122,11 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		 */
 		public java.util.Date getStartTime(){
 			try {
-				return zuluToDate(this.getChild(STARTTIME_TAG).getValue());
+				return DateUtil.zuluToDate(this.getChild(STARTTIME_TAG).getValue());
 			} catch (ParseException e) {
-				//e.printStackTrace();
 				IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 				iae.initCause(e);
 				throw(iae);
-				//return new Date();
 			}
 		}
 		/**
@@ -136,7 +134,7 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		 */		
 		public java.util.Date getEndTime(){
 			try {
-				return zuluToDate(this.getChild(ENDTIME_TAG).getValue());
+				return DateUtil.zuluToDate(this.getChild(ENDTIME_TAG).getValue());
 			} catch (ParseException e) {
 				IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 				iae.initCause(e);
@@ -149,16 +147,14 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		 * @param time
 		 */
 		public void setStartTime(java.util.Date time){
-			this.getChild(STARTTIME_TAG).setValue(dateToZulu(time));
+			this.getChild(STARTTIME_TAG).setValue(DateUtil.dateToZulu(time));
 		}
 		/**
 		 * Set end date of the time interval during which the pointing block is valid
 		 * @param time
 		 */		
 		public void setEndTime(java.util.Date time){
-			//System.out.println(getChild("endTime"));
-			this.getChild(ENDTIME_TAG).setValue(dateToZulu(time));
-			//System.out.println(getChild("endTime"));
+			this.getChild(ENDTIME_TAG).setValue(DateUtil.dateToZulu(time));
 			
 		}
 		
@@ -215,12 +211,7 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		 */
 		public PointingElement[] getMetadata(){
 			return this.getChild("metadata").getChildren();
-			/*PointingElement[] metaChildren = this.getChild("metadata").getChildren();
-			PointingMetadata[] result= new PointingMetadata[metaChildren.length];
-			for (int i=0;i<metaChildren.length;i++){
-				result[i]=(PointingMetadata)metaChildren[i];
-			}
-			return result;*/
+
 		}
 		
 		/**
@@ -255,11 +246,14 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		 * Transform a date into a string of the format yyyy-MM-ddTHH:mm:ss
 		 * @param date date to be transformed
 		 * @return a string representation of the date
+		 * @deprecated use {@link #vega.uplink.DateUtil.dateToZulu(java.util.Date date)} instead.
+		 * 
 		 */
+		@Deprecated
 		public static String dateToZulu(java.util.Date date){
-			java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-			dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-			return dateFormat.format(date);
+			System.out.println("vega.uplink.pointing.PointingBlock.dateToZulu is deprecated. Please use vega.uplink.DateUtil.dateToZulu");
+			Log.info("vega.uplink.pointing.PointingBlock.dateToZulu is deprecated. Please use vega.uplink.DateUtil.dateToZulu");
+			return DateUtil.dateToZulu(date);
 		}
 		
 		/**
@@ -267,11 +261,13 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		 * @param zuluTime the string to be read
 		 * @return the date represented by the string
 		 * @throws ParseException if string is malformed
+		 * @deprecated use {@link #vega.uplink.DateUtil.zuluToDate(String zuluTime)} instead.
 		 */
+		@Deprecated
 		public static java.util.Date zuluToDate(String zuluTime) throws ParseException{
-			java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-			dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-			return dateFormat.parse(zuluTime.trim().replaceAll("\n", ""));
+			System.out.println("vega.uplink.pointing.PointingBlock.zuluToDate is deprecated. Please use vega.uplink.DateUtil.zuluToDate");
+			Log.info("vega.uplink.pointing.PointingBlock.zuluToDate is deprecated. Please use vega.uplink.DateUtil.zuluToDate");
+			return DateUtil.zuluToDate(zuluTime);
 		}
 		
 		/**
@@ -292,46 +288,7 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		}
 		
 		
-		/**
-		 * Compare two pointing blocks
-		 * @param other block to be compared with this one
-		 * @return true if the blocks are equal or false otherwise
-		 */
-		/*public boolean equals(PointingBlock other){
-			
-			boolean result=true;
-			if (!this.getStartTime().equals(other.getStartTime())){
-				System.out.println("Start time of two blocks different");
-				return false;
-			}
-			if (!this.getEndTime().equals(other.getEndTime())){
-				System.out.println("end time of two blocks different");
-				
-				return false;
-			}
-			if (!this.getType().equals(other.getType())){
-				System.out.println("type of two blocks different:"+this.getType()+" "+other.getType());
 
-				return false;
-			}
-			PointingAttitude attitude = getAttitude();
-			if (attitude!=null) if (!this.getAttitude().equals(other.getAttitude())){
-				System.out.println("attitude of two blocks different");
-
-				return false;
-			}
-			PointingElement[]  metas=getMetadata();
-			//PointingMetadata[] metas=getMetadata();
-			if (metas.length!=other.getMetadata().length) return false;
-			for (int i=0;i<metas.length;i++){
-				if (!metas[i].equals(other.getMetadata(metas[i].getName()))){
-					System.out.println("Metadata of two blocks different");
-
-					return false;
-				}
-			}
-			return result;
-		}*/
 		
 		/**
 		 * Read a block from a XML node
@@ -341,9 +298,6 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		public static PointingBlock readFrom(Node node){
 			String name=node.getNodeName();
 			if (!name.equals(BLOCK_TAG)) return null;
-			//if (name.equals("#comment")) return null;
-
-			//String name=node.getNodeName();
 			String value="";
 			PointingBlock result = new PointingBlock();
 
@@ -365,14 +319,11 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 						child = PointingMetadata.readFrom(children.item(i));
 					}
 					else child = PointingElement.readFrom(children.item(i));
-					//System.out.println(child);
 					if (child!=null) result.addChild(child);
 				}			
 			}
-			//else{
 				value=node.getNodeValue();
 				if (value!="" && value!=null)result.setValue(value);
-			//}
 			return result;
 		}
 		
@@ -393,18 +344,18 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		}
 		
 		public boolean validate(){
-			//System.out.println("validating pointing block");
 			boolean result = true;
 			try {
-				zuluToDate(this.getChild(STARTTIME_TAG).getValue());
-				zuluToDate(this.getChild(ENDTIME_TAG).getValue());
-			} catch (ParseException e) {
+				getStartTime();
+				getEndTime();
+				/*DateUtil.zuluToDate(this.getChild(STARTTIME_TAG).getValue());
+				DateUtil.zuluToDate(this.getChild(ENDTIME_TAG).getValue());*/
+			} catch (IllegalArgumentException e) {
 				System.out.println("detected problem");
 				e.printStackTrace();
 				IllegalArgumentException iae = new IllegalArgumentException("Date not in the correct format./n"+this.toXml(0)+"/n"+e.getMessage());
 				iae.initCause(e);
 				throw (iae);
-				//return false;
 			}
 
 			if (!super.validate()) result=false;
@@ -413,7 +364,6 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		
 		public String getInstrument(){
 			List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
-			//PointingMetadata meta = (PointingMetadata)this.getChild(PointingMetadata.METADATA_TAG);
 			PointingMetadata meta = this.getMetadataElement();
 			if (meta==null) return null;
 			String[] comments = meta.getComments().getArray();

@@ -1,28 +1,38 @@
 package vega.uplink.planning;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+//import java.io.ByteArrayInputStream;
+//import java.io.InputStream;
+//import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.logging.Logger;
+import herschel.ia.dataset.ArrayDataset;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+//import javax.xml.parsers.DocumentBuilder;
+//import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.Document;
+//import org.w3c.dom.Document;
 
+
+
+
+
+import vega.uplink.commanding.Fecs;
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.SuperPor;
+import vega.uplink.planning.period.Plan;
 import vega.uplink.pointing.Pdfm;
-import vega.uplink.pointing.PointingBlockInterface;
-import vega.uplink.pointing.PointingMetadata;
+//import vega.uplink.pointing.PointingBlockInterface;
+import vega.uplink.pointing.PointingBlocksSlice;
+//import vega.uplink.pointing.PointingMetadata;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
+import vega.uplink.pointing.exclusion.AbstractExclusion;
 import herschel.ia.dataset.Dataset;
 import herschel.ia.dataset.DatasetEvent;
 import herschel.ia.dataset.StringParameter;
+import herschel.ia.numeric.String1d;
 import herschel.ia.pal.MapContext;
 import herschel.share.fltdyn.time.FineTime;
 
@@ -38,10 +48,12 @@ public class Schedule extends MapContext implements ObservationListener{
 	private boolean porDirty;
 	private Por cachedPor;
 	private Ptr cachedPtr;
+	int counter;
 	public Schedule(PtrSegment ptslSegment,ObservationsSchedule obs){
 
 		super();
-		//System.out.println("The schedule is crated with observation schedule");
+		counter=0;
+
 		if (ptslSegment==null){
 			throw new IllegalArgumentException("An schedulle must have a PTSL segment");
 		}
@@ -60,14 +72,52 @@ public class Schedule extends MapContext implements ObservationListener{
 			setObservationsSchedule(obs);
 			getPor();
 		}
-		//System.out.println(porDirty);
-		//ptrDirty=true;
-		//porDirty=true;
+
 		
 	}
-	
+	public int getCounter(){
+		return counter++;
+	}
 	public Schedule(PtrSegment ptslSegment){
 		this (ptslSegment,null);
+	}
+	
+	private String1d getItlIncludesString1d(){
+		String1d itlIncludes;
+		try{
+			itlIncludes=(String1d)((ArrayDataset) this.get("itlIncludes")).getData();
+		}catch (Exception e){
+			itlIncludes=new String1d();
+			this.set("itlIncludes", new ArrayDataset(itlIncludes));
+		}
+		return itlIncludes;
+	}
+	
+	public void addItlInclude(String include){
+		getItlIncludesString1d().append(include);
+	}
+	
+	public String[] getItlIncludes(){
+		return getItlIncludesString1d().toArray();
+	}
+	
+	private String1d getEvfIncludesString1d(){
+		String1d evfIncludes;
+		try{
+			evfIncludes=(String1d)((ArrayDataset) this.get("evfIncludes")).getData();
+		}catch (Exception e){
+			evfIncludes=new String1d();
+			this.set("evfIncludes", new ArrayDataset(evfIncludes));
+		}
+		return evfIncludes;
+	}
+	
+	public void addEvfInclude(String include){
+		getEvfIncludesString1d().append(include);
+	}
+	
+	public String[] getEvfIncludes(){
+		return getEvfIncludesString1d().toArray();
 	}
 	
 	
@@ -98,6 +148,28 @@ public class Schedule extends MapContext implements ObservationListener{
 		obs.addObservationListener(this);
 		
 	}
+	public void setPlan(Plan plan){
+		this.setProduct("plan", plan);
+	}
+	
+	public void setExclusion(AbstractExclusion ex){
+		this.set("exclusion", ex);
+	}
+	public AbstractExclusion getExclusion(){
+		try {
+			return (AbstractExclusion) get("exclusion");
+		} catch (Exception e) {
+			return null;
+		} 
+		
+	}
+	public Plan getPlan(){
+		try {
+			return (Plan) this.getProduct("plan");
+		} catch (Exception e) {
+			return null;
+		} 
+	}
 	public void setPdfm(Pdfm pdfm){
 		this.setProduct("pdfm", pdfm);
 		
@@ -105,6 +177,18 @@ public class Schedule extends MapContext implements ObservationListener{
 	public Pdfm getPdfm(){
 		try {
 			return (Pdfm) this.getProduct("pdfm");
+		} catch (Exception e) {
+			return null;
+		} 
+	}
+	
+	public void setFecs(Fecs fecs){
+		this.set("fecs", fecs);
+		
+	}
+	public Fecs getFecs(){
+		try {
+			return (Fecs) this.get("fecs");
 		} catch (Exception e) {
 			return null;
 		} 
@@ -127,9 +211,9 @@ public class Schedule extends MapContext implements ObservationListener{
 		getObservationsSchedule().removeObs(obs);
 	}
 	
-	public void removeObservation(int index){
+	/*public void removeObservation(int index){
 		getObservationsSchedule().removeObs(index);
-	}
+	}*/
 	
 	public Observation[] getObservations(){
 		return getObservationsSchedule().getObservations();
@@ -141,42 +225,23 @@ public class Schedule extends MapContext implements ObservationListener{
 		Observation.LISTEN=false;
 		Ptr ptr= new Ptr();
 		PtrSegment segment = this.getPtslSegment().copy();
+		PointingBlocksSlice sl=new PointingBlocksSlice();
 		Observation[] observations = getObservations();
 		for (int i=0;i<observations.length;i++){
 			Observation c = observations[i].copy();
-			PointingBlockInterface[] b = c.getBlocks();
-			/*for (int j=0;j<b.length;j++){
-				//b[j].addMetadata(new PointingMetadata());
-				PointingMetadata meta = b[j].getMetadataElement();
-				if (meta==null) meta=new PointingMetadata();
-				meta.addComment(c.getInstrument());
-				meta.addComment(c.getName());
-				meta.addComment(c.getDescription());
-				meta.addComment(c.getCreator());
-				b[j].setMetadata(meta);
-				
-			}*/
-			
-			
-			segment.setSlice(c);
+			//PointingBlockInterface[] b = c.getBlocks();			
+			sl.setSlice(c);
 		}
+		segment.setSlice(sl);
 		ptr.addSegment(segment);
 		Ptr ptsl=new Ptr();
 		ptsl.addSegment(this.getPtslSegment().copy());
 		PtrUtils.rebasePtrPtsl(ptr, ptsl);
 		try{
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		InputStream stream = new ByteArrayInputStream(ptr.toXml().getBytes(StandardCharsets.UTF_8));
-		Document doc;
-
-		doc = dBuilder.parse(stream);
-		doc.getDocumentElement().normalize();
-		Ptr tempPtr = PtrUtils.readPTRfromDoc(doc);
-		Observation.LISTEN=oldListen;
+		Ptr tempPtr = ptr;
 		cachedPtr=tempPtr;
 		ptrDirty=false;
-		
+		Observation.LISTEN=oldListen;
 		return tempPtr;
 		
 		}catch (Exception e){
@@ -214,7 +279,7 @@ public class Schedule extends MapContext implements ObservationListener{
 		SuperPor result=new SuperPor();
 		for (int i=0;i<observations.length;i++){
 			//System.out.println(i);
-			result.addPor(observations[i].getCommanding());
+			result.addPor(observations[i].getCommanding(getCounter()*10000));
 			//LOG.info("Number of sequences in observation "+i+":"+observations[i].getCommanding().getSequences().length);
 			//System.out.println(observations[i].getCommanding().toXml());
 		}
@@ -237,6 +302,10 @@ public class Schedule extends MapContext implements ObservationListener{
 			pdfmXml=pdfmXml.replace("<?xml version=\"1.0\"?>\n", "");
 		}
 		result=result+pdfmXml+"\n";
+		Plan plan = getPlan();
+		if (plan!=null) result=result+plan.toXml(1)+"\n";
+		AbstractExclusion exclusion = this.getExclusion();
+		if (exclusion!=null) result=result+exclusion.toXml(1);
 		result=result+"</schedule>\n";
 		return result;
 		
@@ -247,7 +316,11 @@ public class Schedule extends MapContext implements ObservationListener{
 	}
 	
 	public String getFileName(){
-		return (String) this.getMeta().get("fileName").getValue();
+		try{
+			return (String) this.getMeta().get("fileName").getValue();
+		}catch (Exception e){
+			return null;
+		}
 	}
 	public void setPath(String path){
 		getMeta().set("path", new StringParameter(path));
@@ -282,6 +355,7 @@ public class Schedule extends MapContext implements ObservationListener{
 
 	@Override
 	public void pointingChanged(ObservationChangeEvent event) {
+		LOG.info("Listenerd change in pointing");
 		LOG.info("PTR dirty");
 		ptrDirty=true;
 		

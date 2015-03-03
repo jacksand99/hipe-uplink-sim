@@ -39,6 +39,7 @@
 			</attitude>
 			<metadata>
 				<hgaRequest>ele-090</hgaRequest>
+				<comment>RSI BSR</comment>
 			</metadata>
 		</block>
 	</pointingBlocks>

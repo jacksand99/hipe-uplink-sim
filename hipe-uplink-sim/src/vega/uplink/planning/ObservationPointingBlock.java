@@ -48,6 +48,10 @@ public class ObservationPointingBlock extends PointingBlock{
 	
 	public void setParent(Observation parent){
 		this.parent=parent;
+		OffsetAngles osa = this.getAttitude().getOffsetAngles();
+		if (InterpreterUtil.isInstance(ObservationOffset.class, osa)){
+			((ObservationOffset)osa).setParent(parent);
+		}
 	}
 	public ObservationPointingBlock(Observation parent,ObservationEvent startEvent,long startDelta,ObservationEvent endEvent,long endDelta,PointingBlock block){
 		super(block);

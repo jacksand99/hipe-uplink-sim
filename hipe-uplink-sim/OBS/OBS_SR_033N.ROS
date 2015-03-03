@@ -56,7 +56,8 @@
 				</offsetAngles>
 			</attitude>
 			<metadata>
-				<comment>Grain tracking (15aN) and dust colours (33) with NAC from 80km, phase angle 51deg, local time 15.3h, do only 3 stations on the limb (none on nightside).</comment>
+				<comment>OSIRIS Grain tracking (15aN)</comment>
+				<comment>and dust colours (33) with NAC from 80km, phase angle 51deg, local time 15.3h, do only 3 stations on the limb (none on nightside).</comment>
 			</metadata>
 		</block>
 	</pointingBlocks>

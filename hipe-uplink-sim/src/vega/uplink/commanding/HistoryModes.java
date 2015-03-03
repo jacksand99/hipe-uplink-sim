@@ -6,6 +6,7 @@ import herschel.ia.dataset.TableDataset;
 import herschel.ia.numeric.Long1d;
 import herschel.ia.numeric.String1d;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.Iterator;
 //import java.util.Map.Entry;
 //import java.util.Set;
 import java.util.List;
+import java.util.TreeSet;
 
 /**
  * Class to store the history of a simulation of a planning period
@@ -26,11 +28,6 @@ import java.util.List;
  *
  */
 public class HistoryModes extends CompositeDataset{
-	/*java.util.HashMap<Long,String> history;
-	java.util.HashMap<Long,String> historyCommands;
-	java.util.HashMap<Long,Long> historyExecution;
-	java.util.HashMap<Long,ModelState> historyStates;*/
-	//java.text.SimpleDateFormat dateFormat2;
 
 	
 	/**
@@ -38,32 +35,24 @@ public class HistoryModes extends CompositeDataset{
 	 */
 	public HistoryModes(){
 		super();
-		//dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
-		//dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		//history=new java.util.HashMap<Long,String>();
-		//historyCommands=new java.util.HashMap<Long,String>();
-		//historyExecution=new java.util.HashMap<Long,Long>();
-		//historyStates=new java.util.HashMap<Long,ModelState>();
+
 		Column time=new Column(new Long1d());
 		Column newmode=new Column(new String1d());
 		Column command=new Column(new String1d());
 		Column orexecution=new Column(new Long1d());
-		//Column eddump=new Column(new String1d());
-		//Column tmRate=new Column(new String1d());
+
 		TableDataset table=new TableDataset();
 		table.addColumn(time);		
 		table.addColumn(newmode);
 		table.addColumn(command);
 		table.addColumn(orexecution);
-		//this.addColumn(eddump);
-		//this.addColumn(tmRate);
+
 		table.setColumnName(0, "Action Time");
 		table.setColumnName(1, "Mode");
 		table.setColumnName(2, "Sequence");
 		table.setColumnName(3, "Original Execution Time");
 		this.set("table", table);
-		//this.setColumnName(4, "End Dump");
-		//this.setColumnName(5, "TM rate");
+
 
 	}
 	
@@ -206,6 +195,26 @@ public class HistoryModes extends CompositeDataset{
 		Arrays.sort(result);
 		return result;*/
 		
+	}
+	public long getCellingTime(long time){
+		long[] allTimes=getTimes();
+		TreeSet<Long> tree=new TreeSet<Long>();
+		for (int i=0;i<allTimes.length;i++){
+			tree.add(allTimes[i]);
+		}
+		return tree.ceiling(time);
+	}
+	public long getFloorTime(long time){
+		long[] allTimes=getTimes();
+		TreeSet<Long> tree=new TreeSet<Long>();
+		for (int i=0;i<allTimes.length;i++){
+			tree.add(allTimes[i]);
+		}
+		return tree.floor(time);
+	}
+	public ModelState getStatesAt(long time){
+		long floorTime = getFloorTime(time);
+		return getStates(floorTime);
 	}
 	
 	public java.util.Date[] getBoundarieDates(){

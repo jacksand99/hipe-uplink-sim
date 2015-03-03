@@ -10,6 +10,10 @@ import herschel.share.fltdyn.time.FineTime;
 
 
 
+
+
+
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -19,14 +23,19 @@ import java.util.Date;
 //import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 import java.util.Set;
 //import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.jfree.util.Log;
 import org.w3c.dom.Document;
+
+import vega.uplink.DateUtil;
 
 /*import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationUtil;*/
@@ -51,21 +60,26 @@ public class PtrSegment extends PointingBlocksSlice{
 	public static String DATA_TAG="data";
 	public static String TIMELINE_TAG="timeline";
 	public static String FRAME_TAG="frame";
-	
+	private TreeMap<Date, PointingBlock> blMapCache;
+	private boolean cacheDirty;
+	private static final Logger LOG = Logger.getLogger(PtrUtils.class.getName());
 	
 	
 	private String getBlockName(PointingBlock block){
-		String result=block.getType()+" "+PointingBlock.dateToZulu(block.getStartTime());
+		String result=block.getType()+" "+DateUtil.dateToZulu(block.getStartTime());
 		return result;
 				
 	}
 	private TreeMap<Date,PointingBlock> getBlMap(){
+		if (cacheDirty==false) return blMapCache;
 		TreeMap<Date, PointingBlock> result = new TreeMap<Date,PointingBlock>();
 		Iterator<Dataset> it = this.getSets().values().iterator();
 		while (it.hasNext()){
 			PointingBlock block = (PointingBlock) it.next();
 			result.put(block.getStartTime(), block);
 		}
+		blMapCache=result;
+		cacheDirty=false;
 		return result;
 		
 	}
@@ -94,9 +108,13 @@ public class PtrSegment extends PointingBlocksSlice{
 		//name=segmentName;
 		includes=new String[0];
 		this.setTimeLineFrame("SC");
+		blMapCache=new TreeMap<Date, PointingBlock>();
+		cacheDirty=true;
+		
 	}
 	
 	public PtrSegment copy(){
+		
     	String text = this.toXml(0);
 
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -107,8 +125,6 @@ public class PtrSegment extends PointingBlocksSlice{
 	
 			doc = dBuilder.parse(stream);
 			doc.getDocumentElement().normalize();
-			//Node node = (Node) doc;
-			//PointingElement pe = PointingElement.readFrom(node.getFirstChild());
 			PtrSegment tempseg = PtrUtils.getPtrSegmentFromDoc(doc);
 			return tempseg;
 		}catch (Exception e){
@@ -150,7 +166,17 @@ public class PtrSegment extends PointingBlocksSlice{
 		
 	}
 	protected void hardRemoveBlock(PointingBlock block){
+		//cacheDirty=true;
 		remove(getBlockName(block));
+		cacheDirty=true;
+		//blMap.remove(block.getStartTime());
+	}
+	protected void hardRemoveBlocks(PointingBlock[] blocks){
+		for (int i=0;i<blocks.length;i++){
+		//cacheDirty=true;
+			remove(getBlockName(blocks[i]));
+		}
+		cacheDirty=true;
 		//blMap.remove(block.getStartTime());
 	}
 	
@@ -158,12 +184,15 @@ public class PtrSegment extends PointingBlocksSlice{
 		set(getBlockName(block),block);
 		//blMap.put(block.getStartTime(), block);
 		//System.out.println("inserted "+block.toXml(0));
+		cacheDirty=true;
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		if (!blMap.lastEntry().getValue().getType().equals(PointingBlock.TYPE_SLEW)){
 			this.setValidityDates(blMap.firstKey(), blMap.lastEntry().getValue().getEndTime());
 		}
+		//cacheDirty=true;
 	}
 	protected void hardInsertBlocks(PointingBlock[] blocks){
+		cacheDirty=true;
 		//TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		//PointingBlock block;
 		PointingBlock lastBlock=null;
@@ -175,11 +204,12 @@ public class PtrSegment extends PointingBlocksSlice{
 			lastBlock=block;
 
 		}
+		cacheDirty=true;
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		if (!blMap.lastEntry().getValue().getType().equals(PointingBlock.TYPE_SLEW)){
 			this.setValidityDates(blMap.firstKey(), blMap.lastEntry().getValue().getEndTime());
 		}
-
+		
 		//set(getBlockName(block),block);
 		//blMap.put(block.getStartTime(), block);
 		//System.out.println("inserted "+block.toXml(0));
@@ -198,6 +228,7 @@ public class PtrSegment extends PointingBlocksSlice{
 		Date oldDate=block.getStartTime();
 		PointingBlock before = blockBefore(block);
 		PointingBlock after = blockAfter(block);
+		//cacheDirty=true;
 		if (before!=null && after!=null){
 			if (before.getType().equals(PointingBlock.TYPE_SLEW) && after.getType().equals(PointingBlock.TYPE_SLEW)){
 				PointingBlockSlew slewBefore=(PointingBlockSlew) before;
@@ -363,17 +394,18 @@ public class PtrSegment extends PointingBlocksSlice{
 	 */
 	public void repairSlews(){
 		removeDuplicateSlews();
-		PointingBlock[] blocks = getBlocks();
+		PointingBlock[] blocks = this.getBlocks();
 
 		for (int i=0;i<blocks.length;i++){
 			PointingBlock block = blocks[i];
 			PointingBlock before = blockBefore(block);
-			PointingBlock after = blockAfter(block);
-			if (before!=null && !before.getType().equals(PointingBlock.TYPE_SLEW) && !before.getEndTime().equals(block.getStartTime())){
+			//PointingBlock after = blockAfter(block);
+			if (!block.getType().equals(PointingBlock.TYPE_SLEW) && before!=null && !before.getType().equals(PointingBlock.TYPE_SLEW) && !before.getEndTime().equals(block.getStartTime())){
 				PointingBlockSlew newSlew=new PointingBlockSlew();
 				newSlew.setBlockBefore(before);
 				newSlew.setBlockAfter(block);
-				addBlock(newSlew);
+				//addBlock(newSlew);
+				this.hardInsertBlock(newSlew);
 			}
 		}
 
@@ -386,6 +418,7 @@ public class PtrSegment extends PointingBlocksSlice{
 	public void addBlock(PointingBlock newBlock){
 		boolean new_is_slew = newBlock.getType().equals(PointingBlock.TYPE_SLEW);
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		cacheDirty=true;
 		Entry<Date, PointingBlock> lastEntry = blMap.lastEntry();
 		PointingBlock before;
 		if (new_is_slew &&((PointingBlockSlew) newBlock).getBlockBefore()==null){
@@ -433,9 +466,9 @@ public class PtrSegment extends PointingBlocksSlice{
 						//The last object is a slew
 						if (new_is_slew){
 							try{
-								throw new IllegalArgumentException("Two consecutives slews are not accepted at "+PointingBlock.dateToZulu(before.getEndTime()));
+								throw new IllegalArgumentException("Two consecutives slews are not accepted at "+DateUtil.dateToZulu(before.getEndTime()));
 							}catch (IllegalArgumentException e){
-								throw new IllegalArgumentException("Two consecutives slews are not accepted at "+PointingBlock.dateToZulu(before.getStartTime()));							
+								throw new IllegalArgumentException("Two consecutives slews are not accepted at "+DateUtil.dateToZulu(before.getStartTime()));							
 							}
 							//return; //can not insert a slew after a slew
 						}
@@ -514,6 +547,7 @@ public class PtrSegment extends PointingBlocksSlice{
 	 */
 	public void setBlocks(PointingBlock[] newBlocks){
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
+		cacheDirty=true;
 		Iterator<Entry<Date, PointingBlock>> it = blMap.entrySet().iterator();
 		while (it.hasNext()){
 			remove(getBlockName(it.next().getValue()));
@@ -765,9 +799,6 @@ public class PtrSegment extends PointingBlocksSlice{
 		return resultArray;
 	}*/
 	
-	/*public PointingBlock getBlockAt(String startTime,String endTime) throws ParseException{
-		return getBlockAt(PointingBlock.zuluToDate(startTime));
-	}*/
 	
 	/**
 	 * Set the validity boundaries of this segment 
@@ -778,7 +809,38 @@ public class PtrSegment extends PointingBlocksSlice{
 		setStartDate(new FineTime(startDate));
 		setEndDate(new FineTime(endDate));
 	}
-	
+	public PointingBlocksSlice[] getAllSlices(){
+		Vector<PointingBlocksSlice> re=new Vector<PointingBlocksSlice>();
+		int obsBlockConter=0;
+		boolean inObsSegment=false;
+		PointingBlock[] blocks = getBlocks();
+		PointingBlocksSlice temp=new PointingBlocksSlice();;
+		for (int i=0;i<blocks.length;i++){
+			if (blocks[i].getType().equals(PointingBlock.TYPE_OBS) && !inObsSegment){
+				if (obsBlockConter>0){
+					temp.setName("OBS_SLICE_"+String.format("%04d", obsBlockConter));
+					re.add(temp.copy());
+				}
+				obsBlockConter++;
+				
+				//result=result+iString+"\t\t\t<!--OBS SLICE #"+String.format("%04d", obsBlockConter)+"-->\n";
+				inObsSegment=true;
+				temp=new PointingBlocksSlice();
+			}
+			if (!blocks[i].getType().equals(PointingBlock.TYPE_OBS) && !blocks[i].getType().equals(PointingBlock.TYPE_SLEW)){
+				inObsSegment=false;
+				
+			}
+			if (inObsSegment  && blocks[i].getType().equals(PointingBlock.TYPE_OBS)) temp.addBlock(blocks[i]);
+		}
+		//if (inObsSegment){
+			temp.setName("OBS_SLICE_"+String.format("%04d", obsBlockConter));
+			re.add(temp.copy());
+		//}
+		PointingBlocksSlice[] result=new PointingBlocksSlice[re.size()];
+		result=re.toArray(result);
+		return result;
+	}
 	public PointingBlocksSlice getSlice(int number){
 		PointingBlocksSlice result=new PointingBlocksSlice();
 		int obsBlockConter=0;
@@ -800,16 +862,41 @@ public class PtrSegment extends PointingBlocksSlice{
 		result.setName("OBS_SLICE_"+String.format("%04d", number));
 		return result;
 	}
-	
-	public void setSlice(PointingBlocksSlice slice){
+	protected void hardSetSlice(PointingBlocksSlice slice){
+		
+		
 		PointingBlock[] obs = slice.getBlocks();
+		
 		for (int i=0;i<obs.length;i++){
 			PointingBlock[] blocksToRemove = this.getBlocksAt(obs[i].getStartTime(), obs[i].getEndTime()).getBlocks();
-			this.removeBlocks(blocksToRemove);
-			this.addBlock(obs[i]);
-			PtrUtils.repairGaps(this);
-
+			this.hardRemoveBlocks(blocksToRemove);		
 		}
+		this.hardInsertBlocks(obs);
+	}
+	public void setSlice(PointingBlocksSlice slice){
+		
+		
+		PointingBlock[] obs = slice.getBlocks();
+		
+		for (int i=0;i<obs.length;i++){
+			PointingBlock[] blocksToRemove = this.getBlocksAt(obs[i].getStartTime(), obs[i].getEndTime()).getBlocks();
+			this.hardRemoveBlocks(blocksToRemove);		
+		}
+		this.hardInsertBlocks(obs);
+		//PtrUtils.repairOrphanSlews(this);
+		
+		/*for (int i=0;i<obs.length;i++){
+
+			this.addBlock(obs[i]);
+			//PtrUtils.repairGaps(this);
+
+		}*/
+		
+		this.repairSlews();
+		
+		PtrUtils.repairGaps(this);
+		
+		
 	}
 	
 	

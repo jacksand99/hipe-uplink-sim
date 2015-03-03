@@ -3,18 +3,20 @@ package vega.uplink.pointing;
 import java.text.ParseException;
 import java.util.Date;
 
+import vega.uplink.DateUtil;
+
 public class PrmTime extends PointingElement{
 	
 	public PrmTime(PointingElement el){
 		this(el.getName(),el.getValue());
 	}
 	public PrmTime(String name,Date date){
-		super(name,PointingBlock.dateToZulu(date));
+		super(name,DateUtil.dateToZulu(date));
 	}
 	public PrmTime(String name,String date) {
 		super(name,date);
 		try {
-			setDate(PointingBlock.zuluToDate(date));
+			setDate(DateUtil.zuluToDate(date));
 		} catch (ParseException e) {
 			IllegalArgumentException iae = new IllegalArgumentException("Incorrect Date:"+e.getMessage());
 			iae.initCause(e);
@@ -24,11 +26,11 @@ public class PrmTime extends PointingElement{
 	}
 	
 	public void setDate(Date date){
-		this.setValue(PointingBlock.dateToZulu(date));
+		this.setValue(DateUtil.dateToZulu(date));
 	}
 	
 	public Date getDate() throws ParseException{
-		return PointingBlock.zuluToDate(this.getValue());
+		return DateUtil.zuluToDate(this.getValue());
 	}
 	
 	public boolean equals(PrmTime another){

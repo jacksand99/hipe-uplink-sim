@@ -2,6 +2,7 @@ package vega.uplink.pointing.PtrParameters.Offset;
 
 import java.util.Date;
 
+import vega.uplink.DateUtil;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.PtrParameters.TargetTrack;
@@ -77,7 +78,7 @@ public abstract class OffsetAngles extends PointingElement {
 	 * @return
 	 */	
 	public void setStartTime(Date startTime){
-		this.setStartTime(PointingBlock.dateToZulu(startTime));
+		this.setStartTime(DateUtil.dateToZulu(startTime));
 	}
 	
 	public abstract OffsetAngles copy();

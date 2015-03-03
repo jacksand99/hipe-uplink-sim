@@ -24,7 +24,13 @@ public class ObservationSequence extends Sequence{
 		executionTimeEvent=executionEvent;
 		executionTimeDelta=executionDelta;
 		this.parent=parent;
+		
+		
+		
 	}
+	/*public String getUniqueID(){
+		//return thi
+	}*/
 	
 	
 	public ObservationSequence (Observation parent,ObservationEvent executionEvent,long executionDelta,String sequenceName,String sequenceID,String sequenceFlag,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles) throws ParseException{

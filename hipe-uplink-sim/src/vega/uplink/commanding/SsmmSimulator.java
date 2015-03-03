@@ -8,7 +8,8 @@ import herschel.ia.numeric.Long1d;
 
 
 
-import java.text.SimpleDateFormat;
+
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -17,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 
 public class SsmmSimulator {
@@ -52,8 +54,7 @@ public class SsmmSimulator {
 	}
 	
 	public String  addGsPass(GsPass pass){
-		SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		
 		String strategy="";
 		TreeMap<Float,String> tm=new TreeMap<Float,String>();
 		String[] instruments=this.getAllInstruments();
@@ -78,14 +79,14 @@ public class SsmmSimulator {
 				endDate=new Date(startDate.getTime()+(duration*1000)+1);
 				if(!startDate.equals(endDate)){
 					simulator.addDump(startDate, endDate, pass.getTmRate());
-					strategy=strategy+"Dump "+entry.getValue()+" from "+dateFormat2.format(startDate)+" to "+dateFormat2.format(endDate)+" at "+pass.getTmRate()+" bits/sec\n";
+					strategy=strategy+"Dump "+entry.getValue()+" from "+DateUtil.dateToZulu(startDate)+" to "+DateUtil.dateToZulu(endDate)+" at "+pass.getTmRate()+" bits/sec\n";
 				}
 			}else {
 				duration=new Float(tmToDownload/pass.getTmRate()).longValue();
 				endDate=new Date(startDate.getTime()+(duration*1000)+1);
 				if(!startDate.equals(endDate)){
 					simulator.addDump(startDate, endDate, pass.getTmRate());
-					strategy=strategy+"Dump "+entry.getValue()+" from "+dateFormat2.format(startDate)+" to "+dateFormat2.format(endDate)+" at "+pass.getTmRate()+" bits/sec\n";
+					strategy=strategy+"Dump "+entry.getValue()+" from "+DateUtil.dateToZulu(startDate)+" to "+DateUtil.dateToZulu(endDate)+" at "+pass.getTmRate()+" bits/sec\n";
 
 				}
 				
@@ -94,7 +95,7 @@ public class SsmmSimulator {
 			tmToDownload=tmToDownload-entry.getKey();
 			if (tmToDownload<0) tmToDownload=0;
 		}
-		if (!strategy.equals("")) strategy=strategy=strategy+"Dump strategy used for pass "+pass.getGroundStation()+" starting at "+dateFormat2.format(pass.getStartPass())+" and ending at "+dateFormat2.format(pass.getEndPass())+"\n"+strategy;
+		if (!strategy.equals("")) strategy=strategy+"Dump strategy used for pass "+pass.getGroundStation()+" starting at "+DateUtil.dateToZulu(pass.getStartPass())+" and ending at "+DateUtil.dateToZulu(pass.getEndPass())+"\n"+strategy;
 		return strategy;
 		
 	}

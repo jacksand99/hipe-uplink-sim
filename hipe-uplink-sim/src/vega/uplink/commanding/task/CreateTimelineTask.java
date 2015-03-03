@@ -6,7 +6,7 @@ import herschel.ia.task.TaskParameter;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+//import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
+import vega.uplink.DateUtil;
 import vega.uplink.commanding.AbstractSequence;
 import vega.uplink.commanding.GsPass;
 import vega.uplink.commanding.Por;
@@ -34,12 +35,9 @@ import vega.uplink.commanding.SsmmSimulator;
 
 public class CreateTimelineTask extends Task {
 	private static final Logger LOGGER = Logger.getLogger(CreateTimelineTask.class.getName());
-	SimpleDateFormat dateFormat2;
 
 	public CreateTimelineTask(){
 		super("createTimelineTask");
-		dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 
 		setDescription("Produce timeline of a POR");
 		TaskParameter parameter = new TaskParameter("por", Por.class);
@@ -132,7 +130,7 @@ public class CreateTimelineTask extends Task {
     			String oldmode=context.getModelState().getStateForMode(context.getHistoryModes().get(j));
     			String newmode=context.getHistoryModes().get(j);
     			if (!context.getOrcd().checkTransion(oldmode, newmode)){
-    				String mess="Forbidden transition "+oldmode+"--->"+newmode+" at "+dateFormat2.format(new Date(j))+" via "+context.getHistoryModes().getCommand(j)+" executed at "+dateFormat2.format(new Date(context.getHistoryModes().getOriginalTime(j)));
+    				String mess="Forbidden transition "+oldmode+"--->"+newmode+" at "+DateUtil.dateToZulu(new Date(j))+" via "+context.getHistoryModes().getCommand(j)+" executed at "+DateUtil.dateToZulu(new Date(context.getHistoryModes().getOriginalTime(j)));
     				//messages=messages+mess;
     				context.log(mess);
     				Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
@@ -145,7 +143,7 @@ public class CreateTimelineTask extends Task {
     			float mPower = context.getMocPower().getPowerAt(new Date(j));
     			context.getMocPowerHistory().append(mPower);
     			if (modelPower>mPower){
-    				String mess="ALARM: Power over due via sequence "+context.getHistoryModes().getCommand(j)+" executed at "+dateFormat2.format(new Date(context.getHistoryModes().getOriginalTime(j)));
+    				String mess="ALARM: Power over due via sequence "+context.getHistoryModes().getCommand(j)+" executed at "+DateUtil.dateToZulu(new Date(context.getHistoryModes().getOriginalTime(j)));
     				//messages=messages+mess;
     				context.log(mess);
     				Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);

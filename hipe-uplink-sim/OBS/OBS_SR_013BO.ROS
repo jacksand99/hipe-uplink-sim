@@ -48,7 +48,7 @@
   </attitude>
 			<metadata>
 				<comment>OWNER=OSIRIS</comment>
-				<comment>013b (013bN and 013bW), regular dust monitoring</comment>
+				<comment>OSIRIS 013b (013bN and 013bW), regular dust monitoring</comment>
 				<comment>repeated 12 times, every hour</comment>
     <comment>SR.SNIPPET_VERSION=001</comment>
     <comment>SR.OWNER=TRUE</comment>

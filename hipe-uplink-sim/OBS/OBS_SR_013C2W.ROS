@@ -64,7 +64,7 @@
 			</attitude>
 			<metadata>
 				<comment>OWNER=OSIRIS</comment>
-				<comment>013c2W regular monitoring</comment>
+				<comment>OSIRIS 013c2W regular monitoring</comment>
 				<comment>to be repeated 12 times, every 60 minutes</comment>
 				<comment>SR.PROCESSED=FALSE</comment>
 				<comment>SR.OBS000.START=BLOCK_START_TIME+00:01:30</comment>

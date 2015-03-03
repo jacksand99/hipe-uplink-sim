@@ -3,6 +3,7 @@ package vega.uplink.pointing.PtrParameters;
 import java.text.ParseException;
 import java.util.Date;
 
+import vega.uplink.DateUtil;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.Units;
@@ -189,7 +190,7 @@ public class PhaseAngle extends PointingElement {
 	 * @param deltaTimeUnits
 	 */
 	public PhaseAngle(Date rEpoch, String deltaTimeUnits,float deltaTime){
-		this(PointingBlock.dateToZulu(rEpoch),deltaTimeUnits,""+deltaTime);
+		this(DateUtil.dateToZulu(rEpoch),deltaTimeUnits,""+deltaTime);
 	}
 	/**
 	 * Align the SC Y axis with the normal of CGSC-Sun plane:
@@ -203,7 +204,7 @@ public class PhaseAngle extends PointingElement {
 	 * 
 	 */
 	public PhaseAngle(Date rEpoch, float deltaTime){
-		this(PointingBlock.dateToZulu(rEpoch),Units.MINUTES,""+deltaTime);
+		this(DateUtil.dateToZulu(rEpoch),Units.MINUTES,""+deltaTime);
 	}
 	/**
 	 * Get the reference epoch for Align the SC Y axis with the normal of CGSC-Sun plane
@@ -211,7 +212,7 @@ public class PhaseAngle extends PointingElement {
 	 */
 	public Date getReferenceEpoch(){
 		try{
-			return PointingBlock.zuluToDate(this.getChild(ALIGN_YCGSC_SUN_NORMAL_START_TIME_TAG).getValue());
+			return DateUtil.zuluToDate(this.getChild(ALIGN_YCGSC_SUN_NORMAL_START_TIME_TAG).getValue());
 		}catch (Exception e){
 			e.printStackTrace();
 			IllegalArgumentException iae = new IllegalArgumentException("Can not read date for Reference Epoch: "+this.getChild(FLIP_START_TIME_TAG).getValue()+" "+e.getMessage());
@@ -258,7 +259,7 @@ public class PhaseAngle extends PointingElement {
 	}
 	
 	public void setReferenceEpoch(Date epoch){
-		setReferenceEpoch(PointingBlock.dateToZulu(epoch));
+		setReferenceEpoch(DateUtil.dateToZulu(epoch));
 	}
 
 	public String getUnit(String field){
@@ -278,7 +279,7 @@ public class PhaseAngle extends PointingElement {
 	
 	public Date getFlipeStartTime(){
 		try {
-			return PointingBlock.zuluToDate(this.getChild(FLIP_START_TIME_TAG).getValue());
+			return DateUtil.zuluToDate(this.getChild(FLIP_START_TIME_TAG).getValue());
 		} catch (Exception e) {
 			e.printStackTrace();
 			IllegalArgumentException iae = new IllegalArgumentException("Can not read date for Flip Start Time: "+this.getChild(FLIP_START_TIME_TAG).getValue()+" "+e.getMessage());
@@ -292,7 +293,7 @@ public class PhaseAngle extends PointingElement {
 	}
 	
 	public PhaseAngle(java.util.Date tRef, java.lang.String yRot){
-		this(PointingBlock.dateToZulu(tRef),yRot);
+		this(DateUtil.dateToZulu(tRef),yRot);
 	}
 	/**
 	 * The power optimised roll places the SC-y-axis at a
@@ -482,7 +483,7 @@ public class PhaseAngle extends PointingElement {
 	 * @param time
 	 */
 	public void setFlipStartTime(Date time){
-		this.addChild(new PointingElement(FLIP_START_TIME_TAG,PointingBlock.dateToZulu(time)));
+		this.addChild(new PointingElement(FLIP_START_TIME_TAG,DateUtil.dateToZulu(time)));
 	}
 	
 

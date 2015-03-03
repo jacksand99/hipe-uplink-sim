@@ -58,7 +58,7 @@
 			</attitude>
 			<metadata>
 				<comment>SR.OWNER=TRUE</comment>
-				<comment>014b, high resolution limb scan</comment>
+				<comment>OSIRIS 014b, high resolution limb scan</comment>
 				<comment>13 stations at lit limb from approx 20 km distance</comment>
 				<comment>SR.PROCESSED=FALSE</comment>
 				<comment>SR.OBS000.START=BLOCK_START_TIME+00:05:00</comment>

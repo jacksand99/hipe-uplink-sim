@@ -2,7 +2,6 @@ package vega.uplink.commanding;
 
 import herschel.share.util.Configuration;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,6 +10,7 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.Vector;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.commanding.SsmmSimulator.InstrumentSimulator;
 
@@ -103,20 +103,8 @@ public class RosettaSsmmSimulator extends SsmmSimulator {
 	}
 	private String addPass(GsPass pass){
 
-		SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		String strategy="";
-		//TreeMap<String,Float> tm=new TreeMap<String,Float>();
-		//String[] instruments=this.getAllInstruments();
-		/*for (int i=0;i<instruments.length;i++){
-			InstrumentSimulator simulator = getSimulator(instruments[i]);
-			float tmAtPass=simulator.getValueAt(pass.getStartPass());
-			if (tmAtPass>0) tm.put(instruments[i],tmAtPass);
-			//if (tm.size()>0) strategy=strategy+"Dump strategy used for pass "+pass.getGroundStation()+" starting at "+dateFormat2.format(pass.getStartPass())+" and ending at "+dateFormat2.format(pass.getEndPass())+"\n";
-			//System.out.println("Tm at pass for "+instruments[i]+" "+tmAtPass);
-		}*/
 		float tmToDownload=pass.getTmRate()*pass.getDumpDurationSecs();
-		//Iterator<Entry<String, Float>> it = tm.entrySet().iterator();
 		Date startDate=pass.getStartDump();
 		Date endDate=pass.getEndDump();
 		Vector<String>[] arrayPriorities=new Vector[18];
@@ -149,7 +137,7 @@ public class RosettaSsmmSimulator extends SsmmSimulator {
 							tmToDownload=tmToDownload-tmAtPass;
 							//startDate=new Date(eDate);
 							//System.out.println("Dump "+simulator.getInstrument()+" from "+dateFormat2.format(startDate)+" to "+dateFormat2.format(new Date(eDate))+" at "+pass.getTmRate()+" bits/sec\n");
-							strategy=strategy+"Dump "+simulator.getInstrument()+" from "+dateFormat2.format(startDate)+" to "+dateFormat2.format(new Date(eDate))+" at "+pass.getTmRate()+" bits/sec\n";
+							strategy=strategy+"Dump "+simulator.getInstrument()+" from "+DateUtil.dateToZulu(startDate)+" to "+DateUtil.dateToZulu(new Date(eDate))+" at "+pass.getTmRate()+" bits/sec\n";
 							startDate=new Date(eDate+1);
 						}else{
 							simulator.addDump(startDate, new Date(startDate.getTime()+1000), pass.getTmRate());
@@ -167,7 +155,7 @@ public class RosettaSsmmSimulator extends SsmmSimulator {
 							simulator.addDump(startDate, new Date(eDate), pass.getTmRate());
 							tmToDownload=tmToDownload-maxTmPerInstrument;
 							
-							strategy=strategy+"Dump "+simulator.getInstrument()+" from "+dateFormat2.format(startDate)+" to "+dateFormat2.format(endDate)+" at "+pass.getTmRate()+" bits/sec\n";
+							strategy=strategy+"Dump "+simulator.getInstrument()+" from "+DateUtil.dateToZulu(startDate)+" to "+DateUtil.dateToZulu(endDate)+" at "+pass.getTmRate()+" bits/sec\n";
 							startDate=new Date(eDate+1);
 						}
 						else{
@@ -201,7 +189,7 @@ public class RosettaSsmmSimulator extends SsmmSimulator {
 			temp.setStartDump(startDate);
 			addPass(temp);
 		}
-		if (!strategy.equals("")) strategy=strategy=strategy+"Dump strategy used for pass "+pass.getGroundStation()+" starting at "+dateFormat2.format(pass.getStartPass())+" and ending at "+dateFormat2.format(pass.getEndPass())+"\n"+strategy;
+		if (!strategy.equals("")) strategy=strategy+"Dump strategy used for pass "+pass.getGroundStation()+" starting at "+DateUtil.dateToZulu(pass.getStartPass())+" and ending at "+DateUtil.dateToZulu(pass.getEndPass())+"\n"+strategy;
 		return strategy;
 	}
 }

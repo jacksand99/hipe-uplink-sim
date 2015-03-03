@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.TreeMap;
 
 public class Ltp extends Period{
+	public static String TAG="LTP";
 	//private TreeMap<Integer,Mtp> mtps;
 	public Ltp(int number, Date startDate, Date endDate) {
 		super(number, startDate, endDate);
@@ -16,7 +17,9 @@ public class Ltp extends Period{
 		this(number,new Date(2526802497000L), new Date(65277473000L));
 	}
 
-	
+	public String getTag(){
+		return Ltp.TAG;
+	}
 	public void addMtp(Mtp mtp){
 		//mtps.put(mtp.getNumber(), mtp);
 		this.setProduct("MTP-"+mtp.getNumber(), mtp);
@@ -107,7 +110,7 @@ public class Ltp extends Period{
 		return this.getMtps();
 	}
 	public String toXml(int indent){
-		return toXml("LTP",indent);
+		return toXml(TAG,indent);
 	}
 
 

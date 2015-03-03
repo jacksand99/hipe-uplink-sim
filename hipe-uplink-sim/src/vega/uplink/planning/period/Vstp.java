@@ -3,7 +3,7 @@ package vega.uplink.planning.period;
 import java.util.Date;
 
 public class Vstp extends Period {
-
+	public static String TAG="VSTP";
 	public Vstp(int number, Date startDate, Date endDate) {
 		super(number, startDate, endDate);
 		// TODO Auto-generated constructor stub
@@ -13,7 +13,12 @@ public class Vstp extends Period {
 	}
 	
 	public String toXml(int indent){
-		return toXml("VSTP",indent);
+		return toXml(TAG,indent);
 	}
+	public String getTag(){
+		return Vstp.TAG;
+	}
+	
+
 
 }

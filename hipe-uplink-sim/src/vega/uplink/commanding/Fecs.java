@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.pointing.EvtmEvent;
 import vega.uplink.pointing.PointingBlock;
@@ -264,10 +265,10 @@ public class Fecs extends TableDataset{
 		passesSet.add(pass);
 		String[] row=new String[8];
 		row[0]=pass.getGroundStation();
-		row[1]=GsPass.dateToZulu(pass.getStartPass());
-		row[2]=GsPass.dateToZulu(pass.getEndPass());
-		row[3]=GsPass.dateToZulu(pass.getStartDump());
-		row[4]=GsPass.dateToZulu(pass.getEndDump());
+		row[1]=DateUtil.defaultDateToString(pass.getStartPass());
+		row[2]=DateUtil.defaultDateToString(pass.getEndPass());
+		row[3]=DateUtil.defaultDateToString(pass.getStartDump());
+		row[4]=DateUtil.defaultDateToString(pass.getEndDump());
 		row[5]=new Float(pass.getTmRate()).toString();
 		row[6]=new Long(pass.getPassDurationSecs()).toString();
 		row[7]=new Long(pass.getDumpDurationSecs()).toString();
@@ -763,33 +764,28 @@ public class Fecs extends TableDataset{
 		if (!pass.isBSR()){
 			result=result+ "<tr>\n"
 					+ "	<td>"+type+"</td><td>"+pass.getGroundStation()
-					+"</td><td>"+PointingBlock.dateToZulu(pass.getStartPass())
-					+"</td><td>"+PointingBlock.dateToZulu(pass.getEndPass())
-					+"</td><td>"+PointingBlock.dateToZulu(pass.getStartDump())
-					+"</td><td>"+PointingBlock.dateToZulu(pass.getEndDump())
+					+"</td><td>"+DateUtil.defaultDateToString(pass.getStartPass())
+					+"</td><td>"+DateUtil.defaultDateToString(pass.getEndPass())
+					+"</td><td>"+DateUtil.defaultDateToString(pass.getStartDump())
+					+"</td><td>"+DateUtil.defaultDateToString(pass.getEndDump())
 					+"</td><td>"+pass.getTmRate()+"</td>\n"
 					+ "</tr>\n"
 					+ "\n";
 
-			//result=result+"Pass "+pass.getGroundStation()+" from "+PointingBlock.dateToZulu(pass.getStartPass())+" to "+PointingBlock.dateToZulu(pass.getEndPass())+"\n";
-			//result=result+"\tDump Start at:"+PointingBlock.dateToZulu(pass.getStartDump())+"\n";
-			//result=result+"\tDump End at:"+PointingBlock.dateToZulu(pass.getEndDump())+"\n";
-			//result=result+"TM bitrate:"+pass.getTmRate()+"\n";
 			
 			return result;
 		}
 		else{
 			result=result+ "<tr>\n"
 					+ "	<td>BSR</td><td>"+pass.getGroundStation()
-					+"</td><td>"+PointingBlock.dateToZulu(pass.getStartPass())
-					+"</td><td>"+PointingBlock.dateToZulu(pass.getEndPass())
+					+"</td><td>"+DateUtil.defaultDateToString(pass.getStartPass())
+					+"</td><td>"+DateUtil.defaultDateToString(pass.getEndPass())
 					+"</td><td>-"
 					+"</td><td>-"
 					+"</td><td>-"
 					+ "</tr>\n"
 					+ "\n";
 
-			//result=result+"BSR Pass "+pass.getGroundStation()+" from "+PointingBlock.dateToZulu(pass.getStartPass())+" to "+PointingBlock.dateToZulu(pass.getEndPass())+"\n";
 			
 			return result;
 			
@@ -799,16 +795,16 @@ public class Fecs extends TableDataset{
 	public static String passToString(GsPass pass){
 		if (!pass.isBSR()){
 			String result="";
-			result=result+"Pass "+pass.getGroundStation()+" from "+PointingBlock.dateToZulu(pass.getStartPass())+" to "+PointingBlock.dateToZulu(pass.getEndPass())+"\n";
-			result=result+"\tDump Start at:"+PointingBlock.dateToZulu(pass.getStartDump())+"\n";
-			result=result+"\tDump End at:"+PointingBlock.dateToZulu(pass.getEndDump())+"\n";
+			result=result+"Pass "+pass.getGroundStation()+" from "+DateUtil.defaultDateToString(pass.getStartPass())+" to "+DateUtil.defaultDateToString(pass.getEndPass())+"\n";
+			result=result+"\tDump Start at:"+DateUtil.defaultDateToString(pass.getStartDump())+"\n";
+			result=result+"\tDump End at:"+DateUtil.defaultDateToString(pass.getEndDump())+"\n";
 			result=result+"TM bitrate:"+pass.getTmRate()+"\n";
 			
 			return result;
 		}
 		else{
 			String result="";
-			result=result+"BSR Pass "+pass.getGroundStation()+" from "+PointingBlock.dateToZulu(pass.getStartPass())+" to "+PointingBlock.dateToZulu(pass.getEndPass())+"\n";
+			result=result+"BSR Pass "+pass.getGroundStation()+" from "+DateUtil.defaultDateToString(pass.getStartPass())+" to "+DateUtil.defaultDateToString(pass.getEndPass())+"\n";
 			
 			return result;
 			
@@ -987,7 +983,7 @@ public class Fecs extends TableDataset{
 				+ "	<th>Name</th><th>Start Date</th><th>End Date</th>\n"
 				+ "</tr>\n";
 		message=message+ "<tr>\n"
-				+ "	<td>"+getName()+"</td><td>"+PointingBlock.dateToZulu(this.getValidityStart())+"</td><td>"+PointingBlock.dateToZulu(this.getValidityEnd())+"</td>\n"
+				+ "	<td>"+getName()+"</td><td>"+DateUtil.defaultDateToString(this.getValidityStart())+"</td><td>"+DateUtil.defaultDateToString(this.getValidityEnd())+"</td>\n"
 				+ "</tr>\n"
 				+ "</table>\n";
 		message=message+"<br><br>";

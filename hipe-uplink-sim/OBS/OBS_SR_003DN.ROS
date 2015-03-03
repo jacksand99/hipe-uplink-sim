@@ -49,7 +49,7 @@
 			</attitude>
 			<metadata>
 				<comment>OWNER=OSIRIS</comment>
-				<comment>003a - 003g, mapping</comment>
+				<comment>OSIRIS  003a - 003g, mapping</comment>
 				<comment>to be repeated N times per day for mapping</comment>
 				<comment>sequence can fulfill other purposes (different pointings)</comment>
 				<comment>SR.PROCESSED=FALSE</comment>

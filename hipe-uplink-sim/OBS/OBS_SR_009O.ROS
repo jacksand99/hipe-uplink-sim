@@ -54,7 +54,7 @@
 			</attitude>
 			<metadata>
 				<comment>SR.OWNER=TRUE</comment>
-				<comment>009, dust jets</comment>
+				<comment>OSIRIS 009, dust jets</comment>
 				<comment>xAngle offset depends on distance, slightly off-limb</comment>
 				<comment>possible 010 ride along</comment>
 				<comment>SR.PROCESSED=FALSE</comment>

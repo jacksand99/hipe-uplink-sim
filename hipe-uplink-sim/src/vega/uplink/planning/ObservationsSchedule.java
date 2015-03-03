@@ -54,6 +54,10 @@ public class ObservationsSchedule extends ListContext {
 	public void removeObs(Observation obs){
 		ProductRef ref = map.get(obs);
 		int index=getRefs().indexOf(ref);
+		if (index<0){
+			IllegalArgumentException iae = new IllegalArgumentException("Observation tried to delete does not exist in the schedule\n"+obs.toXml());
+			throw(iae);
+		}
 		getRefs().remove(index);
 		Iterator<ObservationListener> it = listeners.iterator();
 		while (it.hasNext()){
@@ -63,7 +67,7 @@ public class ObservationsSchedule extends ListContext {
 		}
 		
 	}
-	public void removeObs(int index  ){
+	/*public void removeObs(int index  ){
 
 		getRefs().remove(index);
 		Iterator<ObservationListener> it = listeners.iterator();
@@ -72,7 +76,7 @@ public class ObservationsSchedule extends ListContext {
 			listener.scheduleChanged();
 		}
 		
-	}
+	}*/
 	
 	public Observation[] getObservations(){
 		Set<ProductRef> allRefs = this.getAllRefs();

@@ -3,9 +3,11 @@ package vega.uplink.planning.period;
 import herschel.share.fltdyn.time.FineTime;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
@@ -13,11 +15,19 @@ import java.util.StringTokenizer;
 //import java.util.HashMap;
 import java.util.TreeMap;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+
+import vega.uplink.DateUtil;
+import vega.uplink.planning.Schedule;
 import vega.uplink.pointing.PointingBlock;
 
 public class Plan extends Period{
 	//private TreeMap<Integer,Ltp> ltps;
-
+	public static String TAG="PLAN";
 	public Plan(int number, Date startDate, Date endDate) {
 		super(number, startDate, endDate);
 		//ltps=new TreeMap<Integer,Ltp>();
@@ -31,7 +41,7 @@ public class Plan extends Period{
 		return this.getLtps();
 	}
 	public String toXml(int indent){
-		return toXml("PLAN",indent);
+		return toXml(TAG,indent);
 	}
 	
 	public void addLtp(Ltp ltp){
@@ -157,6 +167,9 @@ public class Plan extends Period{
 		}
 		return result;
 	}
+	public String getTag(){
+		return Plan.TAG;
+	}
 	
 	public static Plan readFromFile(String file){
 		Plan result= new Plan();
@@ -205,7 +218,7 @@ public class Plan extends Period{
 	        		java.util.Date[] sDates=new java.util.Date[nv];
 	        		for (int j=0;j<nv;j++){
 	        			try {
-							sDates[j]=PointingBlock.zuluToDate(field[6+j]);
+							sDates[j]=DateUtil.zuluToDate(field[6+j]);
 							System.out.println(stp+" "+mtp+" "+vstpStart+" "+vstpEnd+" "+ltp+" "+sDates[j]);
 							Vstp vstpP =new Vstp(vstpStart+j,sDates[j]);
 							Ltp ltpP=result.getLtp(ltp);
@@ -258,7 +271,7 @@ public class Plan extends Period{
 		for (int i=0;i<sp.length;i++){
 			//sp[i].fixEndDate();
 			if (i>0){
-				sp[i-1].setEndDate(sp[i].getStartDate());
+				sp[i-1].setEndPeriod(sp[i].getStartDate());
 			}
 		}
 		this.setEndDate(new FineTime(new Date(2526802497000L)));
@@ -268,6 +281,44 @@ public class Plan extends Period{
 		this.getLastSubPeriod().getLastSubPeriod().getLastSubPeriod().getLastSubPeriod().setEndDate(new FineTime(new Date(2526802497000L)));
 		
 		//if (sp.length>0) this.setEndDate(sp[sp.length-1].getEndDate());
+	}
+	private static void saveStringToFile(String file,String str) throws IOException {
+		try{
+			PrintWriter writer = new PrintWriter(file, "UTF-8");
+			writer.print(str);
+			writer.close();
+		}catch (Exception e){
+			IOException io = new IOException(e.getMessage());
+			io.initCause(e);
+			throw(io);
+		}
+	}
+	public static void saveToXmlFile(String file,Plan plan) throws IOException{
+		saveStringToFile(file,plan.toXml());
+	}
+	
+	public static Plan readPlanFromXmlFile(String file) throws IOException{
+		try {
+			 
+			File fXmlFile = new File(file);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+			doc.getDocumentElement().normalize();
+			 
+			NodeList nListHeader = doc.getElementsByTagName("PLAN");
+			Period result = Period.readFromNode(nListHeader.item(0));
+			result.fixEndDate();
+			//System.out.println(result.toXml());
+			return (Plan) result;
+
+		    } catch (Exception e) {
+		    	e.printStackTrace();
+		    	IOException io = new IOException(e.getMessage());
+		    	io.initCause(e);
+		    	throw(io);
+		    	
+		    }
 	}
 
 

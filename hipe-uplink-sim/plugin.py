@@ -75,6 +75,7 @@ from vega.uplink.planning.period import Ltp
 from vega.uplink.planning.period import Mtp
 from vega.uplink.planning.period import Stp
 from vega.uplink.planning.period import Vstp
+from vega.uplink import DateUtil
 
 PreferencePanelRegistrator.registerPanels();
 

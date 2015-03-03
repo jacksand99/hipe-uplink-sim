@@ -1,12 +1,14 @@
 package vega.hipe.preferences;
 
 import java.awt.Dimension;
+import java.util.ArrayList;
 
 import javax.swing.*;
 
 import herschel.ia.gui.kernel.util.field.FileSelectionMode;
 import herschel.ia.gui.kernel.prefs.*;
 import herschel.ia.gui.kernel.prefs.handler.FilePreferenceHandler;
+import herschel.ia.gui.kernel.prefs.handler.OptionPreferenceHandler;
 import herschel.ia.gui.kernel.prefs.handler.StringPreferenceHandler;
 import herschel.ia.gui.kernel.util.component.FilePathPanel;
 import herschel.share.swing.*;
@@ -14,6 +16,7 @@ import herschel.share.util.Configuration;
 
 import javax.swing.GroupLayout.*;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import static javax.swing.GroupLayout.Alignment.BASELINE;
 
@@ -30,8 +33,8 @@ public class UplinkPathPreferences extends PreferencesPanel {
     private FilePathPanel _fieldH;
     private FilePathPanel _fieldI;
     private FilePathPanel _fieldJ;
-
     private JTextField _fieldG;
+    private JComboBox<String> _fieldK;
 
     // private JTextField    _fieldA;  // text field associated to preference keyA
    /* private JTextField    _fieldB;  // text field associated to preference keyB
@@ -52,41 +55,9 @@ public class UplinkPathPreferences extends PreferencesPanel {
     	registerHandler(Properties.ANTENNA_PRIORITY_COMMAND,new StringPreferenceHandler(Configuration.getProperty(Properties.ANTENNA_PRIORITY_COMMAND, ""),_fieldG,Properties.ANTENNA_PRIORITY_COMMAND));
     	registerHandler(Properties.DEFAULT_INIT_SCRIPT,new FilePreferenceHandler(Configuration.getProperty(Properties.DEFAULT_INIT_SCRIPT, ""),_fieldH,Properties.DEFAULT_INIT_SCRIPT));
     	registerHandler(Properties.DEFAULT_POST_SCRIPT,new FilePreferenceHandler(Configuration.getProperty(Properties.DEFAULT_POST_SCRIPT, ""),_fieldI,Properties.DEFAULT_POST_SCRIPT));
+       	registerHandler(DateUtil.DEFAULT_DATE_FORMAT_PROPERTY,new OptionPreferenceHandler(Configuration.getProperty(DateUtil.DEFAULT_DATE_FORMAT_PROPERTY, ""),_fieldK,DateUtil.DEFAULT_DATE_FORMAT_PROPERTY));
+        
 
-    	// Preference IP with type String and default value "text"
-        /*registerHandler(PropertyNames.DEFAULT_FECS_FILE, new AbstractPreferenceHandler<String>(Configuration.getProperty(PropertyNames.DEFAULT_FECS_FILE, "")) {
-            public String getValue() { return _fieldA.getText(); }
-            public void setValue(String value) { _fieldA.setText(value); }
-        });
-
-        // Preference port with type Integer and default value 3
-        registerHandler(PropertyNames.PWPL_FILE, new AbstractPreferenceHandler<String>(Configuration.getProperty(PropertyNames.PWPL_FILE, "")) {
-            public String getValue() { return _fieldB.getText(); }
-            public void setValue(String value) { _fieldB.setText(value); }
-        });
-
-        // Preference repository with type Integer and default value 3
-        registerHandler(PropertyNames.ORCD_FILE, new AbstractPreferenceHandler<String>(Configuration.getProperty(PropertyNames.ORCD_FILE, "")) {
-            public String getValue() { return _fieldC.getText(); }
-            public void setValue(String value) { _fieldC.setText(value); }
-        });
-
-        // Preference user with type Integer and default value 3
-        registerHandler(PropertyNames.DEFAULT_PLANNING_DIRECTORY, new AbstractPreferenceHandler<String>(Configuration.getProperty(PropertyNames.DEFAULT_PLANNING_DIRECTORY, "")) {
-            public String getValue() { return _fieldD.getText(); }
-            public void setValue(String value) { _fieldD.setText(value); }
-        });
-
-        // Preference password with type Integer and default value 3
-        registerHandler(PropertyNames.DEFAULT_EVT_DIRECTORY, new AbstractPreferenceHandler<String>(Configuration.getProperty(PropertyNames.DEFAULT_EVT_DIRECTORY, "")) {
-            public String getValue() { return _fieldE.getText(); }
-            public void setValue(String value) { _fieldE.setText(value); }
-        });
-        // Preference password with type Integer and default value 3
-        registerHandler(PropertyNames.MIB_LOCATION, new AbstractPreferenceHandler<String>(Configuration.getProperty(PropertyNames.MIB_LOCATION, "")) {
-            public String getValue() { return _fieldF.getText(); }
-            public void setValue(String value) { _fieldF.setText(value); }
-        });*/
 
     }
 
@@ -181,6 +152,20 @@ public class UplinkPathPreferences extends PreferencesPanel {
         vGroup.addGroup(vPropsGroup.addComponent(labelJ).addComponent(_fieldJ));
         hLabelGroup.addComponent(labelJ);
         hComboGroup.addComponent(_fieldJ);
+
+        JLabel    labelK = new JLabel("Default Date Format:");
+        _fieldK = new JComboBox<String>();
+        //ArrayList<String> comboBoxItemList = new ArrayList<String>();
+        DefaultComboBoxModel<String> model=new DefaultComboBoxModel<String>();
+        model.addElement(DateUtil.ZULU);
+        model.addElement(DateUtil.DOY);
+        model.addElement(DateUtil.LITERAL);
+        _fieldK.setModel(model);        
+        _fieldK.setMaximumSize(new Dimension(400,20));
+        vPropsGroup = layout.createParallelGroup(BASELINE);
+        vGroup.addGroup(vPropsGroup.addComponent(labelK).addComponent(_fieldK));
+        hLabelGroup.addComponent(labelK);
+        hComboGroup.addComponent(_fieldK);
 
 
 

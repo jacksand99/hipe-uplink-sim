@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 
+import vega.uplink.DateUtil;
 import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationUtil;
 import vega.uplink.planning.Schedule;
@@ -63,7 +64,7 @@ public class Test {
 			editor.setObservation(obs);
 			sch.addObservation(obs);
 			long duration = obs.getDurationMilliSecs();
-			obs.setStartDate(new FineTime(PointingBlock.zuluToDate("2014-07-04T19:00:00Z")));
+			obs.setStartDate(new FineTime(DateUtil.zuluToDate("2014-07-04T19:00:00Z")));
 			obs.setEndDate(new FineTime(new Date(obs.getStartDate().toDate().getTime()+duration)));
 			
 			ObservationUtil.saveScheduleToFile("/Users/jarenas 1/Rosetta/testing/SCH_example.ROS", sch);

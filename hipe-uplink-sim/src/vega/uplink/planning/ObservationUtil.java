@@ -1,6 +1,7 @@
 package vega.uplink.planning;
 
 import herschel.share.fltdyn.time.FineTime;
+import herschel.share.interpreter.InterpreterUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,13 +25,16 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.commanding.AbstractSequence;
+import vega.uplink.commanding.Mib;
 import vega.uplink.commanding.Parameter;
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.PorUtils;
 import vega.uplink.commanding.Sequence;
 import vega.uplink.commanding.SequenceProfile;
+import vega.uplink.commanding.itl.ItlUtil;
 import vega.uplink.planning.gui.ScheduleModel;
 import vega.uplink.planning.period.Plan;
 import vega.uplink.planning.period.Stp;
@@ -47,6 +51,7 @@ import vega.uplink.pointing.PtrParameters.Offset.OffsetCustom;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetFixed;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetRaster;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetScan;
+import vega.uplink.pointing.exclusion.AbstractExclusion;
 
 public class ObservationUtil {
 	private static final Logger LOG = Logger.getLogger(ObservationUtil.class.getName());
@@ -129,7 +134,27 @@ public class ObservationUtil {
 				Log.info("Could not load PDFM from the schedule:"+e.getMessage());
 				e.printStackTrace();
 			}
+			
 			if (pdfm!=null) result.setPdfm(pdfm);
+			
+			Plan plan=null;
+			try{
+				plan = (Plan) Plan.readFromNode(doc.getElementsByTagName("PLAN").item(0));
+			}catch (Exception e){
+				Log.info("Could not load PLAN from the schedule:"+e.getMessage());
+				e.printStackTrace();
+			}
+			if (plan!=null) result.setPlan(plan);
+			
+			AbstractExclusion exclusion=null;
+			try{
+				exclusion = (AbstractExclusion) AbstractExclusion.readFromNode(doc.getElementsByTagName("exclusionPeriods").item(0));
+			}catch (Exception e){
+				Log.info("Could not load PLAN from the schedule:"+e.getMessage());
+				e.printStackTrace();
+			}
+			if (exclusion!=null) result.setExclusion(exclusion);
+
 			return result;
 			
 		    } catch (Exception e) {
@@ -216,8 +241,8 @@ public class ObservationUtil {
 			String description=el.getElementsByTagName("description").item(0).getTextContent();
 			String instrument=el.getElementsByTagName("instrument").item(0).getTextContent();
 			String formatVersion=el.getElementsByTagName("formatVersion").item(0).getTextContent();
-			Date startDate=PointingBlock.zuluToDate(el.getElementsByTagName("startDate").item(0).getTextContent());
-			Date endDate=PointingBlock.zuluToDate(el.getElementsByTagName("endDate").item(0).getTextContent());
+			Date startDate=DateUtil.zuluToDate(el.getElementsByTagName("startDate").item(0).getTextContent());
+			Date endDate=DateUtil.zuluToDate(el.getElementsByTagName("endDate").item(0).getTextContent());
 			result.setName(name);
 			result.setType(type);
 			result.setCreator(creator);
@@ -251,6 +276,46 @@ public class ObservationUtil {
 		    	
 		    }
 		
+	}
+	public static ObservationPor readObsPorfromDoc(Document doc) throws IOException{
+		try{
+			doc.getDocumentElement().normalize();
+			NodeList nListSeqs = (doc.getDocumentElement()).getElementsByTagName("sequence");
+			Observation obs=new Observation(new Date(),new Date());
+			ObservationSequence[] seq = readSequences(nListSeqs,obs);
+			//Observation result=new Observation(new Date(),new Date());
+			//ObservationPointingBlock[] blocks=readBlocks(nListBlocks,obs);
+			for (int i=0;i<seq.length;i++){
+				obs.addObservationSequence(seq[i]);
+			}
+			return (ObservationPor) obs.getCommanding();
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    	IOException io = new IOException(e.getMessage());
+	    	io.initCause(e);
+	    	throw(io);
+	    	
+	    }
+	}
+
+	public static ObservationPointingSlice readSlicefromDoc(Document doc) throws IOException{
+		try{
+			doc.getDocumentElement().normalize();
+			NodeList nListBlocks = (doc.getDocumentElement()).getElementsByTagName("block");
+			//Observation result=new Observation(new Date(),new Date());
+			Observation obs = new Observation(new Date(),new Date());
+			ObservationPointingBlock[] blocks=readBlocks(nListBlocks,obs);
+			for (int i=0;i<blocks.length;i++){
+				obs.addObservationBlock(blocks[i]);
+			}
+			return (ObservationPointingSlice) obs.getPointing();
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    	IOException io = new IOException(e.getMessage());
+	    	io.initCause(e);
+	    	throw(io);
+	    	
+	    }
 	}
 	public static Observation readObservationFromDoc(Document doc) throws IOException{
 
@@ -309,7 +374,7 @@ public class ObservationUtil {
 		
 			}
 
-			pe.getChild("startTime").setValue(PointingBlock.dateToZulu(new Date()));
+			pe.getChild("startTime").setValue(DateUtil.dateToZulu(new Date()));
 			try{
 			if (pe.getAttribute("ref").getValue().equals(OffsetAngles.OFFSETANGLES_TYPE_CUSTOM)){
 					result=new ObservationOffsetCustom(obs,new ObservationEvent(startEventName),ObservationUtil.getOffsetMilliSeconds(startOffSet),new OffsetCustom(pe));
@@ -333,8 +398,8 @@ public class ObservationUtil {
 	
 	private static PointingBlock translatePointingBlock(PointingElement pe,Observation obs){
 		PointingBlock result;
-		pe.getChild("startTime").setValue(PointingBlock.dateToZulu(obs.getObsStartDate()));
-		pe.getChild("endTime").setValue(PointingBlock.dateToZulu(obs.getObsEndDate()));
+		pe.getChild("startTime").setValue(DateUtil.dateToZulu(obs.getObsStartDate()));
+		pe.getChild("endTime").setValue(DateUtil.dateToZulu(obs.getObsEndDate()));
 		PointingElement at = pe.getChild(PointingAttitude.ATTITUDE_TAG);
 		PointingElement os = at.getChild(OffsetAngles.OFFSETANGLES_TAG);
 		if (os!=null){
@@ -509,18 +574,9 @@ public class ObservationUtil {
 		return scheduleToEVF(schedule,Integer.parseInt(schedule.getPtslSegment().getName().replace("MTP_", ""))*10000);
 	}
 	public static String scheduleToEVF(Schedule schedule,int sed){
-		//int mtpNumber=Integer.parseInt(schedule.getPtslSegment().getName().replace("MTP_", ""));
 		TreeMap<String,Integer> counter=new TreeMap<String,Integer>();
 		String result="";
 		Por POR = schedule.getPor();
-		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		//String l03="Start_time: "+dateFormat2.format(POR.getValidityDates()[0])+"\n";
-		//String l04="End_time: "+dateFormat2.format(POR.getValidityDates()[1])+"\n\n\n";
-		//Rosetta patch
-		//String l03="Start_time: 01-January-2014_00:00:00\n";
-		//String l04="Start_time: 01-January-2017_00:00:00\n";
-		//l04=l04+"\n\nInclude: \"EVTF_ROSETTA_TOP______V001.evf\"\n";
 		Observation[] observations = schedule.getObservations();
 		String l05="";
 		for (int i=0;i<observations.length;i++){
@@ -529,53 +585,54 @@ public class ObservationUtil {
 			if (count==null) count=sed;
 			else count=count+1;
 			counter.put(eventName, count);
-			//String itlEventStart=observations[i].getName()+"_"+ObservationEvent.START_OBS.getName();
 			String itlEventStart=eventName+"_SO";
-			//itlEventStart=itlEventStart.replace(" ", "_");
-			l05=l05+dateFormat2.format(observations[i].getStartDate().toDate())+" "+itlEventStart+" (COUNT = "+String.format("%06d", count)+" )\n";
-			//String itlEventEnd=observations[i].getName()+"_"+ObservationEvent.END_OBS.getName();
+			l05=l05+DateUtil.dateToLiteral(observations[i].getStartDate().toDate())+" "+itlEventStart+" (COUNT = "+String.format("%06d", count)+" )\n";
 			String itlEventEnd=eventName+"_EO";
-			//itlEventEnd=itlEventEnd.replace(" ", "_");
-			l05=l05+dateFormat2.format(observations[i].getEndDate().toDate())+" "+itlEventEnd+" (COUNT = "+String.format("%06d", count)+" )\n";
+			l05=l05+DateUtil.dateToLiteral(observations[i].getEndDate().toDate())+" "+itlEventEnd+" (COUNT = "+String.format("%06d", count)+" )\n";
 
 		}
-		//result=l03+l04+l05;
 		result=l05;
 		return result;
 	}
 	
 	public static String OBStoEVF(Observation obs){
 		String result="";
-		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		String l03="Start_time: "+dateFormat2.format(obs.getStartDate().toDate())+"\n";
-		String l04="End_time: "+dateFormat2.format(obs.getEndDate().toDate())+"\n\n\n";
+		String l03="Start_time: "+DateUtil.dateToLiteral(obs.getStartDate().toDate())+"\n";
+		String l04="End_time: "+DateUtil.dateToLiteral(obs.getEndDate().toDate())+"\n\n\n";
 		String itlEventStart=obs.getName()+"_"+ObservationEvent.START_OBS.getName();
 		itlEventStart=itlEventStart.replace(" ", "_");
-		String l05=dateFormat2.format(obs.getStartDate().toDate())+" "+itlEventStart+" (COUNT = 000001)\n";
+		String l05=DateUtil.dateToLiteral(obs.getStartDate().toDate())+" "+itlEventStart+" (COUNT = 000001)\n";
 		String itlEventEnd=obs.getName()+"_"+ObservationEvent.END_OBS.getName();
 		itlEventEnd=itlEventEnd.replace(" ", "_");
-		String l06=dateFormat2.format(obs.getEndDate().toDate())+" "+itlEventEnd+" (COUNT = 000001)\n";
+		String l06=DateUtil.dateToLiteral(obs.getEndDate().toDate())+" "+itlEventEnd+" (COUNT = 000001)\n";
 		result=l03+l04+l05+l06;
 		return result;
 	}
 	public static String scheduleToITL(Schedule schedule){
-		return scheduleToITL(schedule,Integer.parseInt(schedule.getPtslSegment().getName().replace("MTP_", ""))*10000);
+		//return scheduleToITL(schedule,Integer.parseInt(schedule.getPtslSegment().getName().replace("MTP_", ""))*10000);
+		return ItlUtil.porToITL(schedule.getPor(), Integer.parseInt(schedule.getPtslSegment().getName().replace("MTP_", ""))*10000);
 	}
-	public static String scheduleToITL(Schedule schedule, int sed){
+	/*public static String scheduleToITL(Schedule schedule, int sed){
+		Mib mib;
+		try {
+			mib=Mib.getMib();
+		} catch (IOException e) {
+			IllegalArgumentException iae = new IllegalArgumentException("Could not get MIB "+e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+		
 		TreeMap<String,Integer> counter=new TreeMap<String,Integer>();
 		LOG.info("Getting the POR");
 		Por POR = schedule.getPor();
 		LOG.info("Finsih getting the POR");
 		String result="";
-		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		String l01="Version: 1\n";
-		String l02="Ref_date: "+dateFormat.format(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
-		String l03="Start_time: "+dateFormat2.format(schedule.getPtslSegment().getStartDate().toDate())+"\n";
-		String l04="End_time: "+dateFormat2.format(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
+		String l02="Ref_date: "+DateUtil.dateToLiteralNoTime(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
+		String l03="Start_time: "+DateUtil.dateToLiteral(schedule.getPtslSegment().getStartDate().toDate())+"\n";
+		String l04="End_time: "+DateUtil.dateToLiteral(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
 		String l045="#========================================================================\n"+
 		"#\n"+
 		"# Name: "+schedule.getFileName()+"\n"+
@@ -586,7 +643,7 @@ public class ObservationUtil {
 		"#\n"+ 
 		"# Type: "+schedule.getType()+"\n"+ 
 		"#\n"+ 
-		"# Date: "+dateFormat2.format(new Date())+"\n"+
+		"# Date: "+DateUtil.dateToLiteral(new Date())+"\n"+
 		"#======================================================================== \n\n\n";
 		Observation[] observations = schedule.getObservations();		
 		String l05="";
@@ -600,23 +657,25 @@ public class ObservationUtil {
 			Parameter[] tempParam;
 			SequenceProfile[] tempPro;
 			for (int j=0;j<tempSeq.length;j++){
-				//String eventName=getEventString(((ObservationSequence)tempSeq[j]).getObs());
-				//String itlEvent=((ObservationSequence)tempSeq[j]).getObservationName()+"_"+((ObservationSequence)tempSeq[j]).getExecutionTimeEvent().getName();
-				String itlEvent="";
-				if (((ObservationSequence)tempSeq[j]).getExecutionTimeEvent().getName().equals("START_OBS")){
-					itlEvent=eventName+"_SO";
-				}
-				if (((ObservationSequence)tempSeq[j]).getExecutionTimeEvent().getName().equals("END_OBS")){
-					itlEvent=eventName+"_EO";
-				}
+				if (InterpreterUtil.isInstance(ObservationSequence.class, tempSeq[j])){
+					String itlEvent="";
+					if (((ObservationSequence)tempSeq[j]).getExecutionTimeEvent().getName().equals("START_OBS")){
+						itlEvent=eventName+"_SO";
+					}
+					if (((ObservationSequence)tempSeq[j]).getExecutionTimeEvent().getName().equals("END_OBS")){
+						itlEvent=eventName+"_EO";
+					}
+	
+					l05=l05+itlEvent+" "+"(COUNT = "+String.format("%06d", count)+" ) "+ObservationUtil.getOffset(((ObservationSequence)tempSeq[j]).getExecutionTimeDelta())+" "+ tempSeq[j].getInstrumentName()+"\t*\t"+tempSeq[j].getName()+" (\\ #"+mib.getSequenceDescription(tempSeq[j].getName())+"\n";
+				}else{
+					l05=l05+DateUtil.dateToLiteral(tempSeq[j].getExecutionDate())+" "+ tempSeq[j].getInstrument()+"\t*\t"+tempSeq[j].getName()+" (\\ #"+mib.getSequenceDescription(tempSeq[j].getName())+"\n";
+					LOG.info("WARNING:"+DateUtil.dateToLiteral(tempSeq[j].getExecutionDate())+" "+ tempSeq[j].getInstrument()+" "+tempSeq[j].getName()+" is a literal sequence");
 
-				//String itlEvent=eventName+"_"+((ObservationSequence)tempSeq[j]).getExecutionTimeEvent().getName();
-				//itlEvent=itlEvent.replace(" ", "_");
-				l05=l05+itlEvent+" "+"(COUNT = "+String.format("%06d", count)+" ) "+ObservationUtil.getOffset(((ObservationSequence)tempSeq[j]).getExecutionTimeDelta())+" "+ tempSeq[j].getInstrumentName()+"\t*\t"+tempSeq[j].getName()+" (\\"+"\n";
+				}
 				tempParam = tempSeq[j].getParameters();
 				tempParam = tempSeq[j].getParameters();
 				for (int z=0;z<tempParam.length;z++){
-					l05=l05+"\t"+tempParam[z].getName()+"="+tempParam[z].getStringValue()+" ["+tempParam[z].getRepresentation()+"] \\ \n";
+					l05=l05+"\t"+tempParam[z].getName()+"="+tempParam[z].getStringValue()+" ["+tempParam[z].getRepresentation()+"] \\ #"+mib.getParameterDescription(tempParam[z].getName())+" \n";
 				}
 				tempPro=tempSeq[j].getProfiles();
 				String dataRateProfile="\tDATA_RATE_PROFILE = \t\t\t";
@@ -646,7 +705,7 @@ public class ObservationUtil {
 		result=l01+l02+l03+l04+l045+l05;
 		return result;
 
-	}
+	}*/
 	public static void saveMappsProducts(String file,Schedule sch,Plan plan) throws IOException{
 		String mtpName = sch.getPtslSegment().getName();
 		int mtpNumber=Integer.parseInt(mtpName.replace("MTP_", ""));
@@ -659,16 +718,19 @@ public class ObservationUtil {
 			File stpDir = new File(dir+"/STP"+String.format("%03d", stps[i].getNumber()));
 			stpDir.mkdir();
 			String prefix="M"+String.format("%03d", mtpNumber)+"_S"+String.format("%03d", stps[i].getNumber())+"_"+fn;
-			Schedule subSch = sch.getPeriodSchedule(stps[i].getStartDate().toDate(), stps[i].getEndDate().toDate());
-			//saveMappsProducts(stpDir.getAbsolutePath()+"/"+prefix,subSch);
+			//Schedule subSch = sch.getPeriodSchedule(stps[i].getStartDate().toDate(), stps[i].getEndDate().toDate());
+			Por subPor=sch.getPor().getSubPor(stps[i].getStartDate().toDate(), stps[i].getEndDate().toDate());
 			List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
 			Iterator<String> it = ins.iterator();
 			while(it.hasNext()){
 				String instrument = it.next();
 				String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
-				Schedule insSch=subSch.getInstrumentSchedule(instrument);
-				saveStringToFile(stpDir.getAbsolutePath()+"/EVF__"+acro+"_"+prefix+".evf",scheduleToEVF(insSch,sed));
-				saveStringToFile(stpDir.getAbsolutePath()+"/ITLS_"+acro+"_"+prefix+".itl",scheduleToITL(insSch,sed));
+				//Schedule insSch=subSch.getInstrumentSchedule(instrument);
+				Por insPor=subPor.getSubPor(instrument);
+				//saveStringToFile(stpDir.getAbsolutePath()+"/EVF__"+acro+"_"+prefix+".evf",scheduleToEVF(insSch,sed));
+				//saveStringToFile(stpDir.getAbsolutePath()+"/ITLS_"+acro+"_"+prefix+".itl",scheduleToITL(insSch,sed));
+				saveStringToFile(stpDir.getAbsolutePath()+"/EVF__"+acro+"_"+prefix+".evf",ItlUtil.porToEVF(insPor, sed));
+				saveStringToFile(stpDir.getAbsolutePath()+"/ITLS_"+acro+"_"+prefix+".itl",ItlUtil.porToITL(insPor, sed,stps[i].getStartDate().toDate(),stps[i].getEndDate().toDate()));
 
 			}
 			saveStringToFile(stpDir.getAbsolutePath()+"/TLIS_PL_"+prefix+".itl",schToTLISITL(prefix,sch,"STP"+String.format("%03d", stps[i].getNumber())));
@@ -706,30 +768,18 @@ public class ObservationUtil {
 		String l03="Start_time: 01-January-2014_00:00:00\n";
 		String l04="End_time:   01-January-2017_00:00:00\n";
 		String result="";
-		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 
 		String l05="";
-		//List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
-		//Iterator<String> it = ins.iterator();
+		String[] includes=schedule.getEvfIncludes();
+		for (int i=0;i<includes.length;i++){
+			l05=l05+"Include: \""+includes[i]+"\"\n";
+		}
+
 		for (int i=0;i<stps.length;i++){
-		//while(it.hasNext()){
-			//String instrument = it.next();
-			//String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
-			//Schedule insSch=sch.getInstrumentSchedule(instrument);
 			String prefix="M"+String.format("%03d", mtp)+"_S"+String.format("%03d", stps[i].getNumber());
 			l05=l05+"Include: \"STP"+String.format("%03d", stps[i].getNumber())+"/TLIS_PL_"+prefix+"_"+file+".evf\""+"\n";
 
 		}
-		/*while(it.hasNext()){
-			String instrument = it.next();
-			String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
-			//Schedule insSch=sch.getInstrumentSchedule(instrument);
-			l05=l05+"Include: \"EVF__"+acro+"_"+file+".evf\""+"\n";
-
-		}*/
 		result=l03+l04+l05;
 		return result;
 
@@ -740,26 +790,6 @@ public class ObservationUtil {
 		String l04="End_time:   01-January-2017_00:00:00\n";
 		
 		String result="";
-		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		//String l01="Version: 1\n";
-		//String l02="Ref_date: "+dateFormat.format(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
-		//String l03="Start_time: "+dateFormat2.format(schedule.getPtslSegment().getStartDate().toDate())+"\n";
-		//String l04="End_time: "+dateFormat2.format(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
-		//String l045="#========================================================================\n"+
-		//"#\n"+
-		//"# Name: "+schedule.getFileName()+"\n"+
-		//"#\n"+ 
-		//"# Description: "+schedule.getDescription()+"\n"+
-		//"#\n"+ 
-		//"# Author: "+schedule.getCreator()+"\n"+ 
-		//"#\n"+ 
-		//"# Type: "+schedule.getType()+"\n"+ 
-		//"#\n"+ 
-		//"# Date: "+dateFormat2.format(new Date())+"\n"+
-		//"#======================================================================== \n\n\n";
 
 		String l05="";
 		List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
@@ -767,12 +797,10 @@ public class ObservationUtil {
 		while(it.hasNext()){
 			String instrument = it.next();
 			String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
-			//Schedule insSch=sch.getInstrumentSchedule(instrument);
 			l05=l05+"Include: \""+dir+"/EVF__"+acro+"_"+file+".evf\""+"\n";
 
 		}
 		result=l03+l04+l05;
-		//result=l05;
 		return result;
 
 
@@ -783,26 +811,6 @@ public class ObservationUtil {
 		String l04="End_time: 26-December-2018_17:39:40\n";
 
 		String result="";
-		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		//String l01="Version: 1\n";
-		//String l02="Ref_date: "+dateFormat.format(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
-		//String l03="Start_time: "+dateFormat2.format(schedule.getPtslSegment().getStartDate().toDate())+"\n";
-		//String l04="End_time: "+dateFormat2.format(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
-		//String l045="#========================================================================\n"+
-		//"#\n"+
-		//"# Name: "+schedule.getFileName()+"\n"+
-		//"#\n"+ 
-		//"# Description: "+schedule.getDescription()+"\n"+
-		//"#\n"+ 
-		//"# Author: "+schedule.getCreator()+"\n"+ 
-		//"#\n"+ 
-		//"# Type: "+schedule.getType()+"\n"+ 
-		//"#\n"+ 
-		//"# Date: "+dateFormat2.format(new Date())+"\n"+
-		//"#======================================================================== \n\n\n";
 
 		String l05="";
 		List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
@@ -810,7 +818,6 @@ public class ObservationUtil {
 		while(it.hasNext()){
 			String instrument = it.next();
 			String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
-			//Schedule insSch=sch.getInstrumentSchedule(instrument);
 			l05=l05+"Include: \"EVF__"+acro+"_"+file+".evf\""+"\n";
 
 		}
@@ -823,14 +830,10 @@ public class ObservationUtil {
 	public static String schToTLISITL(String file,Schedule schedule,int mtp,Stp[] stps){
 		
 		String result="";
-		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		String l01="Version: 1\n";
-		String l02="Ref_date: "+dateFormat.format(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
-		String l03="Start_time: "+dateFormat2.format(schedule.getPtslSegment().getStartDate().toDate())+"\n";
-		String l04="End_time: "+dateFormat2.format(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
+		String l02="Ref_date: "+DateUtil.dateToLiteralNoTime(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
+		String l03="Start_time: "+DateUtil.dateToLiteral(schedule.getPtslSegment().getStartDate().toDate())+"\n";
+		String l04="End_time: "+DateUtil.dateToLiteral(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
 		String l045="#========================================================================\n"+
 		"#\n"+
 		"# Name: "+schedule.getFileName()+"\n"+
@@ -841,17 +844,15 @@ public class ObservationUtil {
 		"#\n"+ 
 		"# Type: "+schedule.getType()+"\n"+ 
 		"#\n"+ 
-		"# Date: "+dateFormat2.format(new Date())+"\n"+
+		"# Date: "+DateUtil.dateToLiteral(new Date())+"\n"+
 		"#======================================================================== \n\n\n";
 
 		String l05="";
-		//List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
-		//Iterator<String> it = ins.iterator();
+		String[] includes=schedule.getItlIncludes();
+		for (int i=0;i<includes.length;i++){
+			l05=l05+"Include: \""+includes[i]+"\"\n";
+		}
 		for (int i=0;i<stps.length;i++){
-		//while(it.hasNext()){
-			//String instrument = it.next();
-			//String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
-			//Schedule insSch=sch.getInstrumentSchedule(instrument);
 			String prefix="M"+String.format("%03d", mtp)+"_S"+String.format("%03d", stps[i].getNumber());
 			l05=l05+"Include: \"STP"+String.format("%03d", stps[i].getNumber())+"/TLIS_PL_"+prefix+"_"+file+".itl\""+"\n";
 
@@ -863,14 +864,10 @@ public class ObservationUtil {
 	}
 	public static String schToTLISITL(String file,Schedule schedule,String dir){
 		String result="";
-		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		String l01="Version: 1\n";
-		String l02="Ref_date: "+dateFormat.format(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
-		String l03="Start_time: "+dateFormat2.format(schedule.getPtslSegment().getStartDate().toDate())+"\n";
-		String l04="End_time: "+dateFormat2.format(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
+		String l02="Ref_date: "+DateUtil.dateToLiteralNoTime(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
+		String l03="Start_time: "+DateUtil.dateToLiteral(schedule.getPtslSegment().getStartDate().toDate())+"\n";
+		String l04="End_time: "+DateUtil.dateToLiteral(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
 		String l045="#========================================================================\n"+
 		"#\n"+
 		"# Name: "+schedule.getFileName()+"\n"+
@@ -881,7 +878,7 @@ public class ObservationUtil {
 		"#\n"+ 
 		"# Type: "+schedule.getType()+"\n"+ 
 		"#\n"+ 
-		"# Date: "+dateFormat2.format(new Date())+"\n"+
+		"# Date: "+DateUtil.dateToLiteral(new Date())+"\n"+
 		"#======================================================================== \n\n\n";
 
 		String l05="";
@@ -890,7 +887,6 @@ public class ObservationUtil {
 		while(it.hasNext()){
 			String instrument = it.next();
 			String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
-			//Schedule insSch=sch.getInstrumentSchedule(instrument);
 			l05=l05+"Include: \""+dir+"/ITLS_"+acro+"_"+file+".itl\""+"\n";
 
 		}
@@ -901,14 +897,10 @@ public class ObservationUtil {
 	}
 	public static String schToTLISITL(String file,Schedule schedule){
 		String result="";
-		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		String l01="Version: 1\n";
-		String l02="Ref_date: "+dateFormat.format(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
-		String l03="Start_time: "+dateFormat2.format(schedule.getPtslSegment().getStartDate().toDate())+"\n";
-		String l04="End_time: "+dateFormat2.format(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
+		String l02="Ref_date: "+DateUtil.dateToLiteralNoTime(schedule.getPtslSegment().getStartDate().toDate())+"\n\n\n";
+		String l03="Start_time: "+DateUtil.dateToLiteral(schedule.getPtslSegment().getStartDate().toDate())+"\n";
+		String l04="End_time: "+DateUtil.dateToLiteral(schedule.getPtslSegment().getEndDate().toDate())+"\n\n\n";
 		String l045="#========================================================================\n"+
 		"#\n"+
 		"# Name: "+schedule.getFileName()+"\n"+
@@ -919,7 +911,7 @@ public class ObservationUtil {
 		"#\n"+ 
 		"# Type: "+schedule.getType()+"\n"+ 
 		"#\n"+ 
-		"# Date: "+dateFormat2.format(new Date())+"\n"+
+		"# Date: "+DateUtil.dateToLiteral(new Date())+"\n"+
 		"#======================================================================== \n\n\n";
 
 		String l05="";
@@ -928,7 +920,6 @@ public class ObservationUtil {
 		while(it.hasNext()){
 			String instrument = it.next();
 			String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
-			//Schedule insSch=sch.getInstrumentSchedule(instrument);
 			l05=l05+"Include: \"ITLS_"+acro+"_"+file+".itl\""+"\n";
 
 		}
@@ -938,17 +929,24 @@ public class ObservationUtil {
 
 	}
 	public static String OBStoITL(Observation obs){
+		Mib mib;
+		try {
+			mib=Mib.getMib();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			IllegalArgumentException iae = new IllegalArgumentException("Could not get MIB "+e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+			
+		}
+		
 		TreeMap<String,Integer> counter=new TreeMap<String,Integer>();
 		Por POR = obs.getCommanding();
 		String result="";
-		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		String l01="Version: 1\n";
-		String l02="Ref_date: "+dateFormat.format(POR.getValidityDates()[0])+"\n\n\n";
-		String l03="Start_time: "+dateFormat2.format(POR.getValidityDates()[0])+"\n";
-		String l04="End_time: "+dateFormat2.format(POR.getValidityDates()[1])+"\n\n\n";
+		String l02="Ref_date: "+DateUtil.dateToLiteralNoTime(POR.getValidityDates()[0])+"\n\n\n";
+		String l03="Start_time: "+DateUtil.dateToLiteral(POR.getValidityDates()[0])+"\n";
+		String l04="End_time: "+DateUtil.dateToLiteral(POR.getValidityDates()[1])+"\n\n\n";
 		String l045="#========================================================================\n"+
 		"#\n"+
 		"# Name: "+obs.getName()+"\n"+
@@ -961,24 +959,29 @@ public class ObservationUtil {
 		"#\n"+ 
 		"# Type: "+obs.getType()+"\n"+ 
 		"#\n"+ 
-		"# Date: "+dateFormat2.format(new Date())+"\n"+
+		"# Date: "+DateUtil.dateToLiteral(new Date())+"\n"+
 		"#======================================================================== \n\n\n";
 		String l05="";
 		AbstractSequence[] tempSeq=POR.getSequences();
 		Parameter[] tempParam;
 		SequenceProfile[] tempPro;
 		for (int i=0;i<tempSeq.length;i++){
-			String eventName=((ObservationSequence)tempSeq[i]).getExecutionTimeEvent().getName();
-			Integer count = counter.get(eventName);
-			if (count==null) count=0;
-			else count=count+1;
-			counter.put(eventName, count);
-			String itlEvent=obs.getName()+"_"+((ObservationSequence)tempSeq[i]).getExecutionTimeEvent().getName();
-			itlEvent=itlEvent.replace(" ", "_");
-			l05=l05+itlEvent+" "+"(COUNT = 000001 ) "+ObservationUtil.getOffset(((ObservationSequence)tempSeq[i]).getExecutionTimeDelta())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\"+"\n";
+			if (InterpreterUtil.isInstance(ObservationSequence.class, tempSeq[i])){
+				String eventName=((ObservationSequence)tempSeq[i]).getExecutionTimeEvent().getName();
+				Integer count = counter.get(eventName);
+				if (count==null) count=0;
+				else count=count+1;
+				counter.put(eventName, count);
+				String itlEvent=obs.getName()+"_"+((ObservationSequence)tempSeq[i]).getExecutionTimeEvent().getName();
+				itlEvent=itlEvent.replace(" ", "_");
+				l05=l05+itlEvent+" "+"(COUNT = 000001 ) "+ObservationUtil.getOffset(((ObservationSequence)tempSeq[i]).getExecutionTimeDelta())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\ #"+mib.getSequenceDescription(tempSeq[i].getName())+"\n";
+			}else{
+				l05=l05+DateUtil.dateToLiteral(tempSeq[i].getExecutionDate())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\ #"+mib.getSequenceDescription(tempSeq[i].getName())+"\n";
+				LOG.info("WARNING:"+DateUtil.dateToLiteral(tempSeq[i].getExecutionDate())+" "+ tempSeq[i].getInstrument()+" "+tempSeq[i].getName()+" is a literal sequence");
+			}
 			tempParam = tempSeq[i].getParameters();
 			for (int z=0;z<tempParam.length;z++){
-				l05=l05+"\t"+tempParam[z].getName()+"="+tempParam[z].getStringValue()+" ["+tempParam[z].getRepresentation()+"] \\ \n";
+				l05=l05+"\t"+tempParam[z].getName()+"="+tempParam[z].getStringValue()+" ["+tempParam[z].getRepresentation()+"] \\ #"+mib.getParameterDescription(tempParam[z].getName())+"\n";
 			}
 			tempPro=tempSeq[i].getProfiles();
 			String dataRateProfile="\tDATA_RATE_PROFILE = \t\t\t";

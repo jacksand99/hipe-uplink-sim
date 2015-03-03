@@ -64,7 +64,7 @@
 			</attitude>
 			<metadata>
 				<comment>OWNER=OSIRIS</comment>
-				<comment>014d, limb scan (2x2 raster)</comment>
+				<comment>OSIRIS 014d, limb scan (2x2 raster)</comment>
 				<comment>repeated 8 times, every 90 minutes</comment>
 				<comment>SR.PROCESSED=FALSE</comment>
 				<comment>SR.OBS000.START=START_TIME+00:01:30</comment>

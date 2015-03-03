@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 public class Mtp extends Period{
 	//private TreeMap<Integer,Stp> stps;
+	public static String TAG="MTP";
 	public Mtp(int number, Date startDate, Date endDate) {
 		super(number, startDate, endDate);
 		//stps=new TreeMap<Integer,Stp>();
@@ -56,6 +57,9 @@ public class Mtp extends Period{
 		stps.values().toArray(result);
 		return result;
 	}*/
+	public String getTag(){
+		return Mtp.TAG;
+	}
 	public Stp[] getStps(){
 		
 		Stp[] result=new Stp[this.getRefs().size()];
@@ -94,7 +98,7 @@ public class Mtp extends Period{
 		return this.getStps();
 	}
 	public String toXml(int indent){
-		return toXml("MTP",indent);
+		return toXml(TAG,indent);
 	}
 
 }

@@ -31,9 +31,9 @@ import net.infonode.properties.propertymap.ref.ThisPropertyMapRef;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 
-//public class Sequence extends Product {
 public class Sequence extends AbstractSequence {
 	public static String INSERT_FLAG = "Insert";
 	public static String DELETE_FLAG = "Delete";
@@ -47,9 +47,6 @@ public class Sequence extends AbstractSequence {
 	public static String PROFILES_FIELD="profiles";
 	
 	
-	//Parameter[] parameters;
-	
-	//TableDataset profilesTable;
 	public Sequence(SequenceInterface seq){
 		this(seq.getName(),seq.getUniqueID(),seq.getFlag(),seq.getSource(),seq.getDestination(),seq.getExecutionDate(),seq.getParameters(),seq.getProfiles());
 	}
@@ -64,7 +61,6 @@ public class Sequence extends AbstractSequence {
 		getMeta().set(FLAG_FLIED, new StringParameter(sequenceFlag));
 		setInstrument(getInstrumentName());
 
-		//parameters=sequenceParamaters;
 		if (sequenceParamaters!=null)setParameters(sequenceParamaters);
 		else set(PARAMETERS_FIELD,new CompositeDataset());
 		TableDataset profilesTable=createProfilesTable();
@@ -85,7 +81,6 @@ public class Sequence extends AbstractSequence {
 		proTable.addColumn(cType);
 		proTable.addColumn(cOffset);
 		proTable.addColumn(cValue);
-		//addColumn(cValue);
 		proTable.setColumnName(0, SequenceProfile.COLUMN_NAME_TYPE);
 		proTable.setColumnName(1, SequenceProfile.COLUMN_NAME_OFFSET);
 		proTable.setColumnName(2, SequenceProfile.COLUMN_NAME_VALUE);
@@ -109,27 +104,25 @@ public class Sequence extends AbstractSequence {
 	}
 	
 	public Sequence (String sequenceName,String sequenceID,String sequenceFlag,char sequenceSource,char sequenceDestination,String sequenceExecutionTime,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles) throws ParseException{
-		this(sequenceName,sequenceID,sequenceFlag,sequenceSource,sequenceDestination,zuluToDate(sequenceExecutionTime),sequenceParamaters,sequenceProfiles);
+		this(sequenceName,sequenceID,sequenceFlag,sequenceSource,sequenceDestination,DateUtil.DOYToDate(sequenceExecutionTime),sequenceParamaters,sequenceProfiles);
 	}
 	
 	public Sequence (String sequenceName,String sequenceID,String sequenceFlag,String sequenceExecutionTime,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles) throws ParseException{
-		this(sequenceName,sequenceID,sequenceFlag,'P','S',zuluToDate(sequenceExecutionTime),sequenceParamaters,sequenceProfiles);
+		this(sequenceName,sequenceID,sequenceFlag,'P','S',DateUtil.DOYToDate(sequenceExecutionTime),sequenceParamaters,sequenceProfiles);
 	}
 	
 	public Sequence (String sequenceName,String sequenceID,String sequenceExecutionTime,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles) throws ParseException{
-		this(sequenceName,sequenceID,INSERT_FLAG,'P','S',zuluToDate(sequenceExecutionTime),sequenceParamaters,sequenceProfiles);
+		this(sequenceName,sequenceID,INSERT_FLAG,'P','S',DateUtil.DOYToDate(sequenceExecutionTime),sequenceParamaters,sequenceProfiles);
 	}
 	
 	public Sequence (String sequenceName,String sequenceID,String sequenceExecutionTime) throws ParseException{
 
-		this(sequenceName,sequenceID,INSERT_FLAG,'P','S',zuluToDate(sequenceExecutionTime),null,null);
+		this(sequenceName,sequenceID,INSERT_FLAG,'P','S',DateUtil.DOYToDate(sequenceExecutionTime),null,null);
 	
 	}
-	
+	@Deprecated
 	public static java.util.Date zuluToDate(String zuluTime) throws ParseException{
-		java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-D'T'HH:mm:ss'Z'");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		return dateFormat.parse(zuluTime);
+		return DateUtil.DOYToDate(zuluTime);
 	}
 	
 	public String getName(){
@@ -172,14 +165,13 @@ public class Sequence extends AbstractSequence {
 
 	}
 	
+	@Deprecated
 	public static String dateToZulu(java.util.Date date){
-		java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-D'T'HH:mm:ss'Z'");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		return dateFormat.format(date);
+		return DateUtil.dateToDOY(date);
 	}
 	
 	public String getExecutionTime(){
-		return dateToZulu(getExecutionDate());
+		return DateUtil.dateToDOY(getExecutionDate());
 	}
 	public Parameter getParameter(String parameterName){
 		CompositeDataset parameters = (CompositeDataset) get(PARAMETERS_FIELD);
@@ -198,13 +190,6 @@ public class Sequence extends AbstractSequence {
 			result[i]=(Parameter) parameters.get(key);
 		}
 		return result;
-		/*if (parameters!=null){
-			return parameters;
-			
-		}
-		else{
-			return new Parameter[0];
-		}*/
 	}
 	
 	public SequenceProfile[] getProfiles(){
@@ -249,7 +234,7 @@ public class Sequence extends AbstractSequence {
 	}
 	
 	public void setExecutionTime(String time) throws ParseException{
-		setExecutionDate(zuluToDate(time));
+		setExecutionDate(DateUtil.DOYToDate(time));
 
 	}
 	
@@ -260,8 +245,6 @@ public class Sequence extends AbstractSequence {
 			parameters.set(sequenceParameters[i].getName(),sequenceParameters[i]);
 		}
 		set(PARAMETERS_FIELD,parameters);
-		//parameters.set(arg0, arg1);
-		//parameters=sequenceParameters;
 	}
 	
 	public void setProfiles(SequenceProfile[] sequenceProfiles){
@@ -375,9 +358,7 @@ public class Sequence extends AbstractSequence {
 		String l6=indentString+"\t<executionTime>\n";
 		String l7=indentString+"\t\t<actionTime>"+getExecutionTime()+"</actionTime>\n";
 		String l8=indentString+"\t</executionTime>\n";
-		//String l9="";
 		Parameter[] parameters = getParameters();
-		//if (parameters!=null) l9=indentString+"\t<parameterList count=\""+parameters.length+"\">\n";
 		String l9="";
 		String l10="";
 		String l11="";
@@ -389,7 +370,6 @@ public class Sequence extends AbstractSequence {
 			}
 			l11=indentString+"\t</parameterList>\n";
 		}
-		//String l11=indentString+"\t</parameterList>\n";
 		String l12="";
 		SequenceProfile[] profiles=getProfiles();
 		if (profiles.length>0) l12=indentString+"\t<profileList count=\""+profiles.length+"\">\n";
@@ -402,7 +382,6 @@ public class Sequence extends AbstractSequence {
 			l14=indentString+"\t</profileList>\n";
 
 		}
-		//String l14=indentString+"\t</profileList>\n";
 		String l15=indentString+"</sequence>\n";
 		return l1+l2+l3+l4+l5+l6+l7+l8+l9+l10+l11+l12+l13+l14+l15;
 	}
