@@ -15,11 +15,9 @@ import herschel.ia.gui.kernel.SelectionVisitor;
 import herschel.ia.gui.kernel.VariableSelection;
 import herschel.ia.pal.gui.components.ContextOutline;
 
-public class OtherOutline extends ContextOutline implements OutlineComponent{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+//public class OtherOutline extends ContextOutline implements OutlineComponent{
+public class OtherOutline extends PorOutline {
+	/*private static final long serialVersionUID = 1L;
 	VariableSelection selection;
 	ContextOutline realOutline;
 	public OtherOutline(){
@@ -44,7 +42,7 @@ public class OtherOutline extends ContextOutline implements OutlineComponent{
 		
 		// TODO Auto-generated method stub
 		//return false;
-	}
+	}*/
 	
 
 

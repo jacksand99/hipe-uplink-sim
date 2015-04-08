@@ -6,6 +6,9 @@ import herschel.share.util.Configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -23,6 +26,7 @@ import org.eclipse.jgit.transport.CredentialsProviderUserInfo;
 import org.eclipse.jgit.transport.JschConfigSessionFactory;
 import org.eclipse.jgit.transport.OpenSshConfig;
 import org.eclipse.jgit.transport.OpenSshConfig.Host;
+import org.eclipse.jgit.transport.PushResult;
 //import org.eclipse.jgit.transport.
 import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.transport.URIish;
@@ -31,6 +35,7 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
 import vega.uplink.Properties;
+import vega.uplink.commanding.Fecs;
 
 public class HipeGit {
     private String localPath;
@@ -44,6 +49,7 @@ public class HipeGit {
     public static boolean TUNNEL=false;
 
     private static HipeGit instance;
+    private static final Logger LOG = Logger.getLogger(Fecs.class.getName());
     //public static String LOCAL_REPOSITORY_PROPERTY="vega.hipe.git.localPath";
     
     protected HipeGit(){
@@ -166,8 +172,9 @@ public class HipeGit {
 
     
     public void gitClone() throws IOException, GitAPIException {
-        Git.cloneRepository().setURI(remotePath)
-                .setDirectory(new File(localPath)).call();
+        /*Git.cloneRepository().setURI(remotePath)
+                .setDirectory(new File(localPath)).call();*/
+    	(new Thread(new GitCloneRunnable())).start();
     }
 
    
@@ -199,8 +206,64 @@ public class HipeGit {
 
     
     public void gitPull() throws IOException, GitAPIException {
-        git.pull().call();
+        //git.pull().call();
+    	(new Thread(new GitPullRunnable())).start();
     }
     
+    private class GitPullRunnable implements Runnable {
+ 
+
+        public void run() {
+        	try{
+        		LOG.info("Starting Git Pull");
+        		PullResult pullResult = git.pull().call();
+        		if (pullResult!=null){
+	        		LOG.info(pullResult.getFetchResult().getMessages());
+	        		List<String> conflicst = pullResult.getMergeResult().getCheckoutConflicts();
+	        		if (conflicst!=null){
+		        		Iterator<String> it = conflicst.iterator();
+		        		while (it.hasNext()){
+		        			LOG.info("Checkout Conflicts:"+it.next());
+		        		}
+	        		}
+	        		if (pullResult.isSuccessful()){
+	        			LOG.info("Git pull successful");
+	        		}else{
+	        			LOG.info("Git pull failed");
+	        		}
+        		}
+        		LOG.info("Finished Git Pull");
+        	}catch (Exception e){
+        		IllegalArgumentException iae=new IllegalArgumentException (e.getMessage());
+        		LOG.severe("Git pull error:"+e.getMessage());
+        		iae.initCause(e);
+        		throw(iae);
+        	}
+        }
+
+
+
+    }
+    
+    private class GitCloneRunnable implements Runnable {
+    	 
+
+        public void run() {
+        	try{
+        		LOG.info("Starting Git Clone");
+        		Git.cloneRepository().setURI(remotePath)
+                .setDirectory(new File(localPath)).call();
+        		LOG.info("Finished Git Clone");
+        	}catch (Exception e){
+        		IllegalArgumentException iae=new IllegalArgumentException (e.getMessage());
+        		LOG.severe("Git clone error:"+e.getMessage());
+        		iae.initCause(e);
+        		throw(iae);
+        	}
+        }
+
+
+
+    }
 
 }

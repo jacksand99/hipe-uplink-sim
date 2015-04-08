@@ -6,11 +6,11 @@ import herschel.ia.task.TaskParameter;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import vega.hipe.gui.xmlutils.HtmlDocument;
+import vega.hipe.gui.xmlutils.HtmlEditorKit;
 import vega.uplink.commanding.Fecs;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
-import vega.uplink.pointing.gui.xmlutils.HtmlDocument;
-import vega.uplink.pointing.gui.xmlutils.HtmlEditorKit;
 
 public class RosettaFecsSummaryTask extends Task {
 	private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());

@@ -16,7 +16,7 @@
    limitations under the License.
 
  */
-package vega.uplink.pointing.gui.xmlutils;
+package vega.hipe.gui.xmlutils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class EncodingUtilities {
     /**
      * The standard to Java encoding table.
      */
-    protected static final Map ENCODINGS = new HashMap();
+    protected static final Map<String,String> ENCODINGS = new HashMap<String,String>();
     static {
         ENCODINGS.put("UTF-8",           "UTF8");
         ENCODINGS.put("UTF-16",          "Unicode");

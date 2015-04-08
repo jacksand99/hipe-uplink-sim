@@ -13,6 +13,7 @@ import herschel.share.interpreter.InterpreterUtil;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -44,17 +45,16 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 	private java.util.HashSet<ObservationListener> listeners;
 	private final Logger LOG = Logger.getLogger(Observation.class.getName());
 	public static boolean LISTEN=true;
-	//public long uid;
-	/*public boolean equals(Observation obs){
-		boolean result=true;
-		if (!this.getName().equals(obs.getName())) return false;
-		if (!this.getObsStartDate().equals(obs.getObsStartDate())) return false;
-		if (!this.getObsEndDate().equals(obs.getObsEndDate())) return false;
-		return result;
-	}*/
+	public java.util.SortedMap<String,Date> eventMap;
+
 	private Observation(){
 		super();
 		listeners=new java.util.HashSet<ObservationListener>();
+		eventMap=new java.util.TreeMap<String,Date>();
+	}
+	
+	public void setEventMap(SortedMap<String,Date> map){
+		eventMap=map;
 	}
 	/**
 	 * Creates an Observation with a start time and end time
@@ -62,8 +62,9 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 	 * @param endDate
 	 */
 	public Observation (Date startDate,Date endDate){
-		super();
-		listeners=new java.util.HashSet<ObservationListener>();
+		//super();
+		//listeners=new java.util.HashSet<ObservationListener>();
+		this();
 		this.setStartDate(new FineTime(startDate));
 		this.setEndDate(new FineTime(endDate));
 		this.setProduct("sequences", new ObservationPor(this));
@@ -115,6 +116,14 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 	 */
 	public void removeObservationListener(ObservationListener listener){
 		listeners.remove(listener);
+	}
+	
+	public void addEvent(ObservationEvent event,Date date){
+		eventMap.put(event.getName(), date);
+	}
+	
+	public void removeEvent(ObservationEvent event){
+		eventMap.remove(event.getName());
 	}
 	/*protected void fireCommandingChange(DatasetEvent<Product> source){
 		LOG.info("Firing Observation change");
@@ -580,8 +589,21 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 	public Date getDateForEvent(ObservationEvent event){
 		if (event.equals(ObservationEvent.START_OBS)) return getObsStartDate();
 		if (event.equals(ObservationEvent.END_OBS)) return getObsEndDate();
+		return eventMap.get(event.getName());
 		
-		return null;
+		//return null;
+	}
+	
+	public ObservationEvent[] getDefinedEvents(){
+		ObservationEvent[] result=new ObservationEvent[eventMap.size()];
+		Iterator<String> it = eventMap.keySet().iterator();
+		int counter=0;
+		while (it.hasNext()){
+			result[counter]=new ObservationEvent(it.next());
+			counter++;
+		}
+		//result=eventMap.keySet().toArray(result);
+		return result;
 	}
 	
 	/**

@@ -5,7 +5,10 @@ import herschel.share.fltdyn.time.SimpleTimeFormat;
 import herschel.share.fltdyn.time.TimeScale;
 
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * Class that provides a number of utility methods to transform strings from and into dates and finetimes
@@ -189,10 +192,22 @@ public class DateUtil {
 	 */
 	public static java.util.Date DOYToDate(String zuluTime) throws ParseException {
 		java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-D'T'HH:mm:ss.SSS'Z'");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		java.text.SimpleDateFormat dateFormat3=new java.text.SimpleDateFormat("yyyy-D'T'HH:mm:ss");
+
+		TimeZone tz = java.util.TimeZone.getTimeZone("UTC");
+		dateFormat.setTimeZone(tz);
 		try {
-			Date result = dateFormat.parse(zuluTime);
-			if (result.getYear()<100){
+			Date result;
+			try{
+				result = dateFormat.parse(zuluTime);
+			}catch(Exception e2){
+				result = dateFormat3.parse(zuluTime);
+			}
+			GregorianCalendar c=new GregorianCalendar(tz);
+			c.setTime(result);
+			int year = c.get(Calendar.YEAR);
+			//System.out.println(year);
+			if (year<100){
 				//System.out.println("Could not read "+zuluTime+" adding 20. Year is "+result.getYear());
 				result=DateUtil.DOYToDate("20"+zuluTime);
 			}
@@ -203,7 +218,18 @@ public class DateUtil {
 			
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
-			return dateFormat2.parse(zuluTime);
+			Date result = dateFormat2.parse(zuluTime);
+			
+			GregorianCalendar c=new GregorianCalendar(tz);
+			c.setTime(result);
+			int year = c.get(Calendar.YEAR);
+			//System.out.println(year);
+			if (year<100){
+				//System.out.println("Could not read "+zuluTime+" adding 20. Year is "+result.getYear());
+				result=DateUtil.DOYToDate("20"+zuluTime);
+			}
+			return result;
+
 		}
 	}
 	/**

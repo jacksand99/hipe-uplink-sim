@@ -10,6 +10,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
+import vega.IconResources;
 import vega.uplink.commanding.SimulationContext;
 import herschel.ia.gui.kernel.parts.AbstractVariableEditorComponent;
 import herschel.ia.gui.plot.LayerXY;
@@ -30,7 +31,7 @@ public class PowerPlotViewer extends AbstractVariableEditorComponent<SimulationC
 	@Override
 	public Icon getComponentIcon() {
 	     try {
-	            URL resource = HistoryModesPlot.class.getResource("/vega/vega.gif");
+	            URL resource = HistoryModesPlot.class.getResource(IconResources.HUS_ICON);
 	            BufferedImage imageIcon = ImageIO.read(resource);
 	            return new ImageIcon(imageIcon);
 	    } catch (IOException e) {

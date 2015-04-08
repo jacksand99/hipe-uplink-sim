@@ -17,7 +17,7 @@
 
 */
 
-package vega.uplink.pointing.gui.xmlutils;
+package vega.hipe.gui.xmlutils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

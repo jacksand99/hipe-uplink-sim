@@ -14,6 +14,8 @@ from herschel.share.util import Configuration
 #    path.append(file.absolutePath)
 
 # Plugin imports
+from vega import IconResources
+from vega.uplink.commanding import Pdor
 from vega.uplink.commanding import Fecs
 from vega.uplink.commanding import GsPass
 from vega.uplink.commanding import Mib
@@ -27,6 +29,7 @@ from vega.uplink.commanding import SequenceProfile
 from vega.uplink.commanding import Simulation
 from vega.uplink.commanding import SimulationContext
 from vega.uplink.commanding import SuperPor
+from vega.uplink.commanding import MocPower
 from vega.uplink.pointing import Ptr
 from vega.uplink.pointing import PtrUtils
 from vega.uplink.pointing import PtrSegment
@@ -76,6 +79,11 @@ from vega.uplink.planning.period import Mtp
 from vega.uplink.planning.period import Stp
 from vega.uplink.planning.period import Vstp
 from vega.uplink import DateUtil
+from vega.hipe.gui.xmlutils import XmlData
+from vega.hipe.gui.xmlutils import HtmlDocument
+from vega.uplink.commanding.itl import ItlParser
+from vega.uplink.commanding.itl import EventList
+
 
 PreferencePanelRegistrator.registerPanels();
 
@@ -103,8 +111,8 @@ REGISTRY = ExtensionRegistry.getInstance();
 #for ins in instruments:
 #	print "Registering config panel for "+ins
 #	REGISTRY.register(UserPreferences.CATEGORY, Extension("Mission Planning/Instruments/"+ins,"vega.hipe.preferences.InstrumentPreferences",None,None))  # unused
-REGISTRY.register(REGISTRY.VIEWABLE,Extension("site.view.variables","vega.uplink.commanding.gui.SimulationContextView","Workbench/Variables","vega/vega.gif"))
-REGISTRY.register(REGISTRY.VIEWABLE,Extension("site.view.simulation","vega.uplink.commanding.gui.SimulationView","Workbench/Simulation","vega/vega.gif"))
+REGISTRY.register(REGISTRY.VIEWABLE,Extension("site.view.variables","vega.uplink.commanding.gui.SimulationContextView","Workbench/Variables",IconResources.HUS_ICON_NOROOT))
+REGISTRY.register(REGISTRY.VIEWABLE,Extension("site.view.simulation","vega.uplink.commanding.gui.SimulationView","Workbench/Simulation",IconResources.HUS_ICON_NOROOT))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("vega.uplink.commanding.gui.OtherOutline","vega.uplink.commanding.gui.OtherOutline","factory.outline.variable","vega.uplink.commanding.Por"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("vega.uplink.pointing.gui.PtrOutline","vega.uplink.pointing.gui.PtrOutline","factory.outline.variable","vega.uplink.pointing.Ptr"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("vega.uplink.pointing.gui.PointingElementOutline","vega.uplink.pointing.gui.PointingElementOutline","factory.outline.variable","vega.uplink.pointing.PointingElement"))
@@ -119,7 +127,6 @@ REGISTRY.register(REGISTRY.COMPONENT,Extension("Pointing Metadata Editor","vega.
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Observation Editor","vega.uplink.planning.gui.ObservationEditor","factory.editor.variable","vega.uplink.planning.Observation"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Scheduler Viewer","vega.uplink.planning.gui.ScheduleViewer","factory.editor.variable","vega.uplink.planning.Schedule"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Power Plot Viewer","vega.uplink.commanding.gui.PowerPlotViewer","factory.editor.variable","vega.uplink.commanding.SimulationContext"))
-REGISTRY.register(REGISTRY.COMPONENT,Extension("HTML Document viewer","vega.uplink.pointing.gui.xmlutils.HtmlDocumentViewer","factory.editor.variable","vega.uplink.pointing.gui.xmlutils.HtmlDocument"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("PTR Reader","vega.uplink.pointing.gui.PtrFileComponent","factory.editor.file","vega.uplink.pointing.gui.PtrFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("PDFM Reader","vega.uplink.pointing.gui.PdfmFileComponent","factory.editor.file","vega.uplink.pointing.gui.PdfmFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("EVTM Reader","vega.uplink.pointing.gui.EvtmFileComponent","factory.editor.file","vega.uplink.pointing.gui.EvtmFile"))
@@ -130,19 +137,40 @@ REGISTRY.register(REGISTRY.COMPONENT,Extension("FECS Reader","vega.uplink.comman
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Planning Observation Reader","vega.uplink.planning.gui.ObservationFileComponent","factory.editor.file","vega.uplink.planning.gui.ObservationFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Planning Schedule Reader","vega.uplink.planning.gui.ScheduleFileComponent","factory.editor.file","vega.uplink.planning.gui.ScheduleFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Planning Period Reader","vega.uplink.planning.gui.PeriodsFileComponent","factory.editor.file","vega.uplink.planning.gui.PeriodsFile"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("XML Reader","vega.hipe.gui.xmlutils.XmlFileComponent","factory.editor.file","vega.hipe.gui.xmlutils.XmlFile"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("XML Editor","vega.hipe.gui.xmlutils.XmlFileEditor","factory.editor.variable","vega.hipe.gui.xmlutils.XmlDataInterface"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("Fecs XML Editor","vega.hipe.gui.xmlutils.XmlFileEditor","factory.editor.variable","vega.uplink.commanding.Fecs"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("HTML Reader","vega.hipe.gui.xmlutils.HtmlFileComponent","factory.editor.file","vega.hipe.gui.xmlutils.HtmlFile"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("HTML Editor","vega.hipe.gui.xmlutils.HtmlDocumentViewer","factory.editor.variable","vega.hipe.gui.xmlutils.HtmlDocument"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("XmlMapContextEditor","vega.hipe.products.gui.AbstractXmlMapContextXmlEditor","factory.editor.variable","vega.hipe.products.AbstractXmlMapContext"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("PorItlEditor","vega.uplink.commanding.gui.PorItlEditor","factory.editor.variable","vega.uplink.commanding.Por"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("ITL editor Explicit Time","vega.uplink.commanding.gui.SuperPorItlEditor","factory.editor.variable","vega.uplink.commanding.SuperPor"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("ITL editor Events","vega.uplink.commanding.gui.SuperPorItlEditorEvents","factory.editor.variable","vega.uplink.commanding.SuperPor"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("vega.uplink.commanding.itl.gui.EvfOutline","vega.uplink.commanding.itl.gui.EvfOutline","factory.outline.variable","vega.uplink.commanding.itl.EventList"))
 
 
-REGISTRY.register("site.fileType",Extension("site.file.ptr","vega.uplink.pointing.gui.PtrFile",Configuration.getProperty("vega.file.type.PTR"),"vega/vega.gif"));
-REGISTRY.register("site.fileType",Extension("site.file.ptsl","vega.uplink.pointing.gui.PtrFile",Configuration.getProperty("vega.file.type.PTSL"),"vega/vega.gif"));
-REGISTRY.register("site.fileType",Extension("site.file.pdfm","vega.uplink.pointing.gui.PdfmFile",Configuration.getProperty("vega.file.type.PDFM"),"vega/vega.gif"));
-REGISTRY.register("site.fileType",Extension("site.file.evtm","vega.uplink.pointing.gui.EvtmFile",Configuration.getProperty("vega.file.type.EVTM"),"vega/vega.gif"));
-REGISTRY.register("site.fileType",Extension("site.file.por","vega.uplink.commanding.gui.PorFile",Configuration.getProperty("vega.file.type.POR"),"vega/vega.gif"));
-REGISTRY.register("site.fileType",Extension("site.file.fecs","vega.uplink.commanding.gui.FecsFile",Configuration.getProperty("vega.file.type.FECS"),"vega/vega.gif"));
-REGISTRY.register("site.fileType",Extension("site.file.porg","vega.uplink.commanding.gui.PorgFile",Configuration.getProperty("vega.file.type.PORG"),"vega/vega.gif"));
-REGISTRY.register("site.fileType",Extension("site.file.obs","vega.uplink.planning.gui.ObservationFile",Configuration.getProperty("vega.file.type.OBS"),"vega/vega.gif"));
-REGISTRY.register("site.fileType",Extension("site.file.schedule","vega.uplink.planning.gui.ScheduleFile",Configuration.getProperty("vega.file.type.SCH"),"vega/vega.gif"));
-REGISTRY.register("site.fileType",Extension("site.file.period","vega.uplink.planning.gui.PeriodsFile",Configuration.getProperty("vega.file.type.PER"),"vega/vega.gif"));
-
+REGISTRY.register("site.fileType",Extension("site.file.xml","vega.hipe.gui.xmlutils.HtmlFile","regex:^[a-zA-Z0-9_\-.]*.html",IconResources.HUS_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.xml","vega.hipe.gui.xmlutils.XmlFile","regex:^[a-zA-Z0-9_\-.]*.xml",IconResources.XML_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.ptr","vega.uplink.pointing.gui.PtrFile",Configuration.getProperty("vega.file.type.PTR"),IconResources.PTR_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.ptsl","vega.uplink.pointing.gui.PtrFile",Configuration.getProperty("vega.file.type.PTSL"),IconResources.PTSL_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.pdfm","vega.uplink.pointing.gui.PdfmFile",Configuration.getProperty("vega.file.type.PDFM"),IconResources.PDFM_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.evtm","vega.uplink.pointing.gui.EvtmFile",Configuration.getProperty("vega.file.type.EVTM"),IconResources.HUS_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.por","vega.uplink.commanding.gui.PorFile",Configuration.getProperty("vega.file.type.POR"),IconResources.POR_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.fecs","vega.uplink.commanding.gui.FecsFile",Configuration.getProperty("vega.file.type.FECS"),IconResources.FECS_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.porg","vega.uplink.commanding.gui.PorgFile",Configuration.getProperty("vega.file.type.PORG"),IconResources.PORG_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.obs","vega.uplink.planning.gui.ObservationFile",Configuration.getProperty("vega.file.type.OBS"),IconResources.HUS_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.schedule","vega.uplink.planning.gui.ScheduleFile",Configuration.getProperty("vega.file.type.SCH"),IconResources.HUS_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.period","vega.uplink.planning.gui.PeriodsFile",Configuration.getProperty("vega.file.type.PER"),IconResources.HUS_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.itl","vega.uplink.commanding.itl.gui.ItlFile",Configuration.getProperty("vega.file.type.ITL"),IconResources.ITL_ICON_NOROOT));
+REGISTRY.register(REGISTRY.COMPONENT,Extension("ITL to POR","vega.uplink.commanding.itl.gui.ItlFileComponent","factory.editor.file","vega.uplink.commanding.itl.gui.ItlFile"))
+REGISTRY.register("site.fileType",Extension("site.file.evf","vega.uplink.commanding.itl.gui.EvfFile",Configuration.getProperty("vega.file.type.EVF"),IconResources.ITL_ICON_NOROOT));
+REGISTRY.register(REGISTRY.COMPONENT,Extension("Evf reader","vega.uplink.commanding.itl.gui.EvfFileComponent","factory.editor.file","vega.uplink.commanding.itl.gui.EvfFile"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("EvfEditor","vega.uplink.commanding.itl.gui.EvfFileEditor","factory.editor.variable","vega.uplink.commanding.itl.EventList"))
+REGISTRY.register("site.fileType",Extension("site.file.pdor","vega.uplink.commanding.gui.PdorFile",Configuration.getProperty("vega.file.type.PDOR"),IconResources.POR_ICON_NOROOT));
+REGISTRY.register(REGISTRY.COMPONENT,Extension("PDOR reader","vega.uplink.commanding.gui.PdorFileComponent","factory.editor.file","vega.uplink.commanding.gui.PdorFile"))
+REGISTRY.register("site.fileType",Extension("site.file.pwpl","vega.uplink.commanding.gui.PwplFile",Configuration.getProperty("vega.file.type.PWPL"),IconResources.POR_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.pwtl","vega.uplink.commanding.gui.PwplFile",Configuration.getProperty("vega.file.type.PWTL"),IconResources.POR_ICON_NOROOT));
+REGISTRY.register(REGISTRY.COMPONENT,Extension("PWPL reader","vega.uplink.commanding.gui.PwplFileComponent","factory.editor.file","vega.uplink.commanding.gui.PwplFile"))
 
 toolRegistry = TaskToolRegistry.getInstance()
 from vega.uplink.commanding.task import SavePorTask

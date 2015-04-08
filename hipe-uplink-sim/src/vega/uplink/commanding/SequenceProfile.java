@@ -191,16 +191,29 @@ public class SequenceProfile extends TableDataset{
 
 	
 	public String toXml(int indent){
-		String indentString="";
+		//String indentString="";
+		StringBuilder indentString=new StringBuilder();
 		for (int i=0;i<=indent;i++){
-			indentString=indentString+"\t";
+			indentString.append("\t");
 		}
 		String l1="<profile type=\""+getType()+"\">";
 		String l2="<timeOffset>"+getOffSetString()+"</timeOffset>";
 		String l3="<value>"+new Double(getValue()).toString()+"</value>";
 		String l4="</profile>";
-		return indentString+l1+"\n\t"+indentString+l2+"\n\t"+indentString+l3+"\n"+indentString+l4;
-		
+		StringBuilder result=new StringBuilder();
+		result.append(indentString);
+		result.append(l1);
+		result.append("\n\t");
+		result.append(indentString);
+		result.append(l2);
+		result.append("\n\t");
+		result.append(indentString);
+		result.append(l3);
+		result.append("\n");
+		result.append(indentString);
+		result.append(l4);
+		//return indentString+l1+"\n\t"+indentString+l2+"\n\t"+indentString+l3+"\n"+indentString+l4;
+		return result.toString();
 	}
 	
 	public boolean equal(SequenceProfile sq){

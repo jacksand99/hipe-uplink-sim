@@ -151,7 +151,7 @@ public class Sequence extends AbstractSequence {
 	}
 	
 	public char getSource(){
-		return ((String) getMeta().get(FLAG_FLIED).getValue()).charAt(0);
+		return ((String) getMeta().get(SOURCE_FIELD).getValue()).charAt(0);
 
 	}
 	
@@ -287,7 +287,7 @@ public class Sequence extends AbstractSequence {
 		String result = acronyms.get(acronim);
 		if (result!=null) return acronyms.get(acronim);
 		else {
-			System.out.println("Acronim for "+acronim+"in command "+getName()+" not known");
+			//System.out.println("Acronim for "+acronim+"in command "+getName()+" not known");
 			return "UNKNOWN";
 		}
 
@@ -346,10 +346,13 @@ public class Sequence extends AbstractSequence {
 
 	
 	public String toXml(int indent){
-		String indentString="";
+		//String indentString="";
+		StringBuilder indentString=new StringBuilder();
+		indentString.append("");;
 		for (int i=0;i<indent;i++){
-			indentString=indentString+"\t";
+			indentString.append("\t");
 		}
+		
 		String l1=indentString+"<sequence name=\""+getName()+"\">\n";
 		String l2=indentString+"\t<uniqueID>"+getUniqueID()+"</uniqueID>\n";
 		String l3=indentString+"\t<insertOrDeleteFlag>"+getFlag()+"</insertOrDeleteFlag>\n";
@@ -359,31 +362,66 @@ public class Sequence extends AbstractSequence {
 		String l7=indentString+"\t\t<actionTime>"+getExecutionTime()+"</actionTime>\n";
 		String l8=indentString+"\t</executionTime>\n";
 		Parameter[] parameters = getParameters();
-		String l9="";
-		String l10="";
-		String l11="";
+		//String l9="";
+		StringBuilder l9=new StringBuilder();
+		l9.append("");
+		//String l10="";
+		StringBuilder l10=new StringBuilder();
+		l10.append("");
+		//String l11="";
+		StringBuilder l11=new StringBuilder();
+		l11.append("");
 		if (parameters!=null && parameters.length>0){
-			l9=indentString+"\t<parameterList count=\""+parameters.length+"\">\n";
+			l9.append(indentString);
+			l9.append("\t<parameterList count=\""+parameters.length+"\">\n");
 			for (int i=0;i<parameters.length;i++){
 				if (parameters[i]==null) System.out.println("parameter is nulll:"+new Integer(i).toString()+getUniqueID());
-				l10=l10+parameters[i].toXML(i+1, indent+2)+"\n";
+				l10.append(parameters[i].toXML(i+1, indent+2)+"\n");
 			}
-			l11=indentString+"\t</parameterList>\n";
+			l11.append(indentString);
+			l11.append("\t</parameterList>\n");
 		}
-		String l12="";
+		//String l12="";
+		StringBuilder l12=new StringBuilder();
+		l12.append("");
 		SequenceProfile[] profiles=getProfiles();
-		if (profiles.length>0) l12=indentString+"\t<profileList count=\""+profiles.length+"\">\n";
-		String l13="";
-		String l14="";
+		if (profiles.length>0){
+			l12.append(indentString);
+			l12.append("\t<profileList count=\""+profiles.length+"\">\n");
+		}
+		//String l13="";
+		StringBuilder l13=new StringBuilder();
+		l13.append("");
+		//String l14="";
+		StringBuilder l14=new StringBuilder();
 		if (profiles.length>0){
 			for (int i=0;i<profiles.length;i++){
-				l13=l13+profiles[i].toXml(indent+2)+"\n";
+				l13.append(profiles[i].toXml(indent+2)+"\n");
 			}
-			l14=indentString+"\t</profileList>\n";
+			l14.append(indentString);
+			l14.append("\t</profileList>\n");
 
 		}
 		String l15=indentString+"</sequence>\n";
-		return l1+l2+l3+l4+l5+l6+l7+l8+l9+l10+l11+l12+l13+l14+l15;
+		StringBuilder result=new StringBuilder();
+		result.append(l1);
+		result.append(l2);
+		result.append(l3);
+		result.append(l4);
+		result.append(l5);
+		result.append(l6);
+		result.append(l7);
+		result.append(l8);
+		result.append(l9);
+		result.append(l10);
+		result.append(l11);
+		result.append(l12);
+		result.append(l13);
+		result.append(l14);
+		result.append(l15);
+		
+
+		return result.toString();
 	}
 	
 	public String toXml(){

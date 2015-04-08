@@ -43,6 +43,8 @@ import javax.swing.JTextField;
 
 
 
+
+import vega.IconResources;
 /*import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 
@@ -134,7 +136,7 @@ public class PointingElementEditor extends AbstractVariableEditorComponent<Point
 	public Icon getComponentIcon() {
 		// TODO Auto-generated method stub
         try {
-            URL resource = PointingElementEditor.class.getResource("/vega/vega.gif");
+            URL resource = PointingElementEditor.class.getResource(IconResources.HUS_ICON);
             BufferedImage imageIcon = ImageIO.read(resource);
             return new ImageIcon(imageIcon);
     } catch (IOException e) {

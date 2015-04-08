@@ -3,12 +3,12 @@ package vega.uplink.pointing;
 import java.util.Date;
 import java.util.NoSuchElementException;
 
+import vega.hipe.gui.xmlutils.HtmlEditorKit;
 import vega.uplink.DateUtil;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetAngles;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetCustom;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetRaster;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetScan;
-import vega.uplink.pointing.gui.xmlutils.HtmlEditorKit;
 
 public class PtrChecker {
 	public static String checkSlice(PointingBlocksSlice slice){

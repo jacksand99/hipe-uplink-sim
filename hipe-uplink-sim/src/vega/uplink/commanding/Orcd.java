@@ -19,6 +19,19 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import vega.uplink.Properties;
+import vega.uplink.pointing.Ptr;
+import vega.uplink.pointing.PtrSegment;
+
 
 public class Orcd extends TableDataset{
 	
@@ -30,7 +43,7 @@ public class Orcd extends TableDataset{
 	public static int INDEX_NOT_ALLOWED=5;
 	
 	
-	public Orcd(){
+	private Orcd(){
 		super();
 		Column mode=new Column(new String1d());
 		
@@ -53,6 +66,15 @@ public class Orcd extends TableDataset{
 		this.setColumnName(INDEX_ALLOWED, "Transition allowed from mode");
 		this.setColumnName(INDEX_NOT_ALLOWED, "Transition forbidden from mode");
 		this.setVersion("1.0");
+	}
+	public static Orcd getOrcd(){
+		try{
+			return Orcd.readORCDXmlfile(Properties.getProperty(Properties.ORCD_FILE));
+		}catch(Exception e){
+			return Orcd.readORCDXmlfromJar();
+
+		}
+
 	}
 	public void setVersion(String version){
 		this.getMeta().set("version", new StringParameter(version));
@@ -180,6 +202,112 @@ public class Orcd extends TableDataset{
 			e.printStackTrace();
 		}
 	}
+	public void writeToXmlFile(String file){
+		try{
+			PrintWriter writer = new PrintWriter(file, "UTF-8");
+			writer.print(this.toXml());
+
+			writer.close();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	private static Orcd readORCDXmlBuffer(BufferedReader br){
+		Orcd result= new Orcd();
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder;
+		Document doc;
+		try{
+			dBuilder=dbFactory.newDocumentBuilder();
+			doc = dBuilder.parse(new InputSource(br));
+		}catch (Exception e){
+			IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
+			e.initCause(e);
+			throw(iae);
+		}
+	 
+		doc.getDocumentElement().normalize();
+	 
+		NodeList nListHeader = doc.getElementsByTagName("orcd");
+		Node nBody =nListHeader.item(0);
+		Element elBody = (Element) nBody;
+		String version=elBody.getAttribute("version");
+		result.setVersion(version);
+		NodeList nlSegments=elBody.getElementsByTagName("powerModel");
+		Element powerBody = (Element) nlSegments.item(0);
+		NodeList nlmodes=powerBody.getElementsByTagName("mode");
+		int nModes = nlmodes.getLength();
+		for (int i=0;i<nModes;i++){
+			Element mode = (Element) nlmodes.item(i);
+			String name=mode.getAttribute("name");
+			String power=mode.getElementsByTagName("power").item(0).getTextContent();
+			String transitionAllowed="";
+			try{
+				NodeList taNodes=mode.getElementsByTagName("transitionAllowed");
+				int nTaModes = taNodes.getLength();
+				for (int j=0;j<nTaModes;j++){
+					Element ta=(Element) taNodes.item(j);
+					transitionAllowed=transitionAllowed+" "+ta.getTextContent();
+				}
+			}catch(Exception e){
+				transitionAllowed="null";
+			}
+			if (transitionAllowed.equals("")) transitionAllowed="null";
+			transitionAllowed=transitionAllowed.trim();
+
+			String transitionNotAllowed="";
+			try{
+				NodeList tnaNodes=mode.getElementsByTagName("transitionNotAllowed");
+				int nTnaModes = tnaNodes.getLength();
+				for (int j=0;j<nTnaModes;j++){
+					Element tna=(Element) tnaNodes.item(j);
+					transitionNotAllowed=transitionNotAllowed+" "+tna.getTextContent();
+				}
+			}catch (Exception e){
+				transitionNotAllowed="null";
+			}
+			if (transitionNotAllowed.equals("")) transitionNotAllowed="null";
+			transitionNotAllowed=transitionNotAllowed.trim();
+
+			NodeList sequenceNodes=mode.getElementsByTagName("sequence");
+			int nSNodes=sequenceNodes.getLength();
+			for (int j=0;j<nSNodes;j++){
+				Element seq=(Element) sequenceNodes.item(j);
+				String seqName=seq.getTextContent();
+				String offset="00:00:00";
+				try{
+					offset=seq.getAttribute("offset");
+					if (offset.equals("")) offset="00:00:00";
+				}catch (Exception e){
+					
+				}
+				result.addRow(name, power, seqName, offset, transitionAllowed, transitionNotAllowed);
+			}
+		}
+		return result;
+	}
+	public static Orcd readORCDXmlfromJar(){
+		InputStream is = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/mib/orcd.xml");
+		InputStreamReader isr = new InputStreamReader(is);
+		BufferedReader br = new BufferedReader(isr);
+		return readORCDXmlBuffer(br);
+	}
+	
+	public static Orcd readORCDXmlfile(String xmlFile){
+		try{
+			return readORCDXmlBuffer(new BufferedReader(new FileReader(xmlFile)));
+		}catch(Exception e){
+			IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
+			e.initCause(e);
+			throw(iae);
+			//e.printStackTrace();
+			//return new Orcd();
+		}
+	  
+	}
+
+	
 	private static Orcd readORCDBuffer(BufferedReader br){
 		Orcd result= new Orcd();
 		String line = "";
@@ -233,7 +361,7 @@ public class Orcd extends TableDataset{
 
 
 	}
-	public static Orcd readORCDfromJar(){
+	private static Orcd readORCDfromJar(){
 		
 		InputStream is = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/mib/orcd.csv");
 		InputStreamReader isr = new InputStreamReader(is);
@@ -241,7 +369,7 @@ public class Orcd extends TableDataset{
 		return readORCDBuffer(br);
 	}
 	
-	public static Orcd readORCDfile(String csvFile){
+	private static Orcd readORCDfile(String csvFile){
 		try{
 			return readORCDBuffer(new BufferedReader(new FileReader(csvFile)));
 		}catch(Exception e){
@@ -273,14 +401,14 @@ public class Orcd extends TableDataset{
 			String mode=array[0];
 			modes.add(mode);
 		}
-		
-		String result="<orcd version="+getVersion()+">\n";
+		String result="<!-- Operations Rules and Constrains Model -->\n";
+		result=result+"<orcd version=\""+getVersion()+"\">\n";
 		result=result+"\t<powerModel>\n";
 		Iterator<String> it = modes.iterator();
 		while (it.hasNext()){
 			String mode=it.next();
-			result=result+"\t\t<mode name="+mode+">\n";
-			//result=result+"\t\t<mode>"+mode+"</mode>\n";
+			result=result+"\t\t<mode name=\""+mode+"\">\n";
+
 			result=result+"\t\t\t<power>"+this.getPowerForMode(mode)+"</power>\n";
 			TableDataset table = findInTable(this, INDEX_MODE, mode);
 			int rowCount2=table.getRowCount();
@@ -289,32 +417,15 @@ public class Orcd extends TableDataset{
 			for (int i=0;i<rowCount2;i++){
 				String[] array=new String[6];
 				array = table.getRow(i).toArray(array);
-				//String mode=array[0];
-				//String power=array[1];
+
 				String sequence=array[2];
 				String offSet=array[3];
 				allowed=array[4];
 				notAllowed=array[5];
-				//result=result+"\t<entry>\n";
-				//result=result+"\t\t<mode>"+mode+"</mode>\n";
-				//result=result+"\t\t<power>"+power+"</power>\n";
+
 				if (!offSet.equals("00:00:00")) result=result+"\t\t\t<sequence offset=\""+offSet+"\""+">"+sequence+"</sequence>\n";
 				else result=result+"\t\t\t<sequence>"+sequence+"</sequence>\n";
-				//result=result+"\t\t<offset>"+offSet+"</offset>\n";
-				/*if (!allowed.equals("null")){
-					StringTokenizer allTok = new StringTokenizer(allowed);
-					while(allTok.hasMoreElements()){
-						result=result+"\t\t<allowed>"+allTok.nextToken()+"</allowed>\n";
-					}
-					//result=result+"\t\t<allowed>"+allowed+"</allowed>\n";
-				}
-				if (!notAllowed.equals("null")){
-					StringTokenizer notallTok = new StringTokenizer(notAllowed);
-					while(notallTok.hasMoreElements()){
-						result=result+"\t\t<notAllowed>"+notallTok.nextToken()+"</notAllowed>\n";
-					}
-				}*/
-				//result=result+"\t</entry>\n";
+
 				
 				
 			}
@@ -323,7 +434,7 @@ public class Orcd extends TableDataset{
 				while(allTok.hasMoreElements()){
 					result=result+"\t\t\t<transitionAllowed>"+allTok.nextToken()+"</transitionAllowed>\n";
 				}
-			//result=result+"\t\t<allowed>"+allowed+"</allowed>\n";
+
 			}
 			if (!notAllowed.equals("null")){
 				StringTokenizer notallTok = new StringTokenizer(notAllowed);

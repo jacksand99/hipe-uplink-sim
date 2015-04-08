@@ -16,7 +16,7 @@
    limitations under the License.
 
  */
-package vega.uplink.pointing.gui.xmlutils;
+package vega.hipe.gui.xmlutils;
 
 import java.awt.Font;
 import javax.swing.JEditorPane;
@@ -35,7 +35,12 @@ import javax.swing.text.ViewFactory;
  */
 public class XMLEditorKit extends DefaultEditorKit {
 
-    public static final String XML_MIME_TYPE = "text/xml";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public static final String XML_MIME_TYPE = "text/xml";
     
     protected XMLContext context;
     protected ViewFactory factory = null;

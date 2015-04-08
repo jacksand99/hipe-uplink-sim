@@ -1,67 +1,92 @@
 from vega.uplink.pointing import *
 import java
+from java.util import Date
 from vega.uplink.commanding import *
-dateFormat2 = java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss")
-dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 
 def checkStatus(sTime,eTime,forbidden_status,hm):
-	tm=hm.getTimes()
-	for k in tm:
-		if (k>=sTime and k<=eTime):
-			if (hm.getStates(k).getStateForMode(forbidden_status)==forbidden_status):
-				simulationContext.log("Forbidden "+forbidden_status+" during "+hm.getStates(k).getState("PTR_")+" at "+dateFormat2.format(java.util.Date(k)))
-def checkCommand(sTime,eTime,forbidden_command,hm):
-	tm=hm.getTimes()
-	for k in tm:
-		if (k>=sTime and k<=eTime):
-			if (hm.getCommand(k)==forbidden_command):
-				simulationContext.log("Forbidden "+forbidden_command+" at "+dateFormat2.format(java.util.Date(k)))
-#PTR vs commanding constrains checks
-forb_man=["RP_PW_ICA_HV","SR_NAC_Door_Open","SR_WAC_Door_Open"]
-forb_comm=["ACSS120Z","ACSS180Z","ACSS123Z","ACSS124Z"]
-for j in simulationContext.getHistoryModes().getTimes():
-	states=simulationContext.getHistoryModes().getStatesAt(j+1)
-	if (states==None):
-		#print j
-		ptr_state="None"
-	else:
-		ptr_state=states.getState("PTR_")
-	if (ptr_state=="PTR_MWOL" or ptr_state=="PTR_MWNV"):
-		for f in forb_man:
-			if (states.getStateForMode(f)==f):
-				simulationContext.log("Forbidden "+f+" during "+ptr_state+" at "+dateFormat2.format(java.util.Date(j)))
-		for c in forb_comm:
-			checkCommand(j-21600000,j,c,simulationContext.getHistoryModes())
-			if (simulationContext.getHistoryModes().getCommand(j)==c):
-				simulationContext.log("Forbidden command "+c+" during "+ptr_state+" at "+dateFormat2.format(java.util.Date(j)))
-		checkStatus(j,j+1800000,"AL_PW_On",simulationContext.getHistoryModes())
-		checkStatus(j,j+1800000,"AL_PW_Operational",simulationContext.getHistoryModes())
-		checkStatus(j,j+1800000,"AL_Door_Open",simulationContext.getHistoryModes())
-forb_man=["RN_PW_DPU_Only","RN_PW_COPS","RP_PW_ICA_HV","SR_NAC_Door_Open","SR_WAC_Door_Open", "AL_PW_On","AL_PW_Operational","VR_PW_ME_Idle","VR_PW_ME_Safe"]
-forb_comm=["ACSS120Z","ACSS180Z","ACSS123Z","ACSS124Z"]
-for j in simulationContext.getHistoryModes().getTimes():
-	states=simulationContext.getHistoryModes().getStates(j+1)
-	if (states==None):
-		#print j
-		ptr_state="None"
-	else:
-		ptr_state=states.getState("PTR_")
-	#print ptr_state
-	if (ptr_state=="PTR_MOCM"):
-		#print "In maintenance",ptr_state
-		for f in forb_man:
-			if (states.getStateForMode(f)==f):
-				simulationContext.log("Forbidden "+f+" during "+ptr_state+" at "+dateFormat2.format(java.util.Date(j)))
-		for c in forb_comm:
-			if (simulationContext.getHistoryModes().getCommand(j)==c):
-				simulationContext.log("Forbidden command "+c+" during "+ptr_state+" at "+dateFormat2.format(java.util.Date(j))) 
-		checkStatus(j,j+1800000,"ALICE_PW_On",simulationContext.getHistoryModes())
-		checkStatus(j,j+1800000,"ALICE_PW_Operational",simulationContext.getHistoryModes())
-del(dateFormat2)
-del(c)
-del(f)
-del(forb_man)
-del(forb_comm)
-del(j)
-del(ptr_state)
-del(states)
+	modes=hm.getModesBetween(sTime,eTime)
+	for m in modes:
+		if (m==forbidden_status):
+			return True
+	return False
+def checkCommand(sTime,eTime,forbidden_command,st):
+	seqs=st.getSequencesBetween(sTime,eTime)
+	for s in seqs:
+		if (s.getName()==forbidden_command):
+			return True
+	return False
+#WOL / OCM and Payload State Constraints
+if (simulationContext.getPtr()!=None):
+    ptrSegment=simulationContext.getPtr().getSegments()[0]
+    #WOL Payload State Constraints
+    #ALICE
+    blocks=ptrSegment.getAllBlocksOfType("MWOL").getBlocks()
+    forb_man=["AL_Door_Open","AL_HV_On"]
+    for fb in forb_man:
+    	for b in blocks:
+    		if checkStatus(b.getStartTime(),Date(b.getEndTime().getTime()+1800000),fb,simulationContext.getHistoryModes()):
+    			simulationContext.log("Forbidden "+fb+" during MWOL + 30m at "+DateUtil.defaultDateToString(b.getStartTime()))
+    blocks=ptrSegment.getAllBlocksOfType("MWNV").getBlocks()
+    for fb in forb_man:
+    	for b in blocks:
+    		if checkStatus(Date(b.getEndTime().getTime()-1500000),Date(b.getEndTime().getTime()+1800000),fb,simulationContext.getHistoryModes()):
+    			simulationContext.log("Forbidden "+fb+" during last 25min of MWNV + 30m at "+DateUtil.defaultDateToString(b.getStartTime()))
+    #COSIMA
+    forb_comm=["ACSS120Z","ACSS123Z","ACSS124Z","ACSS125Z"]
+    blocks=ptrSegment.getAllBlocksOfType("MWOL").getBlocks()
+    for fc in forb_comm:
+    	for b in blocks:
+    		if checkCommand(b.getStartTime(),b.getEndTime(),fc,simulationContext.getSequenceTimeline()):
+    			simulationContext.log("Forbidden "+fc+" during MWOL at "+DateUtil.defaultDateToString(b.getStartTime()))
+    for fc in forb_comm:
+    	for b in blocks:
+    		if checkCommand(Date(b.getStartime().getTime()-19800000),b.getStartTime(),fc,simulationContext.getSequenceTimeline()):
+    			simulationContext.log("Forbidden "+fc+" 5.5h before MWOL at "+DateUtil.defaultDateToString(b.getStartTime()))
+    blocks=ptrSegment.getAllBlocksOfType("MWNV").getBlocks()
+    for fc in forb_comm:
+    	for b in blocks:
+    		if checkCommand(Date(b.getEndTime().getTime()-1500000),b.getEndTime(),fc,simulationContext.getSequenceTimeline()):
+    			simulationContext.log("Forbidden "+fc+" during last 25min of MWNV at "+DateUtil.defaultDateToString(b.getStartTime()))
+    for fc in forb_comm:
+    	for b in blocks:
+    		if checkCommand(Date(b.getEndTime().getTime()-1500000-19800000),Date(b.getEndTime().getTime()-1500000),fc,simulationContext.getSequenceTimeline()):
+    			simulationContext.log("Forbidden "+fc+" 5.5h before last 25min of MWNV at "+DateUtil.defaultDateToString(b.getStartTime()))
+    #RPC_ICA, OSIRIS-NAC & OSIRIS-WAC
+    blocks=ptrSegment.getAllBlocksOfType("MWOL").getBlocks()
+    forb_man=["RP_PW_ICA_HV","SR_NAC_Door_Open","SR_WAC_Door_Open"]
+    for fb in forb_man:
+    	for b in blocks:
+    		if checkStatus(b.getStartTime(),b.getEndTime(),fb,simulationContext.getHistoryModes()):
+    			simulationContext.log("Forbidden "+fb+" during MWOL at "+DateUtil.defaultDateToString(b.getStartTime()))
+    blocks=ptrSegment.getAllBlocksOfType("MWNV").getBlocks()
+    for fb in forb_man:
+    	for b in blocks:
+    		if checkStatus(Date(b.getEndTime().getTime()-1500000),b.getEndTime(),fb,simulationContext.getHistoryModes()):
+    			simulationContext.log("Forbidden "+fb+" during last 25min of MWNV at "+DateUtil.defaultDateToString(b.getStartTime()))
+    #OCM and Payload State Constraints
+    #ALICE
+    blocks=ptrSegment.getAllBlocksOfType("MOCM").getBlocks()
+    forb_man=["AL_Door_Open","AL_HV_On"]
+    for fb in forb_man:
+    	for b in blocks:
+    		if checkStatus(b.getStartTime(),Date(b.getEndTime().getTime()+1800000),fb,simulationContext.getHistoryModes()):
+    			simulationContext.log("Forbidden "+fb+" during MOCM + 30m at "+DateUtil.defaultDateToString(b.getStartTime()))
+    #COSIMA
+    #blocks=ptrSegment.getAllBlocksOfType("MOCM").getBlocks()
+    for fc in forb_comm:
+    	for b in blocks:
+    		if checkCommand(b.getStartTime(),b.getEndTime(),fc,simulationContext.getSequenceTimeline()):
+    			simulationContext.log("Forbidden "+fc+" during MOCM at "+DateUtil.defaultDateToString(b.getStartTime()))
+    for fc in forb_comm:
+    	for b in blocks:
+    		if checkCommand(Date(b.getStartTime().getTime()-19800000),b.getStartTime(),fc,simulationContext.getSequenceTimeline()):
+    			simulationContext.log("Forbidden "+fc+" 5.5h before MOCM at "+DateUtil.defaultDateToString(b.getStartTime()))
+    #ROSINA, RPC_ICA, OSIRIS-NAC,OSIRIS-WAC & VIRTIS
+    forb_man=["RP_PW_ICA_HV","SR_NAC_Door_Open","SR_WAC_Door_Open","VR_PW_ME_Idle","VR_PW_ME_Safe"]
+    for fb in forb_man:
+    	for b in blocks:
+    		if checkStatus(b.getStartTime(),b.getEndTime(),fb,simulationContext.getHistoryModes()):
+    			simulationContext.log("Forbidden "+fb+" during MOCM at "+DateUtil.defaultDateToString(b.getStartTime()))
+
+
+del(blocks,fb,fc,forb_comm,forb_man,ptrSegment)

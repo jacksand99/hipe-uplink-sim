@@ -16,7 +16,7 @@
    limitations under the License.
 
  */
-package vega.uplink.pointing.gui.xmlutils;
+package vega.hipe.gui.xmlutils;
 
 /**
  * This class contains the definitions of the arrays used to find

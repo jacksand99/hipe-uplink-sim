@@ -1,4 +1,9 @@
-package vega.uplink.pointing.gui.xmlutils;
+/*
+
+   Licensed under GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+
+ */
+package vega.hipe.gui.xmlutils;
 
 import java.awt.BorderLayout;
 //import java.awt.Dimension;
@@ -27,6 +32,8 @@ import javax.swing.text.html.StyleSheet;
 
 
 
+
+import vega.IconResources;
 //import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.gui.PtrXmlEditor;
 import herschel.ia.gui.apps.components.util.BottomPanel;
@@ -102,26 +109,20 @@ public class HtmlDocumentViewer extends AbstractVariableEditorComponent<HtmlDocu
 	      saveButton.addActionListener(ptral);
         buttonsPanel.add(saveButton);
         buttonsPanel.add(Box.createHorizontalGlue());
-        //this.add(buttonsPanel, BorderLayout.NORTH);
-        //this.add(jEditorPane, BorderLayout.CENTER);
+
         
         JPanel global=new JPanel(new BorderLayout());
 		global.add(buttonsPanel,BorderLayout.NORTH);
 		global.add(new JScrollPane(jEditorPane),BorderLayout.CENTER);
 		this.add(new BottomPanel(this, global));
-		/*JPanel global=new JPanel(new BorderLayout());
-		global.add(topPanel,BorderLayout.NORTH);
-		editor = new XMLTextEditor();
-		editor.setText(pointingMetadata.toXml(0));
-		global.add(new JScrollPane(editor),BorderLayout.CENTER);
-		this.add(new BottomPanel(this, global));*/
+
 
     }
 	
 	public Icon getComponentIcon() {
 		// TODO Auto-generated method stub
         try {
-            URL resource = PtrXmlEditor.class.getResource("/vega/vega.gif");
+            URL resource = PtrXmlEditor.class.getResource(IconResources.HUS_ICON);
             BufferedImage imageIcon = ImageIO.read(resource);
             return new ImageIcon(imageIcon);
     } catch (IOException e) {

@@ -264,35 +264,36 @@ public class PointingElement extends CompositeDataset  {
 	 * @return
 	 */
 	public String toXml(int indent){
-		String result="";
-		String iString="";
+		//String result="";
+		StringBuilder result=new StringBuilder();
+		StringBuilder iString=new StringBuilder();
 		for (int i=0;i<indent;i++){
-			iString=iString+"\t";
+			iString.append("\t");
 		}
 		PointingElement[] childs=this.getChildren();
 		PointingElement[] attr=this.getAttributes();
 		if (childs.length==0){
 			if (attr.length>0 || getValue()!=""){
-				result=result+iString+"<"+getName();
-				for (int z=0;z<attr.length;z++) result=result+" "+attr[z].getName()+"='"+attr[z].getValue()+"'";
-				if(!getValue().equals("")) result=result+">"+getValue()+"</"+getName()+">\n";
+				result.append(iString+"<"+getName());
+				for (int z=0;z<attr.length;z++) result.append(" "+attr[z].getName()+"='"+attr[z].getValue()+"'");
+				if(!getValue().equals("")) result.append(">"+getValue()+"</"+getName()+">\n");
 				else{
-					result=result+"/>\n";
+					result.append("/>\n");
 				}
 			}
 		}else{
-			result=result+iString+"<"+getName();
-			for (int z=0;z<attr.length;z++) result=result+" "+attr[z].getName()+"='"+attr[z].getValue()+"'";
-			result=result+">\n";
+			result.append(iString+"<"+getName());
+			for (int z=0;z<attr.length;z++) result.append(" "+attr[z].getName()+"='"+attr[z].getValue()+"'");
+			result.append(">\n");
 
 
 			for (int j=0;j<childs.length;j++){
-				result=result+childs[j].toXml(indent+1);
+				result.append(childs[j].toXml(indent+1));
 			}
-			result=result+iString+"</"+getName()+">\n";
+			result.append(iString+"</"+getName()+">\n");
 			
 		}
-		return result;
+		return result.toString();
 	}
 	
 	/**

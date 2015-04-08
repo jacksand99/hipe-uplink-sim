@@ -16,7 +16,7 @@
    limitations under the License.
 
  */
-package vega.uplink.pointing.gui.xmlutils;
+package vega.hipe.gui.xmlutils;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -31,7 +31,11 @@ import javax.swing.text.PlainDocument;
  */
 public class XMLDocument extends PlainDocument {
 
-    protected XMLScanner lexer;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected XMLScanner lexer;
     protected XMLContext context;
     
     protected XMLToken cacheToken = null;

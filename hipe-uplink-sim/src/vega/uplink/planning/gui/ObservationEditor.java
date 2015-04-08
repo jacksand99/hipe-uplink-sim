@@ -33,6 +33,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 
+import vega.IconResources;
+import vega.hipe.gui.xmlutils.XMLEditorKit;
 import vega.uplink.Properties;
 import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationChangeEvent;
@@ -43,7 +45,6 @@ import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
 import vega.uplink.pointing.PtrUtils;
 import vega.uplink.pointing.gui.PtrXmlEditor;
-import vega.uplink.pointing.gui.xmlutils.XMLEditorKit;
 
 public class ObservationEditor extends AbstractVariableEditorComponent<Observation> implements ObservationListener{
 	/**
@@ -204,7 +205,7 @@ public class ObservationEditor extends AbstractVariableEditorComponent<Observati
 	
 	public Icon getComponentIcon() {
         try {
-            URL resource = PtrXmlEditor.class.getResource("/vega/vega.gif");
+            URL resource = PtrXmlEditor.class.getResource(IconResources.HUS_ICON);
             BufferedImage imageIcon = ImageIO.read(resource);
             return new ImageIcon(imageIcon);
     } catch (IOException e) {

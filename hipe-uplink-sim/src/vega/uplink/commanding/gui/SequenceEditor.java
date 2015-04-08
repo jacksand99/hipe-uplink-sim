@@ -10,6 +10,7 @@ import herschel.ia.gui.kernel.parts.AbstractVariableEditorComponent;
 
 
 
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
 //import java.util.StringTokenizer;
+
 
 import javax.imageio.ImageIO;
 import javax.swing.GroupLayout;
@@ -30,6 +32,7 @@ import javax.swing.JTextField;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 
+import vega.IconResources;
 import vega.uplink.commanding.Sequence;
 
 public class SequenceEditor extends AbstractVariableEditorComponent<Sequence>{
@@ -194,7 +197,7 @@ public class SequenceEditor extends AbstractVariableEditorComponent<Sequence>{
 	@Override
 	public Icon getComponentIcon() {
         try {
-            URL resource = SequenceEditor.class.getResource("/vega/vega.gif");
+            URL resource = SequenceEditor.class.getResource(IconResources.HUS_ICON);
             BufferedImage imageIcon = ImageIO.read(resource);
             return new ImageIcon(imageIcon);
     } catch (IOException e) {

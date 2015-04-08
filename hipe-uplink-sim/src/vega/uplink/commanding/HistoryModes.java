@@ -10,11 +10,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 //import java.util.Map.Entry;
 //import java.util.Set;
 import java.util.List;
 import java.util.TreeSet;
+
+
 
 /**
  * Class to store the history of a simulation of a planning period
@@ -28,14 +31,15 @@ import java.util.TreeSet;
  *
  */
 public class HistoryModes extends CompositeDataset{
-
-	
+	private boolean cacheDirty;
+	HashSet<ModePeriod> periods;
 	/**
 	 * Constructor that creates a History empty
 	 */
 	public HistoryModes(){
 		super();
-
+		cacheDirty=true;
+		periods=new HashSet<ModePeriod>();
 		Column time=new Column(new Long1d());
 		Column newmode=new Column(new String1d());
 		Column command=new Column(new String1d());
@@ -83,6 +87,7 @@ public class HistoryModes extends CompositeDataset{
 			row[3]=new Long(originalTime);
 			((TableDataset) get("table")).addRow(row);
 		}
+		cacheDirty=true;
 	}
 	private Long[] longToLongArray(long[] data){
 		Long[] result=new Long[data.length];
@@ -155,6 +160,7 @@ public class HistoryModes extends CompositeDataset{
 	 */
 	public void addStates(long time,ModelState states){
 		set(""+time,states);
+		cacheDirty=true;
 		//historyStates.put(time, states);
 	}
 	
@@ -178,6 +184,7 @@ public class HistoryModes extends CompositeDataset{
 			Long key=it.next();
 			add(key.longValue(),newset.get(key),command,originalTime);
 		}
+		cacheDirty=true;
 		
 	}
 	
@@ -263,6 +270,8 @@ public class HistoryModes extends CompositeDataset{
 		return result;
 	}
 	
+	
+	
 	public String[] getAllStates(){
 		HashMap<String,String> hm=new HashMap<String,String>();
 		long[] temp=getTimes();
@@ -291,6 +300,86 @@ public class HistoryModes extends CompositeDataset{
 		String[] result= new String[hm.size()];
 		hm.keySet().toArray(result);
 		return result;
+	}
+	
+	private HashSet<ModePeriod> getPeriods(){
+		if (!cacheDirty) return periods;
+		else{
+			HashSet<ModePeriod> result=new HashSet<ModePeriod>();
+			String[] states = getAllStates();
+			for (int i=0;i<states.length;i++){
+				Date[] dates = this.getBoundarieDatesForState(states[i]);
+				for (int j=0;j<dates.length;j=j+2){
+					Date start = dates[j];
+					Date end = dates[j+1];
+					ModePeriod period = new ModePeriod(start,end,states[i]);
+					result.add(period);
+				}
+			}
+			cacheDirty=false;
+			periods=result;
+		}
+		return periods;
+	}
+	
+	public String[] getModesBetween(Date startDate,Date endDate){
+		ModePeriod[] periods = findOverlapingModes(startDate,endDate);
+		HashSet<String> modes=new HashSet<String>();
+		for (int i=0;i<periods.length;i++){
+			modes.add(periods[i].getName());
+		}
+		String[] result=new String[modes.size()];
+		result=modes.toArray(result);
+		return result;
+	}
+	
+	private ModePeriod[] findOverlapingModes(Date startDate,Date endDate){
+		java.util.Vector<ModePeriod> affected=new java.util.Vector<ModePeriod>();
+		Iterator<ModePeriod> it = getPeriods().iterator();
+		while (it.hasNext()){
+
+			ModePeriod pass = it.next();
+				boolean con1=false;
+				boolean con2=false;
+				if (pass.getStartTime().after(endDate) ) con1=true;
+				if (pass.getEndTime().before(startDate)) con2=true;
+				if (!con1 && !con2) affected.add(pass);
+		}
+		ModePeriod[] result= new ModePeriod[affected.size()];
+		result=affected.toArray(result);
+		return result;
+	}
+	
+	private class ModePeriod implements Comparable<ModePeriod>{
+		Date startTime;
+		Date endTime;
+		String mode;
+		@Override
+		public int compareTo(ModePeriod o) {
+			return startTime.compareTo(o.startTime);
+		}
+		ModePeriod(Date sTime,Date eTime,String instrumentMode){
+			startTime=sTime;
+			endTime=eTime;
+			mode=instrumentMode;
+		}
+		Date getStartTime(){
+			return startTime;
+		}
+		Date getEndTime(){
+			return endTime;
+		}
+		String getName(){
+			return mode;
+		}
+		public boolean equals(ModePeriod other){
+			if (!startTime.equals(other.getStartTime())) return false;
+			if (!endTime.equals(other.getEndTime())) return false;
+			if (!getName().equals(other.getName())) return false;
+			return true;
+		}
+		
+		
 	}
 
 }

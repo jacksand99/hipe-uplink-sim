@@ -16,10 +16,10 @@
    limitations under the License.
 
  */
-package vega.uplink.pointing.gui.xmlutils;
+package vega.hipe.gui.xmlutils;
 
 import java.awt.Color;
-import java.awt.Font;
+
 
 import javax.swing.JEditorPane;
 import javax.swing.event.UndoableEditEvent;
@@ -44,7 +44,11 @@ import javax.swing.undo.UndoManager;
  */
 public class XMLTextEditor extends JEditorPane {
 
-    protected UndoManager undoManager;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected UndoManager undoManager;
     
     /** Creates a new instance of XMLEditorPane */
     public XMLTextEditor() {

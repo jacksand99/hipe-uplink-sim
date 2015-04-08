@@ -21,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import vega.IconResources;
 import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.PointingMetadata;
 import herschel.ia.dataset.gui.views.ArrayDataComponent;
@@ -117,7 +118,7 @@ public class PointingMetadataEditor extends AbstractVariableEditorComponent<Poin
 	public Icon getComponentIcon() {
 		// TODO Auto-generated method stub
         try {
-            URL resource = PointingElementEditor.class.getResource("/vega/vega.gif");
+            URL resource = PointingElementEditor.class.getResource(IconResources.PTR_ICON);
             BufferedImage imageIcon = ImageIO.read(resource);
             return new ImageIcon(imageIcon);
     } catch (IOException e) {

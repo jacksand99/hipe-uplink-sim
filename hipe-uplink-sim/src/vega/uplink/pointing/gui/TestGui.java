@@ -9,12 +9,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import vega.hipe.gui.xmlutils.XMLTextEditor;
 import vega.uplink.Properties;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrUtils;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetScan;
 import vega.uplink.pointing.attitudes.Limb;
-import vega.uplink.pointing.gui.xmlutils.XMLTextEditor;
 
 import com.sun.glass.events.WindowEvent;
 

@@ -18,6 +18,7 @@ import herschel.share.swing.Components;
 
 
 
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
@@ -74,6 +75,8 @@ import org.jfree.ui.RefineryUtilities;
 
 
 
+
+import vega.IconResources;
 import vega.uplink.Properties;
 import vega.uplink.commanding.HistoryModes;
 
@@ -538,7 +541,7 @@ public class HistoryModesPlot extends AbstractVariableEditorComponent<HistoryMod
 
 	public Icon getComponentIcon() {
         try {
-            URL resource = HistoryModesPlot.class.getResource("/vega/vega.gif");
+            URL resource = HistoryModesPlot.class.getResource(IconResources.HUS_ICON);
             BufferedImage imageIcon = ImageIO.read(resource);
             return new ImageIcon(imageIcon);
     } catch (IOException e) {

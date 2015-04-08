@@ -92,23 +92,35 @@ public class MocPower extends TableDataset{
 		return ((Float1d) this.getColumn(1).getData()).get(ind);
 		//return power[ind];
 	}
+	protected static String removeMultipleSpaces(String line){
+		line=line.replaceAll("\t", " ");
+		int index=line.indexOf("  ");
+		if (index==-1){
+			return line;
+		}else{
+			return removeMultipleSpaces(line.replaceAll("  ", " "));
+		}
+	}
 	public static MocPower ReadFromBuffer(BufferedReader br){
 		MocPower result = new MocPower();
 		//BufferedReader br = null;
 		String line = "";
-		String cvsSplitBy = "      ";
+		String cvsSplitBy = " ";
 	 
 		try {
 	 
 			//br = new BufferedReader(new FileReader(file));
 			while ((line = br.readLine()) != null) {
-	 
+				
+				line=removeMultipleSpaces(line);
+				if (!line.equals(" ") &&  !line.equals("")){
 			        // use comma as separator
-				String[] fields = line.split(cvsSplitBy);
-				long newTime=DateUtil.DOYToDate(fields[0]).getTime();
-				float newPower=Float.parseFloat(fields[1]);
-				//System.out.println(zuluToDate(fields[0]).toString()+","+fields[1]);
-				result.addRecord(newTime, newPower);
+					String[] fields = line.split(cvsSplitBy);
+					long newTime=DateUtil.parse(fields[0]).getTime();
+					float newPower=Float.parseFloat(fields[1]);
+					//System.out.println(zuluToDate(fields[0]).toString()+","+fields[1]);
+					result.addRecord(newTime, newPower);
+				}
 	 
 			}
 		}catch (FileNotFoundException e) {
@@ -137,57 +149,20 @@ public class MocPower extends TableDataset{
 			return ReadFromBuffer(new BufferedReader(new FileReader(file)));
 			
 		}catch (Exception e){
-			e.printStackTrace();
-			return new MocPower();
+			IllegalArgumentException iae = new IllegalArgumentException("Could not read power file "+e.getMessage());
+			iae.initCause(e);
+			throw iae;
+
 		}
 	}
 	public static MocPower ReadFromJar(){
 		System.out.println("reading from jar");
-		//MocPower result = new MocPower();
-		//try{
+
 			InputStream is = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/moc/PWPL_14_001_14_365__OPT_01.ROS");
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
 			return ReadFromBuffer(br);
-		//}catch (Exception e){
-			//e.printStackTrace();
-			//return result;
-		//}
-		/*BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = "      ";
-	 
-		try {
-	 
-			br = new BufferedReader(new FileReader(file));
-			while ((line = br.readLine()) != null) {
-	 
-			        // use comma as separator
-				String[] fields = line.split(cvsSplitBy);
-				long newTime=zuluToDate(fields[0]).getTime();
-				float newPower=Float.parseFloat(fields[1]);
-				//System.out.println(zuluToDate(fields[0]).toString()+","+fields[1]);
-				result.addRecord(newTime, newPower);
-	 
-			}
-		}catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		//System.out.println(result.power.length);
-		return result;*/
+
 		
 		
 	}

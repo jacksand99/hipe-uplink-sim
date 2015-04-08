@@ -10,6 +10,11 @@ import herschel.ia.numeric.Long1d;
 
 
 
+
+
+
+
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -47,10 +52,29 @@ public class SsmmSimulator {
 	public void reset(){
 		init();
 	}
+	
+	public float getDataRateAt(String instrument,Date date){
+		InstrumentSimulator simulator = getSimulator(instrument);
+		return simulator.getRateAt(date);
+	}
 
 	public void addAction(String instrument, Date time,float rate){
 		InstrumentSimulator simulator = getSimulator(instrument);
 		simulator.add(time, rate);
+	}
+	
+	public void initInstrument(String instrument,Date time,float memory){
+		addAction(instrument,time,memory);
+		addAction(instrument,new Date(time.getTime()+1000),0);
+	}
+	public void initInstrument(String instrument,String time,String memory,String datarate) throws NumberFormatException, ParseException{
+		initInstrument(instrument,DateUtil.parse(time),Float.parseFloat(memory),Float.parseFloat(datarate));
+	}
+	public void initInstrument(String instrument,Date time,float memory,float datarate){
+		addAction(instrument,new Date(time.getTime()-1000),memory);
+		//addAction(instrument,new Date(time.getTime()+1000),0);
+		addAction(instrument,time,datarate);
+		//addAction(instrument,new Date(time.getTime()+1000),0);
 	}
 	
 	public String  addGsPass(GsPass pass){
@@ -219,6 +243,19 @@ public class SsmmSimulator {
 		
 		void add(Date time,float rate){
 			rates.put(time, rate);
+		}
+		
+		float getRateAt(Date time){
+			Entry<Date, Float> result = rates.floorEntry(time);
+			if (result==null) return 0f;
+			Float r = result.getValue();
+			if (r<0) {
+				Date newdate = rates.ceilingKey(time);
+				if (newdate==null) return 0f;
+				else return getRateAt(newdate);
+			}
+			else return r;
+			
 		}
 		
 		void addDump(Date startTime,Date endTime,float rate){

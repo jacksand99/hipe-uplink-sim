@@ -53,6 +53,9 @@ import org.w3c.dom.Document;
 import rosetta.uplink.pointing.RosettaPtrChecker;
 import de.jaret.util.date.JaretDate;
 import de.jaret.util.ui.timebars.swing.TimeBarViewer;
+import vega.IconResources;
+import vega.hipe.gui.xmlutils.HtmlEditorKit;
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.commanding.Fecs;
 import vega.uplink.commanding.Simulation;
@@ -70,7 +73,6 @@ import vega.uplink.pointing.PtrUtils;
 import vega.uplink.pointing.exclusion.AbstractExclusion;
 import vega.uplink.pointing.gui.PtrXmlEditor;
 //import vega.uplink.pointing.gui.PtrXmlEditor.PrintAction;
-import vega.uplink.pointing.gui.xmlutils.HtmlEditorKit;
 
 public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 	/**
@@ -394,6 +396,11 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
             }
         };
 
+		SiteAction savePors = new AbstractEditorAction("SavePors") {
+            @Override public void actionPerformed(ActionEvent e) {
+                savePors();
+            }
+        };
 
         
 		menus.retarget(Retarget.SAVE_AS, saveAs);
@@ -406,7 +413,7 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
         menus.insert(new Insert(MENU, MAIN, EDIT_ADDON), orcdCheck);
         menus.insert(new Insert(MENU, MAIN, FILE_ADDON), gMapps);
         menus.insert(new Insert(MENU, MAIN, FILE_ADDON), savePtrAs);
-
+        menus.insert(new Insert(MENU, MAIN, FILE_ADDON), savePors);
 
 	}
 	
@@ -424,7 +431,7 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 	
 	public Icon getComponentIcon() {
         try {
-            URL resource = PtrXmlEditor.class.getResource("/vega/vega.gif");
+            URL resource = PtrXmlEditor.class.getResource(IconResources.HUS_ICON);
             BufferedImage imageIcon = ImageIO.read(resource);
             return new ImageIcon(imageIcon);
     } catch (IOException e) {
@@ -508,7 +515,7 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 			Fecs fecs = schedule.getFecs();
 			if (fecs!=null) context.setFecs(fecs);
 			Simulation simulation=new Simulation(schedule.getPor(),context);
-			SimulationContext resultContext = simulation.runSimulation();
+			SimulationContext resultContext = simulation.runOnlyText(false);
 			String messages="";
 			messages=messages+resultContext.getLog();
 			messages=messages.replace("\n", "\n<br>");
@@ -522,6 +529,41 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 				    JOptionPane.ERROR_MESSAGE);
 			e1.printStackTrace();
 		}
+	}
+	public void savePors(){
+		String path=null;
+        try{
+	          JFileChooser chooser = new JFileChooser();
+	          try{
+	        	  chooser.setSelectedFile(new File(Properties.getProperty(Properties.DEFAULT_PLANNING_DIRECTORY)));
+	          }catch (Exception e3){
+	        	//chooser.setCurrentDirectory(new File(Properties.getProperty(Properties.DEFAULT_PLANNING_DIRECTORY)));
+	          }
+	          chooser.setMultiSelectionEnabled(false);
+	          chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	          
+	          int option = chooser.showSaveDialog(ScheduleViewer.this);
+	          //File sf;
+	          if (option == JFileChooser.APPROVE_OPTION) {
+	            File sf = chooser.getSelectedFile();
+	            path=sf.getAbsolutePath();
+	            ObservationUtil.savePors(path, schedule);
+	            
+	          }
+	          else {
+	            //itlbar.setText("You canceled.");
+	          }
+	         
+
+      } catch (Exception e1) {
+					JOptionPane.showMessageDialog(ScheduleViewer.this,
+						    e1.getMessage(),
+						    "Error",
+						    JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+					return;
+				}
+
 	}
 	
 	public void generateMapps(){

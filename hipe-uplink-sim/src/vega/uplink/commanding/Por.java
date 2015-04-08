@@ -2,6 +2,7 @@ package vega.uplink.commanding;
 
 //import herschel.ia.dataset.Product;
 import herschel.ia.dataset.StringParameter;
+import herschel.ia.numeric.String1d;
 import herschel.ia.pal.MapContext;
 import herschel.share.fltdyn.time.FineTime;
 //import herschel.share.interpreter.InterpreterUtil;
@@ -10,12 +11,19 @@ import herschel.share.fltdyn.time.FineTime;
 
 import herschel.share.interpreter.InterpreterUtil;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -25,14 +33,21 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import vega.hipe.gui.xmlutils.XmlDataInterface;
+import vega.hipe.products.AbstractXmlMapContext;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 
 
 	
-public class Por extends MapContext implements SequenceTimelineInterface{
+public class Por extends AbstractXmlMapContext implements SequenceTimelineInterface{
 	static private String AUTHOR="Rosetta Testing Team";
 	TreeMap<String,AbstractSequence> sequenceMap;
+	boolean calculateValidity;
+	String1d initModes;
+	String1d initMS;
+	String1d initMemory;
+	String1d initDataStore;
 	public Por copy(){
 		Por result = new Por();
 		//result.setSequences(porSequences);
@@ -42,6 +57,10 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 			newSeq[i]=(AbstractSequence) seqs[i].copy();
 		}
 		result.setSequences(newSeq);
+		result.setInitModes(getInitModes().copy());
+		result.setInitMS(getInitMS().copy());
+		result.setInitMemory(getInitMemory().copy());
+		result.setInitDataStore(getInitDataStore().copy());
 		return result;
 		//for (int i=0;i<seqs)
 		
@@ -51,10 +70,46 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 		setCreator(AUTHOR);
 		setName(""+new java.util.Date().getTime());
 		setPath(Properties.getProperty("user.home"));
+		setVersion("1");
 		this.setType("POR");
 		this.setCreationDate(new FineTime(new java.util.Date()));
 		sequenceMap=new TreeMap<String,AbstractSequence>();
+		calculateValidity=true;
+		initModes=new String1d();
+		initMS=new String1d();
+		initMemory=new String1d();
+		initDataStore=new String1d();
+
 	}
+	public String1d getInitModes(){
+		return initModes;
+	}
+	
+	public String1d getInitMS(){
+		return initMS;
+	}
+	public String1d getInitMemory(){
+		return initMemory;
+	}
+	public String1d getInitDataStore(){
+		return initDataStore;
+	}
+
+	
+	public void setInitModes(String1d im){
+		initModes=im;
+	}
+	
+	public void setInitMS(String1d ims){
+		initMS=ims;
+	}
+	public void setInitMemory(String1d ims){
+		initMemory=ims;
+	}
+	public void setInitDataStore(String1d ims){
+		initDataStore=ims;
+	}
+
 	
 	public void setName(String name){
 		getMeta().set("name", new StringParameter(name));
@@ -66,6 +121,15 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 	public String getName(){
 		return (String) getMeta().get("name").getValue();
 	}
+	
+	public void setVersion(String version){
+		getMeta().set("version", new StringParameter(version));
+	}
+	
+	public String getVersion(){
+		return (String) getMeta().get("version").getValue();
+	}
+	
 	public String getPath(){
 		return (String) getMeta().get("path").getValue();
 	}
@@ -83,7 +147,7 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 		this.getRefs().remove(sequence.getUniqueID());
 		sequenceMap.remove(sequence.getUniqueID());
 	}
-	private void removeAllSequences(){
+	public void removeAllSequences(){
 		AbstractSequence[] seqs = this.getSequences();
 		for (int i=0;i<seqs.length;i++){
 			removeSequence(seqs[i]);
@@ -99,8 +163,22 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 		sequenceMap.put(sequence.getUniqueID(), sequence);
 		calculateValidity();
 	}*/
+	public void  setCalculateValidity(boolean recalcualte){
+		calculateValidity=recalcualte;
+		if (recalcualte) calculateValidity();
+	}
 	
 	protected void calculateValidity(){
+		if (!calculateValidity) return;
+		Mib mib;
+		try {
+			mib = Mib.getMib();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			IllegalArgumentException iae = new IllegalArgumentException("Could not get Mib "+e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+		}
 		AbstractSequence[] seqs=getSequences();
 		int size=seqs.length;
 		java.util.Date lower=null;
@@ -108,14 +186,18 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 		
 		for (int i=0;i<size;i++){
 			java.util.Date exDate=seqs[i].getExecutionDate();
+			java.util.Date endDate=new Date(seqs[i].getExecutionDate().getTime()+(1000*mib.getTotalSequenceDuration(seqs[i].getName())));
 			if (lower==null) lower=exDate;
-			if (higher==null) higher=exDate;
+			if (higher==null) higher=endDate;
 			if (exDate.before(lower)) lower=exDate;
-			if (exDate.after(higher)) higher=exDate;
+			if (endDate.after(higher)) higher=endDate;
 		}
 		if (lower!=null)  this.setStartDate(new FineTime(lower));
 
-		if (higher!=null) this.setEndDate(new FineTime(higher));
+		if (higher!=null){
+			//higher
+			this.setEndDate(new FineTime(higher));
+		}
 
 	}
 	
@@ -208,10 +290,12 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 	}
 	
 	public void setSequences(SequenceInterface[] porSequences){
+		setCalculateValidity(false);
 		for (int i=0;i<porSequences.length;i++){
 			addSequence(porSequences[i]);
 		}
-		calculateValidity();
+		//calculateValidity();
+		setCalculateValidity(true);
 	}
 	
 	public AbstractSequence[] getSequences(){
@@ -263,9 +347,41 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 		
 		
 	}
+	
+	private void addDefaultParameters(){
+		Mib mib=null;
+		try{
+			mib=Mib.getMib();
+		}catch (Exception e){
+			IllegalArgumentException iae = new IllegalArgumentException("Could not get Mib:"+e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+		}
+		AbstractSequence[] seq = this.getSequences();
+		for (int i=0;i<seq.length;i++){
+			Parameter[] dp = mib.getDefaultParameters(seq[i].getName());
+			for (int j=0;j<dp.length;j++){
+				try{
+					Parameter rp = seq[i].getParameter(dp[j].getName());
+					if (rp==null) seq[i].addParameter(dp[j]);
+				}catch (Exception e){
+					seq[i].addParameter(dp[j]);
+				}
+			}
+		}
+	}
 
 	
 	public String toXml(){
+		Mib mib;
+		try{
+			mib = Mib.getMib();
+		}catch (Exception e){
+			IllegalArgumentException iae = new IllegalArgumentException("Could not get MIB "+e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+		}
+		addDefaultParameters();
 		AbstractSequence[] seqs=getOrderedSequences();
 		String l01="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 		String l02="<planningData xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n              xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\n              xsi:noNamespaceSchemaLocation=\"rosPlanningData.xsd\">\n";
@@ -278,21 +394,48 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 		String l09="\t\t\t</validityRange>\n";
 		String l10="\t\t</header>\n";
 		String l11="\t\t<occurrenceList count=\""+seqs.length+"\" creationTime=\""+getGenerationTime()+"\" author=\""+getCreator()+"\">\n";
-		String l12="";
+		//String l12="";
+		StringBuilder l12=new StringBuilder();
+		l12.append("");
 		int size=seqs.length;
 		for (int i=0;i<size;i++){
-			l12=l12+seqs[i].toXml(3)+"\n";
+			int c = i+1;
+			l12.append("\t\t\t"+"<!-- Sequence "+seqs[i].getName()+" ("+c+") -->\n");
+			l12.append("\t\t\t"+"<!-- Description: "+mib.getSequenceDescription(seqs[i].getName())+" -->\n");
+			
+			l12.append(seqs[i].toXml(3)+"\n");
 		}
 		String l13="\t\t</occurrenceList>\n";
 		String l14="\t</commandRequests>\n";
 		String l15="</planningData>\n";
-		return l01+l02+l03+l04+l05+l06+l07+l08+l09+l10+l11+l12+l13+l14+l15;
+		StringBuilder result=new StringBuilder();
+		result.append(l01);
+		result.append(l02);
+		result.append(l03);
+		result.append(l04);
+		result.append(l05);
+		result.append(l06);
+		result.append(l07);
+		result.append(l08);
+		result.append(l09);
+		result.append(l10);
+		result.append(l11);
+		result.append(l12);
+		result.append(l13);
+		result.append(l14);
+		result.append(l15);
+		return result.toString();
 		
 	}
 	
 	public AbstractSequence[] getOrderedSequences(){
-		
+		OrderedSequences ordered = new OrderedSequences();
 		AbstractSequence[] arraySeq=getSequences();
+		for (int i=0;i<arraySeq.length;i++){
+			ordered.put(arraySeq[i].getExecutionDate(), arraySeq[i]);
+		}
+		return ordered.toSequenceArray();
+		/*AbstractSequence[] arraySeq=getSequences();
 		if (arraySeq==null) return new Sequence[0];
 		java.util.Vector<AbstractSequence> result =new java.util.Vector<AbstractSequence>();
 		long[] times;
@@ -316,7 +459,7 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 		}
 		Sequence[] ret=new Sequence[result.size()];
 		result.toArray(ret);
-		return ret;
+		return ret;*/
 	}
 	
 	protected AbstractSequence[] insertInOrder(AbstractSequence[] arr,AbstractSequence newSeq){
@@ -376,6 +519,53 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 		
 		return result;
 	}
+	@Override
+	public String getXmlData() {
+		// TODO Auto-generated method stub
+		return this.toXml();
+	}
+	@Override
+	public void setFileName(String newFileName) {
+		setName(newFileName);
+		
+	}
+	@Override
+	public String getFileName() {
+		// TODO Auto-generated method stub
+		return getName();
+	}
+	@Override
+	public void setXmlData(String data) {
+		try{
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			InputStream stream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
+			Document doc;
+	
+			doc = dBuilder.parse(stream);
+			Por tempPor = PorUtils.readPorfromDocument(doc);
+			this.removeAllSequences();
+			this.setSequences(tempPor.getSequences());
+			
+		}catch (Exception e){
+			IllegalArgumentException iae=new IllegalArgumentException(e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+		}
+		
+	}
+	@Override
+	public void saveAs(String file) throws FileNotFoundException,
+			UnsupportedEncodingException {
+		PorUtils.writePORtofile(file, this);
+		
+	}
+	@Override
+	public void save() throws FileNotFoundException,
+			UnsupportedEncodingException {
+		PorUtils.savePor(this);
+		
+	}
 	
 	/*private class SequenceRule implements herschel.share.predicate.Predicate<Product> {
 
@@ -403,6 +593,17 @@ public class Por extends MapContext implements SequenceTimelineInterface{
 		
 	}*/
 	
-
+	class OrderedSequences extends TreeMap<Date,AbstractSequence>{
+		public AbstractSequence put(Date key,AbstractSequence value){
+			AbstractSequence former = this.get(key);
+			if (former==null) return super.put(key, value);
+			return put(new Date(key.getTime()+1),value);
+		}
+		public AbstractSequence[] toSequenceArray(){
+			AbstractSequence[] result=new AbstractSequence[this.size()];
+			result=this.values().toArray(result);
+			return result;
+		}
+	}
 	
 }

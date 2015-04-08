@@ -706,6 +706,44 @@ public class ObservationUtil {
 		return result;
 
 	}*/
+	public static void savePors(String directory,Schedule sch){
+		String sufix=".POR";
+		try{
+			String porType=Properties.getProperty("vega.file.type.POR");
+			int indexOfDot = porType.indexOf(".");
+			sufix=porType.substring(indexOfDot);
+		}catch (Exception e){
+			sufix=".POR";
+		}
+		savePors(directory,sch,sufix);
+	}
+	public static void savePors(String directory,Schedule sch,String sufix){
+		File dir=new File(directory);
+		if (!dir.isDirectory()) throw new IllegalArgumentException("Pors need to be saved in a directory");
+		Por por=sch.getPor();
+		List<String> ins = Properties.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
+		Iterator<String> it = ins.iterator();
+		String mtpNumber=sch.getPtslSegment().getName().replace("MTP_", "");
+		while(it.hasNext()){
+			String instrument = it.next();
+			String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument);
+			//Schedule insSch=subSch.getInstrumentSchedule(instrument);
+			Por insPor=por.getSubPor(instrument);
+			//saveStringToFile(stpDir.getAbsolutePath()+"/EVF__"+acro+"_"+prefix+".evf",scheduleToEVF(insSch,sed));
+			//saveStringToFile(stpDir.getAbsolutePath()+"/ITLS_"+acro+"_"+prefix+".itl",scheduleToITL(insSch,sed));
+			try {
+				if (insPor.getSequences().length>0){
+					saveStringToFile(dir.getAbsolutePath()+"/POR__DM_"+mtpNumber+"_01_"+acro+sufix,insPor.toXml());
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				IllegalArgumentException iae = new IllegalArgumentException("Could not save POR:"+e.getMessage());
+				iae.initCause(e);
+				throw(iae);
+			}
+
+		}
+	}
 	public static void saveMappsProducts(String file,Schedule sch,Plan plan) throws IOException{
 		String mtpName = sch.getPtslSegment().getName();
 		int mtpNumber=Integer.parseInt(mtpName.replace("MTP_", ""));

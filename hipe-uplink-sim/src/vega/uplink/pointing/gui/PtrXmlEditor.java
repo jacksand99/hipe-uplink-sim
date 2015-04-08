@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoundedRangeModel;
@@ -52,18 +53,28 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import rosetta.uplink.pointing.AttitudeGeneratorException;
+import rosetta.uplink.pointing.AttitudeGeneratorFDImpl;
+import rosetta.uplink.pointing.AttitudeGeneratorFDImplMini;
+import rosetta.uplink.pointing.ExclusionPeriod;
+import rosetta.uplink.pointing.RosettaPtrChecker;
+import vega.IconResources;
+import vega.hipe.gui.xmlutils.HtmlDocument;
+import vega.hipe.gui.xmlutils.HtmlDocumentViewer;
+import vega.hipe.gui.xmlutils.HtmlEditorKit;
+import vega.hipe.gui.xmlutils.XMLEditorKit;
+import vega.hipe.gui.xmlutils.XMLTextEditor;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
+import vega.uplink.commanding.Fecs;
+import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingElement;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
 import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
-import vega.uplink.pointing.gui.xmlutils.HtmlDocumentViewer;
 //import vega.uplink.pointing.PointingElement;
-import vega.uplink.pointing.gui.xmlutils.XMLEditorKit;
-import vega.uplink.pointing.gui.xmlutils.XMLTextEditor;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
@@ -90,6 +101,7 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final String NEWLINE = "\n";
+	private static final Logger LOG = Logger.getLogger(PtrXmlEditor.class.getName());
 	
 	Ptr ptr;
 	//JEditorPane editor;
@@ -139,12 +151,24 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
 		    			
 		            }
 		        });
+			JButton buttonFD=new JButton("FD PTR check");
+			buttonFD.addActionListener(new ActionListener() {
+		        	 
+		            public void actionPerformed(ActionEvent e)
+		            {
+		            	//JSearchDialog searchDialog=new JSearchDialog(editor,ptr.getName());
+		            	//searchDialog.setVisible(true);
+		            	finishEdting();
+		            	checkPtrFD();
+		    			
+		            }
+		        });
 
 		button.setAlignmentX(Component.LEFT_ALIGNMENT);
 		buttonsPanel.add(buttonSave,BorderLayout.WEST);
 		
 		buttonsPanel.add(button,BorderLayout.CENTER);
-		buttonsPanel.add(buttonSearch,BorderLayout.EAST);
+		buttonsPanel.add(buttonFD,BorderLayout.EAST);
 		topPanel.add(buttonsPanel,BorderLayout.WEST);
 		topPanel.add(classLabel,BorderLayout.EAST);
 		JPanel global = new JPanel (new BorderLayout());
@@ -661,7 +685,7 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
 	public Icon getComponentIcon() {
 		// TODO Auto-generated method stub
         try {
-            URL resource = PtrXmlEditor.class.getResource("/vega/vega.gif");
+            URL resource = PtrXmlEditor.class.getResource(IconResources.PTR_ICON);
             BufferedImage imageIcon = ImageIO.read(resource);
             return new ImageIcon(imageIcon);
     } catch (IOException e) {
@@ -715,6 +739,113 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
 
 
     }
+    
+	public void checkPtrFD() {
+		ExclusionPeriod excl = new ExclusionPeriod();
+		Float[] valuesEta=new Float[1];
+		valuesEta[0]=new Float(0);
+		Float[] valuesZeta=new Float[1];
+		valuesZeta[0]=new Float(0);
+		Float[] valuesEpsilon=new Float[1];
+		valuesEpsilon[0]=new Float(0);
+
+
+		//Ptr ptr = ptr;
+		Pdfm pdfm;
+        if (ptr == null) {
+            throw (new NullPointerException("Missing ptr value"));
+        }
+    	try{
+    		String pdfmName=ptr.getSegments()[0].getPdfm();
+    		if (pdfmName==null){
+    			throw (new IllegalArgumentException("There is no pfdm defined in the PTR"));
+    		}
+    		File f=new File(ptr.getPath()+"/"+pdfmName);
+    		if (!f.exists()){
+    			throw (new IllegalArgumentException("The pfdm defined in the PTR coul not be found at "+f.getAbsolutePath()));
+    		}
+    		pdfm=PtrUtils.readPdfmfromFile(ptr.getPath()+"/"+pdfmName);
+    	}catch (Exception e){
+    		IllegalArgumentException iae = new IllegalArgumentException("Error loading PDFM "+e.getMessage());
+    		iae.initCause(e);
+    		throw(iae);
+    	}
+    
+        String trajectory= Properties.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.activityCase");
+        String message="";
+        int totalLoop=valuesEta.length*valuesZeta.length*valuesEpsilon.length;
+        int loop=0;
+        			LOG.info(new Float(loop*100/totalLoop).intValue() + "% checks done");
+        			loop++;
+        			Float currentEta=valuesEta[0];
+        			Float currentZeta=valuesZeta[0];
+        			Float currentEpsilon=valuesEpsilon[0];
+        	        AttitudeGeneratorFDImplMini ag;
+        	        String activityCase;
+          	        String ptslName="";
+        	        try{
+        	        if (trajectory==null){
+        	        	activityCase=Properties.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.activityCase");
+        	    		try {
+        	    			ag = new AttitudeGeneratorFDImplMini(ptr,pdfm,currentEta,currentZeta,currentEpsilon);
+        	    		} catch (AttitudeGeneratorException ex) {
+        	    			LOG.severe(ex.getMessage());
+        	    			IllegalArgumentException iae=new IllegalArgumentException(ex.getMessage());
+        	    			iae.initCause(ex);
+        	    			ex.printStackTrace();
+        	    			throw(iae);
+        	    			
+        	    		}
+
+        	        }else{
+        	        	activityCase=trajectory;
+        	    		try {
+        	    			ag = new AttitudeGeneratorFDImplMini(ptr,pdfm,AttitudeGeneratorFDImpl.getMtpNum(ptr),trajectory,currentEta,currentZeta,currentEpsilon);
+        	    		} catch (AttitudeGeneratorException ex) {
+        	    			LOG.severe(ex.getMessage());
+        	    			IllegalArgumentException iae=new IllegalArgumentException(ex.getMessage());
+        	    			iae.initCause(ex);
+        	    			ex.printStackTrace();
+        	    			throw(iae);
+        	    			
+        	    		}
+        	        	
+        	        }
+        	        //Fecs fecs=null;
+        	        message=message+"<table class=\"gridtable\">";
+        	        message=message+"<tr><td>TRAJECTORY</td><td>"+activityCase+"</td></tr>"+
+        	        		"<tr><td>PTR</td><td>"+ptr.getName()+"</td></tr>"+
+        	        		
+        	        		"<tr><td>PDFM</td><td>"+pdfm.getName()+"</td></tr>"+
+        	        		
+        	        		"<tr><td>ETA</td><td>"+currentEta+"</td></tr>"+
+        	        		"<tr><td>ZETA</td><td>"+currentZeta+"</td></tr>"+
+        	        		"<tr><td>EPSILON</td><td>"+currentEpsilon+"</td></tr>";
+
+	        	        	message=message+"</table>";
+	        	        	message=message+RosettaPtrChecker.checkPtrHtmlMini(ptr, pdfm,ag);
+        	        }catch (Exception e2){
+        	        	message=message+"<table class=\"gridtable\">";
+            	        message=message+""+
+            	        		"<tr><td>PTR</td><td>"+ptr.getName()+"</td></tr>"+
+            	        		
+            	        		"<tr><td>PDFM</td><td>"+pdfm.getName()+"</td></tr>"+
+            	        		
+            	        		"<tr><td>ETA</td><td>"+currentEta+"</td></tr>"+
+            	        		"<tr><td>ZETA</td><td>"+currentZeta+"</td></tr>"+
+            	        		"<tr><td>EPSILON</td><td>"+currentEpsilon+"</td></tr>";
+        	        	message=message+"</table>\n";
+        	        	message=message+"<font color=red>ERROR:"+e2.getMessage()+"</font>";
+        	        	e2.printStackTrace();
+        	        }
+
+        message="<html><body>"+message+"</body><html>";
+        LOG.info(message);
+        HtmlDocument result=new HtmlDocument("FD PTR check",message);
+        
+        HtmlEditorKit kit=new HtmlEditorKit(result);
+ 	}
+
 
    
     

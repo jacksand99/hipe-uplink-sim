@@ -6,18 +6,39 @@ import herschel.ia.dataset.TableDataset;
 import herschel.ia.numeric.String1d;
 import herschel.share.fltdyn.time.FineTime;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.logging.Logger;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.DOMException;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import vega.hipe.gui.xmlutils.XmlDataInterface;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.pointing.EvtmEvent;
 import vega.uplink.pointing.PointingBlock;
+
+import org.w3c.dom.Document;
+
 
 /**
 * The Fecs class is a data model to store the information from the FECS file.
@@ -34,8 +55,9 @@ import vega.uplink.pointing.PointingBlock;
  * @author jarenas
  *
  */
-public class Fecs extends TableDataset{
+public class Fecs extends TableDataset implements XmlDataInterface{
 	private TreeSet<GsPass> passesSet;
+	private static final Logger LOG = Logger.getLogger(Fecs.class.getName());
 	private static String PASS_TABLE_HEADER=""
 			+ "<tr>\n"
 			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th>\n"
@@ -58,41 +80,7 @@ public class Fecs extends TableDataset{
 			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Bitrate is </th><th>Bitrate was </th>\n"
 			+ "</tr>\n";
 
-	//private Date generationTime;
-	//private Date validityStart;
-	//private Date validityEnd;
-	//private String spacecraft;
-	//private String icdVersion;
-	/*private Fecs(TreeSet<GsPass> passes){
-		super();
-		passesSet=passes;
-		setGenerationTime(new Date());
-		setValidityStart(passes.first().getStartPass());
-		setValidityEnd(passes.last().getEndPass());
-		setSpacecraft("ROS");
-		setIcdVersion("PLID-0.0");
-		Column gs=new Column(new String1d());
-		Column stpass=new Column(new String1d());
-		Column edpass=new Column(new String1d());
-		Column stdump=new Column(new String1d());
-		Column eddump=new Column(new String1d());
-		Column tmRate=new Column(new String1d());
-		
-		this.addColumn(gs);		
-		this.addColumn(stpass);
-		this.addColumn(edpass);
-		this.addColumn(stdump);
-		this.addColumn(eddump);
-		this.addColumn(tmRate);
-		this.setColumnName(0, "Ground Station");
-		this.setColumnName(1, "Start pass");
-		this.setColumnName(2, "End Pass");
-		this.setColumnName(3, "Start Dump");
-		this.setColumnName(4, "End Dump");
-		this.setColumnName(5, "TM rate");
 
-
-	}*/
 	/**
 	 * Constructor of the Fecs class taking as parameters all the needed information, without taking any parameter with default value.
 	 * @param fecsGenerationTime Generation time of the FECS file
@@ -139,6 +127,13 @@ public class Fecs extends TableDataset{
 		this.setColumnName(6, "Total time (s)");
 		this.setColumnName(7, "Dump time (s)");
 
+	}
+	private void deleteAllPasses(){
+		passesSet=new TreeSet<GsPass>();
+		int rowCount=this.getRowCount();
+		for (int i=0;i<rowCount;i++){
+			this.removeRow(i);
+		}
 	}
 	public void setName(String name){
 		getMeta().set("name", new StringParameter(name));
@@ -1010,9 +1005,181 @@ public class Fecs extends TableDataset{
 		return message;
 
 	}
+	@Override
+	public String getXmlData() {
+		// TODO Auto-generated method stub
+		return toString();
+	}
+	@Override
+	public void setFileName(String newFileName) {
+		setName(newFileName);
+		
+	}
+	@Override
+	public String getFileName() {
+		// TODO Auto-generated method stub
+		return this.getName();
+	}
+	@Override
+	public void setXmlData(String data) {
+		try{
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			InputStream stream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
+			Document doc;
+	
+			doc = dBuilder.parse(stream);
+			Fecs tempFecs = Fecs.readFromDoc(doc);
+			setGenerationTime(tempFecs.getGenerationTime());
+			setValidityStart(tempFecs.getValidityStart());
+			setValidityEnd(tempFecs.getValidityEnd());
+			setSpacecraft(tempFecs.getSpacecraft());
+			setIcdVersion(tempFecs.getIcdVersion());
+			this.deleteAllPasses();
+			TreeSet<GsPass> passes = tempFecs.getPasses();
+			Iterator<GsPass> it = passes.iterator();
+			while(it.hasNext()){
+				this.addPass(it.next());
+			}
+		}catch (Exception e){
+			IllegalArgumentException iae=new IllegalArgumentException(e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+		}
+		// TODO Auto-generated method stub
+		
+	}
+	public void writeToFile(String file) throws FileNotFoundException, UnsupportedEncodingException{
+		PrintWriter writer = new PrintWriter(file, "UTF-8");
+		writer.print(getXmlData());
+		writer.close();
+}
 
-	//public GsPass()
+	public void save() throws FileNotFoundException, UnsupportedEncodingException{
+		writeToFile(getPath()+"//"+getFileName());
+	}
+	@Override
+	public void saveAs(String file) throws FileNotFoundException,UnsupportedEncodingException {
+		writeToFile(file);
+	}
 
+	protected static Fecs readFromDoc(Document doc) throws DOMException, ParseException{
+		Fecs result=new Fecs();
+
+
+		doc.getDocumentElement().normalize();
+
+		NodeList nListHeader = doc.getElementsByTagName("header");
+		NamedNodeMap headerAttributes = nListHeader.item(0).getAttributes();
+		result.setSpacecraft(headerAttributes.getNamedItem("spacecraft").getNodeValue());
+		result.setIcdVersion(headerAttributes.getNamedItem("icd_version").getNodeValue());
+		result.setGenerationTime(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("gen_time").getNodeValue()));
+		result.setValidityStart(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("validity_start").getNodeValue()));
+		result.setValidityEnd(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("validity_end").getNodeValue()));
+		Node nodeEvents = doc.getElementsByTagName("events").item(0);
+		NodeList fcsNodeList = nodeEvents.getChildNodes();
+		TreeMap<Date,Node> botNodes=new TreeMap<Date,Node>();
+		TreeMap<Date,Node> stadNodes=new TreeMap<Date,Node>();
+		TreeMap<Date,Node> stodNodes=new TreeMap<Date,Node>();
+		TreeMap<Date,Node> eotNodes=new TreeMap<Date,Node>();
+		TreeMap<Date,Node> boabNodes=new TreeMap<Date,Node>();
+		TreeMap<Date,Node> eoabNodes=new TreeMap<Date,Node>();
+		TreeMap<Date,Node> boalNodes=new TreeMap<Date,Node>();
+		TreeMap<Date,Node> eoalNodes=new TreeMap<Date,Node>();
+		TreeMap<Date,Node> botrNodes=new TreeMap<Date,Node>();
+		TreeMap<Date,Node> eotrNodes=new TreeMap<Date,Node>();
+
+		int size=fcsNodeList.getLength();
+		for (int i=0;i<size;i++){
+			Node item = fcsNodeList.item(i);
+			NamedNodeMap attributes = item.getAttributes();
+			if (attributes!=null){
+				Date time=GsPass.zuluToDate(item.getAttributes().getNamedItem("time").getTextContent());
+				if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOT_")){
+					botNodes.put(time,item);
+
+				}
+				if (item.getAttributes().getNamedItem("id").getNodeValue().equals("STAD")){
+					stadNodes.put(time,item);
+				}
+				if (item.getAttributes().getNamedItem("id").getNodeValue().equals("STOD")){
+					stodNodes.put(time,item);
+				}
+				if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOT_")){
+					eotNodes.put(time,item);
+				}
+				if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOAB")){
+					boabNodes.put(time,item);
+				}
+				if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOAB")){
+					eoabNodes.put(time,item);
+				}
+				if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOAL")){
+					boalNodes.put(time,item);
+				}
+				if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOAL")){
+					eoalNodes.put(time,item);
+				}
+				if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOTR")){
+					//System.out.println("Detected BOTR");
+					botrNodes.put(time,item);
+				}
+				if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOTR")){
+					eotrNodes.put(time,item);
+				}
+
+
+
+			}
+		}
+		Iterator<Date> it = botNodes.keySet().iterator();
+		while (it.hasNext()){
+			Date passStart=it.next();
+			Date passEnd=eotNodes.ceilingKey(new Date(passStart.getTime()+1));
+			if (passEnd==null){
+				LOG.severe("Could not get pass end (EOT) for pass starting "+DateUtil.defaultDateToString(passStart));
+			}else{
+				Node endNode = eotNodes.get(passEnd);
+				String stationEnd = endNode.getAttributes().getNamedItem("ems:station").getNodeValue();
+				Node startNode=botNodes.get(passStart);
+				String stationStart=startNode.getAttributes().getNamedItem("ems:station").getNodeValue();
+				if (!stationEnd.equals(stationStart)){
+					LOG.severe("Pass not included. Overlapping passes BOT station "+stationStart+" EOT station "+stationEnd);
+					LOG.severe("BOT count "+startNode.getAttributes().getNamedItem("count").getNodeValue());
+					LOG.severe("EOT count "+endNode.getAttributes().getNamedItem("count").getNodeValue());
+					//throw new IllegalArgumentException("FECS format invalid. Overlapping passes BOT count "+countStart+" EOT count "+countEnd);
+				}
+				else{
+					SortedMap<Date, Node> subStadMap = stadNodes.subMap(passStart, passEnd);
+					Iterator<Date> it2 = subStadMap.keySet().iterator();
+					while(it2.hasNext()){
+						Date dumpStart=it2.next();
+						Date dumpEnd=stodNodes.ceilingKey(new Date(dumpStart.getTime()+1));
+						//Node dumpStartNode=subStadMap.get(dumpStart);
+						//Node dumpStopNode=
+						String station=botNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
+						float tmRate=Float.parseFloat(stadNodes.get(dumpStart).getAttributes().getNamedItem("tm_rate").getTextContent());
+						String stadStation = stadNodes.get(dumpStart).getAttributes().getNamedItem("ems:station").getTextContent();
+						String stodStation = stodNodes.get(dumpEnd).getAttributes().getNamedItem("ems:station").getTextContent();
+						if (stadStation.equals(stodStation)){
+							GsPass pass=new GsPass(passStart,passEnd,dumpStart,dumpEnd,station,tmRate);
+							result.addPass(pass);
+						}else{
+							LOG.severe("Pass not included. Overlapping passes STAD station "+stadStation+" STOD station "+stodStation);
+							LOG.severe("STAD count "+stadNodes.get(dumpStart).getAttributes().getNamedItem("count").getTextContent());
+							LOG.severe("STOD count "+stodNodes.get(dumpEnd).getAttributes().getNamedItem("count").getTextContent());
+	
+						}
+					}
+				}
+
+			}
+
+
+		}
+		return result;
+	}
+			
 }
 	
 

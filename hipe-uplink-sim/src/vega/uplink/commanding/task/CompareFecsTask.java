@@ -16,6 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
+import vega.hipe.gui.xmlutils.HtmlDocument;
+import vega.hipe.gui.xmlutils.HtmlEditorKit;
 import vega.uplink.DateUtil;
 import vega.uplink.commanding.Fecs;
 import vega.uplink.pointing.PointingBlock;
@@ -23,9 +25,7 @@ import vega.uplink.pointing.PointingBlock;
 //import vega.uplink.commanding.PorChecker;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
-import vega.uplink.pointing.gui.xmlutils.HtmlDocument;
 //import vega.uplink.commanding.task.PorCheckTask.MessagesFrame;
-import vega.uplink.pointing.gui.xmlutils.HtmlEditorKit;
 
 public class CompareFecsTask extends Task {
 	private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());

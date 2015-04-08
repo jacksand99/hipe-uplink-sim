@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
-   <description>This plug-in provides tools for mission planning.</description>
+   <description>The Swiss Knife of mission planning files. This plug-in provides tools for mission planning.</description>
    <contributors_page>https://code.google.com/p/hipe-uplink-sim/</contributors_page>
+   <icon>vega/hus-big.png</icon>
    <properties>vega.properties</properties>
 
    <!-- Compatible starting user release 5.0 (build 1760), not with earlier builds -->

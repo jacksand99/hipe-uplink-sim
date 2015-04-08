@@ -1,4 +1,9 @@
-package vega.uplink.pointing.gui.xmlutils;
+/*
+
+   Licensed under GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+
+ */
+package vega.hipe.gui.xmlutils;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -43,7 +48,7 @@ public class HtmlEditorKit extends JFrame
 	private static final long serialVersionUID = 1L;
 	String htmlString;
 	String title;
-    String[] rules={"body {color:#000; font-family:times; margin: 4px; }",
+    static String[] rules={"body {color:#000; font-family:times; margin: 4px; }",
       		"h1 {color: blcak;}",
       		"h2 {color: black;}",
       		"pre {font : 10px monaco; color : black; background-color : #fafafa; }",
@@ -80,7 +85,7 @@ public class HtmlEditorKit extends JFrame
               + "</body>\n";
     new HtmlEditorKit("Report",text);
   }
- private String getRulesHTML(){
+ public static String getRulesHTML(){
 	  String result="";
 	  result=result+"<head><title>Internal stylesheet</title>\n"+
 			  "<style type=\"text/css\">\n";

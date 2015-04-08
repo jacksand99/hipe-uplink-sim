@@ -9,8 +9,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -51,6 +55,9 @@ public class Mib extends CompositeDataset{
 
 	static String[] css_columns={"CSS_SQNAME","CSS_COMM","CSS_ENTRY","CSS_TYPE","CSS_ELEMID","CSS_NPARS","CSS_MANDISP","CPC_CATEG","CSS_RELTYPE","CSS_RELTIME","CSS_EXTIME","CSS_PREVREL","CSS_GROUPL","CSS_BLOCK","CSS_ILSCOPE","CSS_ILSTAGE","CSS_DYNPTV","CSS_STAPTV","CSS_CEV"};
 	static String[] css_types={"String","String","Integer","String","String","Integer","String","String","String","String","String","String","String","String","String","String","String","String","String"};
+	private HashMap<String,Long> cacheDuration;
+	private HashMap<String,String> cacheSeqDescription;
+	private HashMap<String,String> cacheParamDescription;
 
 	private Mib(){
 		this.set("sdf_table", new TableDataset());
@@ -58,7 +65,9 @@ public class Mib extends CompositeDataset{
 		this.set("cdf_table", new TableDataset());
 		this.set("cpc_table", new TableDataset());
 		this.set("css_table", new TableDataset());
-		
+		cacheDuration=new HashMap<String,Long>();
+		cacheSeqDescription=new HashMap<String,String>();
+		cacheParamDescription=new HashMap<String,String>();
 
 		//sdf_table=new TableDataset();
 		//csp_table=csp_table
@@ -218,7 +227,7 @@ public class Mib extends CompositeDataset{
 
 			//return false;
 		}
-		if (!final_representation.equals(Parameter.REPRESENTATION_RAW) && !final_radix.equals(param.getRadix())){
+		if (final_representation.equals(Parameter.REPRESENTATION_RAW) && !final_radix.equals(param.getRadix())){
 			IllegalArgumentException iae = new IllegalArgumentException("Radix for parameter "+param.getName()+" in the MIB is "+final_radix+" but in the sequence is "+param.getRadix());
 			throw(iae);
 			
@@ -344,25 +353,69 @@ public class Mib extends CompositeDataset{
 	}
 	
 	public String getParameterDescription(String parameterName){
+		String cDescription = cacheParamDescription.get(parameterName);
+		if (cDescription!=null) return cDescription;
+
 		try{
 			TableDataset resultTable=findInTable((TableDataset)this.get("csp_table"),"CSP_FPNAME",parameterName);
 			java.util.List<Object> row = resultTable.getRow(0);
 			String description=(String) row.get(3);
+			cacheParamDescription.put(parameterName, description);
+			return description;
+
+		}catch (Exception e){
+			return "UNKNOWN";
+		}
+	}
+	public String[] getAllSequences(){
+		return removeDuplicates(((String1d)((TableDataset)this.get("css_table")).getColumn("CSS_SQNAME").getData()).toArray());
+	}
+	public static String[] removeDuplicates(String[] arr) {
+		  return new HashSet<String>(Arrays.asList(arr)).toArray(new String[0]);
+		}
+	
+	public String getSequenceDescription(String sequenceName){
+		String cDescription = cacheSeqDescription.get(sequenceName);
+		if (cDescription!=null) return cDescription;
+		try{
+			TableDataset resultTable=findInTable((TableDataset)this.get("css_table"),"CSS_SQNAME",sequenceName);
+			java.util.List<Object> row = resultTable.getRow(0);
+			String description=(String) row.get(1);
+			cacheSeqDescription.put(sequenceName, description);
 			return description;
 		}catch (Exception e){
 			return "UNKNOWN";
 		}
 	}
 	
-	public String getSequenceDescription(String sequenceName){
+	public long getTotalSequenceDuration(String sequenceName){
+		Long cDuration = cacheDuration.get(sequenceName);
+		if (cDuration!=null) return cDuration;
+		long result=0;
 		try{
 			TableDataset resultTable=findInTable((TableDataset)this.get("css_table"),"CSS_SQNAME",sequenceName);
-			java.util.List<Object> row = resultTable.getRow(0);
-			String description=(String) row.get(1);
-			return description;
+			int rows = resultTable.getRowCount();
+			for (int i=0;i<rows;i++){
+				java.util.List<Object> row = resultTable.getRow(i);
+				String tcDuration=(String) row.get(8);
+				result=result+Mib.mibTimeToSecs(tcDuration);
+			}
+			cacheDuration.put(sequenceName, result);
+			return result;
 		}catch (Exception e){
-			return "UNKNOWN";
+			//LOG.warning(sequenceName + " has not duration in the mib");
+			return 0;
 		}
+		
+	}
+	
+	public static long mibTimeToSecs(String mibTime){
+		StringTokenizer items=new StringTokenizer(mibTime,".");
+		int h=Integer.parseInt(items.nextToken());
+		int m=Integer.parseInt(items.nextToken());
+		int s=Integer.parseInt(items.nextToken());
+		long result=s+(m*60)+(h*60*60);
+		return result;
 	}
 
 }

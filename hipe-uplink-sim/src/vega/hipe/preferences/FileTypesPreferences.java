@@ -26,8 +26,11 @@ public class FileTypesPreferences extends PreferencesPanel {
     private JTextField _fieldH;
     private JTextField _fieldI;
     private JTextField _fieldJ;
-
-
+    private JTextField _fieldK;
+    private JTextField _fieldM;
+    private JTextField _fieldN;
+    private JTextField _fieldO;
+    private JTextField _fieldP;
 	@Override
 	protected void makeContent() {
         GroupLayout layout = new GroupLayout(this);
@@ -120,6 +123,46 @@ public class FileTypesPreferences extends PreferencesPanel {
         hLabelGroup.addComponent(labelJ);
         hComboGroup.addComponent(_fieldJ);
 
+        JLabel    labelK = new JLabel("PDOR:");
+        _fieldK = new JTextField();
+        _fieldK.setMaximumSize(new Dimension(400,20));
+        vPropsGroup = layout.createParallelGroup(BASELINE);
+        vGroup.addGroup(vPropsGroup.addComponent(labelK).addComponent(_fieldK));
+        hLabelGroup.addComponent(labelK);
+        hComboGroup.addComponent(_fieldK);
+
+        JLabel    labelM = new JLabel("EVF:");
+        _fieldM = new JTextField();
+        _fieldM.setMaximumSize(new Dimension(400,20));
+        vPropsGroup = layout.createParallelGroup(BASELINE);
+        vGroup.addGroup(vPropsGroup.addComponent(labelM).addComponent(_fieldM));
+        hLabelGroup.addComponent(labelM);
+        hComboGroup.addComponent(_fieldM);
+
+        JLabel    labelN = new JLabel("ITL:");
+        _fieldN = new JTextField();
+        _fieldN.setMaximumSize(new Dimension(400,20));
+        vPropsGroup = layout.createParallelGroup(BASELINE);
+        vGroup.addGroup(vPropsGroup.addComponent(labelN).addComponent(_fieldN));
+        hLabelGroup.addComponent(labelN);
+        hComboGroup.addComponent(_fieldN);
+
+        JLabel    labelO = new JLabel("PWPL:");
+        _fieldO = new JTextField();
+        _fieldO.setMaximumSize(new Dimension(400,20));
+        vPropsGroup = layout.createParallelGroup(BASELINE);
+        vGroup.addGroup(vPropsGroup.addComponent(labelO).addComponent(_fieldO));
+        hLabelGroup.addComponent(labelO);
+        hComboGroup.addComponent(_fieldO);
+
+        JLabel    labelP = new JLabel("PWTL:");
+        _fieldP = new JTextField();
+        _fieldP.setMaximumSize(new Dimension(400,20));
+        vPropsGroup = layout.createParallelGroup(BASELINE);
+        vGroup.addGroup(vPropsGroup.addComponent(labelP).addComponent(_fieldP));
+        hLabelGroup.addComponent(labelP);
+        hComboGroup.addComponent(_fieldP);
+        
         hGroup.addGroup(hLabelGroup);
         hGroup.addGroup(hComboGroup);
         layout.setHorizontalGroup(hGroup);
@@ -139,6 +182,11 @@ public class FileTypesPreferences extends PreferencesPanel {
     	registerHandler("vega.file.type.OBS",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.OBS", ""),_fieldH,"vega.file.type.OBS"));
     	registerHandler("vega.file.type.SCH",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.SCH", ""),_fieldI,"vega.file.type.SCH"));
     	registerHandler("vega.file.type.PER",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.PER", ""),_fieldJ,"vega.file.type.PER"));
+    	registerHandler("vega.file.type.PDOR",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.PDOR", ""),_fieldK,"vega.file.type.PDOR"));
+    	registerHandler("vega.file.type.EVF",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.EVF", ""),_fieldM,"vega.file.type.EVF"));
+    	registerHandler("vega.file.type.ITL",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.ITL", ""),_fieldN,"vega.file.type.ITL"));
+    	registerHandler("vega.file.type.PWPL",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.PWPL", ""),_fieldO,"vega.file.type.PWPL"));
+    	registerHandler("vega.file.type.PWTL",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.PWTL", ""),_fieldP,"vega.file.type.PWTL"));
 
 		
 	}

@@ -10,12 +10,14 @@ import org.w3c.dom.NodeList;
 
 import rosetta.uplink.pointing.ExclusionPeriod;
 import vega.uplink.DateUtil;
+import vega.uplink.commanding.itl.EventList;
 import herschel.ia.dataset.Column;
 import herschel.ia.dataset.StringParameter;
 import herschel.ia.dataset.TableDataset;
 import herschel.ia.numeric.String1d;
 
 public  class  AbstractExclusion extends TableDataset{
+
 	private Vector<Period> cmd;
 	private Vector<Period> nav;
 	

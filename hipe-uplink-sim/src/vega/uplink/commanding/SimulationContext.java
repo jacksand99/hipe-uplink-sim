@@ -1,9 +1,11 @@
 package vega.uplink.commanding;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
 import java.util.Date;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.Ptr;
@@ -17,7 +19,8 @@ import herschel.share.fltdyn.time.FineTime;
 
 public class SimulationContext extends MapContext{
 	private static SimulationContext context;
-	
+	private SequenceTimeline sequenceTimeline;
+	private SsmmSimulator memorySimulator;
 	public SimulationContext(Date startDate,Date endDate){
 		this();
 		setStartDate(new FineTime(startDate));
@@ -26,6 +29,7 @@ public class SimulationContext extends MapContext{
 	public SimulationContext() {
 		super();
 		init();
+		sequenceTimeline=new SequenceTimeline();
 	}
 	
 	private void init(){
@@ -42,12 +46,13 @@ public class SimulationContext extends MapContext{
 		set("historyPowerZ",new ArrayDataset(new Float1d()));
 		setProduct("por",new SuperPor());
 		setProduct("dl_por",new Por());		
-		try{
+		/*try{
 			set("orcd",Orcd.readORCDfile(Properties.getProperty(Properties.ORCD_FILE)));
 		}catch(Exception e){
 			set("orcd",Orcd.readORCDfromJar());
 
-		}
+		}*/
+		set("orcd",Orcd.getOrcd());
 		try{
 			set("mocPower",MocPower.ReadFromFile(Properties.getProperty(Properties.PWPL_FILE)));
 		}catch (Exception e){
@@ -60,14 +65,57 @@ public class SimulationContext extends MapContext{
 		setProduct("ptr",new Ptr());
 		setProduct("pdfm",new Pdfm());
 		set("log",new ArrayDataset(new String1d()));
-		
+		memorySimulator=new RosettaSsmmSimulator(this);
 
 	}
+	
+	public SsmmSimulator getMemorySimulator(){
+		return memorySimulator;
+	}
+	
+	public void saveStateAsInitScript(String file){
+		Date endDate=this.getPor().getEndDate().toDate();
+		
+		try{
+			PrintWriter writer = new PrintWriter(file, "UTF-8");
+			writer.print("#Status at "+DateUtil.defaultDateToString(endDate)+"\n");
+			String[] statesN=this.getModelState().getAllStates();
+			for (int i=0;i<statesN.length;i++){
+				if (!statesN[i].equals("nullOff"))
+					writer.print("simulationContext.getModelState().setState(\""+statesN[i]+"\")\n");
+			}
+			String[] memIns = this.getMemorySimulator().getAllInstruments();
+			for (int i=0;i<memIns.length;i++){
+				float finalMemory = this.getMemorySimulator().getMemoryAt(memIns[i], endDate);
+				float dataRate=this.getMemorySimulator().getDataRateAt(memIns[i], endDate);
+				writer.print("# Memory "+memIns[i]+" "+finalMemory+" "+dataRate+"\n");
+				//this.getMemorySimulator().initInstrument(memIns[i], endDate, memory);
+				writer.print("simulationContext.getMemorySimulator().initInstrument(\""+memIns[i]+"\",\""+DateUtil.defaultDateToString(endDate)+"\",\""+finalMemory+"\",\""+dataRate+"\")\n");
+			}
+			for (int i=0;i<memIns.length;i++){
+				float power = this.getPowerInstrument().getPower(memIns[i]);
+				writer.print("simulationContext.getPowerInstrument().setPower(\""+memIns[i]+"\","+String.format("%.2f", power)+")\n");
+				
+			}
+			//writer.print(PORtoITL(POR));
+			writer.close();
+		}catch (Exception e){
+			IllegalArgumentException iae = new IllegalArgumentException("Could not write init script:"+e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+			//e.printStackTrace();
+		}
+	}
+
 	
 	
 	public HistoryModes getHistoryModes(){
 		return (HistoryModes) get("historyModes");
 	}
+	public SequenceTimeline getSequenceTimeline(){
+		return sequenceTimeline;
+	}
+	
 	
 	public PowerInstrument getPowerInstrument(){
 		return (PowerInstrument) get("powerInstrument");

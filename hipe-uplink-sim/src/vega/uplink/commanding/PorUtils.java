@@ -66,6 +66,8 @@ import org.w3c.dom.NodeList;
 
 
 
+
+
 import vega.uplink.DateUtil;
 //import vega.uplink.pointing.Evtm;
 import vega.uplink.pointing.EvtmEvent;
@@ -101,6 +103,7 @@ public class PorUtils {
         File tdir = null;
         boolean error = true;
         SuperPor result=new SuperPor();
+        result.setCalculateValidity(false);
         result.setName(file.getName());
         result.setPath(file.getParent());
         try {
@@ -129,7 +132,7 @@ public class PorUtils {
                 LOG.info("Deleting temp unzip of " + file + " in " + tdir);
                 FileUtil.delete(tdir);
                 result.setType("PORG");
-                
+                result.setCalculateValidity(true);
                 return result;
                 //throw new IOException("No PORG file found in " + file);
             } catch (ZipException e) {
@@ -144,15 +147,11 @@ public class PorUtils {
             }
         }
 	}
-	public static Por readPORfromFile(String file){
-
+	public static Por readPorfromDocument(Document doc){
 		Por result = new Por();
+		result.setCalculateValidity(false);
 		try {
 			 
-			File fXmlFile = new File(file);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(fXmlFile);
 		 
 			doc.getDocumentElement().normalize();
 		 
@@ -170,11 +169,36 @@ public class PorUtils {
 			result.setGenerationTime(pGenTime);
 			String[] vTimes={pStartTime,pEndTime};
 			result.setValidityTimes(vTimes);
+			//result.setName(fXmlFile.getName());
+			//result.setPath(fXmlFile.getParent());
+			
+		    } catch (Exception e) {
+		    	//e.printStackTrace();
+		    	IllegalArgumentException iae = new IllegalArgumentException("Could not read Por:"+e.getMessage());
+		    	iae.initCause(e);
+		    	throw(iae);
+		    }
+		result.setCalculateValidity(true);
+		return result; 
+	}
+	public static Por readPORfromFile(String file){
+
+		Por result = new Por();
+		try {
+			 
+			File fXmlFile = new File(file);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+			result=readPorfromDocument(doc);
 			result.setName(fXmlFile.getName());
 			result.setPath(fXmlFile.getParent());
 			
 		    } catch (Exception e) {
-		    	e.printStackTrace();
+		    	//e.printStackTrace();
+		    	IllegalArgumentException iae = new IllegalArgumentException("Could not read Por:"+e.getMessage());
+		    	iae.initCause(e);
+		    	throw(iae);
 		    }
 		
 		return result; 
@@ -199,13 +223,19 @@ public class PorUtils {
 				String sDestination=eElement.getElementsByTagName("destination").item(0).getTextContent();
 				String sExecutionTime=eElement.getElementsByTagName("actionTime").item(0).getTextContent();
 				Node parList=eElement.getElementsByTagName("parameterList").item(0);
-				Element el2=(Element) parList;
-				NodeList params=el2.getElementsByTagName("parameter");
-				Parameter[] sParameters=readParameters(params);
+				Parameter[] sParameters=new Parameter[0];
+				if (parList!=null){
+					Element el2=(Element) parList;
+					NodeList params=el2.getElementsByTagName("parameter");
+					sParameters=readParameters(params);
+				}
 				Node proList=eElement.getElementsByTagName("profileList").item(0);
-				Element el3=(Element) proList;
-				NodeList profiles=el3.getElementsByTagName("profile");
-				SequenceProfile[] sProfiles=readProfiles(profiles);			
+				SequenceProfile[] sProfiles=new SequenceProfile[0];
+				if (proList!=null){
+					Element el3=(Element) proList;
+					NodeList profiles=el3.getElementsByTagName("profile");
+					sProfiles=readProfiles(profiles);	
+				}
 				result[temp]=new Sequence (sName,sUniqueID,sFlag,sSource.charAt(0),sDestination.charAt(0),DateUtil.DOYToDate(sExecutionTime),sParameters,sProfiles);
 				
 			}
@@ -361,7 +391,9 @@ public class PorUtils {
 			throw(iae);
 			
 		}
-		String result="";
+		//String result="";
+		StringBuilder result=new StringBuilder();
+		result.append("");
 		/*java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
 		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
@@ -370,15 +402,39 @@ public class PorUtils {
 		String l02="Ref_date: "+DateUtil.dateToLiteralNoTime(POR.getValidityDates()[0])+"\n\n\n";
 		String l03="Start_time: "+DateUtil.dateToLiteral(POR.getValidityDates()[0])+"\n";
 		String l04="End_time: "+DateUtil.dateToLiteral(POR.getValidityDates()[1])+"\n\n\n";
-		String l05="";
-		AbstractSequence[] tempSeq=POR.getSequences();
+		//String l05="";
+		StringBuilder l05=new StringBuilder();
+		l05.append("");
+		String[] initModes = POR.getInitModes().toArray();
+		for (int i=0;i<initModes.length;i++){
+			l05.append("Init_mode: "+initModes[i]+"\n");
+		}
+		String[] initMS = POR.getInitMS().toArray();
+		for (int i=0;i<initMS.length;i++){
+			l05.append("Init_MS: "+initMS[i]+"\n");
+		}
+		String[] initMemory = POR.getInitMemory().toArray();
+		for (int i=0;i<initMemory.length;i++){
+			l05.append("Init_memory: "+initMemory[i]+"\n");
+		}
+		String[] initDataStore = POR.getInitDataStore().toArray();
+		for (int i=0;i<initDataStore.length;i++){
+			l05.append("Init_data_store: "+initDataStore[i]+"\n");
+		}
+		AbstractSequence[] tempSeq=POR.getOrderedSequences();
 		Parameter[] tempParam;
 		SequenceProfile[] tempPro;
 		for (int i=0;i<tempSeq.length;i++){
-			l05=l05+DateUtil.dateToLiteral(tempSeq[i].getExecutionDate())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\ #"+mib.getSequenceDescription(tempSeq[i].getName())+"\n";
+			l05.append(DateUtil.dateToLiteral(tempSeq[i].getExecutionDate())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\ #"+mib.getSequenceDescription(tempSeq[i].getName())+"\n");
 			tempParam = tempSeq[i].getParameters();
 			for (int z=0;z<tempParam.length;z++){
-				l05=l05+"\t"+tempParam[z].getName()+"="+tempParam[z].getStringValue()+" ["+tempParam[z].getRepresentation()+"] \\ #"+mib.getParameterDescription(tempParam[z].getName())+"\n";
+				String val=tempParam[z].getStringValue();
+				if (tempParam[z].getRepresentation().equals("Engineering")){
+					if (val!=null && !val.startsWith("\"")){
+						val="\""+val+"\"";
+					}
+				}
+				l05.append("\t"+tempParam[z].getName()+"="+val+" ["+tempParam[z].getRepresentation()+"] \\ #"+mib.getParameterDescription(tempParam[z].getName())+"\n");
 			}
 			tempPro=tempSeq[i].getProfiles();
 			String dataRateProfile="\tDATA_RATE_PROFILE = \t\t\t";
@@ -398,14 +454,19 @@ public class PorUtils {
 				}
 				
 			}
-			if (dataRatePresent) l05 =l05+dataRateProfile+"\\\n";
-			if (powerProfilePresent) l05 =l05+powerProfile+"\\\n";
+			if (dataRatePresent) l05.append(dataRateProfile+"\\\n");
+			if (powerProfilePresent) l05.append(powerProfile+"\\\n");
 
-			l05=l05+"\t\t\t\t)\n";
+			l05.append("\t\t\t\t)\n");
 
 		}
-		result=l01+l02+l03+l04+l05;
-		return result;
+		result.append(l01);
+		result.append(l02);
+		result.append(l03);
+		result.append(l04);
+		result.append(l05);
+		//result=l01+l02+l03+l04+l05;
+		return result.toString();
 	}
 	
 	public static TableDataset profileToTabledataset(SequenceProfile profile){
@@ -504,16 +565,16 @@ public class PorUtils {
 	public static Fecs readFecsFromFile(String file) throws Exception{
 		Fecs result=new Fecs();
 		try {
-			 
 			File fXmlFile = new File(file);
-			result.setName(fXmlFile.getName());
-			result.setPath(fXmlFile.getParent());
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
-		 
-			//optional, but recommended
-			//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+			result=Fecs.readFromDoc(doc);
+			
+			result.setName(fXmlFile.getName());
+			result.setPath(fXmlFile.getParent());
+
+			/*
 			doc.getDocumentElement().normalize();
 		 
 			//System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
@@ -543,11 +604,6 @@ public class PorUtils {
 			for (int i=0;i<size;i++){
 				Node item = fcsNodeList.item(i);
 				NamedNodeMap attributes = item.getAttributes();
-				/*int s=attributes.getLength();
-				System.out.println("**********************"+s);
-				for (int j=0;j<s;j++){
-					System.out.println(attributes.item(j).getNodeName());
-				}*/
 				if (attributes!=null){
 					Date time=GsPass.zuluToDate(item.getAttributes().getNamedItem("time").getTextContent());
 					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOT_")){
@@ -563,12 +619,6 @@ public class PorUtils {
 					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOT_")){
 						eotNodes.put(time,item);
 					}
-					/*if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOTB")){
-						botbNodes.put(time,item);
-					}
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOTB")){
-						eotbNodes.put(time,item);
-					}*/
 					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOAB")){
 						boabNodes.put(time,item);
 					}
@@ -631,14 +681,6 @@ public class PorUtils {
 					}
 				}
 			}
-			/*Iterator<Date> it2 = botbNodes.keySet().iterator();
-			while (it2.hasNext()){
-				Date passStart=it2.next();
-				Date passEnd=eotbNodes.ceilingKey(passStart);
-				String station=botbNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
-				result.addPass(new GsPassBSR(passStart,passEnd,station));
-				
-			}*/
 
 			Iterator<Date> it3 = boabNodes.keySet().iterator();
 			while (it3.hasNext()){
@@ -688,7 +730,7 @@ public class PorUtils {
 				
 			}
 
-
+*/
 			
 		}catch (Exception e){
 			LOG.throwing("PORUtils", "readFecsFromFile", e);

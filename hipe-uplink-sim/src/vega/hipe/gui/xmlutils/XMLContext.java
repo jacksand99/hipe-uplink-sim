@@ -16,7 +16,7 @@
    limitations under the License.
 
  */
-package vega.uplink.pointing.gui.xmlutils;
+package vega.hipe.gui.xmlutils;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -33,7 +33,11 @@ import javax.swing.text.StyleContext;
  */
 public class XMLContext extends StyleContext {
 
-    //public static String DEFAULT_SYNTAX          = "DEFAULT_SYNTAX";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	//public static String DEFAULT_SYNTAX          = "DEFAULT_SYNTAX";
     public static final String XML_DECLARATION_STYLE  = "xml_declaration";
     public static final String DOCTYPE_STYLE          = "doctype";
     public static final String COMMENT_STYLE          = "comment";
@@ -44,10 +48,10 @@ public class XMLContext extends StyleContext {
     public static final String CDATA_STYLE            = "cdata";
     
     /** Map<String, Color> */
-    protected Map syntaxForegroundMap = null;
+    protected Map<String,Color> syntaxForegroundMap = null;
     
     /** Map<String, Font> */
-    protected Map syntaxFontMap = null;
+    protected Map<String,Font> syntaxFontMap = null;
     
     
     public XMLContext() {
@@ -57,8 +61,8 @@ public class XMLContext extends StyleContext {
         String syntaxName;
         Font font;
         Color fontForeground;
-        syntaxFontMap = new HashMap();
-        syntaxForegroundMap = new HashMap();        
+        syntaxFontMap = new HashMap<String,Font>();
+        syntaxForegroundMap = new HashMap<String,Color>();        
 
         Font defaultFont = new Font("Monospaced", Font.PLAIN, 12);
         
@@ -117,19 +121,19 @@ public class XMLContext extends StyleContext {
         syntaxForegroundMap.put(syntaxName, fontForeground);
     }
     
-    public XMLContext(Map syntaxFontMap, Map syntaxForegroundMap) {
+    public XMLContext(Map<String,Font> syntaxFontMap, Map<String,Color> syntaxForegroundMap) {
         setSyntaxFont(syntaxFontMap);
         setSyntaxForeground(syntaxForegroundMap);
     }
     
-    public void setSyntaxForeground(Map syntaxForegroundMap) {
+    public void setSyntaxForeground(Map<String,Color> syntaxForegroundMap) {
         if (syntaxForegroundMap == null) {
             throw new IllegalArgumentException("syntaxForegroundMap can not be null");
         }
         this.syntaxForegroundMap = syntaxForegroundMap;
     }
     
-    public void setSyntaxFont(Map syntaxFontMap) {
+    public void setSyntaxFont(Map<String,Font> syntaxFontMap) {
         if (syntaxFontMap == null) {
             throw new IllegalArgumentException("syntaxFontMap can not be null");
         }

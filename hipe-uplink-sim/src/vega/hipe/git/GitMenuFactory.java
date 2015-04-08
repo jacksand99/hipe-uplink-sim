@@ -19,6 +19,8 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+
+import vega.IconResources;
 //import vega.help.HelpAction;
 import vega.uplink.commanding.gui.SequenceEditor;
 
@@ -139,7 +141,7 @@ public void actionPerformed(ActionEvent e) {
 	
 	public static Icon getGitIcon() {
         try {
-            URL resource = SequenceEditor.class.getResource("/vega/Git-Icon.png");
+            URL resource = SequenceEditor.class.getResource(IconResources.GIT_ICON);
             BufferedImage imageIcon = ImageIO.read(resource);
             return new ImageIcon(imageIcon);
     } catch (IOException e) {

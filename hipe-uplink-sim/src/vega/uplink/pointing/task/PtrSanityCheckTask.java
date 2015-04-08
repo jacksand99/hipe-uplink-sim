@@ -14,11 +14,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
+import vega.hipe.gui.xmlutils.HtmlDocument;
+import vega.hipe.gui.xmlutils.HtmlEditorKit;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
-import vega.uplink.pointing.gui.xmlutils.HtmlDocument;
 //import vega.uplink.pointing.task.ComparePtrsTask.MessagesFrame;
-import vega.uplink.pointing.gui.xmlutils.HtmlEditorKit;
 
 public class PtrSanityCheckTask extends Task {
 	private static final Logger LOGGER = Logger.getLogger(ComparePtrsTask.class.getName());

@@ -2,6 +2,8 @@ package vega.uplink.commanding.task;
 
 import herschel.ia.task.Task;
 import herschel.ia.task.TaskParameter;
+import vega.hipe.gui.xmlutils.HtmlDocument;
+import vega.hipe.gui.xmlutils.HtmlEditorKit;
 import vega.uplink.commanding.Fecs;
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.PorUtils;
@@ -30,11 +32,24 @@ public class SimulateTask extends Task {
         fecs.setType(TaskParameter.IN);
         fecs.setMandatory(true);
         fecs.setDescription("The FECS used for the simulation"); //6
+        
+		TaskParameter plot = new TaskParameter("plot", Boolean.class);
+		plot.setType(TaskParameter.IN);
+		plot.setMandatory(true);
+		plot.setDefaultValue(false);
+		plot.setDescription("Show or not plots"); //6
+
+		TaskParameter result = new TaskParameter("simulationContext", SimulationContext.class);
+		result.setType(TaskParameter.OUT);
+
+		result.setDescription("The result of the simulation"); //6
 
         addTaskParameter(parameter);
         addTaskParameter(ptr);
         addTaskParameter(pdfm);
         addTaskParameter(fecs);
+        addTaskParameter(plot);
+        addTaskParameter(result);
 
 	}
 	
@@ -60,7 +75,22 @@ public class SimulateTask extends Task {
         context.setPdfm(pdfm);
         context.setPtr(ptr);
         context.setFecs(fecs);
-        Simulation sim = new Simulation(por,context);
-        sim.runSimulation();
+        Boolean plot=(Boolean)getParameter("plot").getValue();
+        SimulationContext result;
+        context.setPlanningPeriod(ptr.getSegments()[0].getName());
+        if (plot){
+        	Simulation sim = new Simulation(por,context);
+        
+        	result=sim.runSimulation();
+        }else{
+        	Simulation sim = new Simulation(por,context);
+            
+        	result=sim.runOnlyText(false);
+        }
+        String messages = result.getLog();
+        messages=messages.replaceAll("\n", "<br>\n");
+        HtmlDocument doc=new HtmlDocument("Simulation Results",messages);
+        HtmlEditorKit kit=new HtmlEditorKit(doc);
+        getParameter("simulationContext").setValue(result);
  	}
 }

@@ -21,6 +21,8 @@ import javafx.scene.web.WebView;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import vega.IconResources;
+
 //import vega.hipe.pds.gui.PDSNavigator;
 
 public class SimpleSwingBrowser implements Runnable {
@@ -73,7 +75,7 @@ public class SimpleSwingBrowser implements Runnable {
     
 	public BufferedImage getImageIcon() {
 		try {
-			URL resource = SimpleSwingBrowser.class.getResource("/vega/vega.gif");
+			URL resource = SimpleSwingBrowser.class.getResource(IconResources.HUS_ICON);
 			BufferedImage imageIcon = ImageIO.read(resource);
 			return imageIcon;
 		} catch (IOException e) {

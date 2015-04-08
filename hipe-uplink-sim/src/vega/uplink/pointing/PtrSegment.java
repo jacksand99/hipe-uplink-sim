@@ -582,6 +582,14 @@ public class PtrSegment extends PointingBlocksSlice{
 		//return name;
 	}
 	
+	public String getPdfm(){
+		String result=null;
+		for (int i=0;i<includes.length;i++){
+			if (!includes[i].equals("FDDF.xml")) return includes[i];
+		}
+		return result;
+	}
+	
 	/**
 	 * Set or replace the name of this segment
 	 * @param newName
@@ -620,40 +628,41 @@ public class PtrSegment extends PointingBlocksSlice{
 	public String toXml(int indent){
 		int obsBlockConter=0;
 		boolean inObsSegment=false;
-		String result=new String();
+		//String result=new String();
+		StringBuilder result=new StringBuilder();
 		String iString="";
 		for (int i=0;i<indent;i++){
 			iString=iString+"\t";
 		}
 		
-		result=result+iString+"<"+SEGMENT_TAG+" "+NAME_TAG+"='"+getName()+"'>\n";
-		result=result+iString+"\t"+"<"+METADATA_TAG+">\n";
+		result.append(iString+"<"+SEGMENT_TAG+" "+NAME_TAG+"='"+getName()+"'>\n");
+		result.append(iString+"\t"+"<"+METADATA_TAG+">\n");
 		for (int i=0;i<includes.length;i++){
-			result=result+iString+"\t\t"+"<"+INCLUDE_TAG+" "+HREF_TAG+"='"+includes[i]+"'/>\n";
+			result.append(iString+"\t\t"+"<"+INCLUDE_TAG+" "+HREF_TAG+"='"+includes[i]+"'/>\n");
 		}
-		result=result+iString+"\t"+"</"+METADATA_TAG+">\n";
-		result=result+iString+"\t"+"<"+DATA_TAG+">\n";
-		result=result+iString+"\t\t"+"<"+TIMELINE_TAG+" "+FRAME_TAG+"='"+getTimeLineFrame()+"'>\n";
+		result.append(iString+"\t"+"</"+METADATA_TAG+">\n");
+		result.append(iString+"\t"+"<"+DATA_TAG+">\n");
+		result.append(iString+"\t\t"+"<"+TIMELINE_TAG+" "+FRAME_TAG+"='"+getTimeLineFrame()+"'>\n");
 		PointingBlock[] blocks = getBlocks();
 		for (int i=0;i<blocks.length;i++){
 			if (blocks[i].getType().equals(PointingBlock.TYPE_OBS) && !inObsSegment){
 				obsBlockConter++;
-				result=result+iString+"\t\t\t<!--OBS SLICE #"+String.format("%04d", obsBlockConter)+"-->\n";
+				result.append(iString+"\t\t\t<!--OBS SLICE #"+String.format("%04d", obsBlockConter)+"-->\n");
 				inObsSegment=true;
 			}
 			if (!blocks[i].getType().equals(PointingBlock.TYPE_OBS) && !blocks[i].getType().equals(PointingBlock.TYPE_SLEW)) inObsSegment=false;
 			int blocknumber=i+1;
-			result=result+iString+"\t\t\t<!-- BLOCK #"+blocknumber+"-->\n";
-			result=result+blocks[i].toXml(indent+3);
+			result.append(iString+"\t\t\t<!-- BLOCK #"+blocknumber+"-->\n");
+			result.append(blocks[i].toXml(indent+3));
 		}
-		result=result+iString+"\t\t"+"</"+TIMELINE_TAG+">\n";
+		result.append(iString+"\t\t"+"</"+TIMELINE_TAG+">\n");
 
-		result=result+iString+"\t"+"</"+DATA_TAG+">\n";
-		result=result+iString+"</"+SEGMENT_TAG+">\n";
+		result.append(iString+"\t"+"</"+DATA_TAG+">\n");
+		result.append(iString+"</"+SEGMENT_TAG+">\n");
 
 		
 		
-		return result;
+		return result.toString();
 	}
 	
 	

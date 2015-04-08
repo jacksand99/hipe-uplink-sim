@@ -190,16 +190,20 @@ public class Ptr extends MapContext{
 	 * @return
 	 */
 	public String toXml(){
-		String result="<"+PRM_TAG+">\n";
-		result=result+"\t<"+HEADER_TAG+"/>\n";				
-		result=result+"\t<"+BODY_TAG+">\n";
+		StringBuilder result=new StringBuilder();
+		result.append("<");
+		result.append(PRM_TAG);
+		result.append(">\n");
+		//String result="<"+PRM_TAG+">\n";
+		result.append("\t<"+HEADER_TAG+"/>\n");				
+		result.append("\t<"+BODY_TAG+">\n");
 		PtrSegment[] seg=getSegments();
 		for (int i=0;i<seg.length;i++){
-			result=result+seg[i].toXml(2);
+			result.append(seg[i].toXml(2));
 		}
-		result=result+"\t</"+BODY_TAG+">\n";
-		result=result+"</"+PRM_TAG+">\n";
-		return result;
+		result.append("\t</"+BODY_TAG+">\n");
+		result.append("</"+PRM_TAG+">\n");
+		return result.toString();
 	}
 	
 	public PointingBlocksSlice getSlice(int number){

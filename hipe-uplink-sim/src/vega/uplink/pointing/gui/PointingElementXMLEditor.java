@@ -32,8 +32,9 @@ import org.xml.sax.SAXException;
 
 import herschel.ia.gui.apps.components.util.BottomPanel;
 import herschel.ia.gui.kernel.parts.AbstractVariableEditorComponent;
+import vega.IconResources;
+import vega.hipe.gui.xmlutils.XMLTextEditor;
 import vega.uplink.pointing.PointingElement;
-import vega.uplink.pointing.gui.xmlutils.XMLTextEditor;
 
 public class PointingElementXMLEditor extends AbstractVariableEditorComponent<PointingElement> {
 	/**
@@ -123,7 +124,7 @@ public class PointingElementXMLEditor extends AbstractVariableEditorComponent<Po
 	public Icon getComponentIcon() {
 		// TODO Auto-generated method stub
         try {
-            URL resource = PointingElementXMLEditor.class.getResource("/vega/vega.gif");
+            URL resource = PointingElementXMLEditor.class.getResource(IconResources.PTR_ICON);
             BufferedImage imageIcon = ImageIO.read(resource);
             return new ImageIcon(imageIcon);
     } catch (IOException e) {

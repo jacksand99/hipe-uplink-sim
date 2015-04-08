@@ -24,7 +24,11 @@ public class PowerInstrument extends CompositeDataset{
 	}
 	
 	public float getPower(String instrument){
-		return ((Double) getMeta().get(instrument).getValue()).floatValue();
+		try{
+			return ((Double) getMeta().get(instrument).getValue()).floatValue();
+		}catch (Exception e){
+			return 0;
+		}
 		//return power.get(instrument).floatValue();
 	}
 	

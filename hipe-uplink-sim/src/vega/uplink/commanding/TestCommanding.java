@@ -20,10 +20,24 @@ public class TestCommanding {
     	herschel.share.util.Configuration.setProperty("var.hcss.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
     	herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
     	herschel.share.util.Configuration.setProperty("vega.mib.location", "/Users/jarenas 1/Downloads/MAPPS/MIB");
+    	herschel.share.util.Configuration.setProperty("vega.instrument.names","{ALICE,CONSERT,COSIMA,GIADA,MIDAS,MIRO,ROSINA,RPC,RSI,OSIRIS,VIRTIS,SREM,LANDER,PTR,ANTENNA}");
+    	herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.ALICE","AL");
+    	herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.OSIRIS","SR");
+
+    	
     	System.out.println(Properties.getProperty("vega.file.type.POR"));
 
     	try {
-			Fecs FECS_XXXXX = PorUtils.readFecsFromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/RMOC/FCT/FECS_________________XXXXX.ROS");
+    		Mib mib=Mib.getMib();
+    		Parameter[] dp = mib.getDefaultParameters("AMRF011A");
+    		for (int i=0;i<dp.length;i++){
+    			System.out.println(dp[i].toXML(0));
+    		}
+    		//Por POR_DM_016_01_SR_P1_01242 = PorUtils.readPORfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP005/LTP005P/MTP016P/PORM/POR__DM_016_01_SR_P1_01242.ROS");
+    		//AbstractSequence seq1 = (AbstractSequence) POR_DM_016_01_SR_P1_01242.getProduct("P012420007");
+    		//AbstractSequence seq2 = (AbstractSequence) POR_DM_016_01_SR_P1_01242.getProduct("P012420001");
+    		//System.out.println(AllowOverlapChecker.allowOverlap(seq1, seq2));
+    		//Fecs FECS_XXXXX = PorUtils.readFecsFromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/RMOC/FCT/FECS_________________XXXXX.ROS");
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

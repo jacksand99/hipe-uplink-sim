@@ -13,10 +13,10 @@ import javax.swing.JTextPane;
 
 import herschel.ia.task.Task;
 import herschel.ia.task.TaskParameter;
+import vega.hipe.gui.xmlutils.HtmlEditorKit;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
 //import vega.uplink.pointing.PtrUtils;
-import vega.uplink.pointing.gui.xmlutils.HtmlEditorKit;
 
 public class ComparePtrsTask extends Task {
 	private static final Logger LOGGER = Logger.getLogger(ComparePtrsTask.class.getName());

@@ -1,5 +1,6 @@
 package vega.uplink.commanding;
 import java.awt.Color;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -9,6 +10,7 @@ import herschel.ia.gui.plot.*;
 
 import org.jfree.ui.RefineryUtilities;
 //import org.jfree.util.Log;
+
 
 
 
@@ -22,6 +24,7 @@ import vega.uplink.commanding.itl.*;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 
 
@@ -70,9 +73,12 @@ public class Simulation {
 		
 	}
 	public SimulationContext runSimulation(){
-		return run(false);
+		return run(false,false);
 	}
-	public SimulationContext run(boolean printStrategy){
+	public SimulationContext runOnlyText(boolean printStrategy){
+		return run(false,true);
+	}
+	public SimulationContext run(boolean printStrategy,boolean onlyText){
 		if (!context.getInitScript().equals("")){
 			try{
 				LOG.info("Executing init script "+context.getInitScript());
@@ -89,15 +95,25 @@ public class Simulation {
 		}
 		AbstractSequence[] seqs=context.getPor().getOrderedSequences();
 		//SsmmSimulator memorySimulator=context.ssmm;
-		SsmmSimulator memorySimulator=new RosettaSsmmSimulator(context);
+		//SsmmSimulator memorySimulator=new RosettaSsmmSimulator(context);
+		//SsmmSimulator memorySimulator=context.getMemorySimulator();
+		SequenceTimeline seqTimeline=context.getSequenceTimeline();
 		LOG.info("Inserting commands into the model");
 		//String messages="";
+		boolean osirisScience=true;
 		for (int i=0;i<seqs.length;i++){
+			seqTimeline.execute(seqs[i]);
 			//if (seqs[i].getName())
 			if (seqs[i].getInstrument().equals("ANTENNA")){
 				//System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-				memorySimulator.addSequence(seqs[i]);
+				context.getMemorySimulator().addSequence(seqs[i]);
 			}
+			if (seqs[i].getName().equals("ASRF071B")){
+				osirisScience=false;
+			}
+			if (seqs[i].getName().equals("ASRF071A")){
+				osirisScience=true;
+			}			
 			HashMap<Long,String> newmodes=context.getOrcd().getModesAsHistory(seqs[i].getName(),seqs[i].getExecutionDate().getTime());
 			context.getHistoryModes().putAll(newmodes, seqs[i].getName(), seqs[i].getExecutionDate().getTime());
 			SequenceProfile[] profiles=seqs[i].getProfiles();
@@ -109,12 +125,19 @@ public class Simulation {
 						context.getHistoryPowerZ().append(context.getPowerInstrument().getTotalPower());
 					}
 					if (profiles[j].getType().equals("DR")){
-						memorySimulator.addAction(seqs[i].getInstrument(), new Date(seqs[i].getExecutionDate().getTime()+(profiles[j].getOffSetSeconds()*1000)), new Float(profiles[j].getValue()));
-						//System.out.println("Detected Z record. Inserted action in memorySimulator");
+						if (seqs[i].getInstrument().equals("OSIRIS")){
+							if (osirisScience){
+								context.getMemorySimulator().addAction(seqs[i].getInstrument(), new Date(seqs[i].getExecutionDate().getTime()+(profiles[j].getOffSetSeconds()*1000)), new Float(profiles[j].getValue()));
+							}
+						}else{
+							context.getMemorySimulator().addAction(seqs[i].getInstrument(), new Date(seqs[i].getExecutionDate().getTime()+(profiles[j].getOffSetSeconds()*1000)), new Float(profiles[j].getValue()));
+						}
+							//System.out.println("Detected Z record. Inserted action in memorySimulator");
 					}
 				}
 			}
 		}
+		context.log(seqTimeline.findAllOverlapping());
 		java.util.Date start=context.getPor().getValidityDates()[0];
 		java.util.Date end=context.getPor().getValidityDates()[1];
 		LOG.info("Inserting the GS passes from the FECS into the model");
@@ -125,7 +148,7 @@ public class Simulation {
 			GsPass pass=it.next();
 			if (pass.getStartPass().after(start) && pass.getStartPass().before(end)){
 				
-				strategy=strategy+memorySimulator.addGsPass(pass);
+				strategy=strategy+context.getMemorySimulator().addGsPass(pass);
 			}
 			//messages=messages+memorySimulator.addGsPass(pass);
 		}
@@ -170,47 +193,32 @@ public class Simulation {
 			}
 			
 		}
-		
-		LOG.info("Generating power plots");
-		PlotXY plot3=new PlotXY();
-		LayerXY layer6 = new LayerXY(context.getExecutionDates(),context.getHistoryPower());
-		layer6.setColor(java.awt.Color.BLUE);
-		LayerXY layer7 = new LayerXY(context.getZRecordDates(),context.getHistoryPowerZ());
-		layer7.setColor(java.awt.Color.GREEN);
-		LayerXY layer8 = new LayerXY(context.getExecutionDates(),context.getMocPowerHistory());
-		layer8.setColor(java.awt.Color.RED);
-		plot3.addLayer(layer6);
-		plot3.addLayer(layer7);
-		plot3.addLayer(layer8);
-		plot3.setTitleText("ORCD/Z records (ITL)");
-		layer7.setName("Power from Z records");
-		layer6.setName("Power from ORCD");
-		layer8.setName("Allowed power from moc");
-		plot3.getXaxis().setTitleText("Time");
-		plot3.getYaxis().setTitleText("Power (Watts)");
-		plot3.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
-		plot3.getLegend().setVisible(true);
-		
-		PlotXY plot4=new PlotXY();
-		//LayerXY layerTotalMemory=new LayerXY(new Long1d(context.ssmmHistory.getAllTimesAsLongArray()),new Float1d(context.ssmmHistory.getAllTotalPower()));
 
-		/*LayerXY layerTotalMemory=new LayerXY(memorySimulator.toLong1d(times),memorySimulator.toFloat1d(memorySimulator.getAllMemoryAt(times)));
-
-		layerTotalMemory.setColor(java.awt.Color.BLUE);
-		layerTotalMemory.setName("Total SSMM");*/
-		/*Long1d limitTimes=new Long1d();
-		limitTimes.append(times[0]);
-		limitTimes.append(times[times.length-1]);
-		Float1d limitValues=new Float1d();
-		limitValues.append(104857600);
-		limitValues.append(104857600);
-		
-		LayerXY layerLimitMemory=new LayerXY(limitTimes,limitValues);
-
-		layerLimitMemory.setColor(java.awt.Color.RED);
-		layerLimitMemory.setName("Packet Store limit");*/
 		LOG.info("Simulating SSMM");
-		String[] instruments=memorySimulator.getAllInstruments();
+		String[] instruments=context.getMemorySimulator().getAllInstruments();
+		PlotXY plot3=null;
+		PlotXY plot4=null;
+		if (!onlyText){
+			plot3=new PlotXY();
+			LayerXY layer6 = new LayerXY(context.getExecutionDates(),context.getHistoryPower());
+			layer6.setColor(java.awt.Color.BLUE);
+			LayerXY layer7 = new LayerXY(context.getZRecordDates(),context.getHistoryPowerZ());
+			layer7.setColor(java.awt.Color.GREEN);
+			LayerXY layer8 = new LayerXY(context.getExecutionDates(),context.getMocPowerHistory());
+			layer8.setColor(java.awt.Color.RED);
+			plot3.addLayer(layer6);
+			plot3.addLayer(layer7);
+			plot3.addLayer(layer8);
+			plot3.setTitleText("ORCD/Z records (ITL)");
+			layer7.setName("Power from Z records");
+			layer6.setName("Power from ORCD");
+			layer8.setName("Allowed power from moc");
+			plot3.getXaxis().setTitleText("Time");
+			plot3.getYaxis().setTitleText("Power (Watts)");
+			plot3.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
+			plot3.getLegend().setVisible(true);
+			plot4=new PlotXY();
+		}
 		for (int i=0;i<instruments.length;i++){
 			long packetStoreSize;
 			try{
@@ -222,7 +230,7 @@ public class Simulation {
 
 			//LayerXY tempLayer=new LayerXY(new Long1d(context.ssmmHistory.getAllTimesAsLongArray()),new Float1d(context.ssmmHistory.getAllPower(instruments[i])));
 			//LayerXY tempLayer=new LayerXY(memorySimulator.getAllTimesLong1d(instruments[i]),memorySimulator.geatAllMemoryFloat1d(instruments[i]));
-			Float[] array = memorySimulator.getValuesAt(instruments[i], times);
+			Float[] array = context.getMemorySimulator().getValuesAt(instruments[i], times);
 			Float1d values=new Float1d();
 			boolean inMemoryFull=false;
 			String mess="";
@@ -252,36 +260,64 @@ public class Simulation {
 
 			//Float1d values = memorySimulator.toFloat1d(memorySimulator.getValuesAt(instruments[i], times));
 			//System.out.println(values);
-			Color color=Color.BLACK;
-			try{
-				color = Properties.getColor(Properties.SUBINSTRUMENT_COLOR_PROPERTY_PREFIX+instruments[i]);
-			}catch (Exception ce){
-				ce.printStackTrace();context.log(ce.getMessage());
+			if (!onlyText){
+				LOG.info("Generating power plots");
+				//plot3=new PlotXY();
+				/*LayerXY layer6 = new LayerXY(context.getExecutionDates(),context.getHistoryPower());
+				layer6.setColor(java.awt.Color.BLUE);
+				LayerXY layer7 = new LayerXY(context.getZRecordDates(),context.getHistoryPowerZ());
+				layer7.setColor(java.awt.Color.GREEN);
+				LayerXY layer8 = new LayerXY(context.getExecutionDates(),context.getMocPowerHistory());
+				layer8.setColor(java.awt.Color.RED);
+				plot3.addLayer(layer6);
+				plot3.addLayer(layer7);
+				plot3.addLayer(layer8);
+				plot3.setTitleText("ORCD/Z records (ITL)");
+				layer7.setName("Power from Z records");
+				layer6.setName("Power from ORCD");
+				layer8.setName("Allowed power from moc");
+				plot3.getXaxis().setTitleText("Time");
+				plot3.getYaxis().setTitleText("Power (Watts)");
+				plot3.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
+				plot3.getLegend().setVisible(true);*/
+				
+				//plot4=new PlotXY();
+
+			
+				Color color=Color.BLACK;
+				try{
+					color = Properties.getColor(Properties.SUBINSTRUMENT_COLOR_PROPERTY_PREFIX+instruments[i]);
+				}catch (Exception ce){
+					ce.printStackTrace();context.log(ce.getMessage());
+				}
+				LayerXY tempLayer=new LayerXY(context.getMemorySimulator().toLong1d(times),values);
+				tempLayer.setColor(color);
+				tempLayer.setName(instruments[i]);
+				//if (!instruments[i].equals("ANTENNA") && !instruments[i].equals("PTR")) plot4.addLayer(tempLayer);
+				plot4.addLayer(tempLayer);
+				if (instruments.length>0){
+					plot4.getXaxis().setTitleText("Time");
+					plot4.getYaxis().setTitleText("Data (bits)");
+					plot4.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
+					plot4.getLegend().setVisible(true);
+				}
+
 			}
-			LayerXY tempLayer=new LayerXY(memorySimulator.toLong1d(times),values);
-			tempLayer.setColor(color);
-			tempLayer.setName(instruments[i]);
-			//if (!instruments[i].equals("ANTENNA") && !instruments[i].equals("PTR")) plot4.addLayer(tempLayer);
-			plot4.addLayer(tempLayer);
 		}
 
 		//plot4.addLayer(layerTotalMemory);
 		//plot4.addLayer(layerLimitMemory);
-		LOG.info("Generating Datarate plots");
-		if (instruments.length>0){
-			plot4.getXaxis().setTitleText("Time");
-			plot4.getYaxis().setTitleText("Data (bits)");
-			plot4.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
-			plot4.getLegend().setVisible(true);
+		//LOG.info("Generating Datarate plots");
+		if (!onlyText){
+			HistoryModesPlot plot = new vega.uplink.commanding.gui.HistoryModesPlot("Time line",context.getHistoryModes());
+			JFrame frame=new JFrame("Time line");
+			frame.setContentPane(plot);
+			plot.setPreferredSize(new java.awt.Dimension(500, 270));
+			frame.pack();
+			RefineryUtilities.centerFrameOnScreen(frame);
+	
+			frame.setVisible(true);
 		}
-		HistoryModesPlot plot = new vega.uplink.commanding.gui.HistoryModesPlot("Time line",context.getHistoryModes());
-		JFrame frame=new JFrame("Time line");
-		frame.setContentPane(plot);
-		plot.setPreferredSize(new java.awt.Dimension(500, 270));
-		frame.pack();
-		RefineryUtilities.centerFrameOnScreen(frame);
-
-		frame.setVisible(true);
 		LOG.info("Executing post script");
 		if (!context.getPostScript().equals("")){
 			try{
@@ -333,7 +369,7 @@ public class Simulation {
 		
 	}
 	
-	public Simulation(String itlFile,String evtFile) throws java.text.ParseException{
+	public Simulation(String itlFile,String evtFile) throws java.text.ParseException, IOException{
 		this();
 		String defaultDirectory=Properties.getProperty(Properties.DEFAULT_EVT_DIRECTORY);
 		//Por por;

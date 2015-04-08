@@ -259,13 +259,13 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
     	
     	AbstractSequence[] seqs = schedule.getPor().getSequences();
     	//System.out.println(schedule.getPor().toXml());
-		Orcd orcd;
-		try{
+		Orcd orcd=Orcd.getOrcd();
+		/*try{
 			orcd=Orcd.readORCDfile(Properties.getProperty(Properties.ORCD_FILE));
 		}catch(Exception e){
 			orcd=Orcd.readORCDfromJar();
 
-		}
+		}*/
 		for (int i=0;i<seqs.length;i++){
 			//System.out.println("sequence found");
 			//if (seqs[i].getName())
