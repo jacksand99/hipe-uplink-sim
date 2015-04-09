@@ -20,12 +20,14 @@ import vega.hipe.gui.xmlutils.HtmlDocument;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
 import vega.uplink.DateUtil;
 import vega.uplink.commanding.Fecs;
+import vega.uplink.commanding.PorUtils;
 import vega.uplink.pointing.PointingBlock;
 //import vega.uplink.commanding.Por;
 //import vega.uplink.commanding.PorChecker;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
 //import vega.uplink.commanding.task.PorCheckTask.MessagesFrame;
+import vega.uplink.pointing.PtrUtils;
 
 public class CompareFecsTask extends Task {
 	private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());
@@ -62,7 +64,49 @@ public class CompareFecsTask extends Task {
 		 addTaskParameter(report);
 
 	}
-	
+	public static void main(String[] args){
+		
+		if (args.length!=4){
+			System.out.println("Usage: CompareFecsTask fullPathOlderFECS fullPathNewerFECS fullPathPTSL fullPathDestinationReport");
+			System.out.println("Number of arguments provided:"+args.length);
+			for (int i=0;i<args.length;i++){
+				System.out.println(args[i]);
+			}
+			System.exit(0);
+		}
+		Fecs olderfecs=null;
+		try {
+			olderfecs=PorUtils.readFecsFromFile(args[0]);
+		}catch (Exception e){
+			System.out.println("Could not read older FECS");
+			e.printStackTrace();
+			System.exit(0);
+		}
+		Fecs newerfecs=null;
+		try {
+			newerfecs=PorUtils.readFecsFromFile(args[1]);
+		}catch (Exception e){
+			System.out.println("Could not read newer FECS");
+			e.printStackTrace();
+			System.exit(0);
+		}
+		Ptr ptsl=null;
+		try{
+			ptsl=PtrUtils.readPTRfromFile(args[2]);
+		}catch (Exception e){
+			System.out.println("Could not read PTSL");
+			e.printStackTrace();
+			System.exit(0);
+		}
+		HtmlDocument report = produceReport(olderfecs,newerfecs,null,ptsl,false);
+		try{
+			report.saveReportToFile(args[3]);
+		}catch (Exception e){
+			System.out.println("Could not save report");
+			e.printStackTrace();
+			System.exit(0);
+		}
+	}
 	public void execute() { 
 		Fecs olderFecs = (Fecs) getParameter("olderFecs").getValue();
         if (olderFecs == null) {
@@ -72,32 +116,47 @@ public class CompareFecsTask extends Task {
         if (newerFecs == null) {
             throw (new NullPointerException("Missing newerFecs value"));
         }
+        Ptr ptsl=(Ptr) getParameter("ptsl").getValue();
+        String station=(String) getParameter("station").getValue();
+        HtmlDocument result = produceReport(olderFecs,newerFecs,station ,ptsl,true);
+        this.getParameter("fecsCompareReport").setValue(result);
+	}
+	public static HtmlDocument produceReport(Fecs olderFecs,Fecs newerFecs,String station,Ptr ptsl,boolean show){
+	//public void execute() { 
+		/*Fecs olderFecs = (Fecs) getParameter("olderFecs").getValue();
+        if (olderFecs == null) {
+            throw (new NullPointerException("Missing olderFecs value"));
+        }
+ 		Fecs newerFecs = (Fecs) getParameter("newerFecs").getValue();
+        if (newerFecs == null) {
+            throw (new NullPointerException("Missing newerFecs value"));
+        }*/
         String oldName = olderFecs.getName();
         Date startDate = newerFecs.getValidityStart();
         //if (new Date().after(startDate)) startDate=new Date();
         olderFecs=olderFecs.getSubFecs(startDate, newerFecs.getValidityEnd());
         olderFecs.setName(oldName);
-        String station=(String) getParameter("station").getValue();
+        //String station=(String) getParameter("station").getValue();
         if (station!=null) {
         	if (station.equals("ESA")){
-            	olderFecs = ((Fecs) getParameter("olderFecs").getValue()).getSubFecsESA();
-            	newerFecs = ((Fecs) getParameter("newerFecs").getValue()).getSubFecsESA();
+            	olderFecs = olderFecs.getSubFecsESA();
+            	newerFecs = newerFecs.getSubFecsESA();
 
         	}
         	if (station.equals("DSN")){
-            	olderFecs = ((Fecs) getParameter("olderFecs").getValue()).getSubFecsDSN();
-            	newerFecs = ((Fecs) getParameter("newerFecs").getValue()).getSubFecsDSN();
+            	olderFecs = olderFecs.getSubFecsDSN();
+            	newerFecs = newerFecs.getSubFecsDSN();
 
         	}
         	if (!station.equals("DSN") && !station.equals("ESA")){
-        		olderFecs = ((Fecs) getParameter("olderFecs").getValue()).getSubFecs(station);
-        		newerFecs = ((Fecs) getParameter("newerFecs").getValue()).getSubFecs(station);
+        		olderFecs = olderFecs.getSubFecs(station);
+        		newerFecs = newerFecs.getSubFecs(station);
         	}
         }
 
         String message="";
         
-        Ptr ptsl=(Ptr) getParameter("ptsl").getValue();
+        //Ptr ptsl=(Ptr) getParameter("ptsl").getValue();
         if (ptsl==null){
         	try{
         		/*message=message+olderFecs.getName()+" 34 m (h/day):"+olderFecs.getHoursDay35m()+"\n";
@@ -203,8 +262,11 @@ public class CompareFecsTask extends Task {
         message="<html><body>"+message+"</body><html>";
         HtmlDocument result=new HtmlDocument("Compare Fecs",message);
         //HtmlEditorKit frame = new HtmlEditorKit("Compare FECS",message);
-        HtmlEditorKit frame = new HtmlEditorKit(result);
-        this.getParameter("fecsCompareReport").setValue(result);
+        if (show){
+        	HtmlEditorKit frame = new HtmlEditorKit(result);
+        }
+        return result;
+        //this.getParameter("fecsCompareReport").setValue(result);
        	//MessagesFrame frame = new MessagesFrame(message);
     	//frame.setVisible(true);
 		

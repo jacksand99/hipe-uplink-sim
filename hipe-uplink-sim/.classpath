@@ -42,5 +42,6 @@
 	<classpathentry kind="lib" path="/hus-ros-fd/bin"/>
 	<classpathentry kind="lib" path="jars/org.eclipse.jgit-3.5.2.201411120430-r.jar"/>
 	<classpathentry kind="lib" path="jars/jsch-0.1.51.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/git/hipe-uplink-sim/hipe-uplink-sim/jars/javax.mail.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

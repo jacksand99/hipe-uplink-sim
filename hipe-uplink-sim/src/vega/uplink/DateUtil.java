@@ -193,7 +193,8 @@ public class DateUtil {
 	public static java.util.Date DOYToDate(String zuluTime) throws ParseException {
 		java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-D'T'HH:mm:ss.SSS'Z'");
 		java.text.SimpleDateFormat dateFormat3=new java.text.SimpleDateFormat("yyyy-D'T'HH:mm:ss");
-
+		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		dateFormat3.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		TimeZone tz = java.util.TimeZone.getTimeZone("UTC");
 		dateFormat.setTimeZone(tz);
 		try {

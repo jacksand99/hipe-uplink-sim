@@ -103,7 +103,7 @@ public class Pdor {
 			for (int i=0;i<seqs.length;i++){
 				System.out.println(seqs[i].toXml());
 			}*/
-			Por por=readPdor("/Users/jarenas 1/Downloads/PDOR_D_AL_DC_AL00018_00255.ROS");
+			Por por=readPdor("/Users/jarenas 1/Rosetta/afterSafeMode/PDOR_D_VSTP97SR00104_00261.ROS");
 			System.out.println(por.toXml());
 		}catch (Exception e){
 			e.printStackTrace();
@@ -137,13 +137,20 @@ public class Pdor {
 		AbstractSequence seq=null;
 		java.util.Vector<AbstractSequence> sequences=new java.util.Vector<AbstractSequence>();
 		for (int i=0;i<lines.length;i++){
-			System.out.println(lines[i]);
+			//System.out.println(lines[i]);
 			if (lines[i].startsWith("DOR_") || lines[i].startsWith("POR_")){
 				refDate=readRefDate(lines[i]);
 				validity=readValidity(lines[i+1]);
+				//System.out.println("******"+refDate);
+				//System.out.println("******"+validity[0]);
+				//System.out.println("******"+validity[1]);
 			}
 			if (lines[i].startsWith("P")){
-				if (seq!=null) seq.addParameter(readParameter(lines[i]));
+				if (seq!=null){
+					seq.addParameter(readParameter(lines[i]));
+					System.out.println("**"+seq);
+				}
+				
 			}
 			if (lines[i].startsWith("H3")){
 				try{
@@ -173,6 +180,7 @@ public class Pdor {
 					rd=new Date(seq.getExecutionDate().getTime()+(duration*1000));
 				}
 				seq=readSequence(lines[i],rd);
+				//System.out.println("********"+seq.toXml());
 				/*if (validity[0]!=null){
 					seq=readSequence(lines[i],validity[0]);
 				}else{
@@ -209,7 +217,10 @@ public class Pdor {
 		if (refDate==null) refDate=new Date();
 		line=line.replace("H1", "");
 		String[] parts = line.split(" ");
-		if (!parts[1].equals("S")) return null;
+		if (!parts[1].equals("S")){
+			LOG.info("Only sequences are supported at the momment in the PDOR reader: "+line);
+			return null;
+		}
 		else {
 			String name=parts[0];
 			return new Sequence(name,ObservationPor.getUniqueID(),DateUtil.dateToDOY(refDate));

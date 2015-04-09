@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class test {
 	public static void main(String[] args){
-		String d="14-023T00:00:00";
+		String d="2015-098T11:25:11Z";
 		try {
 			Date date = DateUtil.parse(d);
 			System.out.println(DateUtil.defaultDateToString(date));

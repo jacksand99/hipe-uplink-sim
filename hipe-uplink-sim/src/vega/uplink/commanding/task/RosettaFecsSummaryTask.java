@@ -9,8 +9,10 @@ import java.util.logging.Logger;
 import vega.hipe.gui.xmlutils.HtmlDocument;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
 import vega.uplink.commanding.Fecs;
+import vega.uplink.commanding.PorUtils;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
+import vega.uplink.pointing.PtrUtils;
 
 public class RosettaFecsSummaryTask extends Task {
 	private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());
@@ -38,9 +40,52 @@ public class RosettaFecsSummaryTask extends Task {
 
 
 	}
-	
-	public void execute() { 
+	public static void main(String[] args){
+		
+		if (args.length!=3){
+			System.out.println("Usage: RosettaFecsSummaryTask fullPathFECS fullPathPTSL fullPathDestinationReport");
+			System.out.println("Number of arguments provided:"+args.length);
+			for (int i=0;i<args.length;i++){
+				System.out.println(args[i]);
+			}
+			System.exit(0);
+		}
+		Fecs fecs=null;
+		try {
+			fecs=PorUtils.readFecsFromFile(args[0]);
+		}catch (Exception e){
+			System.out.println("Could not read FECS");
+			e.printStackTrace();
+			System.exit(0);
+		}
+		Ptr ptsl=null;
+		try{
+			ptsl=PtrUtils.readPTRfromFile(args[1]);
+		}catch (Exception e){
+			System.out.println("Could not read PTSL");
+			e.printStackTrace();
+			System.exit(0);
+		}
+		HtmlDocument report = produceReport(fecs,ptsl,false);
+		try{
+			report.saveReportToFile(args[2]);
+		}catch (Exception e){
+			System.out.println("Could not save report");
+			e.printStackTrace();
+			System.exit(0);
+		}
+	}
+	public void execute() {
 		Fecs fecs = (Fecs) getParameter("fecs").getValue();
+		Ptr ptsl=(Ptr) getParameter("ptsl").getValue();
+		HtmlDocument result = produceReport(fecs,ptsl,true);
+		this.getParameter("fecsRosettaSummaryReport").setValue(result);
+	}
+	public static HtmlDocument produceReport(Fecs fecs,Ptr ptsl,boolean show){
+		
+	//}
+	//public void execute() { 
+		//Fecs fecs = (Fecs) getParameter("fecs").getValue();
 		Fecs fecsESA;
 		Fecs fecsDSN;
         if (fecs == null) {
@@ -61,7 +106,7 @@ public class RosettaFecsSummaryTask extends Task {
 
         String message="";
         
-        Ptr ptsl=(Ptr) getParameter("ptsl").getValue();
+        //Ptr ptsl=(Ptr) getParameter("ptsl").getValue();
         if (ptsl==null){
         	try{
         		message=fecs.getFecsSummaryTableHTML();
@@ -191,8 +236,11 @@ public class RosettaFecsSummaryTask extends Task {
         }
         message="<html><body>"+message+"</body><html>";
         HtmlDocument result=new HtmlDocument("Summary FECS", message);
-        HtmlEditorKit frame = new HtmlEditorKit(result);
-        this.getParameter("fecsRosettaSummaryReport").setValue(result);
+        if (show) {
+        	HtmlEditorKit frame = new HtmlEditorKit(result);
+        }
+        return result;
+        //this.getParameter("fecsRosettaSummaryReport").setValue(result);
        	//MessagesFrame frame = new MessagesFrame(message);
     	//frame.setVisible(true);
 		
