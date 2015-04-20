@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import vega.uplink.DateUtil;
+import vega.uplink.Properties;
 
 public class SequenceTimeline {
 		HashSet<SequenceExecution> set;
@@ -14,7 +15,7 @@ public class SequenceTimeline {
 			set=new HashSet<SequenceExecution>();
 			try {
 				mib=Mib.getMib();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				IllegalArgumentException iae = new IllegalArgumentException("Could not get Mib:"+e.getMessage());
 				iae.initCause(e);
@@ -60,6 +61,27 @@ public class SequenceTimeline {
 			return result;
 		}
 		public String findAllOverlapping(){
+			AbstractAllowOverlapChecker checker;
+			String className=null;
+			try{
+				className=Properties.getProperty("vega.uplink.overlapChecker");
+			}
+			catch(Exception e){
+				className="vega.uplink.commanding.RosettaOverlapChecker";
+			}
+			if (className==null) className="vega.uplink.commanding.RosettaOverlapChecker";
+			try {
+				checker = (AbstractAllowOverlapChecker)Class.forName(className).newInstance();
+			} catch (InstantiationException | IllegalAccessException
+					| ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				checker = new AbstractAllowOverlapChecker(){
+					public boolean allowOverlap(AbstractSequence a,AbstractSequence b){
+						return true;
+					}
+				};
+				
+			}
 			String message="";
 			Iterator<SequenceExecution> it = set.iterator();
 			while (it.hasNext()){
@@ -67,7 +89,7 @@ public class SequenceTimeline {
 				SequenceExecution pass = it.next();
 				SequenceExecution[] over = findOverlapingExecution(pass);
 				for (int i=0;i<over.length;i++){
-					if (!AllowOverlapChecker.allowOverlap(pass.getSequence(), over[i].getSequence())) message=message+pass.getName()+" ("+mib.getSequenceDescription(pass.getName())+") at "+DateUtil.defaultDateToString(pass.getStartTime())+" overlaps with "+over[i].getName()+" ("+mib.getSequenceDescription(over[i].getName())+") at "+DateUtil.defaultDateToString(over[i].getStartTime())+"\n";
+					if (!checker.allowOverlap(pass.getSequence(), over[i].getSequence())) message=message+pass.getName()+" ("+mib.getSequenceDescription(pass.getName())+") at "+DateUtil.defaultDateToString(pass.getStartTime())+" overlaps with "+over[i].getName()+" ("+mib.getSequenceDescription(over[i].getName())+") at "+DateUtil.defaultDateToString(over[i].getStartTime())+"\n";
 					//if (pass.getInstrument().equals(over[i].getInstrument())) message=message+pass.getName()+" ("+mib.getSequenceDescription(pass.getName())+") at "+DateUtil.defaultDateToString(pass.getStartTime())+" overlaps with "+over[i].getName()+" ("+mib.getSequenceDescription(over[i].getName())+") at "+DateUtil.defaultDateToString(over[i].getStartTime())+"\n";
 				}
 			}

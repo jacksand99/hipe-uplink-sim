@@ -173,7 +173,7 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		Mib mib;
 		try {
 			mib = Mib.getMib();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			IllegalArgumentException iae = new IllegalArgumentException("Could not get Mib "+e.getMessage());
 			iae.initCause(e);

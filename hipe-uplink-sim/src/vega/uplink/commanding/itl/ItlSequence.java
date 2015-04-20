@@ -20,7 +20,7 @@ public class ItlSequence extends ObservationSequence{
 				sequenceFlag, sequenceParamaters, sequenceProfiles);
 		try {
 			mib=Mib.getMib();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			IllegalArgumentException iae = new IllegalArgumentException("Could not get mib:"+e.getMessage());
 			iae.initCause(e);
@@ -36,7 +36,7 @@ public class ItlSequence extends ObservationSequence{
 				 sequenceParamaters, sequenceProfiles);
 		try {
 			mib=Mib.getMib();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			IllegalArgumentException iae = new IllegalArgumentException("Could not get mib:"+e.getMessage());
 			iae.initCause(e);
@@ -58,7 +58,7 @@ public class ItlSequence extends ObservationSequence{
 		super(parent, executionEvent, executionDelta, sequenceName, ObservationPor.getUniqueID());
 		try {
 			mib=Mib.getMib();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			IllegalArgumentException iae = new IllegalArgumentException("Could not get mib:"+e.getMessage());
 			iae.initCause(e);

@@ -32,16 +32,17 @@ public class MibFileComponent extends AbstractFileEditorComponent implements Pro
         return ICON;
     }
 
-    @Override
+   @Override
     public VariableSelection getTargetSelection() throws IOException {
-        File file = getFile();
+        /*File file = getFile();
         Mib mib = Mib.getMibFromTarFile(file.getAbsolutePath());
         String variableName = file.getName().toLowerCase();
         variableName = variableName.replaceAll("[.]ROS$", "");
         variableName = variableName.replaceAll("[.]tar$", "");
         variableName = InterpreterUtil.makeVariableName(variableName);
         herschel.ia.gui.kernel.util.VariablesUtil.addVariable(variableName, mib);
-        return new VariableSelection(variableName, mib);
+        return new VariableSelection(variableName, mib);*/
+	   return null;
     }
 
     @Override

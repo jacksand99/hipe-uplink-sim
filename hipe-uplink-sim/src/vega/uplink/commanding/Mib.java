@@ -30,6 +30,12 @@ import herschel.ia.numeric.String1d;
 import vega.hipe.FileUtil;
 import herschel.share.util.ObjectUtil;
 
+/**
+ * The MIB to be used. It only contains the tables from the MIB relevant for mission planning
+ * The tables read are SDF, CSP, CDF, CPC and CSS
+ * @author jarenas
+ *
+ */
 public class Mib extends CompositeDataset{
 	static Mib MIB;
 	private static final Logger LOG = Logger.getLogger(Mib.class.getName());
@@ -57,7 +63,7 @@ public class Mib extends CompositeDataset{
 		cacheSeqDescription=new HashMap<String,String>();
 		cacheParamDescription=new HashMap<String,String>();
 	}
-	public static Mib getMibFromTarFile(String tarFile) throws IOException {
+	/*public static Mib getMibFromTarFile(String tarFile) throws IOException {
 		File tdir=null;
 		
 		try{
@@ -78,7 +84,13 @@ public class Mib extends CompositeDataset{
 		finally{
 			if (tdir!=null) tdir.delete();
 		}
-	}
+	}*/
+	
+	/**
+	 * Read the MIB from files. The location will be read from the properties
+	 * @return the MIB
+	 * @throws IOException In the case the files are not found or are not readable 
+	 */
 	public static Mib getMibFromFiles() throws IOException{
 		FileInputStream sdf_data=new FileInputStream(Properties.getProperty(Properties.MIB_LOCATION)+"/"+"sdf.dat");
 		FileInputStream csp_data=new FileInputStream(Properties.getProperty(Properties.MIB_LOCATION)+"/"+"csp.dat");
@@ -126,6 +138,11 @@ public class Mib extends CompositeDataset{
 
 	}
 	
+	/**
+	 * Read the MIB from the jars in the class path. The need to be in a directory called mib in the first level of the class path
+	 * @return The MIB
+	 * @throws IOException IN case that the directory mib is not found in the class path
+	 */
 	public static Mib getMibFromJar() throws IOException{
 		InputStream sdf_data = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/mib/sdf.dat");
 		InputStream csp_data = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/mib/csp.dat");
@@ -136,12 +153,22 @@ public class Mib extends CompositeDataset{
 	}
 	
 	
+	/**
+	 * Check if a sequence exist in the MIB
+	 * @param sequence The sequence name to be checked
+	 * @return True if the sequence exist and false otherwise
+	 */
 	public boolean checkSequence(String sequence){
 		TableDataset paramsForCommand=findInTable((TableDataset)this.get("csp_table"),"CSP_SQNAME",sequence);
 		if (paramsForCommand.getRowCount()>0) return true;
 		else return false;
 	}
 	
+	/**
+	 * Get the defaulr parameters for a sequence name
+	 * @param sequence The sequence name
+	 * @return Array with the default parameters defined in the mib for the given sequence
+	 */
 	public Parameter[] getDefaultParameters(String sequence){
 		TableDataset paramsForCommand=findInTable((TableDataset)this.get("csp_table"),"CSP_SQNAME",sequence);
 		String1d paramNames=(String1d) paramsForCommand.getColumn("CSP_FPNAME").getData();
@@ -151,6 +178,12 @@ public class Mib extends CompositeDataset{
 		}
 		return result;
 	}
+	/**
+	 * Check if a particular sequence has a given parameter defined in the MIB or not
+	 * @param sequence  Sequence name
+	 * @param parameter Parameter name
+	 * @return True if the parameter is defined in the MIB for the given sequence. False otherwise
+	 */
 	public boolean checkParameterSequence(String sequence,String parameter){
 		TableDataset paramsForCommand=findInTable((TableDataset)this.get("csp_table"),"CSP_SQNAME",sequence);
 		
@@ -162,6 +195,13 @@ public class Mib extends CompositeDataset{
 		else return false;
 		
 	}
+	/**
+	 * Check if the representation and radix of a parameter is the same as defined in the MIB
+	 * @param param Parameter to be checked
+	 * @return True if the parameter representation and radix are the same as defined in the MIB
+	 * @throws IllegalArgumentException If the representation or radix are different. The message in the exception will actually say what is the problem
+	 * 
+	 */
 	public boolean checkParameter(Parameter param){
 		TableDataset resultTable=findInTable((TableDataset)this.get("csp_table"),"CSP_FPNAME",param.getName());
 		java.util.List<Object> row = resultTable.getRow(0);
@@ -210,10 +250,15 @@ public class Mib extends CompositeDataset{
 		return true;
 	}
 	
-	public TableDataset findInTable(TableDataset table, String columnName, String search){
+	private TableDataset findInTable(TableDataset table, String columnName, String search){
 		return table.select(table.getColumn(columnName).getData().where(new herschel.binstruct.util.String1dRegex(search)));
 	}
 	
+	/**
+	 * Get the default Parameter definition in the MIB for a parameter name
+	 * @param parameterName The parameter name
+	 * @return The parameter as default definition in the MIB
+	 */
 	public Parameter getDefaultParameter(String parameterName){
 		Parameter result=new Parameter(parameterName,"Default","Default");
 		TableDataset resultTable=findInTable((TableDataset)this.get("csp_table"),"CSP_FPNAME",parameterName);
@@ -240,7 +285,12 @@ public class Mib extends CompositeDataset{
 		return result;
 	}
 	
-	static public Mib getMib() throws IOException{
+	/**
+	 * Get the MIB. It will try first to read the MIB form files, from the location defined in the properties.
+	 * Then it will try to read it form the jar files in the class path. If it fails as well, the it will crate an empty MIB.
+	 * @return the MIB
+	 */
+	static public Mib getMib() {
 		if (MIB==null){
 			try{
 				MIB=Mib.getMibFromFiles();
@@ -292,6 +342,11 @@ public class Mib extends CompositeDataset{
 	    return untaredFiles;
 	}
 	
+	/**
+	 * Get the description of a parameter in the MIB
+	 * @param parameterName
+	 * @return The description if the parameter
+	 */
 	public String getParameterDescription(String parameterName){
 		String cDescription = cacheParamDescription.get(parameterName);
 		if (cDescription!=null) return cDescription;
@@ -307,13 +362,22 @@ public class Mib extends CompositeDataset{
 			return "UNKNOWN";
 		}
 	}
+	/**
+	 * Return an array with all valid sequences names
+	 * @return
+	 */
 	public String[] getAllSequences(){
 		return removeDuplicates(((String1d)((TableDataset)this.get("css_table")).getColumn("CSS_SQNAME").getData()).toArray());
 	}
-	public static String[] removeDuplicates(String[] arr) {
+	private static String[] removeDuplicates(String[] arr) {
 		  return new HashSet<String>(Arrays.asList(arr)).toArray(new String[0]);
 		}
 	
+	/**
+	 * Get the description in the MIB of a given sequence
+	 * @param sequenceName Sequence name
+	 * @return The description of the sequence
+	 */
 	public String getSequenceDescription(String sequenceName){
 		String cDescription = cacheSeqDescription.get(sequenceName);
 		if (cDescription!=null) return cDescription;
@@ -328,6 +392,11 @@ public class Mib extends CompositeDataset{
 		}
 	}
 	
+	/**
+	 * Get the total duration in seconds of a sequence as defined in the MIB
+	 * @param sequenceName The sequence name
+	 * @return Duration in seconds
+	 */
 	public long getTotalSequenceDuration(String sequenceName){
 		Long cDuration = cacheDuration.get(sequenceName);
 		if (cDuration!=null) return cDuration;
@@ -348,7 +417,7 @@ public class Mib extends CompositeDataset{
 		
 	}
 	
-	public static long mibTimeToSecs(String mibTime){
+	private static long mibTimeToSecs(String mibTime){
 		StringTokenizer items=new StringTokenizer(mibTime,".");
 		int h=Integer.parseInt(items.nextToken());
 		int m=Integer.parseInt(items.nextToken());

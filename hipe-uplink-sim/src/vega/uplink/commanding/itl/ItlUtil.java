@@ -30,7 +30,7 @@ public class ItlUtil {
 		Mib mib;
 		try {
 			mib=Mib.getMib();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			IllegalArgumentException iae = new IllegalArgumentException("Could not get MIB "+e.getMessage());
 			iae.initCause(e);
 			throw(iae);

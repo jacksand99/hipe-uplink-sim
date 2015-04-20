@@ -488,7 +488,7 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 		Mib mib;
 			try {
 				mib=Mib.getMib();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				IllegalArgumentException iae = new IllegalArgumentException("Could not init mib "+e.getMessage());

@@ -1,85 +1,30 @@
 package vega.hipe.mail;
 
-//File Name SendEmail.java
+
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.InetAddress;
+
 import java.text.ParseException;
 import java.util.*;
 
 import javax.mail.*;
 import javax.mail.internet.*;
-import javax.activation.*;
+
 
 import vega.hipe.gui.xmlutils.HtmlDocument;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
 
 public class SendEmail
 {
-public static void main(String [] args)
-{    
-   	herschel.share.util.Configuration.setProperty("var.hcss.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
-	herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
-	herschel.share.util.Configuration.setProperty("vega.mib.location", "/Users/jarenas 1/Downloads/MAPPS/MIB");
-	herschel.share.util.Configuration.setProperty("vega.hipe.mail.from", "javier.arenas@sciops.esa.int");
-	herschel.share.util.Configuration.setProperty("vega.hipe.mail.smtp", "scimta01.esac.esa.int");
-	
-   /*// Recipient's email ID needs to be mentioned.
-   String to = "javier.arenas@sciops.esa.int";
 
-   // Sender's email ID needs to be mentioned
-   String from = "javier.arenas@sciops.esa.int";
-
-   // Assuming you are sending email from localhost
-   String host = "scimta01.esac.esa.int";
-
-   // Get system properties
-   Properties properties = System.getProperties();
-
-   // Setup mail server
-   properties.setProperty("mail.smtp.host", host);
-
-   // Get the default Session object.
-   Session session = Session.getDefaultInstance(properties);
-
-   try{
-      // Create a default MimeMessage object.
-      MimeMessage message = new MimeMessage(session);
-
-      // Set From: header field of the header.
-      message.setFrom(new InternetAddress(from));
-
-      // Set To: header field of the header.
-      message.addRecipient(Message.RecipientType.TO,
-                               new InternetAddress(to));
-      HtmlDocument doc = HtmlDocument.readFromFile("/Users/jarenas 1/Rosetta/hack 15/PTRM_update_alice_rpc_miro_virtis.ROS-nominal.html");
-      message=sendHtmlDocument(doc,message);
-      // Set Subject: header field
-      //message.setSubject("This is the Subject Line!");
-
-      // Now set the actual message
-      
-      //message.setText("This is actual message");
-      //message.
-
-      // Send message
-      Transport.send(message);
-      System.out.println("Sent message successfully....");
-   }catch (Exception mex) {
-      mex.printStackTrace();
-   }*/
-	try{
-		//System.out.println(InetAddress.getLocalHost().getAddress());
-		//System.out.println(System.getProperty("host.name"));
-		//sendMessage("javier.arenas@sciops.esa.int","Hola","Hola Javier");
-		//sendHtmlDocument("javier.arenas@sciops.esa.int,javier.arenas@gmail.com",HtmlDocument.readFromFile("/Users/jarenas 1/Rosetta/hack 15/PTRM_update_alice_rpc_miro_virtis.ROS-nominal.html"));
-	}catch(Exception e){
-		e.printStackTrace();
-	}
-}
+/**
+ * Send an HTML document via email
+ * @param to Email addresses to send the HTML document. Comma separated
+ * @param doc The Html document to send
+ */
 public static void sendHtmlDocument(String to,HtmlDocument doc) {
 	String from=null;
 	String server=null;
@@ -94,6 +39,13 @@ public static void sendHtmlDocument(String to,HtmlDocument doc) {
 	}
 	sendHtmlDocument(from,to,server,doc);
 }
+/**
+ * Send an HTML document via email
+ * @param to Email addresses to send the HTML document. Comma separated
+ * @param doc The Html document to send
+ * @param from The email address to send from
+ * @param smtpServer The SMTP server to use
+ */
 public static void sendHtmlDocument(String from,String to,String smtpServer,HtmlDocument doc) {
 	StringTokenizer tokenizer=new StringTokenizer(to,",");
 	String add[]=new String[tokenizer.countTokens()];
@@ -104,6 +56,12 @@ public static void sendHtmlDocument(String from,String to,String smtpServer,Html
 	}
 	sendHtmlDocument(from,add,smtpServer,doc);
 }
+/**
+ * Send a single email message
+ * @param to Email addresses to send the HTML document. Comma separated 
+ * @param subject The subject to use for the email
+ * @param text The body of the message
+ */
 public static void sendMessage(String to,String subject,String text){
 	String from=null;
 	String server=null;
@@ -118,6 +76,14 @@ public static void sendMessage(String to,String subject,String text){
 	}
 	sendMessage(from,to,server,subject,text);
 }
+/**
+ * Send a single email message
+ * @param to Email addresses to send the message. Comma separated 
+ * @param subject The subject to use for the email
+ * @param text The body of the message
+ * @param from The email address to send from
+ * @param smtpServer The SMTP server to use
+ */
 public static void sendMessage(String from,String to,String smtpServer,String subject,String text){
 	StringTokenizer tokenizer=new StringTokenizer(to,",");
 	String add[]=new String[tokenizer.countTokens()];
@@ -128,6 +94,14 @@ public static void sendMessage(String from,String to,String smtpServer,String su
 	}
 	sendMessage(from,add,smtpServer,subject,text);
 }
+/**
+ * Send a single email message
+ * @param to Array with Email addresses to send the message
+ * @param subject The subject to use for the email
+ * @param text The body of the message
+ * @param from The email address to send from
+ * @param smtpServer The SMTP server to use
+ */
 public static void sendMessage(String from,String[] to,String smtpServer,String subject,String text){
 	try{
 		//Properties properties = System.getProperties();
@@ -138,16 +112,8 @@ public static void sendMessage(String from,String[] to,String smtpServer,String 
 		MimeMessage message = new MimeMessage(session);
 	    message.setFrom(new InternetAddress(from));
 	    for (int i=0;i<to.length;i++){
-	    // Set To: header field of the header.
 	    	message.addRecipient(Message.RecipientType.TO,new InternetAddress(to[i]));
 	    }
-		/*MimeBodyPart bodyPart = new MimeBodyPart();
-		//bodyPart.setHeader("Content-Type", "text/html");
-		
-		bodyPart.setText(text);
-		 MimeMultipart mpart = new MimeMultipart();
-		 mpart.addBodyPart(bodyPart);
-		 message.setContent(mpart);*/
 	    message.setText(text);
 		 message.setHeader("Content-Type", "text/html");
 		 message.setSubject(subject);
@@ -159,9 +125,15 @@ public static void sendMessage(String from,String[] to,String smtpServer,String 
 	}
 
 }
+/**
+ * Send an HTML document via email
+ * @param to Array with Email addresses to send the message
+ * @param doc The Html document to send
+ * @param from The email address to send from
+ * @param smtpServer The SMTP server to use
+ */
 public static void sendHtmlDocument(String from,String[] to,String smtpServer,HtmlDocument doc) {
 	try{
-		//Properties properties = System.getProperties();
 		Properties properties=new Properties();
 		properties.setProperty("mail.smtp.host", smtpServer);
 		properties.put("mail.smtp.localhost", "toto");
@@ -169,7 +141,6 @@ public static void sendHtmlDocument(String from,String[] to,String smtpServer,Ht
 		MimeMessage message = new MimeMessage(session);
 	    message.setFrom(new InternetAddress(from));
 	    for (int i=0;i<to.length;i++){
-	    // Set To: header field of the header.
 	    	message.addRecipient(Message.RecipientType.TO,new InternetAddress(to[i]));
 	    }
 		MimeBodyPart bodyPart = new MimeBodyPart();

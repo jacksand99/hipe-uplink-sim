@@ -40,18 +40,10 @@ import vega.uplink.pointing.PointingBlock;
 import org.w3c.dom.Document;
 
 
+
 /**
-* The Fecs class is a data model to store the information from the FECS file.
-* This file stores the information about Ground station passes and downlink rate.
-*
-* @author  Javier Arenas
-* @version 1.0
-*/
-/**
- * @author jarenas
- *
- */
-/**
+ * The Fecs class is a data model to store the information from the FECS file.
+ * This file stores the information about Ground station passes and downlink rate.
  * @author jarenas
  *
  */
@@ -67,7 +59,7 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Change</th>\n"
 			+ "</tr>\n";
 
-	private static String DUMP_TABLE_HEADER_DURATION=""
+	/*private static String DUMP_TABLE_HEADER_DURATION=""
 			+ "<tr>\n"
 			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Dump is (s)</th><th>Dump was (s)</th>\n"
 			+ "</tr>\n";
@@ -78,7 +70,7 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 	private static String BITRATE_CHANGE_TABLE_HEADER=""
 			+ "<tr>\n"
 			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Bitrate is </th><th>Bitrate was </th>\n"
-			+ "</tr>\n";
+			+ "</tr>\n";*/
 
 
 	/**
@@ -135,13 +127,23 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 			this.removeRow(i);
 		}
 	}
+	/**
+	 * Set the filename of the FECS
+	 * @param name
+	 */
 	public void setName(String name){
 		getMeta().set("name", new StringParameter(name));
 	}
+
+
 	public void setPath(String path){
 		getMeta().set("path", new StringParameter(path));
 	}
 	
+	/**
+	 * Get the file name of the FECS file
+	 * @return
+	 */
 	public String getName(){
 		return (String) getMeta().get("name").getValue();
 	}
@@ -155,8 +157,13 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 	 * @param fecsValidityStart Start time from which this product is applicable.
 	 * @param fecsValidityEnd End time until which this product is applicable
 	 * @param fecsIcdVersion The version of the icd (Interface Control Document) that applies to this product
+	 */	
+	/**
+	 * @param fecsGenerationTime
+	 * @param fecsValidityStart
+	 * @param fecsValidityEnd
+	 * @param fecsIcdVersion
 	 */
-	
 	public Fecs(Date fecsGenerationTime,Date fecsValidityStart,Date fecsValidityEnd,String fecsIcdVersion){
 		this(fecsGenerationTime,fecsValidityStart,fecsValidityEnd,"ROS",fecsIcdVersion);
 	}
@@ -167,8 +174,7 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 	 * @param fecsValidityStart Start time from which this product is applicable.
 	 * @param fecsValidityEnd End time until which this product is applicable
 	 * @param fecsIcdVersion The version of the icd (Interface Control Document) that applies to this product
-	 */
-	
+	 */	
 	public Fecs(Date fecsValidityStart,Date fecsValidityEnd,String fecsIcdVersion){
 		this(new java.util.Date(),fecsValidityStart,fecsValidityEnd,"ROS",fecsIcdVersion);
 	}
@@ -180,8 +186,7 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 	 *  and the ICD version as 0.0.
 	 * @param fecsValidityStart Start time from which this product is applicable.
 	 * @param fecsValidityEnd End time until which this product is applicable
-	 */
-	
+	 */	
 	public Fecs(Date fecsValidityStart,Date fecsValidityEnd){
 		this(new java.util.Date(),fecsValidityStart,fecsValidityEnd,"ROS","PLID-0.0");
 	}
@@ -189,8 +194,7 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 	 * Constructor of the Fecs class assuming the spacecraft to be ROSETTA,
 	 * the generation time the creation time of this product,
 	 * the ICD version as 0.0 and the validity start and end the creation time of this product.
-	 */
-	
+	 */	
 	public Fecs(){
 		this(new java.util.Date(),new java.util.Date(),new java.util.Date(),"ROS","PLID-0.0");
 	}
@@ -214,48 +218,74 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		//generationTime=evtmGenerationTime;
 	}
 	
+	/**
+	 * Get the start date of the validity of the FECS
+	 * @return
+	 */
 	public Date getValidityStart(){
 		return ((FineTime) getMeta().get("StartTime").getValue()).toDate();
-		//return validityStart;
 	}
 	
+	/**
+	 * Get the end date of the validity of the FECS
+	 * @param evtmValidityStart
+	 */
 	public void setValidityStart(Date evtmValidityStart){
 		getMeta().set("StartTime", new DateParameter(new FineTime(evtmValidityStart)));
-		//validityStart=evtmValidityStart;
 	}
 	
-	public void setValidityEnd(Date evtmValidityEnd){
-		getMeta().set("EndTime", new DateParameter(new FineTime(evtmValidityEnd)));
-		//validityEnd=evtmValidityEnd;
+	/**
+	 * Set the end date of the validity of the FECS
+	 * @param validityEnd
+	 */
+	public void setValidityEnd(Date validityEnd){
+		getMeta().set("EndTime", new DateParameter(new FineTime(validityEnd)));
 	}
 	
-	public void setSpacecraft(String evtmSpacecraft){
-		getMeta().set("Spacecraft", new StringParameter(evtmSpacecraft));
-		//spacecraft=evtmSpacecraft;
+	/**
+	 * Set the name of the spacecraft
+	 * @param spacecraft
+	 */
+	public void setSpacecraft(String spacecraft){
+		getMeta().set("Spacecraft", new StringParameter(spacecraft));
 	}
 	
-	public void setIcdVersion(String evtmIcdVersion){
-		getMeta().set("ICDversion", new StringParameter(evtmIcdVersion));
-
-		//icdVersion=evtmIcdVersion;
+	/**
+	 * Set the icd version
+	 * @param icdVersion
+	 */
+	public void setIcdVersion(String icdVersion){
+		getMeta().set("ICDversion", new StringParameter(icdVersion));
 	}
 	
+	/**
+	 * Get the end date of the validity of the FECS
+	 * @return
+	 */
 	public Date getValidityEnd(){
 		return ((FineTime) getMeta().get("EndTime").getValue()).toDate();
-		//return validityEnd;
 	}
 	
+	/**
+	 * Get the spacecraft name
+	 * @return
+	 */
 	public String getSpacecraft(){
 		return (String) getMeta().get("Spacecraft").getValue();
-		//return spacecraft;
 	}
 	
+	/**
+	 * Get the ICD version
+	 * @return
+	 */
 	public String getIcdVersion(){
 		return (String) getMeta().get("ICDversion").getValue();
-
-		//return icdVersion;
 	}
 	
+	/**
+	 * Add a GS pass to the FECS
+	 * @param pass GS pass to add
+	 */
 	public void addPass(GsPass pass){
 		passesSet.add(pass);
 		String[] row=new String[8];
@@ -267,12 +297,12 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		row[5]=new Float(pass.getTmRate()).toString();
 		row[6]=new Long(pass.getPassDurationSecs()).toString();
 		row[7]=new Long(pass.getDumpDurationSecs()).toString();
-
 		addRow(row);
-		
-		//addRown(pass.get)
-		
 	}
+	/**
+	 * Remove a GS pass from the FECS
+	 * @param pass
+	 */
 	public void removePass(GsPass pass){
 		passesSet.remove(pass);
 	}
@@ -304,6 +334,11 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		
 	}
 	
+	/**
+	 * Check if a given date is within a pass
+	 * @param date
+	 * @return True if the date is within a pass. False otherwise
+	 */
 	public boolean isInPass(Date date){
 		boolean result=false;
 		Iterator<GsPass> it = passesSet.iterator();
@@ -353,22 +388,23 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		return result;
 	}
 	
+	/**
+	 * Get the number of passes in this FECS
+	 * @return
+	 */
 	public int size(){
 		return passesSet.size();
 	}
+	
+	/**
+	 * Compare 2 FECS and produce a report in HTML with the differences
+	 * @param older Older fecs to compare
+	 * @param newer Newer fecs to compare
+	 * @return a String with the HTML code for the report
+	 */
 	public static String compareFecsHTML(Fecs older,Fecs newer){
 		System.out.println(compareFecs(older,newer));
 		String result="";
-		/*Fecs larger;
-		Fecs shorter;
-		if (fecs1.size()<fecs2.size()){
-			larger=fecs2;
-			shorter=fecs1;
-		}else{
-			larger=fecs1;
-			shorter=fecs2;
-		}
-		//TreeSet<GsPass> passes1 = larger.getPasses();*/
 		TreeSet<GsPass> added=new TreeSet<GsPass>();
 		TreeSet<GsPass> removed=new TreeSet<GsPass>();
 		TreeSet<GsPass> shorterDump=new TreeSet<GsPass>();
@@ -396,8 +432,6 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 						if (m==null) m="";
 						m=m+"Dump enlarged. Dump was "+olderPasses[0].getDumpDurationSecs()+" s, new dump duration is "+newerPass.getDumpDurationSecs()+" s\n<br>";
 						globalChanges.put(newerPass, m);
-	
-						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
 					}
 					if (newerPass.getPassDurationSecs()<olderPasses[0].getPassDurationSecs()){
 						shorterPass.add(newerPass);
@@ -414,7 +448,6 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 						m=m+"Pass enlarged. Pass was "+olderPasses[0].getPassDurationSecs()+" s, new pass is "+newerPass.getPassDurationSecs()+" s\n<br>";
 						globalChanges.put(newerPass, m);
 
-						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
 					}
 					if (newerPass.getTmRate()!=olderPasses[0].getTmRate()){
 						bitrateChanged.add(newerPass);
@@ -423,8 +456,6 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 						if (m==null) m="";
 						m=m+"Bitrate changed. Bitrate was "+olderPasses[0].getTmRate()+" bits/s, new pass is "+newerPass.getTmRate()+" bits/s\n<br>";
 						globalChanges.put(newerPass, m);
-
-						//result=result+"Pass in "+larger.getName()+" larger than pass in "+shorter.getName()+":\n";
 					}
 
 				}
@@ -503,125 +534,18 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 			result=result+"</table><br>";
 
 		}
-		/*if (shorterDump.size()>0){
-			result=result+"<h2>GS passes dump shortened in "+newer.getName()+"</h2>\n";
-			result=result+"<br>\n";
-			
-			result=result+"<table class=\"gridtable\">\n"+DUMP_TABLE_HEADER_DURATION;
-
-			Iterator<GsPass> shortIt = shorterDump.iterator();
-			while (shortIt.hasNext()){
-				GsPass pass = shortIt.next();
-				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
-				String row = passToHTMLRow(pass);
-				row=row.replace("</tr>", "");
-				row=row+"<td>"+pass.getDumpDurationSecs()+"</td>"+"<td>"+oldPass.getDumpDurationSecs()+"</td></tr>";
-				result=result+row;
-				
-			}
-			result=result+"</table><br>";
-
-		}
-		if (largerDump.size()>0){
-			result=result+"<h2>GS passes dump enlarged in "+newer.getName()+"</h2>\n";
-			result=result+"<br>\n";
-			
-			result=result+"<table class=\"gridtable\">\n"+DUMP_TABLE_HEADER_DURATION;
-
-
-			Iterator<GsPass> largerIt = largerDump.iterator();
-			while (largerIt.hasNext()){
-				GsPass pass = largerIt.next();
-				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
-				String row = passToHTMLRow(pass);
-				row=row.replace("</tr>", "");
-				row=row+"<td>"+pass.getDumpDurationSecs()+"</td>"+"<td>"+oldPass.getDumpDurationSecs()+"</td></tr>";
-				result=result+row;
-
-				
-			}
-			result=result+"</table><br>";
-
-		}
-
-		if (shorterPass.size()>0){
-			result=result+"<h2>GS passes duration shortened in "+newer.getName()+"</h2>\n";
-			result=result+"<br>\n";
-			
-			result=result+"<table class=\"gridtable\">\n"+PASS_DURATION_TABLE_HEADER;
-
-			Iterator<GsPass> shortIt = shorterPass.iterator();
-			while (shortIt.hasNext()){
-				GsPass pass = shortIt.next();
-				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
-				String row = passToHTMLRow(pass);
-				row=row.replace("</tr>", "");
-				row=row+"<td>"+pass.getPassDurationSecs()+"</td>"+"<td>"+oldPass.getPassDurationSecs()+"</td></tr>";
-				result=result+row;
-				
-			}
-			result=result+"</table><br>";
-
-		}
-		if (largerPass.size()>0){
-			result=result+"<h2>GS passes duration enlarged in "+newer.getName()+"</h2>\n";
-			result=result+"<br>\n";
-			
-			result=result+"<table class=\"gridtable\">\n"+PASS_DURATION_TABLE_HEADER;
-
-
-			Iterator<GsPass> largerIt = largerPass.iterator();
-			while (largerIt.hasNext()){
-				GsPass pass = largerIt.next();
-				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
-				String row = passToHTMLRow(pass);
-				row=row.replace("</tr>", "");
-				row=row+"<td>"+pass.getPassDurationSecs()+"</td>"+"<td>"+oldPass.getPassDurationSecs()+"</td></tr>";
-				result=result+row;
-
-				
-			}
-			result=result+"</table><br>";
-
-		}
-		if (bitrateChanged.size()>0){
-			result=result+"<h2>GS passes bitrate changed in "+newer.getName()+"</h2>\n";
-			result=result+"<br>\n";
-			
-			result=result+"<table class=\"gridtable\">\n"+BITRATE_CHANGE_TABLE_HEADER;
-
-
-			Iterator<GsPass> largerIt = bitrateChanged.iterator();
-			while (largerIt.hasNext()){
-				GsPass pass = largerIt.next();
-				GsPass oldPass = older.findOverlapingPasses(pass.getStartPass(), pass.getEndPass())[0];
-				String row = passToHTMLRow(pass);
-				row=row.replace("</tr>", "");
-				row=row+"<td>"+pass.getTmRate()+"</td>"+"<td>"+oldPass.getTmRate()+"</td></tr>";
-				result=result+row;
-
-				
-			}
-			result=result+"</table><br>";
-
-		}*/
 
 		return result;
 		
 	}
-	
+	/**
+	 * Compare 2 FECS and produce a report in ASCII with the differences
+	 * @param older Older fecs to compare
+	 * @param newer Newer fecs to compare
+	 * @return a String with the ASCII code for the report
+	 */	
 	public static String compareFecs(Fecs older,Fecs newer){
 		String result="";
-		/*Fecs larger;
-		Fecs shorter;
-		if (fecs1.size()<fecs2.size()){
-			larger=fecs2;
-			shorter=fecs1;
-		}else{
-			larger=fecs1;
-			shorter=fecs2;
-		}
-		//TreeSet<GsPass> passes1 = larger.getPasses();*/
 		TreeSet<GsPass> added=new TreeSet<GsPass>();
 		TreeSet<GsPass> removed=new TreeSet<GsPass>();
 		TreeSet<GsPass> shorterDump=new TreeSet<GsPass>();
@@ -747,6 +671,12 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		return result;
 		
 	}
+	/**
+	 * Convert a pass to a HTML table row. The row has 7 columns:
+	 * Pass type, Ground station,start pass date, end pass date,start dump date, end dump date and tm rate
+	 * @param pass
+	 * @return
+	 */
 	public static String passToHTMLRow(GsPass pass){
 		String result="";
 		String type="-";
@@ -787,6 +717,11 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		}
 	}
 	
+	/**
+	 * Get a string representation of a pass
+	 * @param pass
+	 * @return
+	 */
 	public static String passToString(GsPass pass){
 		if (!pass.isBSR()){
 			String result="";
@@ -805,6 +740,11 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 			
 		}
 	}
+	/**
+	 * Get a subfecs with all the GS passes from a station
+	 * @param station Ground Station Name
+	 * @return Fecs with all the passes from that station
+	 */
 	public Fecs getSubFecs(String station){
 		Fecs result=new Fecs(this.getValidityStart(),this.getValidityEnd());
 		result.setName(getName()+"_"+station);
@@ -816,10 +756,17 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		return result;
 	}
 	
+	/**
+	 * Get subfecs with all passes from DSN stations
+	 * @return
+	 */
 	public Fecs getSubFecsDSN(){
 		return getSubFecs("DSS");
 	}
-	
+	/**
+	 * Get subfecs with all passes from ESA stations
+	 * @return
+	 */	
 	public Fecs getSubFecsESA(){
 		Fecs result=new Fecs(this.getValidityStart(),this.getValidityEnd());
 		result.setName(getName()+"_ESA");
@@ -832,6 +779,12 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		
 	}
 	
+	/**
+	 * Get subfecs with all pasess froma a date to a date
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
 	public Fecs getSubFecs(Date startDate,Date endDate){
 		Fecs result=new Fecs(startDate,endDate);
 		GsPass[] passes = this.findOverlapingPasses(startDate, endDate);
@@ -844,6 +797,10 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		return result;
 	}
 	
+	/**
+	 * Get all Ground station names in this FECS
+	 * @return
+	 */
 	public String[] getStations(){
 		TreeSet<String> stationsSet=new TreeSet<String>();
 		Iterator<GsPass> it = passesSet.iterator();
@@ -854,6 +811,10 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		result=stationsSet.toArray(result);
 		return result;
 	}
+	/**
+	 * Get total data dump in this FECS
+	 * @return
+	 */
 	public float getTotalDataDump(){
 		float result=0;
 		Iterator<GsPass> it = passesSet.iterator();
@@ -864,6 +825,11 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		return result;
 		
 	}
+	/**
+	 * Get total data dump from a particular station
+	 * @param station Ground Station Name
+	 * @return
+	 */
 	public float getTotalDataDump(String station){
 		float result=0;
 		Iterator<GsPass> it = passesSet.iterator();
@@ -873,6 +839,10 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		}
 		return result;
 	}
+	/**
+	 * Get total number of hours of passes per day
+	 * @return
+	 */
 	public float getHoursDay(){
 		float totalSecs=0;
 		Iterator<GsPass> it = passesSet.iterator();
@@ -886,6 +856,10 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		return totalHours/fecsDays;
 		
 	}
+	/**
+	 * Get the total number of hours of dump per day of 70m antennas
+	 * @return
+	 */
 	public float getDumpHoursDay70m(){
 		float totalSecs=0;
 		Iterator<GsPass> it = passesSet.iterator();
@@ -901,6 +875,10 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		return totalHours/fecsDays;
 		
 	}
+	/**
+	 * Get the total number of hours of passes per day of 70m antennas
+	 * @return
+	 */
 	public float getPassHoursDay70m(){
 		float totalSecs=0;
 		Iterator<GsPass> it = passesSet.iterator();
@@ -916,7 +894,10 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		return totalHours/fecsDays;
 		
 	}
-
+	/**
+	 * Get the total number of hours of dump per day of 35m antennas
+	 * @return
+	 */
 	public float getDumpHoursDay35m(){
 		float totalSecs=0;
 		Iterator<GsPass> it = passesSet.iterator();
@@ -931,6 +912,10 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		return totalHours/fecsDays;
 		
 	}
+	/**
+	 * Get the total number of hours of passes per day of 35m antennas
+	 * @return
+	 */
 	public float getPassHoursDay35m(){
 		float totalSecs=0;
 		Iterator<GsPass> it = passesSet.iterator();
@@ -945,7 +930,10 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		return totalHours/fecsDays;
 		
 	}
-
+	/**
+	 * Get the total number of hours of BSR passes
+	 * @return
+	 */
 	public float getBSRHours(){
 		float totalSecs=0;
 		Iterator<GsPass> it = passesSet.iterator();
@@ -959,7 +947,10 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		return totalHours;
 		
 	}
-
+	/**
+	 * Get the total number of hours of BSR per day
+	 * @return
+	 */
 	public float getBSRHoursDay(){
 		float totalHours=getBSRHours();
 		float fecsDays =  ((this.getValidityEnd().getTime()-this.getValidityStart().getTime()) / (1000*60*60*24));
@@ -970,6 +961,10 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		
 	}
 	
+	/**
+	 * Get summary of the FECS in html
+	 * @return astring with the HTML code
+	 */
 	public String getFecsSummaryTableHTML(){
 		String message="";
 		//message=message+"<h1>"+getName()+"</h1>";
@@ -1049,11 +1044,18 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		// TODO Auto-generated method stub
 		
 	}
+	/**
+	 * Write FECS to a file
+	 * @param file full path of the file to save
+	 * @throws FileNotFoundException
+	 * @throws UnsupportedEncodingException
+	 */
 	public void writeToFile(String file) throws FileNotFoundException, UnsupportedEncodingException{
 		PrintWriter writer = new PrintWriter(file, "UTF-8");
 		writer.print(getXmlData());
 		writer.close();
 }
+
 
 	public void save() throws FileNotFoundException, UnsupportedEncodingException{
 		writeToFile(getPath()+"//"+getFileName());

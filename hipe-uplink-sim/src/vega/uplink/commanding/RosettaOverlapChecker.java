@@ -1,15 +1,12 @@
 package vega.uplink.commanding;
 
-public class AllowOverlapChecker {
-	public static boolean allowOverlap(AbstractSequence seq1,AbstractSequence seq2){
+public class RosettaOverlapChecker extends AbstractAllowOverlapChecker {
+	public  boolean allowOverlap(AbstractSequence seq1,AbstractSequence seq2){
 
 		if (!seq1.getInstrument().equals(seq2.getInstrument())) return true;
-		//System.out.println()
 		if (seq1.getInstrument().equals("OSIRIS")){
-			//System.out.println("Is OSIRIS");
 				String camaraID1=getOsirisCamara(seq1);
 				String camaraID2=getOsirisCamara(seq2);
-				//System.out.println(camaraID1+" "+camaraID2);
 
 				if (camaraID1.equals(camaraID2)){
 					return false;

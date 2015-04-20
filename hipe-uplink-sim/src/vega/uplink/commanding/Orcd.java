@@ -14,10 +14,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.zip.Adler32;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,13 +35,38 @@ import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
 
 
+/**
+ * Implementation of the Operations Rules and Constrains Document.
+ * It is the model of the spacecraft, defining what sequence is allowed, the mode transitions and
+ * the power consumed by the different modes
+ * @author jarenas
+ *
+ */
 public class Orcd extends TableDataset{
 	
+	/**
+	 * The index in the table for the MODE column. 0
+	 */
 	public static int INDEX_MODE=0;
+	/**
+	 * The index in the table for the POWER column. 1
+	 */
 	public static int INDEX_POWER=1;
+	/**
+	 * The index in the table for the SEQUENCE column. 2
+	 */
 	public static int INDEX_SEQUENCE=2;
+	/**
+	 * The index in the table for the OFFSET column. 3
+	 */
 	public static int INDEX_OFFSET=3;
+	/**
+	 * The index in the table for the ALLOWED column. 4
+	 */
 	public static int INDEX_ALLOWED=4;
+	/**
+	 * The index in the table for the NOT ALLOWED column. 5
+	 */
 	public static int INDEX_NOT_ALLOWED=5;
 	
 	
@@ -67,6 +94,11 @@ public class Orcd extends TableDataset{
 		this.setColumnName(INDEX_NOT_ALLOWED, "Transition forbidden from mode");
 		this.setVersion("1.0");
 	}
+	/**
+	 * Get the ORCD. It tries first to get it form the XML file as defined in the properties,
+	 * then it will try to read it from the jars files present in the class path
+	 * @return
+	 */
 	public static Orcd getOrcd(){
 		try{
 			return Orcd.readORCDXmlfile(Properties.getProperty(Properties.ORCD_FILE));
@@ -76,10 +108,18 @@ public class Orcd extends TableDataset{
 		}
 
 	}
+	/**
+	 * Set the version of the ORCD
+	 * @param version
+	 */
 	public void setVersion(String version){
 		this.getMeta().set("version", new StringParameter(version));
 	}
 	
+	/**
+	 * Get the version of the ORCD
+	 * @return
+	 */
 	public String getVersion(){
 		return (String) this.getMeta().get("version").getValue();
 	}
@@ -88,6 +128,11 @@ public class Orcd extends TableDataset{
 		return this;
 	}
 	
+	/**
+	 * Get the modes and times that a sequence will trigger
+	 * @param sequence
+	 * @return a Hashmap containing couples of long (number of seconds) and the mode name
+	 */
 	public java.util.HashMap<Long,String> getModes(String sequence){
 		java.util.HashMap<Long,String> result = new java.util.HashMap<Long,String>();
 		TableDataset tb=findInTable(this,INDEX_SEQUENCE,sequence);
@@ -100,7 +145,39 @@ public class Orcd extends TableDataset{
 		}
 		return result;
 	}
+	/**
+	 * Get the times and the modes that a sequence will trigger. So if the sequence 
+	 * AAAA is defined in the MIB to make the spacecraft to go to mode A1 in 0 seconds and A2 in 30 seconds,
+	 * it will add 0 to the execution time and 30 secs.
+	 * 
+	 * @param sequence
+	 * @return a Hashmap containing couples of long (with the long representation of the date when the mode transition will happen) and the mode name
+	 */
+	public java.util.HashMap<Long,String> getModesAsHistory(AbstractSequence sequence){
+		return getModesAsHistory(sequence.getName(), sequence.getExecutionDate());
+	}
+	/**
+	 * Get the times and the modes that a sequence will trigger. So if the sequence 
+	 * AAAA is defined in the MIB to make the spacecraft to go to mode A1 in 0 seconds and A2 in 30 seconds,
+	 * it will add 0 to the initial time and 30 secs.
+	 * 
+	 * @param sequence
+	 * @param initialTime
+	 * @return a Hashmap containing couples of long (with the long representation of the date when the mode transition will happen) and the mode name
+	 */
+	public java.util.HashMap<Long,String> getModesAsHistory(String sequence,Date initialTime){
+		return getModesAsHistory(sequence, initialTime.getTime());
+	}
 	
+	/**
+	 * Get the times and the modes that a sequence will trigger. So if the sequence 
+	 * AAAA is defined in the MIB to make the spacecraft to go to mode A1 in 0 seconds and A2 in 30 seconds,
+	 * it will add 0 to the initial time and 30 secs.
+	 * 
+	 * @param sequence
+	 * @param initialTime
+	 * @return a Hashmap containing couples of long (with the long representation of the date when the mode transition will happen) and the mode name
+	 */
 	public java.util.HashMap<Long,String> getModesAsHistory(String sequence,long initialTime){
 		java.util.HashMap<Long,String> result = new java.util.HashMap<Long,String>();
 		
@@ -116,6 +193,12 @@ public class Orcd extends TableDataset{
 		return result;
 	}
 	
+	/**
+	 * Check if transition from a mode to another is allowed in the ORCD
+	 * @param mode1 current mode
+	 * @param mode2 the mode to go to
+	 * @return True if the transition is allowed or False otherwise
+	 */
 	public boolean checkTransion(String mode1, String mode2){
 		boolean result=false;
 		TableDataset tb=findInTable(this,INDEX_MODE,mode2);
@@ -136,6 +219,11 @@ public class Orcd extends TableDataset{
 	}
 	
 	
+	/**
+	 * Get the power defined in the ORCD for a given mode
+	 * @param mode 
+	 * @return The power defined in the ORCD for the given mode
+	 */
 	public float getPowerForMode(String mode){
 		float result=0;
 		TableDataset tb=findInTable(this,INDEX_MODE,mode);
@@ -147,6 +235,11 @@ public class Orcd extends TableDataset{
 		return result;
 	}
 	
+	/**
+	 * Get the total power for a list of modes (just the sum of the power defined for each mode)
+	 * @param modes Array of mode names
+	 * @return the total power for all the modes given
+	 */
 	public float getTotalPowerForModes(String[] modes){
 		float result=0;
 		for (int i=0;i<modes.length;i++){
@@ -156,7 +249,6 @@ public class Orcd extends TableDataset{
 	}
 	
 	private boolean isSequenceInList(String seq,String list){
-		//System.out.println("Find "+seq+" in "+list);
 		String[] arr=list.split(" ");
 		boolean result=false;
 		for (int i=0;i<arr.length;i++){
@@ -165,12 +257,12 @@ public class Orcd extends TableDataset{
 		return result;
 	}
 	
-	public TableDataset findInTable(TableDataset table, int columnIndex, String search){
+	private TableDataset findInTable(TableDataset table, int columnIndex, String search){
 		TableDataset result=table.select(table.getColumn(columnIndex).getData().where(new herschel.binstruct.util.String1dRegex(search)));
 		return result;
 	}
 	
-	public void addRow(String mode,String power,String sequence,String offSet,String allowed,String notAllowed){
+	private void addRow(String mode,String power,String sequence,String offSet,String allowed,String notAllowed){
 		String[] array=new String[6];
 		array[0]=mode;
 		array[1]=power;
@@ -180,7 +272,7 @@ public class Orcd extends TableDataset{
 		array[5]=notAllowed;
 		this.addRow(array);
 	}
-	public void writeToFile(String file){
+	/*public void writeToFile(String file){
 		try{
 			PrintWriter writer = new PrintWriter(file, "UTF-8");
 			writer.print("#Mode,Cons,transition via,allowed,not allowed\n");
@@ -201,7 +293,11 @@ public class Orcd extends TableDataset{
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-	}
+	}*/
+	/**
+	 * Write the ORCD representation to a XML file
+	 * @param file full path of the target XML file
+	 */
 	public void writeToXmlFile(String file){
 		try{
 			PrintWriter writer = new PrintWriter(file, "UTF-8");
@@ -287,6 +383,10 @@ public class Orcd extends TableDataset{
 		}
 		return result;
 	}
+	/**
+	 * Read the XML from a jar file in the class path. It will try to locate the file /mib/orcd.xml in the class path
+	 * @return The ORCD
+	 */
 	public static Orcd readORCDXmlfromJar(){
 		InputStream is = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/mib/orcd.xml");
 		InputStreamReader isr = new InputStreamReader(is);
@@ -294,6 +394,11 @@ public class Orcd extends TableDataset{
 		return readORCDXmlBuffer(br);
 	}
 	
+	/**
+	 * Read the ORCD from a XML file
+	 * @param xmlFile The xml file full path
+	 * @return The ORCD
+	 */
 	public static Orcd readORCDXmlfile(String xmlFile){
 		try{
 			return readORCDXmlBuffer(new BufferedReader(new FileReader(xmlFile)));
@@ -301,14 +406,12 @@ public class Orcd extends TableDataset{
 			IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 			e.initCause(e);
 			throw(iae);
-			//e.printStackTrace();
-			//return new Orcd();
 		}
 	  
 	}
 
 	
-	private static Orcd readORCDBuffer(BufferedReader br){
+	/*private static Orcd readORCDBuffer(BufferedReader br){
 		Orcd result= new Orcd();
 		String line = "";
 		String cvsSplitBy = ",";
@@ -316,9 +419,7 @@ public class Orcd extends TableDataset{
 			 
 			while ((line = br.readLine()) != null) {
 				if (!line.startsWith("#")){
-			        // use comma as separator
 					String[] fields = line.split(cvsSplitBy);
-					//int size=fields.length;
 					String[] cArray=fields[2].split(" ");
 					for (int i=0;i<cArray.length;i++){
 						String seq="";
@@ -334,11 +435,9 @@ public class Orcd extends TableDataset{
 								seq=cArray[i];
 								off="00:00:00";
 						}
-						//System.out.println(fields[0]+","+fields[1]+","+seq+","+off+","+fields[3]+","+fields[4]);
 		
 						result.addRow(fields[0], fields[1], seq, off, fields[3], fields[4]);
 					}
-					//System.out.println("Country [code= " + country[4] + " , name=" + country[5] + "]");
 				}
 			}
 	 
@@ -360,8 +459,8 @@ public class Orcd extends TableDataset{
 		return result;
 
 
-	}
-	private static Orcd readORCDfromJar(){
+	}*/
+	/*private static Orcd readORCDfromJar(){
 		
 		InputStream is = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/mib/orcd.csv");
 		InputStreamReader isr = new InputStreamReader(is);
@@ -380,9 +479,9 @@ public class Orcd extends TableDataset{
 			//return new Orcd();
 		}
 	  
-	}
+	}*/
 	
-	public long getOffsetSeconds(String sOffset){
+	private long getOffsetSeconds(String sOffset){
 		long offset=0;
 		String[] times=sOffset.split(":");
 		int hours=Integer.parseInt(times[0]);
@@ -392,6 +491,10 @@ public class Orcd extends TableDataset{
 		return offset;
 	}
 	
+	/**
+	 * Get a XML representation of the ORCD
+	 * @return
+	 */
 	public String toXml(){
 		TreeSet<String> modes=new TreeSet<String>();
 		int rowCount=this.getRowCount();

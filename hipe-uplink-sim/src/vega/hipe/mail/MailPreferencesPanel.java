@@ -15,6 +15,11 @@ import herschel.ia.gui.kernel.prefs.PreferencesPanel;
 import herschel.ia.gui.kernel.prefs.handler.StringPreferenceHandler;
 import herschel.share.util.Configuration;
 
+/**
+ * Preference panel for the email functions
+ * @author jarenas
+ *
+ */
 public class MailPreferencesPanel extends PreferencesPanel {
     private JTextField _fieldA;
     private JTextField _fieldB;

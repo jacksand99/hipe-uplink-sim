@@ -970,7 +970,7 @@ public class ObservationUtil {
 		Mib mib;
 		try {
 			mib=Mib.getMib();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			IllegalArgumentException iae = new IllegalArgumentException("Could not get MIB "+e.getMessage());
 			iae.initCause(e);
