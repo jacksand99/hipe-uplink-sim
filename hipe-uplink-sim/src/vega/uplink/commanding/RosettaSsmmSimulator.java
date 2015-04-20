@@ -1,6 +1,5 @@
 package vega.uplink.commanding;
 
-import herschel.share.util.Configuration;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -12,10 +11,13 @@ import java.util.Vector;
 
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
-import vega.uplink.commanding.SsmmSimulator.InstrumentSimulator;
 
+/**
+ * Rosetta SSMM simulator
+ * @author jarenas
+ *
+ */
 public class RosettaSsmmSimulator extends SsmmSimulator {
-	//public HashMap<String,Integer> priorities;
 	public HashMap<String,String> priorityParameter;
 	public HashMap<String,String> priorityParameterReverse;
 	
@@ -80,21 +82,16 @@ public class RosettaSsmmSimulator extends SsmmSimulator {
 		
 		int sPrio=17;
 		Iterator<Entry<Float, String>> perIt = tm.entrySet().iterator();
-		//String dString=(""+new Date().getTime()).substring(5);
 		try{
-			//Sequence priSeq=new Sequence(priorityCommand,"P"+dString,Sequence.dateToZulu(pass.getStartPass()));
 			Sequence priSeq=new PrioritySequence();
 			priSeq.setExecutionDate(pass.getStartPass());
 			while(perIt.hasNext()){
 				Entry<Float, String> entry = perIt.next();
 				String ins=entry.getValue();
 				String param=priorityParameterReverse.get(ins);
-				//priSeq.addParameter(sequenceParameter);
-				//priSeq.addParameter(new ParameterFloat(param,Parameter.REPRESENTATION_RAW,Parameter.RADIX_DECIMAL,sPrio));
 				priSeq.set(param,new ParameterFloat(param,Parameter.REPRESENTATION_RAW,Parameter.RADIX_DECIMAL,sPrio));
 				sPrio--;
 			}
-			//SimulationContext.getInstance().getDlPor().addSequence(priSeq);
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -124,19 +121,14 @@ public class RosettaSsmmSimulator extends SsmmSimulator {
 			for (int j=0;j<vector.size();j++){
 				InstrumentSimulator simulator = getSimulator(vector.get(j));
 				Float tmAtPass = simulator.getValueAt(startDate);
-				//System.out.println(simulator.getInstrument()+" with priority "+i+" has "+tmAtPass+" and the max per instrument is "+maxTmPerInstrument);
 				if (tmAtPass<=maxTmPerInstrument ){
 					if (tmAtPass>0){
-						//float rate = tmAtPass/pass.getDumpDurationSecs();
 						float duration = tmAtPass/pass.getTmRate();
-						//System.out.println("duration:"+duration);
 						if (duration>1){
 							
 							long eDate = startDate.getTime()+(new Float(duration).longValue()*1000);
 							simulator.addDump(startDate, new Date(eDate), pass.getTmRate());
 							tmToDownload=tmToDownload-tmAtPass;
-							//startDate=new Date(eDate);
-							//System.out.println("Dump "+simulator.getInstrument()+" from "+dateFormat2.format(startDate)+" to "+dateFormat2.format(new Date(eDate))+" at "+pass.getTmRate()+" bits/sec\n");
 							strategy=strategy+"Dump "+simulator.getInstrument()+" from "+DateUtil.dateToZulu(startDate)+" to "+DateUtil.dateToZulu(new Date(eDate))+" at "+pass.getTmRate()+" bits/sec\n";
 							startDate=new Date(eDate+1);
 						}else{
@@ -168,22 +160,8 @@ public class RosettaSsmmSimulator extends SsmmSimulator {
 				}
 			}
 		}
-		/*System.out.println("********************");
-		System.out.println("Still "+tmToDownload+" can be downloaded and the memory has "+getTotalMemoryAt(startDate));
-		System.out.println("orginal start date was"+pass.getStartDump()); 
-		System.out.println(startDate);
-		System.out.println(pass.getEndDump());
-
-		System.out.println("********************");*/
 
 		if (this.getTotalMemoryAt(new Date(startDate.getTime()+1))>pass.getTmRate() && tmToDownload>0 && startDate.before(pass.getEndDump())){
-			/*System.out.println("********************");
-			System.out.println("Still "+tmToDownload+" can be downloaded and the memory has "+getTotalMemoryAt(startDate));
-			//System.out.println("orginal start date was 
-			System.out.println(startDate);
-			System.out.println(pass.getEndDump());
-
-			System.out.println("********************");*/
 
 			GsPass temp = new GsPass(pass);
 			temp.setStartDump(startDate);
@@ -193,35 +171,3 @@ public class RosettaSsmmSimulator extends SsmmSimulator {
 		return strategy;
 	}
 }
-		/*while (it.hasNext()){
-			Entry<String, Float> entry = it.next();
-			InstrumentSimulator simulator = getSimulator(entry.getValue());
-			long duration=0;
-			if (entry.getKey()<tmToDownload){
-				duration=new Float(entry.getKey()/pass.getTmRate()).longValue();
-				endDate=new Date(startDate.getTime()+(duration*1000)+1);
-				if(!startDate.equals(endDate)){
-					simulator.addDump(startDate, endDate, pass.getTmRate());
-					strategy=strategy+"Dump "+entry.getValue()+" from "+dateFormat2.format(startDate)+" to "+dateFormat2.format(endDate)+" at "+pass.getTmRate()+" bits/sec\n";
-				}
-			}else {
-				duration=new Float(tmToDownload/pass.getTmRate()).longValue();
-				endDate=new Date(startDate.getTime()+(duration*1000)+1);
-				if(!startDate.equals(endDate)){
-					simulator.addDump(startDate, endDate, pass.getTmRate());
-					strategy=strategy+"Dump "+entry.getValue()+" from "+dateFormat2.format(startDate)+" to "+dateFormat2.format(endDate)+" at "+pass.getTmRate()+" bits/sec\n";
-
-				}
-				
-			}
-			startDate=endDate;
-			tmToDownload=tmToDownload-entry.getKey();
-			if (tmToDownload<0) tmToDownload=0;
-		}
-		if (!strategy.equals("")) strategy=strategy=strategy+"Dump strategy used for pass "+pass.getGroundStation()+" starting at "+dateFormat2.format(pass.getStartPass())+" and ending at "+dateFormat2.format(pass.getEndPass())+"\n"+strategy;
-		return strategy;
-		
-	}*/
-
-
-//}

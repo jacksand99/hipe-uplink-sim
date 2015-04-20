@@ -1,8 +1,6 @@
 package vega.uplink.commanding;
 import static java.lang.Math.abs;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -13,79 +11,81 @@ import herschel.ia.numeric.Double1d;
 import herschel.ia.numeric.Float1d;
 import herschel.ia.numeric.String1d;
 
+/**
+ * Class to store a sequence profile (a consumption of resources, power or datarate)
+ * @author jarenas
+ *
+ */
 public class SequenceProfile extends TableDataset{
-	
-	//String type;
+	/**
+	 * DR
+	 */
 	public static String PROFILE_TYPE_DR="DR";
+	/**
+	 * PW
+	 */
 	public static String PROFILE_TYPE_PW="PW";
-	/*private double value;
-	private int offSetHours;
-	private int offSetMinutes;
-	private int offSetSeconds;*/
+	/**
+	 * Type
+	 */
 	public static String COLUMN_NAME_TYPE="Type";
+	/**
+	 * Offset
+	 */
 	public static String COLUMN_NAME_OFFSET="Offset";
+	/**
+	 * Value
+	 */
 	public static String COLUMN_NAME_VALUE="Value";
 	
 	
+	/**
+	 * Creates a new sequence profile
+	 * @param profileType profile type, PW or DR
+	 * @param profileOffset offset (time after execution) that this profile will start to be valid
+	 * @param profileValue value of this profile
+	 */
 	public SequenceProfile(String profileType,String profileOffset,double profileValue){
 		Column cType=new Column(new String1d().append(profileType));
 		Column cOffset=new Column(new String1d().append(profileOffset));
 		Column cValue=new Column(new Double1d().append(profileValue));
-		//Column cValue=new Column(new String1d().append(""));
 		addColumn(cType);
 		addColumn(cOffset);
 		addColumn(cValue);
-		//addColumn(cValue);
 		setColumnName(0, COLUMN_NAME_TYPE);
 		setColumnName(1, COLUMN_NAME_OFFSET);
 		setColumnName(2, COLUMN_NAME_VALUE);
-		//setColumnName(3, COLUMN_NAME_VALUE);
-
-		/*type=profileType;
-		value=profileValue;
-		offSetHours=getHoursFromString(profileOffset);
-		offSetMinutes=getMinutesFromString(profileOffset);
-		offSetSeconds=getSecondsFromString(profileOffset);*/
 		
 	}
 	
+	/**
+	 * Get the profile type (PW or DR)
+	 * @return
+	 */
 	public String getType(){
 		return ((String1d) getColumn(COLUMN_NAME_TYPE).getData()).get(0);
-		//return type;
 	}
 	
+	/**
+	 * Get the value of this profile
+	 * @return
+	 */
 	public double getValue(){
 		return ((Double1d) getColumn(COLUMN_NAME_VALUE).getData()).get(0);
-		//return value;
 	}
 	
+	/**
+	 * Get the offset as string
+	 * @return
+	 */
 	public String getOffSetString(){
 		return ((String1d) getColumn(COLUMN_NAME_OFFSET).getData()).get(0);
-
-		/*String hours;
-		String minutes;
-		String seconds;
-		if (offSetHours <10){
-			hours = "0"+new Integer(offSetHours).toString();
-		} else {
-			hours =new Integer(offSetHours).toString();
-		}
-
-		if (offSetMinutes <10){
-			minutes = "0"+new Integer(offSetMinutes).toString();
-		} else {
-			minutes =new Integer(offSetMinutes).toString();
-		}
-		
-		if (offSetSeconds <10){
-			seconds = "0"+new Integer(offSetSeconds).toString();
-		} else {
-			seconds =new Integer(offSetSeconds).toString();
-		}
-		
-		return hours+":"+minutes+":"+seconds;*/
 	}
 	
+	/**
+	 * Get the offset as number of seconds
+	 * @return
+	 */
 	public int getOffSetSeconds(){
 		String offset=getOffSetString();
 		int offSetHours=getHoursFromString(offset);
@@ -95,26 +95,34 @@ public class SequenceProfile extends TableDataset{
 		return offSetSeconds+(offSetMinutes*60)+(offSetHours*60*60);
 	}
 	
+	/**
+	 * Set the profile type (PW or DR)
+	 * @param profileType
+	 */
 	public void setType(String profileType){
 		getColumn(COLUMN_NAME_TYPE).setData(new String1d().append(profileType));
-
-		//type=profileType;
 	}
 	
+	/**
+	 * Set the profile value
+	 * @param profileValue
+	 */
 	public void setValue(float profileValue){
 		getColumn(COLUMN_NAME_VALUE).setData(new Float1d().append(profileValue));
-
-		//value=profileValue;
 	}
 	
+	/**
+	 * Set the profile offset as string
+	 * @param profileOffSet
+	 */
 	public void setOffSetString(String profileOffSet){
 		getColumn(COLUMN_NAME_OFFSET).setData(new String1d().append(profileOffSet));
-
-		/*offSetHours=getHoursFromString(profileOffSet);
-		offSetMinutes=getMinutesFromString(profileOffSet);
-		offSetSeconds=getSecondsFromString(profileOffSet);*/
 	}
 	
+	/**
+	 * Set the profile offset as number of seconds
+	 * @param profileOffSetSeconds
+	 */
 	public void setOffSetSeconds(int profileOffSetSeconds){
 		int hours = abs(profileOffSetSeconds/3600);
 		int minutes =abs((profileOffSetSeconds-(hours*3600))/60);
@@ -142,9 +150,6 @@ public class SequenceProfile extends TableDataset{
 		}
 		
 		this.setOffSetString(hours+":"+minutes+":"+seconds);
-		/*offSetHours=hours;
-		offSetMinutes=minutes;
-		offSetSeconds=seconds;*/
 		
 	}
 	
@@ -166,6 +171,10 @@ public class SequenceProfile extends TableDataset{
 		return new Integer(new String(arr2)).intValue();
 	}
 	
+	/**
+	 * Generate an xml representation of this profile
+	 * @return
+	 */
 	public String toXml(){
 		return toXml(0);
 	}
@@ -190,8 +199,12 @@ public class SequenceProfile extends TableDataset{
 	}
 
 	
+	/**
+	 * get a xml representation of this profile with a given indentation
+	 * @param indent
+	 * @return
+	 */
 	public String toXml(int indent){
-		//String indentString="";
 		StringBuilder indentString=new StringBuilder();
 		for (int i=0;i<=indent;i++){
 			indentString.append("\t");
@@ -212,7 +225,6 @@ public class SequenceProfile extends TableDataset{
 		result.append("\n");
 		result.append(indentString);
 		result.append(l4);
-		//return indentString+l1+"\n\t"+indentString+l2+"\n\t"+indentString+l3+"\n"+indentString+l4;
 		return result.toString();
 	}
 	

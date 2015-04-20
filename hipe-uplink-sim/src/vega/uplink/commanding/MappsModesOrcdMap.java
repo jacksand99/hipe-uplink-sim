@@ -3,6 +3,12 @@ package vega.uplink.commanding;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+/**
+ * Class that allows to init the status of a simulation using the ITL code that may be present in an ITL
+ * The current implementation if fully Rosetta specific
+ * @author jarenas
+ *
+ */
 public class MappsModesOrcdMap {
 	private static HashMap<String,String> map;
 	private static final Logger LOG = Logger.getLogger(MappsModesOrcdMap.class.getName());
@@ -43,6 +49,10 @@ public class MappsModesOrcdMap {
 		return map;
 	}
 	
+	/**
+	 * Init the the instrument states of the simulation
+	 * @param sc
+	 */
 	public static void initStates(SimulationContext sc){
 		SuperPor por = sc.getPor();
 		String[] initModes = por.getInitModes().toArray();
@@ -67,6 +77,11 @@ public class MappsModesOrcdMap {
 
 	}
 	
+	/**
+	 * Init the memory of the different ssmm
+	 * @param sc
+	 * @param memorySimulator
+	 */
 	public static void initMemory(SimulationContext sc,SsmmSimulator memorySimulator){
 		SuperPor por = sc.getPor();
 		String[] initMemory=por.getInitMemory().toArray();

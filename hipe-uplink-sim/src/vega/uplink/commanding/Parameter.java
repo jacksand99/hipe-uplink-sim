@@ -27,11 +27,12 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Class to store a parameter from a sequence
+ * @author jarenas
+ *
+ */
 public class Parameter extends TableDataset{
-	//private String name;
-	//private String representation;
-	//private String radix;
-	//private String stringValue;
 	public static String RADIX_DECIMAL="Decimal";
 	public static String RADIX_HEX="Hexadecimal";
 	public static String RADIX_OCTAL="Octal";
@@ -43,12 +44,14 @@ public class Parameter extends TableDataset{
 	public static String COLUMN_NAME_VALUE="Value";
 	
 	
+	/**
+	 * Creates a new Parameter
+	 * @param parameterName Name of the parameter
+	 * @param parameterRepresentation Either Raw or Engineering
+	 * @param parameterRadix One of Decimal, Hexadecimal or Octal
+	 */
 	public Parameter(String parameterName,String parameterRepresentation,String parameterRadix){
 		super();		
-		/*name=parameterName;
-		representation=parameterRepresentation;
-		radix=parameterRadix;
-		stringValue="";*/
 		Column cName=new Column(new String1d().append(parameterName));
 		Column cRepresentation=new Column(new String1d().append(parameterRepresentation));
 		Column cRadix=new Column(new String1d().append(parameterRadix));
@@ -64,59 +67,73 @@ public class Parameter extends TableDataset{
 
 	}
 
-	/*public Parameter(String parameterName,String parameterRepresentation,String parameterRadix,float parameterValue){
-		name=parameterName;
-		representation=parameterRepresentation;
-		radix=parameterRadix;
-		value=parameterValue;
-	}*/
 	
+	/**
+	 * Get the name of the parameter
+	 * @return
+	 */
 	public String getName(){
 		return ((String1d) getColumn(COLUMN_NAME_NAME).getData()).get(0);
-		//return name;
 		
 	}
 	
+	/**
+	 * Get the representation of the parameter. Either Raw or Engineering
+	 * @return
+	 */
 	public String getRepresentation(){
 		return ((String1d) getColumn(COLUMN_NAME_REPRESENTATION).getData()).get(0);
-
-		//return representation;
 	}
 	
+	/**
+	 * Get the radix of the parameter. One of Decimal, Hexadecimal or Octal 
+	 * @return
+	 */
 	public String getRadix(){
 		return ((String1d) getColumn(COLUMN_NAME_RADIX).getData()).get(0);
-
-		//return radix;
 	}
 	
+	/**
+	 * Get the value of the parameter as String
+	 * @return
+	 */
 	public String getStringValue(){
 		return ((String1d) getColumn(COLUMN_NAME_VALUE).getData()).get(0);
-
-		//return stringValue;
 	}
 	
+	/**
+	 * Set the name of the parameter
+	 * @param parameterName
+	 */
 	public void setName(String parameterName){
-		//name=parameterName;
 		getColumn(COLUMN_NAME_NAME).setData(new String1d().append(parameterName));
 	}
 	
+	/**
+	 * Set the representation of the parameter. Either Raw or Engineering.
+	 * @param parameterRepresentation
+	 */
 	public void setRepresentation(String parameterRepresentation){
-		//representation=parameterRepresentation;
 		getColumn(COLUMN_NAME_REPRESENTATION).setData(new String1d().append(parameterRepresentation));
 
 	}
 	
+	/**
+	 * Set the radix of the parameter. One of Decimal, Hexadecimal or Octal
+	 * @param parameterRadix
+	 */
 	public void setRadix(String parameterRadix){
-		//radix=parameterRadix;
 		getColumn(COLUMN_NAME_RADIX).setData(new String1d().append(parameterRadix));
 
 	}
 	
-	/*public void setStringValue(String parameterStringValue){
-		stringValue=parameterStringValue;
-	}*/
 	
 	
+	/**
+	 * Get the XML representation of this parameter
+	 * @param position The value of the attribute position
+	 * @return
+	 */
 	public String toXML(int position){
 		return toXML(position,0);
 	}
@@ -144,6 +161,12 @@ public class Parameter extends TableDataset{
 		  
 		  return eleParameter;
 	}
+	/**
+	 * Get the XML representation of this parameter with a given indentation
+	 * @param position The value of the attribute position
+	 * @param indent The desired indentation for the text
+	 * @return
+	 */
 	public String toXML(int position,int indent){
 		String indentString="";
 		for (int i=0;i<=indent;i++){
@@ -158,96 +181,9 @@ public class Parameter extends TableDataset{
 
 		String l2= "<value representation=\""+getRepresentation()+"\" radix=\""+getRadix()+"\">"+val+"</value>";
 		String l3="</parameter>";
-		//return l1+"\n\t"+l2+"\n"+l3;
 		return indentString+l1+"\n\t"+indentString+l2+"\n"+indentString+l3;
 	}
-/*	
-	public void 	setColumn(int index, Column newColumn){
-		ArrayData data = newColumn.getData();
-		if (InterpreterUtil.isInstance(String1d.class, data)){
-			String1d dataTemp=(String1d) data;
-			String actualData=dataTemp.getAt(0);
-			if (index==0){
-				this.setName(actualData);
-			}
-			if (index==1){
-				this.setRepresentation(actualData);
-			}
-			if (index==2){
-				this.setRadix(actualData);
-			}
-			if (index==3){
-				this.setValue(actualData);
-			}
 
-		}
-	}
-	
-	public void 	setColumn(String name, Column newColumn) {
-		if (name.equals(COLUMN_NAME_NAME)) setColumn(0,newColumn);
-		if (name.equals(COLUMN_NAME_REPRESENTATION)) setColumn(0,newColumn);
-		if (name.equals(COLUMN_NAME_RADIX)) setColumn(0,newColumn);
-		if (name.equals(COLUMN_NAME_VALUE)) setColumn(0,newColumn);
-		
-	}
-	
-	public void 	setColumnName(int index, String newName) {
-		//Do nothing
-	}
-    //Replaces a column at specified column index in this table.
-	public void 	setValueAt(Object newValue, int rowIndex, int columnIndex) {
-		System.out.println("setvalue:"+Object.class);
-		if (InterpreterUtil.isInstance(String.class, newValue)){
-			if (rowIndex==0 && columnIndex==0){
-				setName((String) newValue);
-			}
-			if (rowIndex==0 && columnIndex==1){
-				setRepresentation((String) newValue);
-			}
-			if (rowIndex==0 && columnIndex==2){
-				setRadix((String) newValue);
-			}
-			if (rowIndex==0 && columnIndex==3){
-				setValue((String) newValue);
-			}
-
-		}
-	}
-	
-	public void setValue(String newValue){
-		stringValue=newValue;
-		getColumn(COLUMN_NAME_VALUE).setData(new String1d().append(stringValue));
-	}
-	
-	public void 	setColumn(int index, String newName, Column newColumn){
-		setColumn(index,newColumn);
-	}
-	public int 	indexOf(String name) {
-		if (name.equals(COLUMN_NAME_NAME)) return 0;
-		if (name.equals(COLUMN_NAME_REPRESENTATION)) return 1;
-		if (name.equals(COLUMN_NAME_RADIX)) return 2;
-		if (name.equals(COLUMN_NAME_VALUE)) return 3;
-		return -1;
-	}
-	
-	
-	public Object 	getValueAt(int rowIndex, int columnIndex) {
-		if (rowIndex==0 && columnIndex==0){
-			return getName();
-		}
-		if (rowIndex==0 && columnIndex==1){
-			return getRepresentation();
-		}
-		if (rowIndex==0 && columnIndex==2){
-			return getRadix();
-		}
-		if (rowIndex==0 && columnIndex==3){
-			return getStringValue();
-		}
-		return "";
-
-	}
-*/	
 	public int 	getRowCount() {
 		return 1;
 	}

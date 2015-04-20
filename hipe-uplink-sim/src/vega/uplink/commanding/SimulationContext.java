@@ -46,20 +46,13 @@ public class SimulationContext extends MapContext{
 		set("historyPowerZ",new ArrayDataset(new Float1d()));
 		setProduct("por",new SuperPor());
 		setProduct("dl_por",new Por());		
-		/*try{
-			set("orcd",Orcd.readORCDfile(Properties.getProperty(Properties.ORCD_FILE)));
-		}catch(Exception e){
-			set("orcd",Orcd.readORCDfromJar());
-
-		}*/
 		set("orcd",Orcd.getOrcd());
 		try{
-			set("mocPower",MocPower.ReadFromFile(Properties.getProperty(Properties.PWPL_FILE)));
+			set("mocPower",MocPower.readFromFile(Properties.getProperty(Properties.PWPL_FILE)));
 		}catch (Exception e){
-			set("mocPower",MocPower.ReadFromJar());
+			set("mocPower",MocPower.readFromJar());
 
 		}
-		//set("modelState",ModelState.getModelState());
 		set("modelState",new ModelState());
 		set("fecs",new Fecs());
 		setProduct("ptr",new Ptr());
@@ -89,7 +82,6 @@ public class SimulationContext extends MapContext{
 				float finalMemory = this.getMemorySimulator().getMemoryAt(memIns[i], endDate);
 				float dataRate=this.getMemorySimulator().getDataRateAt(memIns[i], endDate);
 				writer.print("# Memory "+memIns[i]+" "+finalMemory+" "+dataRate+"\n");
-				//this.getMemorySimulator().initInstrument(memIns[i], endDate, memory);
 				writer.print("simulationContext.getMemorySimulator().initInstrument(\""+memIns[i]+"\",\""+DateUtil.defaultDateToString(endDate)+"\",\""+finalMemory+"\",\""+dataRate+"\")\n");
 			}
 			for (int i=0;i<memIns.length;i++){
@@ -97,13 +89,11 @@ public class SimulationContext extends MapContext{
 				writer.print("simulationContext.getPowerInstrument().setPower(\""+memIns[i]+"\","+String.format("%.2f", power)+")\n");
 				
 			}
-			//writer.print(PORtoITL(POR));
 			writer.close();
 		}catch (Exception e){
 			IllegalArgumentException iae = new IllegalArgumentException("Could not write init script:"+e.getMessage());
 			iae.initCause(e);
 			throw(iae);
-			//e.printStackTrace();
 		}
 	}
 
@@ -244,7 +234,6 @@ public class SimulationContext extends MapContext{
 		String result="";
 		String1d log=((String1d) ((ArrayDataset) get("log")).getData());
 		int size = log.getSize();
-		//String[] lines=log.toArray();
 		for (int i=0;i<size;i++){
 			result=result+log.get(i)+"\n";
 		}

@@ -6,14 +6,12 @@ import herschel.ia.dataset.TableDataset;
 import herschel.ia.numeric.Long1d;
 import herschel.ia.numeric.String1d;
 
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-//import java.util.Map.Entry;
-//import java.util.Set;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -71,16 +69,8 @@ public class HistoryModes extends CompositeDataset{
 		if (getCommand(time)!=null){
 			add(time+1,mode,command,originalTime);
 		}
-		/*if (history.get(time)!=null){
-			add(time+1,mode,command,originalTime);
-		}*/ else{
-			
-		
-			//history.put(time, mode);
-			//historyCommands.put(time, command);
-			//historyExecution.put(time, originalTime);
+		else{
 			Object[] row=new Object[4];
-			//row[0]=dateFormat2.format(new Date(time));
 			row[0]=new Long(time);
 			row[1]=mode;
 			row[2]=command;
@@ -99,19 +89,9 @@ public class HistoryModes extends CompositeDataset{
 	}
 	private int findIndex(long time){
 		TableDataset table = (TableDataset)get("table");
-		//System.out.println("tablesize is "+table.getRowCount());
 		long[] times = ((Long1d) table.getColumn(0).getData()).toArray();
-		//System.out.println("times size is "+times.length);
-		
 		List<Long> list = Arrays.asList(longToLongArray(times));
-		/*System.out.println("The list size is "+list.size());
-		System.out.println("The list is "+list);
-		System.out.println("The 1st vale is "+list.get(0));*/
-
 		return list.indexOf(time);
-		//Arrays.sort(times);
-		//return Arrays.binarySearch(times, time);
-
 	}
 	/**
 	 * @param time Time of the action (number of milliseconds since January 1, 1970, 00:00:00 GMT)
@@ -122,9 +102,6 @@ public class HistoryModes extends CompositeDataset{
 		int index = findIndex(time);
 		if (index<0) return null;
 		return ((String1d) table.getColumn(1).getData()).get(index);
-		//Long1d times = (Long1d) table.getColumn(0).getData();
-		
-		//return history.get(time);
 	}
 	
 	/**
@@ -137,8 +114,6 @@ public class HistoryModes extends CompositeDataset{
 		if (index<0) return null;
 
 		return ((String1d) table.getColumn(2).getData()).get(index);
-
-		//return historyCommands.get(time);
 	}
 	/**
 	 * @param time Time of the action (number of milliseconds since January 1, 1970, 00:00:00 GMT)
@@ -147,11 +122,7 @@ public class HistoryModes extends CompositeDataset{
 	public long getOriginalTime(long time){
 		TableDataset table = (TableDataset)get("table");
 		int index = findIndex(time);
-		//if (index<0) return null;
-
 		return ((Long1d) table.getColumn(3).getData()).get(index);
-
-		//return historyExecution.get(time);
 	}
 	
 	/**
@@ -161,7 +132,6 @@ public class HistoryModes extends CompositeDataset{
 	public void addStates(long time,ModelState states){
 		set(""+time,states);
 		cacheDirty=true;
-		//historyStates.put(time, states);
 	}
 	
 	/**
@@ -174,9 +144,14 @@ public class HistoryModes extends CompositeDataset{
 		}catch (java.lang.NullPointerException ne){
 			return null;
 		}
-		//return historyStates.get(time);
 	}
 	
+	/**
+	 * Put a group of actions into the history, all originated by the same sequence executed at the same time
+	 * @param newset Set of times and new modes
+	 * @param command Sequence that originates the transitions
+	 * @param originalTime execution time of the sequence
+	 */
 	public void putAll(java.util.HashMap<Long,String> newset,String command,long originalTime){
 
 		Iterator<Long> it=newset.keySet().iterator();
@@ -188,21 +163,21 @@ public class HistoryModes extends CompositeDataset{
 		
 	}
 	
+	/**
+	 * Get all times (as long) of actions contained in this history
+	 * @return
+	 */
 	public long[] getTimes(){
 		long[] result = ((Long1d) ((TableDataset) get("table")).getColumn(0).getData()).toArray();
 		Arrays.sort(result);
 		return result;
-		/*long[] result=new long[history.size()];
-		Iterator<Long> it=history.keySet().iterator();
-		int locator=0;
-		while (it.hasNext()){
-			result[locator]=it.next().longValue();
-			locator++;
-		}
-		Arrays.sort(result);
-		return result;*/
-		
 	}
+
+	/**
+	 * Get the least time greater than or equal to the given time (as long)
+	 * @param time
+	 * @return
+	 */
 	public long getCellingTime(long time){
 		long[] allTimes=getTimes();
 		TreeSet<Long> tree=new TreeSet<Long>();
@@ -211,6 +186,11 @@ public class HistoryModes extends CompositeDataset{
 		}
 		return tree.ceiling(time);
 	}
+	/**
+	 * Get the greatest time less than or equal to the given time
+	 * @param time
+	 * @return
+	 */
 	public long getFloorTime(long time){
 		long[] allTimes=getTimes();
 		TreeSet<Long> tree=new TreeSet<Long>();
@@ -219,11 +199,20 @@ public class HistoryModes extends CompositeDataset{
 		}
 		return tree.floor(time);
 	}
+	/**
+	 * Get all the states where the spacecraft was at the given time (as long)
+	 * @param time
+	 * @return
+	 */
 	public ModelState getStatesAt(long time){
 		long floorTime = getFloorTime(time);
 		return getStates(floorTime);
 	}
 	
+	/**
+	 * Get the earlier and latest date contained in this history
+	 * @return
+	 */
 	public java.util.Date[] getBoundarieDates(){
 		long[] temp=getTimes();
 		java.util.Date[] result= new java.util.Date[2];
@@ -232,6 +221,12 @@ public class HistoryModes extends CompositeDataset{
 		return result;
 	}
 	
+	/**
+	 * For a given mode, get all start date and end date of this mode. So if this mode start at time
+	 * 1, then end at 3, then occurs again at 5 and end at 7, you wil get an array [1,3,5,7]
+	 * @param modeName
+	 * @return
+	 */
 	public java.util.Date[] getBoundarieDatesForState(String modeName){
 		java.util.Vector<java.util.Date> result_v=new java.util.Vector<java.util.Date>();
 		long[] temp=getTimes();
@@ -272,26 +267,22 @@ public class HistoryModes extends CompositeDataset{
 	
 	
 	
+	/**
+	 * Get the name of all states contained in this history
+	 * @return
+	 */
 	public String[] getAllStates(){
 		HashMap<String,String> hm=new HashMap<String,String>();
 		long[] temp=getTimes();
-		//System.out.println("*******");
-		//System.out.println(temp.length);
-		//System.out.println("*******");
 
 		for (int i=0;i<temp.length;i++){
-			//System.out.println(i);
 			ModelState ms=getStates(temp[i]);
 			if (ms!=null){
 				String[] as=ms.getAllStates();
-				/*System.out.println("*******");
-				System.out.println(as.length);
-				System.out.println("*******");*/
 				
 				for (int j=0;j<as.length;j++){
 					if (!as[j].startsWith("null")){
 						hm.put(as[j], "");
-						//System.out.println("**** put *****"+as[j]);
 
 					}
 				}
@@ -322,6 +313,12 @@ public class HistoryModes extends CompositeDataset{
 		return periods;
 	}
 	
+	/**
+	 * Get all the modes between two dates
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
 	public String[] getModesBetween(Date startDate,Date endDate){
 		ModePeriod[] periods = findOverlapingModes(startDate,endDate);
 		HashSet<String> modes=new HashSet<String>();

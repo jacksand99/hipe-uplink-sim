@@ -8,24 +8,23 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Class to store a sequence parameter with a literal value (Engineering).
+ * @author jarenas
+ *
+ */
 public class ParameterString extends Parameter{
-	//private String value;
 	
 	public ParameterString(String parameterName,String parameterRepresentation,String parameterValue){
 		super(parameterName,parameterRepresentation,"");
 		getColumn(COLUMN_NAME_VALUE).setData(new String1d().append(parameterValue));
-
-		//value=parameterValue;
 	}
 	
 	public String getValue(){
 		return ((String1d) getColumn(COLUMN_NAME_VALUE).getData()).get(0);
-
-		//return value;
 	}
 	
 	public void setValue(String parameterValue){
-		//value=parameterValue;
 		getColumn(COLUMN_NAME_VALUE).setData(new String1d().append(parameterValue));
 	}
 
@@ -45,7 +44,6 @@ public class ParameterString extends Parameter{
 				eleParameter.setAttribute("position", new Integer(position).toString());
 				Element eleValue=doc.createElement("value");
 				eleValue.setAttribute("representation", getRepresentation());
-				//eleValue.setAttribute("radix", this.radix);
 				eleValue.setTextContent(this.getStringValue());
 				eleParameter.appendChild(eleValue);
 				

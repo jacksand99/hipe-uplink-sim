@@ -1,6 +1,6 @@
 package vega.uplink.commanding;
 
-import java.io.IOException;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -8,6 +8,11 @@ import java.util.Iterator;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 
+/**
+ * Class to store a timeline of sequences to be executed
+ * @author jarenas
+ *
+ */
 public class SequenceTimeline {
 		HashSet<SequenceExecution> set;
 		Mib mib;
@@ -16,12 +21,17 @@ public class SequenceTimeline {
 			try {
 				mib=Mib.getMib();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				IllegalArgumentException iae = new IllegalArgumentException("Could not get Mib:"+e.getMessage());
 				iae.initCause(e);
 				throw(iae);
 			}
 		}
+		/**
+		 * get all sequences executing between 2 dates
+		 * @param startDate
+		 * @param endDate
+		 * @return
+		 */
 		public AbstractSequence[] getSequencesBetween(Date startDate,Date endDate){
 			java.util.Vector<AbstractSequence> affected=new java.util.Vector<AbstractSequence>();
 			Iterator<SequenceExecution> it = set.iterator();
@@ -40,6 +50,11 @@ public class SequenceTimeline {
 			
 		}
 		
+		/**
+		 * Find sequences that overlap with a given sequence
+		 * @param se
+		 * @return
+		 */
 		public SequenceExecution[] findOverlapingExecution(SequenceExecution se){
 			Date endDate = se.getEndTime();
 			Date startDate = se.getStartTime();
@@ -60,6 +75,10 @@ public class SequenceTimeline {
 			result=affected.toArray(result);
 			return result;
 		}
+		/**
+		 * Check all overlaps in execution using the specific overalp checker as defined in the preferences
+		 * @return a string with all error messages with overlaps
+		 */
 		public String findAllOverlapping(){
 			AbstractAllowOverlapChecker checker;
 			String className=null;
@@ -74,7 +93,6 @@ public class SequenceTimeline {
 				checker = (AbstractAllowOverlapChecker)Class.forName(className).newInstance();
 			} catch (InstantiationException | IllegalAccessException
 					| ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				checker = new AbstractAllowOverlapChecker(){
 					public boolean allowOverlap(AbstractSequence a,AbstractSequence b){
 						return true;
@@ -90,12 +108,15 @@ public class SequenceTimeline {
 				SequenceExecution[] over = findOverlapingExecution(pass);
 				for (int i=0;i<over.length;i++){
 					if (!checker.allowOverlap(pass.getSequence(), over[i].getSequence())) message=message+pass.getName()+" ("+mib.getSequenceDescription(pass.getName())+") at "+DateUtil.defaultDateToString(pass.getStartTime())+" overlaps with "+over[i].getName()+" ("+mib.getSequenceDescription(over[i].getName())+") at "+DateUtil.defaultDateToString(over[i].getStartTime())+"\n";
-					//if (pass.getInstrument().equals(over[i].getInstrument())) message=message+pass.getName()+" ("+mib.getSequenceDescription(pass.getName())+") at "+DateUtil.defaultDateToString(pass.getStartTime())+" overlaps with "+over[i].getName()+" ("+mib.getSequenceDescription(over[i].getName())+") at "+DateUtil.defaultDateToString(over[i].getStartTime())+"\n";
 				}
 			}
 			return message;
 		}
 
+		/**
+		 * Execute a sequence in this timeline
+		 * @param seq
+		 */
 		public void execute(AbstractSequence seq){
 			Date startTime=seq.getExecutionDate();
 			String sequenceName=seq.getName();

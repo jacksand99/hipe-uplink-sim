@@ -1,29 +1,20 @@
 package vega.uplink.commanding;
 
-//import herschel.ia.dataset.Product;
 import herschel.ia.dataset.StringParameter;
 import herschel.ia.numeric.String1d;
-import herschel.ia.pal.MapContext;
 import herschel.share.fltdyn.time.FineTime;
-//import herschel.share.interpreter.InterpreterUtil;
-//import herschel.share.predicate.Predicate;
 
 
 import herschel.share.interpreter.InterpreterUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -33,14 +24,21 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import vega.hipe.gui.xmlutils.XmlDataInterface;
 import vega.hipe.products.AbstractXmlMapContext;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 
 
 	
+/**
+ * Class to store a Payload Operation Request (POR), is a set of sequences to be executed at the spacecraft
+ * @author jarenas
+ *
+ */
 public class Por extends AbstractXmlMapContext implements SequenceTimelineInterface{
+	/**
+	 * Rosetta Testing Team
+	 */
 	static private String AUTHOR="Rosetta Testing Team";
 	TreeMap<String,AbstractSequence> sequenceMap;
 	boolean calculateValidity;
@@ -50,7 +48,6 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 	String1d initDataStore;
 	public Por copy(){
 		Por result = new Por();
-		//result.setSequences(porSequences);
 		AbstractSequence[] seqs = this.getSequences();
 		AbstractSequence[] newSeq=new AbstractSequence[seqs.length] ;
 		for (int i=0;i<seqs.length;i++){
@@ -62,7 +59,6 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		result.setInitMemory(getInitMemory().copy());
 		result.setInitDataStore(getInitDataStore().copy());
 		return result;
-		//for (int i=0;i<seqs)
 		
 	}
 	public Por (){
@@ -81,31 +77,61 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		initDataStore=new String1d();
 
 	}
+	/**
+	 * In the case that the POR has been loaded form an ITL, get the itl lines to init the modes
+	 * @return
+	 */
 	public String1d getInitModes(){
 		return initModes;
 	}
-	
+	/**
+	 * In the case that the POR has been loaded form an ITL, get the itl lines to init the MS
+	 * @return
+	 */	
 	public String1d getInitMS(){
 		return initMS;
 	}
+	/**
+	 * In the case that the POR has been loaded form an ITL, get the itl lines to init the memory
+	 * @return
+	 */
 	public String1d getInitMemory(){
 		return initMemory;
 	}
+	/**
+	 * In the case that the POR has been loaded form an ITL, get the itl lines to init the data store
+	 * @return
+	 */
 	public String1d getInitDataStore(){
 		return initDataStore;
 	}
 
 	
+	/**
+	 * In the case that the POR has been loaded form an ITL, set the itl lines to init the modes
+	 * @param im
+	 */
 	public void setInitModes(String1d im){
 		initModes=im;
 	}
-	
+	/**
+	 * In the case that the POR has been loaded form an ITL, set the itl lines to init the MS
+	 * @param ims
+	 */	
 	public void setInitMS(String1d ims){
 		initMS=ims;
 	}
+	/**
+	 * In the case that the POR has been loaded form an ITL, set the itl lines to init the memory
+	 * @param ims
+	 */
 	public void setInitMemory(String1d ims){
 		initMemory=ims;
 	}
+	/**
+	 * In the case that the POR has been loaded form an ITL, set the itl lines to init the data store
+	 * @param ims
+	 */
 	public void setInitDataStore(String1d ims){
 		initDataStore=ims;
 	}
@@ -122,10 +148,18 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		return (String) getMeta().get("name").getValue();
 	}
 	
+	/**
+	 * Set the version of the POR
+	 * @param version
+	 */
 	public void setVersion(String version){
 		getMeta().set("version", new StringParameter(version));
 	}
 	
+	/**
+	 * Get the version of the POR
+	 * @return
+	 */
 	public String getVersion(){
 		return (String) getMeta().get("version").getValue();
 	}
@@ -143,26 +177,36 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 			
 		}
 	}
+	/**
+	 * Remove a sequence from the POR. The sequence that will removed will be the one with the same UniqueID as the one passed
+	 * @param sequence
+	 */
 	public void removeSequence(SequenceInterface sequence){
 		this.getRefs().remove(sequence.getUniqueID());
 		sequenceMap.remove(sequence.getUniqueID());
 	}
+	/**
+	 * Remove all sequences form the POR
+	 */
 	public void removeAllSequences(){
 		AbstractSequence[] seqs = this.getSequences();
 		for (int i=0;i<seqs.length;i++){
 			removeSequence(seqs[i]);
 		}
 	}
+	/**
+	 * Regenerate a POR form another oen. It will remove all sequences from this POR and add the sequences from the given one, keeping the rest of the metadata as it is in this one.
+	 * @param por
+	 */
 	public void regenerate(Por por){
 		this.removeAllSequences();
 		this.setSequences(por.getSequences());
 	}
 
-	/*public void addSequence(AbstractSequence sequence){
-		setProduct(sequence.getUniqueID(),sequence);
-		sequenceMap.put(sequence.getUniqueID(), sequence);
-		calculateValidity();
-	}*/
+	/**
+	 * Set it to True if the validity of the POR should be recalculated for any new sequence added or false otherwise
+	 * @param recalcualte
+	 */
 	public void  setCalculateValidity(boolean recalcualte){
 		calculateValidity=recalcualte;
 		if (recalcualte) calculateValidity();
@@ -174,7 +218,6 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		try {
 			mib = Mib.getMib();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			IllegalArgumentException iae = new IllegalArgumentException("Could not get Mib "+e.getMessage());
 			iae.initCause(e);
 			throw(iae);
@@ -212,12 +255,23 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		vector.toArray(result);
 		return result;
 	}
+	/**
+	 * Get a subpor with all sequences from a date to a date
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
 	public Por getSubPor(Date startDate,Date endDate){
 		Por result=new Por();
 		AbstractSequence[] seqs = this.findOverlapingSequences(startDate, endDate);
 		result.setSequences(seqs);
 		return result;
 	}
+	/**
+	 * Get a subpor with all sequences from a given instrument
+	 * @param instrument
+	 * @return
+	 */
 	public Por getSubPor(String instrument){
 		Vector<AbstractSequence> vector= new Vector<AbstractSequence>();
 		
@@ -231,12 +285,17 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		result.setSequences(array);
 		return result;
 	}
+	/**
+	 * get all sequences with execution date in range of dates
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
 	public AbstractSequence[] findOverlapingSequences(Date startDate,Date endDate){
 		java.util.Vector<AbstractSequence> affected=new java.util.Vector<AbstractSequence>();
 		AbstractSequence[] seqs=getSequences();
 		for (int i=0;i<seqs.length;i++){
 			AbstractSequence cs = seqs[i];
-			//if (seqs[i].getExecutionDate().equals(date)) vector.add(seqs[i]);
 			boolean con1=false;
 			boolean con2=false;
 			if (cs.getExecutionDate().after(endDate) ) con1=true;
@@ -249,21 +308,42 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		return result;
 	}
 	
+	/**
+	 * Set the generation date of a POR
+	 * @param date
+	 */
 	public void setGenerationDate(java.util.Date date){
 		this.setCreationDate(new FineTime(date));
 	}
 	
+	/**
+	 * Set the generation date of the POR as String in DOY format (yyyy-D'T'HH:mm:ss.SSS'Z')
+	 * @param time
+	 * @throws ParseException
+	 */
 	public void setGenerationTime(String time) throws ParseException{
 		setGenerationDate(DateUtil.DOYToDate(time));
 	}
+	/**
+	 * Get the genration date of the POR
+	 * @return
+	 */
 	public java.util.Date getGenerationDate(){
 		return getCreationDate().toDate();
 	}
 	
+	/**
+	 * Get teh generation date of the POR as string in DOY format (yyyy-D'T'HH:mm:ss.SSS'Z')
+	 * @return
+	 */
 	public String getGenerationTime(){
 		return DateUtil.dateToDOY(getCreationDate().toDate());
 	}
 	
+	/**
+	 * Get the validity dates for this POR
+	 * @return an array of size 2 where the element 0 is the start date and element 1 is the end date
+	 */
 	public java.util.Date[] getValidityDates(){
 		Date[] result = new java.util.Date[2];
 		result[0]=getStartDate().toDate();
@@ -271,17 +351,30 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		return result;
 	}
 	
+	/**
+	 * Set the validity dates for this POR.
+	 * @param dates n array of size 2 where the element 0 is the start date and element 1 is the end date
+	 */
 	public void setValidityDates(java.util.Date[] dates){
 		setStartDate(new FineTime(dates[0]));
 		setEndDate(new FineTime(dates[1]));
 
 	}
 	
+	/**
+	 * Set the validity dates for this POR as strings in DOY format (yyyy-D'T'HH:mm:ss.SSS'Z')
+	 * @param times an array of size 2 where the element 0 is the start date and element 1 is the end date
+	 * @throws ParseException
+	 */
 	public void setValidityTimes(String[] times) throws ParseException{
 		setStartDate(new FineTime(DateUtil.DOYToDate(times[0])));
 		setEndDate(new FineTime(DateUtil.DOYToDate(times[1])));
 	}
 	
+	/**
+	 * Get the validity dates for this POR as strings in DOY format (yyyy-D'T'HH:mm:ss.SSS'Z')
+	 * @return an array of size 2 where the element 0 is the start date and element 1 is the end date
+	 */
 	public String[] getValidityTimes(){
 		String[] result=new String[2];
 		result[0]=DateUtil.dateToDOY(getStartDate().toDate());
@@ -294,7 +387,6 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		for (int i=0;i<porSequences.length;i++){
 			addSequence(porSequences[i]);
 		}
-		//calculateValidity();
 		setCalculateValidity(true);
 	}
 	
@@ -435,31 +527,6 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 			ordered.put(arraySeq[i].getExecutionDate(), arraySeq[i]);
 		}
 		return ordered.toSequenceArray();
-		/*AbstractSequence[] arraySeq=getSequences();
-		if (arraySeq==null) return new Sequence[0];
-		java.util.Vector<AbstractSequence> result =new java.util.Vector<AbstractSequence>();
-		long[] times;
-		java.util.Set<Long> set = new HashSet<Long>();
-		Long newTime;
-		for (int i=0;i<arraySeq.length;i++){
-			newTime=new Long(arraySeq[i].getExecutionDate().getTime());
-			set.add(newTime);
-		}
-		times=new long[set.size()];
-		Iterator<Long> it = set.iterator();
-		int counter=0;
-		while(it.hasNext()) {
-		  times[counter]=(it.next()).longValue();
-		  counter++;
-		}
-		Arrays.sort(times);
-		for (int i=0;i<times.length;i++){
-			AbstractSequence[] seqDate = this.getSequencesForDate(new java.util.Date(times[i]));
-			for (int j=0;j<seqDate.length;j++) result.add(seqDate[j]);
-		}
-		Sequence[] ret=new Sequence[result.size()];
-		result.toArray(ret);
-		return ret;*/
 	}
 	
 	protected AbstractSequence[] insertInOrder(AbstractSequence[] arr,AbstractSequence newSeq){
@@ -507,6 +574,11 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		
 	}
 	
+	/**
+	 * Get a POR with the sequences for a given instrument
+	 * @param instrument
+	 * @return
+	 */
 	public Por getPORforInstrument(String instrument){
 		Por result= new Por();
 		result.setValidityDates(this.getValidityDates());
@@ -521,7 +593,6 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 	}
 	@Override
 	public String getXmlData() {
-		// TODO Auto-generated method stub
 		return this.toXml();
 	}
 	@Override
@@ -531,7 +602,6 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 	}
 	@Override
 	public String getFileName() {
-		// TODO Auto-generated method stub
 		return getName();
 	}
 	@Override
@@ -567,31 +637,6 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		
 	}
 	
-	/*private class SequenceRule implements herschel.share.predicate.Predicate<Product> {
-
-		@Override
-		public Predicate<Product> and(Predicate<Product> arg0) {
-			return this;
-			//return (evaluate(arg0) && arg0.evaluate(arg0)); 
-			// TODO Auto-generated method stub
-			//return null;
-		}
-
-		@Override
-		public boolean evaluate(Product arg0) {
-			return InterpreterUtil.isInstance(Sequence.class, arg0);
-			// TODO Auto-generated method stub
-			//return false;
-		}
-
-		@Override
-		public Predicate<Product> or(Predicate<Product> arg0) {
-			return this;
-			// TODO Auto-generated method stub
-			//return null;
-		}
-		
-	}*/
 	
 	class OrderedSequences extends TreeMap<Date,AbstractSequence>{
 		public AbstractSequence put(Date key,AbstractSequence value){

@@ -1,20 +1,12 @@
 package vega.uplink.commanding;
 
-import herschel.ia.dataset.Column;
-import herschel.ia.dataset.Dataset;
-import herschel.ia.dataset.DateParameter;
-import herschel.ia.dataset.MetaData;
+
 import herschel.ia.dataset.Product;
-import herschel.ia.dataset.StringParameter;
+
 import herschel.ia.dataset.TableDataset;
-import herschel.ia.numeric.String1d;
-import herschel.share.fltdyn.time.FineTime;
-//import herschel.share.io.FileUtil;
+
 import vega.hipe.FileUtil;
 
-
-import herschel.share.io.archive.ArchiveReader;
-import herschel.share.io.archive.FileArchive;
 import herschel.share.io.archive.ZipReader;
 
 import java.io.File;
@@ -23,13 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.Vector;
+
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -45,7 +31,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -69,11 +55,20 @@ import org.w3c.dom.NodeList;
 
 
 import vega.uplink.DateUtil;
-//import vega.uplink.pointing.Evtm;
-import vega.uplink.pointing.EvtmEvent;
 
+
+/**
+ * Class to perform a set of utilty methods over PORs and other classes from this package
+ * @author jarenas
+ *
+ */
 public class PorUtils {
 	private static final Logger LOG = Logger.getLogger(PorUtils.class.getName());
+	/**
+	 * Write a SuperPor as a PORG (zip file containing individual PORs)
+	 * @param file
+	 * @param por
+	 */
 	public static void writePORGtofile(String file,SuperPor por){
 		File porg = new File(file);
 		File tdir = null;
@@ -98,6 +93,12 @@ public class PorUtils {
         }
     }
 	}
+	/**
+	 * Read a SuperPor from a PORG (zip file containing individual PORs)
+	 * @param fileName
+	 * @return
+	 * @throws IOException
+	 */
 	public static SuperPor readPORGfromFile(String fileName) throws IOException{
 		File file=new File(fileName);
         File tdir = null;
@@ -109,20 +110,12 @@ public class PorUtils {
         try {
             try {
                 tdir = FileUtil.createTempDir(file.getName()+"_temp_porg", "unzip");
-                //java.util.zip.ZipFile zipfile=new java.util.zip.ZipFile(file);
-                //zipfile.
-                //FileArchive fa = new FileArchive(file);
                 ZipReader ar= new ZipReader(file);
-                //ArchiveReader ar = fa.createReader();
                 ar.extract(tdir);
                 for (String name : tdir.list()) {
                     if (!name.startsWith("."))  {
                         error = false;
                         String porFile = new File(tdir, name).getAbsolutePath();
-                        //por.setName(name);
-                        //String porName = name.toLowerCase();
-                        //porName = porName.replaceAll("[.]ROS$", "");
-                        //porName = porName.replaceAll("[.]xml$", "");
                         Por por = readPORfromFile(porFile);
                         por.setName(name);
                         
@@ -134,7 +127,6 @@ public class PorUtils {
                 result.setType("PORG");
                 result.setCalculateValidity(true);
                 return result;
-                //throw new IOException("No PORG file found in " + file);
             } catch (ZipException e) {
                 throw new IOException("Could not unzip " + file + " in " + tdir, e);
             } catch (IOException e) {
@@ -147,6 +139,11 @@ public class PorUtils {
             }
         }
 	}
+	/**
+	 * Read POR from a XML document
+	 * @param doc
+	 * @return
+	 */
 	public static Por readPorfromDocument(Document doc){
 		Por result = new Por();
 		result.setCalculateValidity(false);
@@ -169,11 +166,7 @@ public class PorUtils {
 			result.setGenerationTime(pGenTime);
 			String[] vTimes={pStartTime,pEndTime};
 			result.setValidityTimes(vTimes);
-			//result.setName(fXmlFile.getName());
-			//result.setPath(fXmlFile.getParent());
-			
 		    } catch (Exception e) {
-		    	//e.printStackTrace();
 		    	IllegalArgumentException iae = new IllegalArgumentException("Could not read Por:"+e.getMessage());
 		    	iae.initCause(e);
 		    	throw(iae);
@@ -181,6 +174,11 @@ public class PorUtils {
 		result.setCalculateValidity(true);
 		return result; 
 	}
+	/**
+	 * read POR from a xml file
+	 * @param file
+	 * @return
+	 */
 	public static Por readPORfromFile(String file){
 
 		Por result = new Por();
@@ -195,7 +193,6 @@ public class PorUtils {
 			result.setPath(fXmlFile.getParent());
 			
 		    } catch (Exception e) {
-		    	//e.printStackTrace();
 		    	IllegalArgumentException iae = new IllegalArgumentException("Could not read Por:"+e.getMessage());
 		    	iae.initCause(e);
 		    	throw(iae);
@@ -243,6 +240,12 @@ public class PorUtils {
 		return result;
 	}
 	
+	/**
+	 * Read parameters from a xml node list
+	 * @param nList
+	 * @return
+	 * @throws IOException
+	 */
 	public static Parameter[] readParameters(NodeList nList) throws IOException{
 		Mib MIB = Mib.getMib();
 		Parameter[] result = new Parameter[nList.getLength()];
@@ -305,6 +308,11 @@ public class PorUtils {
 		return result;
 	}
 	
+	/**
+	 * Read profiles from a xml node list
+	 * @param nList
+	 * @return
+	 */
 	public static SequenceProfile[] readProfiles(NodeList nList){
 		SequenceProfile[] result = new SequenceProfile[nList.getLength()];
 		 
@@ -330,28 +338,28 @@ public class PorUtils {
 
 		return result;
 	}
+	/**
+	 * Save POR into a xml file
+	 * @param POR
+	 */
 	public static void savePor(Por POR){
 		writePORtofile(POR.getPath()+"/"+POR.getName(),POR);
 	}
+	/**
+	 * save POR into a xml file
+	 * @param file
+	 * @param POR
+	 */
 	public static void writePORtofile(String file,Por POR){
 		try{
-			/*PrintWriter writer = new PrintWriter(file, "UTF-8");
-			writer.print(POR.toXml());
-			writer.close();*/
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 			DOMSource source = new DOMSource(POR.getXMLDocument());
 			StreamResult result = new StreamResult(new File(file));
-	 
-			// Output to console for testing
-			// StreamResult result = new StreamResult(System.out);
-	 
 			transformer.transform(source, result);
 			LOG.info("Writted POR to file " + file );
-	 
-			//System.out.println("File saved!");
 		}catch (Exception e){
 			LOG.severe(e.getMessage());
 			LOG.throwing("PorUtils", "writePORtofile", e);
@@ -360,6 +368,11 @@ public class PorUtils {
 		
 	}
 	
+	/**
+	 * save POR as ITL file
+	 * @param file
+	 * @param POR
+	 */
 	public static void writeITLtofile(String file,Por POR){
 		try{
 			PrintWriter writer = new PrintWriter(file, "UTF-8");
@@ -370,6 +383,11 @@ public class PorUtils {
 		}
 		
 	}
+	/**
+	 * Write the ORCD into a XML file
+	 * @param file
+	 * @param orcd
+	 */
 	public static void writeORCDtoXMLfile(String file,Orcd orcd){
 		try{
 			PrintWriter writer = new PrintWriter(file, "UTF-8");
@@ -381,6 +399,11 @@ public class PorUtils {
 		
 	}
 	
+	/**
+	 * Get a POR as ITL
+	 * @param POR
+	 * @return
+	 */
 	public static String PORtoITL(Por POR){
 		Mib mib;
 		try{
@@ -391,18 +414,12 @@ public class PorUtils {
 			throw(iae);
 			
 		}
-		//String result="";
 		StringBuilder result=new StringBuilder();
 		result.append("");
-		/*java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		java.text.SimpleDateFormat dateFormat2 = new java.text.SimpleDateFormat("dd-MMMMMMMMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));*/
 		String l01="Version: 1\n";
 		String l02="Ref_date: "+DateUtil.dateToLiteralNoTime(POR.getValidityDates()[0])+"\n\n\n";
 		String l03="Start_time: "+DateUtil.dateToLiteral(POR.getValidityDates()[0])+"\n";
 		String l04="End_time: "+DateUtil.dateToLiteral(POR.getValidityDates()[1])+"\n\n\n";
-		//String l05="";
 		StringBuilder l05=new StringBuilder();
 		l05.append("");
 		String[] initModes = POR.getInitModes().toArray();
@@ -445,12 +462,10 @@ public class PorUtils {
 				if (tempPro[j].getType().equals(SequenceProfile.PROFILE_TYPE_DR)){
 					dataRateProfile=dataRateProfile+" "+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[bits/sec]";
 					dataRatePresent=true;
-					//l05 =l05+ "\tDATA_RATE_PROFILE = \t\t\t"+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[bits/sec]\\\n"; 
 				}
 				if (tempPro[j].getType().equals(SequenceProfile.PROFILE_TYPE_PW)){
 					powerProfile=powerProfile+" "+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[Watts]";
 					powerProfilePresent=true;
-					//l05 = l05+"\tPOWER_PROFILE = \t\t\t"+tempPro[j].getOffSetString()+"\t"+new Double(tempPro[j].getValue()).toString()+"\t[Watts]\\\n"; 
 				}
 				
 			}
@@ -465,103 +480,16 @@ public class PorUtils {
 		result.append(l03);
 		result.append(l04);
 		result.append(l05);
-		//result=l01+l02+l03+l04+l05;
 		return result.toString();
 	}
 	
-	public static TableDataset profileToTabledataset(SequenceProfile profile){
-		/*herschel.ia.dataset.TableDataset result=new herschel.ia.dataset.TableDataset();
-		Column cType=new Column(new String1d());
-		Column cValue=new Column(new String1d());
-		Column cOffset=new Column(new String1d());
-		result.addColumn(cType);
-		result.addColumn(cValue);
-		result.addColumn(cOffset);
-		String[] array=new String[3];
-		array[0]=profile.getType();
-		array[1]=new Double(profile.getValue()).toString();
-		array[2]=profile.getOffSetString();
-		result.addRow(array);
-		result.setColumnName(0, "Type");
-		result.setColumnName(1, "Value");
-		result.setColumnName(2, "OffSet");
 
-		return result;*/
-		return profile;
-	}
-	
-	public static TableDataset parameterToTabledataset(Parameter parameter){
-		return parameter;
-		/*herschel.ia.dataset.TableDataset result=new herschel.ia.dataset.TableDataset();
-		Column cName=new Column(new String1d());
-		Column cRepresentation=new Column(new String1d());
-		Column cRadix=new Column(new String1d());
-		Column cValue=new Column(new String1d());
-
-		result.addColumn(cName);
-		result.addColumn(cRepresentation);
-		result.addColumn(cRadix);
-		result.addColumn(cValue);
-
-		String[] array=new String[4];
-		array[0]=parameter.getName();
-		array[1]=parameter.getRepresentation();
-		array[2]=parameter.getRadix();
-		array[3]=parameter.getStringValue();
-		result.addRow(array);
-		result.setColumnName(0, "Name");
-		result.setColumnName(1, "Representation");
-		result.setColumnName(2, "Radix");
-		result.setColumnName(3, "Value");
-
-		return result;	*/
-	}
-	
-	
-	public static Product sequenceToProduct(Sequence seq){
-		return seq;
-		/*Product result=new Product();
-		TableDataset parameters=new TableDataset();
-		TableDataset profiles=new TableDataset();
-		Parameter[] params=seq.getParameters();
-		SequenceProfile[] prof=seq.getProfiles();
-		if (params!=null){
-			for (int i=0;i<params.length;i++){
-				parameters.concatenate(parameterToTabledataset(params[i]));
-			}
-		}
-		if (prof!=null){
-			for (int i=0;i<prof.length;i++){
-				profiles.concatenate(profileToTabledataset(prof[i]));
-			}
-		}
-
-		result.set("parameters", parameters);
-		result.set("profiles", profiles);
-		MetaData meta=new MetaData();
-		meta.set("name", new StringParameter(seq.getName()));
-		meta.set("uniqueID", new StringParameter(seq.getUniqueID()));
-		meta.set("executiontime",new DateParameter(new FineTime(seq.getExecutionDate())));
-		meta.set("source", new StringParameter(""+seq.getSource()));
-		meta.set("destination", new StringParameter(""+seq.getDestination()));
-		meta.set("flag", new StringParameter(seq.getFlag()));
-		
-		result.setMeta(meta);
-		return result;*/
-	}
-	
-	public static herschel.ia.pal.MapContext porToContext(Por POR){
-		return POR;
-		/*herschel.ia.pal.MapContext result = new herschel.ia.pal.MapContext();
-		result.setStartDate(new FineTime(POR.getValidityDates()[0]));
-		result.setEndDate(new FineTime(POR.getValidityDates()[1]));
-		result.setCreationDate(new FineTime(POR.getGenerationDate()));
-		Sequence[] seqs=POR.getOrderedSequences();
-		for (int i=0;i<seqs.length;i++){
-			result.setProduct(seqs[i].getUniqueID(), sequenceToProduct(seqs[i]));
-		}
-		return result;*/
-	}
+	/**
+	 * Read FECS from XML file
+	 * @param file
+	 * @return
+	 * @throws Exception
+	 */
 	public static Fecs readFecsFromFile(String file) throws Exception{
 		Fecs result=new Fecs();
 		try {
@@ -573,164 +501,6 @@ public class PorUtils {
 			
 			result.setName(fXmlFile.getName());
 			result.setPath(fXmlFile.getParent());
-
-			/*
-			doc.getDocumentElement().normalize();
-		 
-			//System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-			NodeList nListHeader = doc.getElementsByTagName("header");
-			NamedNodeMap headerAttributes = nListHeader.item(0).getAttributes();
-			result.setSpacecraft(headerAttributes.getNamedItem("spacecraft").getNodeValue());
-			result.setIcdVersion(headerAttributes.getNamedItem("icd_version").getNodeValue());
-			result.setGenerationTime(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("gen_time").getNodeValue()));
-			result.setValidityStart(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("validity_start").getNodeValue()));
-			result.setValidityEnd(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("validity_end").getNodeValue()));
-			Node nodeEvents = doc.getElementsByTagName("events").item(0);
-			NodeList fcsNodeList = nodeEvents.getChildNodes();
-			TreeMap<Date,Node> botNodes=new TreeMap<Date,Node>();
-			TreeMap<Date,Node> stadNodes=new TreeMap<Date,Node>();
-			TreeMap<Date,Node> stodNodes=new TreeMap<Date,Node>();
-			TreeMap<Date,Node> eotNodes=new TreeMap<Date,Node>();
-			//TreeMap<Date,Node> botbNodes=new TreeMap<Date,Node>();
-			//TreeMap<Date,Node> eotbNodes=new TreeMap<Date,Node>();
-			TreeMap<Date,Node> boabNodes=new TreeMap<Date,Node>();
-			TreeMap<Date,Node> eoabNodes=new TreeMap<Date,Node>();
-			TreeMap<Date,Node> boalNodes=new TreeMap<Date,Node>();
-			TreeMap<Date,Node> eoalNodes=new TreeMap<Date,Node>();
-			TreeMap<Date,Node> botrNodes=new TreeMap<Date,Node>();
-			TreeMap<Date,Node> eotrNodes=new TreeMap<Date,Node>();
-			
-			int size=fcsNodeList.getLength();
-			for (int i=0;i<size;i++){
-				Node item = fcsNodeList.item(i);
-				NamedNodeMap attributes = item.getAttributes();
-				if (attributes!=null){
-					Date time=GsPass.zuluToDate(item.getAttributes().getNamedItem("time").getTextContent());
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOT_")){
-						botNodes.put(time,item);
-						
-					}
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("STAD")){
-						stadNodes.put(time,item);
-					}
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("STOD")){
-						stodNodes.put(time,item);
-					}
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOT_")){
-						eotNodes.put(time,item);
-					}
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOAB")){
-						boabNodes.put(time,item);
-					}
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOAB")){
-						eoabNodes.put(time,item);
-					}
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOAL")){
-						boalNodes.put(time,item);
-					}
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOAL")){
-						eoalNodes.put(time,item);
-					}
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOTR")){
-						//System.out.println("Detected BOTR");
-						botrNodes.put(time,item);
-					}
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOTR")){
-						eotrNodes.put(time,item);
-					}
-
-					
-
-				}
-			}
-			Iterator<Date> it = botNodes.keySet().iterator();
-			while (it.hasNext()){
-				Date passStart=it.next();
-				Date passEnd=eotNodes.ceilingKey(new Date(passStart.getTime()+1));
-				Node endNode = eotNodes.get(passEnd);
-				String stationEnd = endNode.getAttributes().getNamedItem("ems:station").getNodeValue();
-				Node startNode=botNodes.get(passStart);
-				String stationStart=startNode.getAttributes().getNamedItem("ems:station").getNodeValue();
-				if (!stationEnd.equals(stationStart)){
-					LOG.severe("Pass not included. Overlapping passes BOT station "+stationStart+" EOT station "+stationEnd);
-					LOG.severe("BOT count "+startNode.getAttributes().getNamedItem("count").getNodeValue());
-					LOG.severe("EOT count "+endNode.getAttributes().getNamedItem("count").getNodeValue());
-					//throw new IllegalArgumentException("FECS format invalid. Overlapping passes BOT count "+countStart+" EOT count "+countEnd);
-				}
-				else{
-				SortedMap<Date, Node> subStadMap = stadNodes.subMap(passStart, passEnd);
-				Iterator<Date> it2 = subStadMap.keySet().iterator();
-					while(it2.hasNext()){
-						Date dumpStart=it2.next();
-						Date dumpEnd=stodNodes.ceilingKey(new Date(dumpStart.getTime()+1));
-						//Node dumpStartNode=subStadMap.get(dumpStart);
-						//Node dumpStopNode=
-						String station=botNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
-						float tmRate=Float.parseFloat(stadNodes.get(dumpStart).getAttributes().getNamedItem("tm_rate").getTextContent());
-						String stadStation = stadNodes.get(dumpStart).getAttributes().getNamedItem("ems:station").getTextContent();
-						String stodStation = stodNodes.get(dumpEnd).getAttributes().getNamedItem("ems:station").getTextContent();
-						if (stadStation.equals(stodStation)){
-							GsPass pass=new GsPass(passStart,passEnd,dumpStart,dumpEnd,station,tmRate);
-							result.addPass(pass);
-						}else{
-							LOG.severe("Pass not included. Overlapping passes STAD station "+stadStation+" STOD station "+stodStation);
-							LOG.severe("STAD count "+stadNodes.get(dumpStart).getAttributes().getNamedItem("count").getTextContent());
-							LOG.severe("STOD count "+stodNodes.get(dumpEnd).getAttributes().getNamedItem("count").getTextContent());
-							
-						}
-					}
-				}
-			}
-
-			Iterator<Date> it3 = boabNodes.keySet().iterator();
-			while (it3.hasNext()){
-				Date passStart=it3.next();
-				Date passEnd=eoabNodes.ceilingKey(new Date(passStart.getTime()+1));
-				String station=boabNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
-				String endStation=eoabNodes.get(passEnd).getAttributes().getNamedItem("ems:station").getTextContent();
-				if (station.equals(endStation)){
-					result.addPass(new GsPassOAB(passStart,passEnd,station));
-				}else{
-					LOG.severe("Pass not included. Overlapping passes BOAB station "+station+" EOAB station "+endStation);
-					LOG.severe("STAD count "+boabNodes.get(passStart).getAttributes().getNamedItem("count").getTextContent());
-					LOG.severe("STOD count "+eoabNodes.get(passEnd).getAttributes().getNamedItem("count").getTextContent());
-				}
-				
-			}
-			Iterator<Date> it4 = boalNodes.keySet().iterator();
-			while (it4.hasNext()){
-				Date passStart=it4.next();
-				Date passEnd=eoalNodes.ceilingKey(new Date(passStart.getTime()+1));
-				String station=boalNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
-				String endStation=eoalNodes.get(passEnd).getAttributes().getNamedItem("ems:station").getTextContent();
-				if (station.equals(endStation)){
-					result.addPass(new GsPassOAL(passStart,passEnd,station));
-				}else{
-					LOG.severe("Pass not included. Overlapping passes BOAL station "+station+" EOAL station "+endStation);
-					LOG.severe("STAD count "+boalNodes.get(passStart).getAttributes().getNamedItem("count").getTextContent());
-					LOG.severe("STOD count "+eoalNodes.get(passEnd).getAttributes().getNamedItem("count").getTextContent());
-				}
-				
-			}
-			
-			Iterator<Date> it5 = botrNodes.keySet().iterator();
-			while (it5.hasNext()){
-				Date passStart=it5.next();
-				Date passEnd=eotrNodes.ceilingKey(new Date(passStart.getTime()+1));
-				String station=botrNodes.get(passStart).getAttributes().getNamedItem("ems:station").getTextContent();
-				String endStation=eotrNodes.get(passEnd).getAttributes().getNamedItem("ems:station").getTextContent();
-				if (station.equals(endStation)){
-					result.addPass(new GsPassOTR(passStart,passEnd,station));
-					//System.out.println("Inster BOTR");
-				}else{
-					LOG.severe("Pass not included. Overlapping passes BOTR station "+station+" EOTR station "+endStation);
-					LOG.severe("STAD count "+botrNodes.get(passStart).getAttributes().getNamedItem("count").getTextContent());
-					LOG.severe("STOD count "+eotrNodes.get(passEnd).getAttributes().getNamedItem("count").getTextContent());
-				}
-				
-			}
-
-*/
 			
 		}catch (Exception e){
 			LOG.throwing("PORUtils", "readFecsFromFile", e);
@@ -742,78 +512,13 @@ public class PorUtils {
 	}
 
 	
-	/*public static Fecs readFecsFromFile(String file){
-		Fecs result=new Fecs();
-		try {
-			 
-			File fXmlFile = new File(file);
-			result.setName(fXmlFile.getName());
-			result.setPath(fXmlFile.getParent());
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(fXmlFile);
-		 
-			doc.getDocumentElement().normalize();
-		 
-			NodeList nListHeader = doc.getElementsByTagName("header");
-			NamedNodeMap headerAttributes = nListHeader.item(0).getAttributes();
-			result.setSpacecraft(headerAttributes.getNamedItem("spacecraft").getNodeValue());
-			result.setIcdVersion(headerAttributes.getNamedItem("icd_version").getNodeValue());
-			result.setGenerationTime(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("gen_time").getNodeValue()));
-			result.setValidityStart(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("validity_start").getNodeValue()));
-			result.setValidityEnd(EvtmEvent.zuluToDate(headerAttributes.getNamedItem("validity_end").getNodeValue()));
-			Node nodeEvents = doc.getElementsByTagName("events").item(0);
-			NodeList fcsNodeList = nodeEvents.getChildNodes();
-			Vector<Node> botNodes=new Vector<Node>();
-			Vector<Node> stadNodes=new Vector<Node>();
-			Vector<Node> stodNodes=new Vector<Node>();
-			Vector<Node> eotNodes=new Vector<Node>();
-			int size=fcsNodeList.getLength();
-			for (int i=0;i<size;i++){
-				Node item = fcsNodeList.item(i);
-				NamedNodeMap attributes = item.getAttributes();
-				if (attributes!=null){
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOT_")) botNodes.add(item);
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("STAD")) stadNodes.add(item);
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("STOD")) stodNodes.add(item);
-					if (item.getAttributes().getNamedItem("id").getNodeValue().equals("EOT_")) eotNodes.add(item);
-				}
-			}
-			
-			size=botNodes.size();
-			for (int i=0;i<size;i++){
-				Node botItem = botNodes.get(i);
-				Node stadItem = stadNodes.get(i);
-				Node stodItem = stodNodes.get(i);
-				Node eotItem = eotNodes.get(i);
-				Date passStart=GsPass.zuluToDate(botItem.getAttributes().getNamedItem("time").getTextContent());
-				Date passEnd=GsPass.zuluToDate(eotItem.getAttributes().getNamedItem("time").getTextContent());
-				Date dumpStart=GsPass.zuluToDate(stadItem.getAttributes().getNamedItem("time").getTextContent());
-				Date dumpEnd=GsPass.zuluToDate(stodItem.getAttributes().getNamedItem("time").getTextContent());
-				String station=botItem.getAttributes().getNamedItem("ems:station").getTextContent();
-				float tmRate=Float.parseFloat(stadItem.getAttributes().getNamedItem("tm_rate").getTextContent());
-				GsPass pass=new GsPass(passStart,passEnd,dumpStart,dumpEnd,station,tmRate);
-				result.addPass(pass);
-			}
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-		
-		return result;
-	}*/
 	
  
     /**
-     * Format the file path for zip
-     * @param file file path
-     * @return Formatted file path
+     * ZIP the contents of folder into a zip file
+     * @param zipFile
+     * @param sourceFolder
      */
-    /*private static String generateZipEntry(String sourceFolder,String file){
-    	//System.out.println(sourceFolder);
-    	//System.out.println(file);
-    	if (!sourceFolder.equals(file)) return file.substring(sourceFolder.length()+1, file.length());
-    	else return file;
-    }*/
     public static void zipIt(String zipFile,String sourceFolder){
     	 
         byte[] buffer = new byte[1024];
@@ -824,7 +529,6 @@ public class PorUtils {
        	ZipOutputStream zos = new ZipOutputStream(fos);
     
        	LOG.info("Output to Zip : " + zipFile);
-       	//List<String> fileList = generateFileList(new File(sourceFolder));
        	String[] fileList=new File(sourceFolder).list();
        	for(String file : fileList){
     

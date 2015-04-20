@@ -9,12 +9,10 @@ import herschel.ia.numeric.*;
 import herschel.ia.gui.plot.*;
 
 import org.jfree.ui.RefineryUtilities;
-//import org.jfree.util.Log;
 
 
 
 
-import com.kenai.jffi.Array;
 
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
@@ -29,38 +27,30 @@ import java.util.logging.Logger;
 
 
 
-
-//import javax.naming.ConfigurationException;
 import javax.swing.JFrame;
-//import java.lang.Runnable ;
+/**
+ * 
+ * @author jarenas
+ *
+ */
 public class Simulation {
-	//java.text.SimpleDateFormat dateFormat2;
 	SimulationContext context;
 	private static final Logger LOG = Logger.getLogger(Simulation.class.getName());
 	private Simulation(){
 		context=new SimulationContext();
-		/*dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));*/
-		
 	}
 	public Simulation(SimulationContext context){
 		this.context=context;
-		//System.out.println("Init script:"+this.context.getInitScript());
-		/*dateFormat2 = new java.text.SimpleDateFormat("dd-MMM-yyyy'_'HH:mm:ss");
-		dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));*/
-		
 	}
 
 	public Simulation(Por[] pors){
 		this();
-		//context=new SimulationContext();
 		addPors(pors);
 		
 		
 	}
 	public Simulation(Por[] pors,SimulationContext simContext){
 		this(simContext);
-		//context=new SimulationContext();
 		addPors(pors);
 		
 		
@@ -94,18 +84,12 @@ public class Simulation {
 			}
 		}
 		AbstractSequence[] seqs=context.getPor().getOrderedSequences();
-		//SsmmSimulator memorySimulator=context.ssmm;
-		//SsmmSimulator memorySimulator=new RosettaSsmmSimulator(context);
-		//SsmmSimulator memorySimulator=context.getMemorySimulator();
 		SequenceTimeline seqTimeline=context.getSequenceTimeline();
 		LOG.info("Inserting commands into the model");
-		//String messages="";
 		boolean osirisScience=true;
 		for (int i=0;i<seqs.length;i++){
 			seqTimeline.execute(seqs[i]);
-			//if (seqs[i].getName())
 			if (seqs[i].getInstrument().equals("ANTENNA")){
-				//System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 				context.getMemorySimulator().addSequence(seqs[i]);
 			}
 			if (seqs[i].getName().equals("ASRF071B")){
@@ -132,7 +116,6 @@ public class Simulation {
 						}else{
 							context.getMemorySimulator().addAction(seqs[i].getInstrument(), new Date(seqs[i].getExecutionDate().getTime()+(profiles[j].getOffSetSeconds()*1000)), new Float(profiles[j].getValue()));
 						}
-							//System.out.println("Detected Z record. Inserted action in memorySimulator");
 					}
 				}
 			}
@@ -150,13 +133,9 @@ public class Simulation {
 				
 				strategy=strategy+context.getMemorySimulator().addGsPass(pass);
 			}
-			//messages=messages+memorySimulator.addGsPass(pass);
 		}
 		if (printStrategy) context.log(strategy);
 		
-		//System.out.println("Run full simulation:");
-		//Synchronize()
-		//boolean r=memorySimulator.runSimulation(context.sp.getValidityDates()[1]);
 		long[] timess=context.getHistoryModes().getTimes();
 		java.util.Vector<Long> temp=new java.util.Vector<Long>();
 		for (int i=0;i<timess.length;i++){
@@ -173,7 +152,6 @@ public class Simulation {
 			String newmode=context.getHistoryModes().get(j);
 			if (!context.getOrcd().checkTransion(oldmode, newmode)){
 				String mess="Forbidden transition "+oldmode+"--->"+newmode+" at "+DateUtil.dateToZulu(new Date(j))+" via "+context.getHistoryModes().getCommand(j)+" executed at "+DateUtil.dateToZulu(new Date(context.getHistoryModes().getOriginalTime(j)));
-				//messages=messages+mess;
 				context.log(mess);
 				Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
 			}
@@ -186,7 +164,6 @@ public class Simulation {
 			context.getMocPowerHistory().append(mPower);
 			if (modelPower>mPower){
 				String mess="ALARM: Power over due via sequence "+context.getHistoryModes().getCommand(j)+" executed at "+DateUtil.dateToZulu(new Date(context.getHistoryModes().getOriginalTime(j)));
-				//messages=messages+mess;
 				context.log(mess);
 				Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
 
@@ -224,12 +201,9 @@ public class Simulation {
 			try{
 				packetStoreSize=Long.parseLong(Properties.getProperty(Properties.SSMM_PACKETSTORE_PREFIX+instruments[i]));
 			}catch (herschel.share.util.ConfigurationException e){
-				//e.printStackTrace();
 				packetStoreSize=104857600;
 			}
 
-			//LayerXY tempLayer=new LayerXY(new Long1d(context.ssmmHistory.getAllTimesAsLongArray()),new Float1d(context.ssmmHistory.getAllPower(instruments[i])));
-			//LayerXY tempLayer=new LayerXY(memorySimulator.getAllTimesLong1d(instruments[i]),memorySimulator.geatAllMemoryFloat1d(instruments[i]));
 			Float[] array = context.getMemorySimulator().getValuesAt(instruments[i], times);
 			Float1d values=new Float1d();
 			boolean inMemoryFull=false;
@@ -241,7 +215,6 @@ public class Simulation {
 						if (!mess.equals(mess2)){
 							mess=mess2;
 							context.log(mess);
-							//messages=messages+mess;
 							Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
 
 						}
@@ -250,38 +223,13 @@ public class Simulation {
 						
 					inMemoryFull=true;
 				}else{
-					//System.out.println("Resetting memory warning because value is "+array[j]+ " for instrument "+instruments[i]);
 					inMemoryFull=false;
-					//mess="";
 				}
 				values.append(array[j].floatValue());
 				
 			}
-
-			//Float1d values = memorySimulator.toFloat1d(memorySimulator.getValuesAt(instruments[i], times));
-			//System.out.println(values);
 			if (!onlyText){
 				LOG.info("Generating power plots");
-				//plot3=new PlotXY();
-				/*LayerXY layer6 = new LayerXY(context.getExecutionDates(),context.getHistoryPower());
-				layer6.setColor(java.awt.Color.BLUE);
-				LayerXY layer7 = new LayerXY(context.getZRecordDates(),context.getHistoryPowerZ());
-				layer7.setColor(java.awt.Color.GREEN);
-				LayerXY layer8 = new LayerXY(context.getExecutionDates(),context.getMocPowerHistory());
-				layer8.setColor(java.awt.Color.RED);
-				plot3.addLayer(layer6);
-				plot3.addLayer(layer7);
-				plot3.addLayer(layer8);
-				plot3.setTitleText("ORCD/Z records (ITL)");
-				layer7.setName("Power from Z records");
-				layer6.setName("Power from ORCD");
-				layer8.setName("Allowed power from moc");
-				plot3.getXaxis().setTitleText("Time");
-				plot3.getYaxis().setTitleText("Power (Watts)");
-				plot3.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
-				plot3.getLegend().setVisible(true);*/
-				
-				//plot4=new PlotXY();
 
 			
 				Color color=Color.BLACK;
@@ -293,7 +241,6 @@ public class Simulation {
 				LayerXY tempLayer=new LayerXY(context.getMemorySimulator().toLong1d(times),values);
 				tempLayer.setColor(color);
 				tempLayer.setName(instruments[i]);
-				//if (!instruments[i].equals("ANTENNA") && !instruments[i].equals("PTR")) plot4.addLayer(tempLayer);
 				plot4.addLayer(tempLayer);
 				if (instruments.length>0){
 					plot4.getXaxis().setTitleText("Time");
@@ -304,10 +251,6 @@ public class Simulation {
 
 			}
 		}
-
-		//plot4.addLayer(layerTotalMemory);
-		//plot4.addLayer(layerLimitMemory);
-		//LOG.info("Generating Datarate plots");
 		if (!onlyText){
 			HistoryModesPlot plot = new vega.uplink.commanding.gui.HistoryModesPlot("Time line",context.getHistoryModes());
 			JFrame frame=new JFrame("Time line");
@@ -372,22 +315,8 @@ public class Simulation {
 	public Simulation(String itlFile,String evtFile) throws java.text.ParseException, IOException{
 		this();
 		String defaultDirectory=Properties.getProperty(Properties.DEFAULT_EVT_DIRECTORY);
-		//Por por;
 		Por[] pors=new Por[1];
-		//try{
-			pors[0] = ItlParser.parseItl(itlFile, evtFile, defaultDirectory, 1);
-			
-		//}catch (Exception e){
-			//pors[0]=new Por();
-			//e.printStackTrace();
-		//}
+		pors[0] = ItlParser.parseItl(itlFile, evtFile, defaultDirectory, 1);
 		addPors(pors);
 	}
-	/*@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		runSimulation();
-	}*/
-	
-	//Public Simulation(String[] itlFiles)
 }

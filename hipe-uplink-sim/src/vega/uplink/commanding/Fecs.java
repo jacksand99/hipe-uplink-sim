@@ -1096,7 +1096,7 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 			Node item = fcsNodeList.item(i);
 			NamedNodeMap attributes = item.getAttributes();
 			if (attributes!=null){
-				Date time=GsPass.zuluToDate(item.getAttributes().getNamedItem("time").getTextContent());
+				Date time=DateUtil.DOYToDate(item.getAttributes().getNamedItem("time").getTextContent());
 				if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOT_")){
 					botNodes.put(time,item);
 

@@ -12,6 +12,11 @@ import vega.uplink.DateUtil;
 import vega.uplink.commanding.itl.ItlParser;
 import vega.uplink.planning.ObservationPor;
 
+/**
+ * Class to handle PDORs (Payload Direct Operations Requests) as well as old style (ASCII) PORs, as they follow the same format
+ * @author jarenas
+ *
+ */
 public class Pdor {
 	private static final Logger LOG = Logger.getLogger(Pdor.class.getName());
 	protected static String[] readFile(BufferedReader br) throws IOException, ParseException{
@@ -28,13 +33,7 @@ public class Pdor {
 		result = new String[lines.size()];
 		lines.toArray(result);
 		br.close();
-		//try{
 			return result;
-		/*}catch (java.text.ParseException pex){
-			ParseException nEx = new ParseException(pex.getMessage(),0);
-			nEx.initCause(pex);
-			throw nEx;
-		}*/
 	}
 	protected static String[] readFile(File f) throws IOException, ParseException{
 		BufferedReader br = null;
@@ -82,34 +81,14 @@ public class Pdor {
 		
 	}
 	
-	public static void main(String[] args){
-    	herschel.share.util.Configuration.setProperty("var.hcss.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
-    	herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
-    	herschel.share.util.Configuration.setProperty("vega.mib.location", "/Users/jarenas 1/Downloads/MAPPS/MIB");
-    	herschel.share.util.Configuration.setProperty("vega.instrument.names","{ALICE,CONSERT,OSIRIS}");
-    	herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.ALICE","AL");
-    	herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.OSIRIS","SR");
-    	herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.CONSERT","CN");
-		try{
-			/*String[] lines = readFile("/Users/jarenas 1/Downloads/PDOR_D_AL_DC_AL00018_00255.ROS");
-			lines=clean(lines);
-			for (int i=0;i<lines.length;i++){
-				System.out.println(lines[i]);
-				//if (lines[i].startsWith("P")) System.out.println(readParameter(lines[i]).toXML(0));
-				//if (lines[i].startsWith("H4")) System.out.println(DateUtil.defaultDateToString(readExDate(lines[i])));
-				//if (lines[i].startsWith("H1")) System.out.println(readSequence(lines[i]).toXml());
-			}
-			AbstractSequence[] seqs = readSequences(lines);
-			for (int i=0;i<seqs.length;i++){
-				System.out.println(seqs[i].toXml());
-			}*/
-			Por por=readPdor("/Users/jarenas 1/Rosetta/afterSafeMode/PDOR_D_VSTP97SR00104_00261.ROS");
-			System.out.println(por.toXml());
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-	}
 	
+	/**
+	 * Read a PDOR (or old style POR) from a file as a POR 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	public static Por readPdor(String file) throws IOException, ParseException{
 		Por result=new Por();
 		File f=new File(file);
@@ -137,13 +116,9 @@ public class Pdor {
 		AbstractSequence seq=null;
 		java.util.Vector<AbstractSequence> sequences=new java.util.Vector<AbstractSequence>();
 		for (int i=0;i<lines.length;i++){
-			//System.out.println(lines[i]);
 			if (lines[i].startsWith("DOR_") || lines[i].startsWith("POR_")){
 				refDate=readRefDate(lines[i]);
 				validity=readValidity(lines[i+1]);
-				//System.out.println("******"+refDate);
-				//System.out.println("******"+validity[0]);
-				//System.out.println("******"+validity[1]);
 			}
 			if (lines[i].startsWith("P")){
 				if (seq!=null){
@@ -159,7 +134,6 @@ public class Pdor {
 				}catch (Exception e){
 					LOG.info("Could not parse delta");
 				}
-				//System.out.println(DateUtil.defaultDateToString(readExDate(lines[i])));
 			}
 			if (lines[i].startsWith("H4")){
 				try{
@@ -167,7 +141,6 @@ public class Pdor {
 				}catch (Exception e){
 					LOG.info("Could not parse execution date");
 				}
-				//System.out.println(DateUtil.defaultDateToString(readExDate(lines[i])));
 			}
 			if (lines[i].startsWith("H1")){
 				Date rd=refDate;
@@ -180,12 +153,6 @@ public class Pdor {
 					rd=new Date(seq.getExecutionDate().getTime()+(duration*1000));
 				}
 				seq=readSequence(lines[i],rd);
-				//System.out.println("********"+seq.toXml());
-				/*if (validity[0]!=null){
-					seq=readSequence(lines[i],validity[0]);
-				}else{
-					seq=readSequence(lines[i],refDate);
-				}*/
 			}
 		}
 		if (seq!=null) sequences.add(new Sequence(seq));
@@ -240,7 +207,6 @@ public class Pdor {
 	protected static long readDelta(String line) throws ParseException{
 		String[] parts = line.split(" ");
 		return ItlParser.deltaToMilli(parts[1]);
-		//return DateUtil.parse(parts[1]);
 	}
 	protected static Parameter readParameter(String line){
 		Mib mib;

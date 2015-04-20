@@ -21,48 +21,36 @@ import vega.uplink.DateUtil;
 
 import com.kenai.jffi.Array;
 
+/**
+ * Object that contains the data read form a PWPL file (the power limits defined by MOC)
+ * @author jarenas
+ *
+ */
 public class MocPower extends TableDataset{
 	MocPower instance;
-	//long[] dates;
-	//float[] power;
 	
 	private MocPower(){
 		super();
 		Column time=new Column(new Long1d());
 		Column power=new Column(new Float1d());
-		//Column eddump=new Column(new String1d());
-		//Column tmRate=new Column(new String1d());
 		
 		this.addColumn(time);		
 		this.addColumn(power);
-		//this.addColumn(eddump);
-		//this.addColumn(tmRate);
 		this.setColumnName(0, "Time");
 		this.setColumnName(1, "Power");
-
-		/*dates=new long[0];
-		power=new float[0];*/
 		
 	}
 	
+	/**
+	 * Add a record (time and max power to this object)
+	 * @param newDate
+	 * @param newPower
+	 */
 	private void addRecord(long newDate,float newPower){
-		/*AbstractOrdered1dData[] array=new AbstractOrdered1dData[2];
-		array*/
 		Object[] array=new Object[2];
 		array[0]=newDate;
 		array[1]=newPower;
 		this.addRow(array);
-		/*long[] nArrayDates=new long[dates.length+1];
-		float[] nArrayPower=new float[power.length+1];
-		for (int i=0;i<dates.length;i++){
-			nArrayDates[i]=dates[i];
-			nArrayPower[i]=power[i];
-		}
-		nArrayDates[dates.length]=newDate;
-		nArrayPower[dates.length]=newPower;
-		
-		
-		setRecords(nArrayDates,nArrayPower);*/
 	}
 	
 	private void setRecords(long[] newDates, float[] newPowers){
@@ -74,11 +62,12 @@ public class MocPower extends TableDataset{
 		}
 		this.getColumn(0).setData(col1);
 		this.getColumn(1).setData(col2);
-		
-		/*dates=newDates;
-		power=newPowers;*/
 	}
 	
+	/**
+	 * Get an instance of this object
+	 * @return
+	 */
 	public MocPower getInstance(){
 		if (instance==null){
 			instance=new MocPower();
@@ -86,11 +75,10 @@ public class MocPower extends TableDataset{
 		return instance;
 	}
 	
-	public float getPower(java.util.Date index){
+	private float getPower(java.util.Date index){
 		long[] dates = ((Long1d) this.getColumn(0).getData()).toArray();
 		int ind=Arrays.binarySearch(dates, index.getTime());
 		return ((Float1d) this.getColumn(1).getData()).get(ind);
-		//return power[ind];
 	}
 	protected static String removeMultipleSpaces(String line){
 		line=line.replaceAll("\t", " ");
@@ -101,24 +89,24 @@ public class MocPower extends TableDataset{
 			return removeMultipleSpaces(line.replaceAll("  ", " "));
 		}
 	}
-	public static MocPower ReadFromBuffer(BufferedReader br){
+	/**
+	 * Read this object from a buffered reader
+	 * @param br
+	 * @return
+	 */
+	public static MocPower readFromBuffer(BufferedReader br){
 		MocPower result = new MocPower();
-		//BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = " ";
 	 
 		try {
-	 
-			//br = new BufferedReader(new FileReader(file));
 			while ((line = br.readLine()) != null) {
 				
 				line=removeMultipleSpaces(line);
 				if (!line.equals(" ") &&  !line.equals("")){
-			        // use comma as separator
 					String[] fields = line.split(cvsSplitBy);
 					long newTime=DateUtil.parse(fields[0]).getTime();
 					float newPower=Float.parseFloat(fields[1]);
-					//System.out.println(zuluToDate(fields[0]).toString()+","+fields[1]);
 					result.addRecord(newTime, newPower);
 				}
 	 
@@ -128,7 +116,6 @@ public class MocPower extends TableDataset{
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if (br != null) {
@@ -139,14 +126,18 @@ public class MocPower extends TableDataset{
 				}
 			}
 		}
-		//System.out.println(result.power.length);
 		return result;
 
 	}
-	public static MocPower ReadFromFile (String file){
+	/**
+	 * Read this object from a file
+	 * @param file
+	 * @return
+	 */
+	public static MocPower readFromFile (String file){
 		try {
 			 
-			return ReadFromBuffer(new BufferedReader(new FileReader(file)));
+			return readFromBuffer(new BufferedReader(new FileReader(file)));
 			
 		}catch (Exception e){
 			IllegalArgumentException iae = new IllegalArgumentException("Could not read power file "+e.getMessage());
@@ -155,20 +146,28 @@ public class MocPower extends TableDataset{
 
 		}
 	}
-	public static MocPower ReadFromJar(){
+	/**
+	 * Read the file from jar file. It will try to read the file from the jars in the class path from the path /moc/PWPL_14_001_14_365__OPT_01.ROS
+	 * @return
+	 */
+	public static MocPower readFromJar(){
 		System.out.println("reading from jar");
 
 			InputStream is = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/moc/PWPL_14_001_14_365__OPT_01.ROS");
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
-			return ReadFromBuffer(br);
+			return readFromBuffer(br);
 
 		
 		
 	}
 	
+	/**
+	 * Get maximum power at a given date
+	 * @param aproxDate
+	 * @return
+	 */
 	public float getPowerAt(java.util.Date aproxDate){
-		//System.out.println(findCloserDate(aproxDate));
 		return getPower(findCloserDate(aproxDate));
 	}
 	
@@ -177,12 +176,9 @@ public class MocPower extends TableDataset{
 		long[] dates = ((Long1d) this.getColumn(0).getData()).toArray();
 		long[] orderedDates=dates;
 		Arrays.sort(orderedDates);
-		//System.out.println(dates.length);
 		for (int i=0;i<orderedDates.length;i++){
 			if (dateToFind.after(new java.util.Date(orderedDates[i]))) result=new java.util.Date(orderedDates[i]);
-			//System.out.println(result);
 		}
-		
 		return result;
 	}
 	

@@ -1,5 +1,10 @@
 package vega.uplink.commanding;
 
+/**
+ * Sequence overlap checker for Rosetta
+ * @author jarenas
+ *
+ */
 public class RosettaOverlapChecker extends AbstractAllowOverlapChecker {
 	public  boolean allowOverlap(AbstractSequence seq1,AbstractSequence seq2){
 

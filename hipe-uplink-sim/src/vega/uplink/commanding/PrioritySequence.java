@@ -12,6 +12,11 @@ import vega.uplink.Properties;
 
 
 
+/**
+ * A special sequence used to set the priority downlink for the instruments
+ * @author jarenas
+ *
+ */
 public class PrioritySequence extends Sequence {
 	
 	public PrioritySequence() throws ParseException{

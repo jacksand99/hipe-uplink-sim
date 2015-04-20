@@ -274,7 +274,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 			result.putAll(newmodes, seqs[i].getName(), seqs[i].getExecutionDate().getTime());
 
 		}
-		String[] states = modelState.getStateNames();
+		String[] states = modelState.getSubsystemNames();
 		long startTime = this.schedule.getPtslSegment().getSegmentStartDate().getTime();
 		HashMap<Long, String> hm = new HashMap<Long,String>();
 		for (int i=0;i<states.length;i++){

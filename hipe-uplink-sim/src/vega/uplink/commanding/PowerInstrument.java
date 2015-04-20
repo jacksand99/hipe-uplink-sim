@@ -9,38 +9,50 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * Class to store the power consumed by instruments at any give time
+ * @author jarenas
+ *
+ */
 public class PowerInstrument extends CompositeDataset{
-	//java.util.HashMap<String, Float> power;
 	
 	public PowerInstrument(){
 		super();
-		//power=new java.util.HashMap<String, Float>();
 		
 	}
 	
+	/**
+	 * Set the power consumption of a instrument
+	 * @param instrument
+	 * @param powerI
+	 */
 	public void setPower(String instrument,float powerI){
 		getMeta().set(instrument, new DoubleParameter(powerI));
-		//power.put(instrument, powerI);
 	}
 	
+	/**
+	 * Get the power consumption of an instrument
+	 * @param instrument
+	 * @return
+	 */
 	public float getPower(String instrument){
 		try{
 			return ((Double) getMeta().get(instrument).getValue()).floatValue();
 		}catch (Exception e){
 			return 0;
 		}
-		//return power.get(instrument).floatValue();
 	}
 	
+	/**
+	 * Summatory of the power consumption of all the instruments
+	 * @return
+	 */
 	public float getTotalPower(){
 		Set<String> keyset = getMeta().keySet();
 		float result=0;
 		Iterator<String> it = keyset.iterator();
-		//Collection<Float> values=power.values();
-		//Iterator<Float> it=values.iterator();
 		while (it.hasNext()){
 			float value = getPower(it.next());
-			//result=result+it.next().floatValue();
 			result=result+value;
 		}
 		return result;
