@@ -40,5 +40,13 @@
 		</sequence>
 	</sequences>
 	<pointingBlocks>
+	<block ref="OBS">
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+      <attitude ref="track_pwropt"/>
+      <metadata>
+      <comment>COSIMA DUST_EXPOSE_COS_TOF</comment>
+      </metadata>
+   </block>
 	</pointingBlocks>
 </observation>

@@ -42,7 +42,8 @@ public class ObservationPointingBlock extends PointingBlock{
 	public ObservationPointingBlock copy(){
 		ObservationPointingBlock result = new ObservationPointingBlock(this.getType(),parent,startTimeEvent,startTimeDelta,endTimeEvent,endTimeDelta);
 		result.copyFrom(this);
-		result.setMetadata(this.getMetadataElement().copy());
+		
+		if (this.getMetadataElement()!=null) result.setMetadata(this.getMetadataElement().copy());
 		return result;
 	}
 	

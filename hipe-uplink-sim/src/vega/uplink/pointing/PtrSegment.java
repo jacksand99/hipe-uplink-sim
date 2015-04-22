@@ -697,12 +697,20 @@ public class PtrSegment extends PointingBlocksSlice{
 		//TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		Iterator<PointingBlock> it = this.getBlMap().values().iterator();
 		while(it.hasNext()){
+			
 			PointingBlock block=it.next();
+			//if (block.)
 			boolean con1=false;
 			boolean con2=false;
 			if (block.getStartTime().after(endTime)) con1=true;
 			if (block.getEndTime().before(startTime)) con2=true;
-			if (!con1 && !con2) result.addBlock(block);
+			if (!con1 && !con2){
+				try{
+					result.addBlock(block);
+				}catch (IllegalArgumentException e){
+					LOG.warning(e.getMessage());
+				}
+			}
 		}
 		return result;
 	}

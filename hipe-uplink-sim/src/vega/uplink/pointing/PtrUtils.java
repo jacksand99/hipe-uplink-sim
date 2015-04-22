@@ -31,6 +31,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import vega.uplink.DateUtil;
 import vega.uplink.planning.gui.ScheduleModel;
 import vega.uplink.pointing.EvtmEvents.EvtmEventAnt;
 import vega.uplink.pointing.EvtmEvents.EvtmEventAos;
@@ -536,13 +537,28 @@ public class PtrUtils {
 		for (int j=1;j<blocks.length;j++){
 			PointingBlock blockBefore = blocks[j-1];
 			if (blockBefore.getType().equals("SLEW")) {
-				((PointingBlockSlew) blockBefore).setBlockAfter(blocks[j]);
+				if (!blocks[j].getType().equals("SLEW")){
+					((PointingBlockSlew) blockBefore).setBlockAfter(blocks[j]);
+				}
+				else{
+					segment.hardRemoveBlock(blockBefore);
+					((PointingBlockSlew)blocks[j]).setBlockBefore(((PointingBlockSlew) blockBefore).getBlockBefore());
+					LOG.warning("unificated SLEW at "+DateUtil.defaultDateToString(blocks[j].getStartTime()));
+				}
 			}
 		}
+		blocks = segment.getBlocks();
 		for (int j=0;j<blocks.length-1;j++){
 			PointingBlock blockAfter = blocks[j+1];
 			if (blockAfter.getType().equals("SLEW")) {
-				((PointingBlockSlew) blockAfter).setBlockBefore(blocks[j]);
+				if (!blocks[j].getType().equals("SLEW")){
+					((PointingBlockSlew) blockAfter).setBlockBefore(blocks[j]);
+				}else{
+					segment.hardRemoveBlock(blockAfter);
+					((PointingBlockSlew)blocks[j]).setBlockAfter(((PointingBlockSlew)blockAfter).getBlockAfter());
+					LOG.warning("unificated SLEW at "+DateUtil.defaultDateToString(blocks[j].getStartTime()));
+				}
+				//((PointingBlockSlew) blockAfter).setBlockBefore(blocks[j]);
 			}
 		}
 		
