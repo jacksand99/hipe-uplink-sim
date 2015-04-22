@@ -1,0 +1,82 @@
+<observation>
+	<name>VR_M1F</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>VIRTIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2015-02-05T15:23:55</startDate>
+	<endDate>2015-02-05T16:23:55</endDate>
+	<sequences>
+		<sequence name="AVRF001A">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<parameterList count="2">
+					<parameter name="VVF0001A" position="1">
+						<value representation="Raw" radix="Decimal">500000000</value>
+					</parameter>
+					<parameter name="VVF0001B" position="2">
+						<value representation="Raw" radix="Hexadecimal">20078000</value>
+					</parameter>
+			</parameterList>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="AVRF004D">
+			<executionTime>
+				<actionTime>START_OBS+00:00:11</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="AVRF016A">
+			<executionTime>
+				<actionTime>END_OBS-00:02:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="AVRF006A">
+			<executionTime>
+				<actionTime>END_OBS-00:01:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>1.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+	</pointingBlocks>
+</observation>

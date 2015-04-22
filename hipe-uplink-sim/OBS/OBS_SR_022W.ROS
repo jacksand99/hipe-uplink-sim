@@ -1,0 +1,44 @@
+<observation>
+	<name>SR_022W</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>OSIRIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2015-02-05T15:23:55</startDate>
+	<endDate>2015-02-05T16:23:55</endDate>
+	<sequences>
+		<sequence name="OBS_START">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="OBS_END">
+			<executionTime>
+				<actionTime>END_OBS-00:00:01</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>26.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+	</pointingBlocks>
+</observation>

@@ -1,0 +1,55 @@
+<observation>
+	<name>OSIRIS CA4B1O</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Stellar calibration [16Cyg]</description>
+	<instrument>OSIRIS</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="OBS_START">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+		<sequence name="OBS_END">
+			<executionTime>
+				<actionTime>END_OBS-00:00:01</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>26.0</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>0.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+      <attitude ref="inertial">
+         <boresight ref="Nadir_Nav_Boresight"/>			  
+         <target ref="16Cyg"/>
+      </attitude>
+      <metadata>
+         <comment>OSIRIS pointing for Stellar calibration [16Cyg]</comment>
+      </metadata>
+		</block>
+	</pointingBlocks>
+</observation>

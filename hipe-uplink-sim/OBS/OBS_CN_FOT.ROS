@@ -1,0 +1,32 @@
+<observation>
+	<name>CN_FOT</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>CONSERT</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2015-02-05T15:23:55</startDate>
+	<endDate>2015-02-05T16:23:55</endDate>
+	<sequences>
+		<sequence name="ACNS420A">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<parameterList count="2">
+					<parameter name="CN_SCI_POWER" position="1">
+						<value representation="Raw" radix="Decimal">11</value>
+					</parameter>
+					<parameter name="CN_SCI_DRATE" position="2">
+						<value representation="Raw" radix="Decimal">4400</value>
+					</parameter>
+			</parameterList>
+		</sequence>
+		<sequence name="ACNS420B">
+			<executionTime>
+				<actionTime>END_OBS+00:00:00</actionTime>
+			</executionTime>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+	</pointingBlocks>
+</observation>

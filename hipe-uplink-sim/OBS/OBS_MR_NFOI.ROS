@@ -1,0 +1,48 @@
+<observation>
+	<name>MIRO NFOI</name>
+	<type>Unknown</type>
+	<creator>Unknown</creator>
+	<description>Unknown</description>
+	<instrument>MIRO</instrument>
+	<formatVersion>1.0</formatVersion>
+	<startDate>2014-12-23T19:10:00</startDate>
+	<endDate>2014-12-23T22:45:00</endDate>
+	<sequences>
+		<sequence name="AMRF011A">
+			<executionTime>
+				<actionTime>START_OBS+00:00:00</actionTime>
+			</executionTime>
+			<profileList count="2">
+					<profile type="PW">
+						<timeOffset>00:00:00</timeOffset>
+						<value>81.3</value>
+					</profile>
+					<profile type="DR">
+						<timeOffset>00:00:00</timeOffset>
+						<value>2414.0</value>
+					</profile>
+			</profileList>
+		</sequence>
+	</sequences>
+	<pointingBlocks>
+		<block ref='OBS'>
+			<startTime>START_OBS+00:00:00</startTime>
+			<endTime>END_OBS+00:00:00</endTime>
+			<attitude ref="track_pwropt">
+            <boresight ref="MiroSMM"/>
+            <target ref="CG"/>
+            <offsetRefAxis ref="SC_Xaxis"/>
+            <offsetAngles ref="fixed">
+                <xAngle units="deg"> 7.000008004 </xAngle> 
+                        <!--2 deg for limb stare, +5 deg offset--> 
+                        <!--concat obs id-->
+                <yAngle units="deg"> 0. </yAngle>
+            </offsetAngles>
+        </attitude>
+        <metadata>
+            <comment>MIRO NFOI</comment>
+        </metadata>
+
+		</block>
+	</pointingBlocks>
+</observation>

@@ -83,6 +83,7 @@ from vega.hipe.gui.xmlutils import XmlData
 from vega.hipe.gui.xmlutils import HtmlDocument
 from vega.uplink.commanding.itl import ItlParser
 from vega.uplink.commanding.itl import EventList
+from vega.uplink.planning.aspen import AspenObservationSchedule
 
 
 PreferencePanelRegistrator.registerPanels();
