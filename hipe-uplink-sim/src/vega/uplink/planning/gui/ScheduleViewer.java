@@ -63,6 +63,7 @@ import vega.uplink.commanding.SimulationContext;
 import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationUtil;
 import vega.uplink.planning.Schedule;
+import vega.uplink.planning.aspen.AspenObservationSchedule;
 import vega.uplink.planning.period.Plan;
 import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.PointingBlock;
@@ -363,7 +364,13 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
                 saveAs();
             }
         };
-		SiteAction save = new AbstractEditorAction("Save") {
+		SiteAction saveAsAspenSchedule = new AbstractEditorAction("SaveAsAspenSchedule") {
+            @Override public void actionPerformed(ActionEvent e) {
+                saveAsAspenSch();
+            }
+        };
+
+        SiteAction save = new AbstractEditorAction("Save") {
             @Override public void actionPerformed(ActionEvent e) {
                 save();
             }
@@ -405,6 +412,7 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
         
 		menus.retarget(Retarget.SAVE_AS, saveAs);
 		menus.retarget(Retarget.SAVE, save);
+        menus.insert(new Insert(MENU, MAIN, FILE_ADDON), saveAsAspenSchedule);
 		
         //menus.insert(new Insert(MENU, MAIN, FILE_ADDON), saveastxt);
 
@@ -469,6 +477,40 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 	            schedule.setPath(sf.getParent());
  
 	            save();
+	            
+	          }
+	          else {
+	            //itlbar.setText("You canceled.");
+	          }
+	         
+
+          } catch (Exception e1) {
+					JOptionPane.showMessageDialog(ScheduleViewer.this,
+						    e1.getMessage(),
+						    "Error",
+						    JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				}	
+	}
+	
+	public void saveAsAspenSch(){
+        try{
+	          JFileChooser chooser = new JFileChooser();
+	          try{
+	        	  chooser.setSelectedFile(new File(schedule.getPath()+"/"+"ObservationSchedule.xml"));
+	          }catch (Exception e3){
+	        	chooser.setCurrentDirectory(new File(Properties.getProperty(Properties.DEFAULT_PLANNING_DIRECTORY)));
+	          }
+	          chooser.setMultiSelectionEnabled(false);
+	          
+	          int option = chooser.showSaveDialog(ScheduleViewer.this);
+	          //File sf;
+	          if (option == JFileChooser.APPROVE_OPTION) {
+	            File sf = chooser.getSelectedFile();
+	            //schedule.setFileName(sf.getName());
+	            //schedule.setPath(sf.getParent());
+ 
+	            AspenObservationSchedule.saveAspenScheduleToFile(sf.getAbsolutePath(), schedule);
 	            
 	          }
 	          else {

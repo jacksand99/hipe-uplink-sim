@@ -2,6 +2,7 @@ package vega.uplink.planning.aspen;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -17,7 +18,8 @@ import vega.uplink.Properties;
 import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationPointingSlice;
 import vega.uplink.planning.ObservationUtil;
-
+import vega.uplink.planning.ObservationsSchedule;
+import vega.uplink.planning.Schedule;
 
 import org.w3c.dom.Element;
 
@@ -87,9 +89,12 @@ public class AspenObservationSchedule {
     	herschel.share.util.Configuration.setProperty("vega.instrument.names","{ALICE,CONSERT,COSIMA,GIADA,MIDAS,MIRO,ROSINA,RPC,RSI,OSIRIS,VIRTIS,SREM,LANDER,PTR,ANTENNA}");
     	try {
 			Observation[] obs = readObservations("/Users/jarenas 1/Downloads/MTP011_LAC/ObservationSchedule.xml");
+			ObservationsSchedule os= new ObservationsSchedule() ;
 			for (int i=0;i<obs.length;i++){
+				os.addObservation(obs[i]);
 				//System.out.println(obs[i].getName()+" "+obs[i].getInstrument());
 			}
+			saveAspenScheduleToFile("/Users/jarenas 1/Downloads/MTP011_LAC/ObservationSchedule-hipe.xml",os);
 		} catch (IOException e) {
 
 			e.printStackTrace();
@@ -141,6 +146,66 @@ public class AspenObservationSchedule {
 			
 		}
 		return obs;
+	}
+	
+	public static String getAspenSchedule(ObservationsSchedule schedule){
+		String result="";
+		result=result+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n";
+		result=result+"<ObservationSchedule>\n";
+		Observation[] obs = schedule.getObservations();
+		for (int i=0;i<obs.length;i++){
+			Observation o = obs[i];
+			String name =o.getName();
+			name=name.replaceFirst(o.getInstrument()+"_", "");
+			name=name.replaceFirst(o.getInstrument()+" ", "");
+			boolean prime=false;
+			if (o.getPointing().getBlocks().length>0) prime=true;
+			if (prime) result=result+"<ObservationInstance attitudeRequirement=\"PRIME\" ";
+			else result=result+"<ObservationInstance attitudeRequirement=\"RAIDER\" ";
+			result =result+"instrumentName=\""+o.getInstrument()+"\" mnemonic=\"\" " ;
+			result=result+"name=\""+name+"\" ";
+			result=result+"type=\"observation\">\n";
+		    result=result+"\t<iteration>"+i+"</iteration>\n";
+		    result=result+"\t<campaignDefinitionID>250002</campaignDefinitionID>\n";
+		    result=result+"\t<schedulingRuleID>1027</schedulingRuleID>\n";
+		    result=result+"\t<observationTypeID>250002</observationTypeID>\n";
+		    result=result+"\t<subsystemName>"+o.getInstrument()+"</subsystemName>\n";
+		    result=result+"\t<schedulingPriority>20</schedulingPriority>\n";
+		    result=result+"\t<schedulingIteration>"+i+"</schedulingIteration>\n";
+		    result=result+"\t<utcStart>"+DateUtil.dateToZulu(o.getObsStartDate())+"</utcStart>\n";
+		    result=result+"\t<utcEnd>"+DateUtil.dateToZulu(o.getObsEndDate())+"</utcEnd>\n";
+		    result=result+"\t<prime>"+prime+"</prime>\n";
+		    result=result+"\t<valid>true</valid>\n";
+
+			result=result+"</ObservationInstance>\n";
+		}
+		
+		result=result+"</ObservationSchedule>\n";
+		
+		return result;
+	}
+	
+	public static void saveAspenScheduleToFile(String file,ObservationsSchedule sch) throws IOException {
+		try{
+			PrintWriter writer = new PrintWriter(file, "UTF-8");
+			writer.print(getAspenSchedule(sch));
+			writer.close();
+		}catch (Exception e){
+			IOException io = new IOException(e.getMessage());
+			io.initCause(e);
+			throw(io);
+		}
+	}
+	public static void saveAspenScheduleToFile(String file,Schedule sch) throws IOException {
+		try{
+			PrintWriter writer = new PrintWriter(file, "UTF-8");
+			writer.print(getAspenSchedule(sch.getObservationsSchedule()));
+			writer.close();
+		}catch (Exception e){
+			IOException io = new IOException(e.getMessage());
+			io.initCause(e);
+			throw(io);
+		}
 	}
 	
 }

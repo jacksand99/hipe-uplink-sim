@@ -1,5 +1,7 @@
 package vega.uplink.pointing.PtrParameters;
 
+import herschel.share.interpreter.InterpreterUtil;
+
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -363,6 +365,7 @@ public class TestPtrParameters {
 	}*/
 	
 	public static OffsetRefAxis[] getAllCombinationsOffsetAxis(){
+		//.isInstance(Inertial.class, arg1)
 		String[] refAxis={"SC_Xaxis","SC_Yaxis","SC_Yaxis"};
 		Vector<OffsetRefAxis> vResult=new Vector<OffsetRefAxis>();
 
