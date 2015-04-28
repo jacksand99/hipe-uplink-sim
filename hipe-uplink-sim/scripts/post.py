@@ -29,7 +29,7 @@ if (simulationContext.getPtr()!=None):
     blocks=ptrSegment.getAllBlocksOfType("MWNV").getBlocks()
     for fb in forb_man:
     	for b in blocks:
-    		if checkStatus(Date(b.getEndTime().getTime()-1500000),Date(b.getEndTime().getTime()+1800000),fb,simulationContext.getHistoryModes()):
+    		if checkStatus(Date(b.getEndTime().getTime()-2100000),Date(b.getEndTime().getTime()+1800000),fb,simulationContext.getHistoryModes()):
     			simulationContext.log("Forbidden "+fb+" during last 25min of MWNV + 30m at "+DateUtil.defaultDateToString(b.getStartTime()))
     #COSIMA
     forb_comm=["ACSS120Z","ACSS123Z","ACSS124Z","ACSS125Z"]
@@ -45,7 +45,7 @@ if (simulationContext.getPtr()!=None):
     blocks=ptrSegment.getAllBlocksOfType("MWNV").getBlocks()
     for fc in forb_comm:
     	for b in blocks:
-    		if checkCommand(Date(b.getEndTime().getTime()-1500000),b.getEndTime(),fc,simulationContext.getSequenceTimeline()):
+    		if checkCommand(Date(b.getEndTime().getTime()-2100000),b.getEndTime(),fc,simulationContext.getSequenceTimeline()):
     			simulationContext.log("Forbidden "+fc+" during last 25min of MWNV at "+DateUtil.defaultDateToString(b.getStartTime()))
     for fc in forb_comm:
     	for b in blocks:
@@ -61,7 +61,7 @@ if (simulationContext.getPtr()!=None):
     blocks=ptrSegment.getAllBlocksOfType("MWNV").getBlocks()
     for fb in forb_man:
     	for b in blocks:
-    		if checkStatus(Date(b.getEndTime().getTime()-1500000),b.getEndTime(),fb,simulationContext.getHistoryModes()):
+    		if checkStatus(Date(b.getEndTime().getTime()-2100000),b.getEndTime(),fb,simulationContext.getHistoryModes()):
     			simulationContext.log("Forbidden "+fb+" during last 25min of MWNV at "+DateUtil.defaultDateToString(b.getStartTime()))
     #OCM and Payload State Constraints
     #ALICE
