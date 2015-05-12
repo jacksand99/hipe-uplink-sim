@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
+import vega.uplink.track.GsPass;
 
 /**
  * Rosetta SSMM simulator

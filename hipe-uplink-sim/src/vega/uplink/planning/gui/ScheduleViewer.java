@@ -49,7 +49,6 @@ import de.jaret.util.ui.timebars.swing.TimeBarViewer;
 import vega.IconResources;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
 import vega.uplink.Properties;
-import vega.uplink.commanding.Fecs;
 import vega.uplink.commanding.Simulation;
 import vega.uplink.commanding.SimulationContext;
 import vega.uplink.planning.Observation;
@@ -65,6 +64,7 @@ import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
 import vega.uplink.pointing.exclusion.AbstractExclusion;
 import vega.uplink.pointing.gui.PtrXmlEditor;
+import vega.uplink.track.Fecs;
 
 public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 	/**

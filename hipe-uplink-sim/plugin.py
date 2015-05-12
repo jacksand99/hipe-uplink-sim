@@ -16,14 +16,15 @@ from herschel.share.util import Configuration
 # Plugin imports
 from vega import IconResources
 from vega.uplink.commanding import Pdor
-from vega.uplink.commanding import Fecs
-from vega.uplink.commanding import GsPass
+from vega.uplink.track import Fecs
+from vega.uplink.track import GsPass
 from vega.uplink.commanding import Mib
 from vega.uplink.commanding import Orcd
 from vega.uplink.commanding import Parameter
 from vega.uplink.commanding import Por
 from vega.uplink.commanding import PorChecker
 from vega.uplink.commanding import PorUtils
+from vega.uplink.track import FecsUtils
 from vega.uplink.commanding import Sequence
 from vega.uplink.commanding import SequenceProfile
 from vega.uplink.commanding import Simulation
@@ -134,13 +135,13 @@ REGISTRY.register(REGISTRY.COMPONENT,Extension("EVTM Reader","vega.uplink.pointi
 REGISTRY.register(REGISTRY.COMPONENT,Extension("POR Reader","vega.uplink.commanding.gui.PorFileComponent","factory.editor.file","vega.uplink.commanding.gui.PorFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("PORG Reader","vega.uplink.commanding.gui.PorgFileComponent","factory.editor.file","vega.uplink.commanding.gui.PorgFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("MIB Reader","vega.uplink.commanding.gui.MibFileComponent","factory.editor.file","vega.uplink.commanding.gui.MibFile"))
-REGISTRY.register(REGISTRY.COMPONENT,Extension("FECS Reader","vega.uplink.commanding.gui.FecsFileComponent","factory.editor.file","vega.uplink.commanding.gui.FecsFile"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("FECS Reader","vega.uplink.track.gui.FecsFileComponent","factory.editor.file","vega.uplink.track.gui.FecsFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Planning Observation Reader","vega.uplink.planning.gui.ObservationFileComponent","factory.editor.file","vega.uplink.planning.gui.ObservationFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Planning Schedule Reader","vega.uplink.planning.gui.ScheduleFileComponent","factory.editor.file","vega.uplink.planning.gui.ScheduleFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("Planning Period Reader","vega.uplink.planning.gui.PeriodsFileComponent","factory.editor.file","vega.uplink.planning.gui.PeriodsFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("XML Reader","vega.hipe.gui.xmlutils.XmlFileComponent","factory.editor.file","vega.hipe.gui.xmlutils.XmlFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("XML Editor","vega.hipe.gui.xmlutils.XmlFileEditor","factory.editor.variable","vega.hipe.gui.xmlutils.XmlDataInterface"))
-REGISTRY.register(REGISTRY.COMPONENT,Extension("Fecs XML Editor","vega.hipe.gui.xmlutils.XmlFileEditor","factory.editor.variable","vega.uplink.commanding.Fecs"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("Fecs XML Editor","vega.hipe.gui.xmlutils.XmlFileEditor","factory.editor.variable","vega.uplink.track.Fecs"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("HTML Reader","vega.hipe.gui.xmlutils.HtmlFileComponent","factory.editor.file","vega.hipe.gui.xmlutils.HtmlFile"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("HTML Editor","vega.hipe.gui.xmlutils.HtmlDocumentViewer","factory.editor.variable","vega.hipe.gui.xmlutils.HtmlDocument"))
 REGISTRY.register(REGISTRY.COMPONENT,Extension("XmlMapContextEditor","vega.hipe.products.gui.AbstractXmlMapContextXmlEditor","factory.editor.variable","vega.hipe.products.AbstractXmlMapContext"))
@@ -157,7 +158,7 @@ REGISTRY.register("site.fileType",Extension("site.file.ptsl","vega.uplink.pointi
 REGISTRY.register("site.fileType",Extension("site.file.pdfm","vega.uplink.pointing.gui.PdfmFile",Configuration.getProperty("vega.file.type.PDFM"),IconResources.PDFM_ICON_NOROOT));
 REGISTRY.register("site.fileType",Extension("site.file.evtm","vega.uplink.pointing.gui.EvtmFile",Configuration.getProperty("vega.file.type.EVTM"),IconResources.HUS_ICON_NOROOT));
 REGISTRY.register("site.fileType",Extension("site.file.por","vega.uplink.commanding.gui.PorFile",Configuration.getProperty("vega.file.type.POR"),IconResources.POR_ICON_NOROOT));
-REGISTRY.register("site.fileType",Extension("site.file.fecs","vega.uplink.commanding.gui.FecsFile",Configuration.getProperty("vega.file.type.FECS"),IconResources.FECS_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.fecs","vega.uplink.track.gui.FecsFile",Configuration.getProperty("vega.file.type.FECS"),IconResources.FECS_ICON_NOROOT));
 REGISTRY.register("site.fileType",Extension("site.file.porg","vega.uplink.commanding.gui.PorgFile",Configuration.getProperty("vega.file.type.PORG"),IconResources.PORG_ICON_NOROOT));
 REGISTRY.register("site.fileType",Extension("site.file.obs","vega.uplink.planning.gui.ObservationFile",Configuration.getProperty("vega.file.type.OBS"),IconResources.HUS_ICON_NOROOT));
 REGISTRY.register("site.fileType",Extension("site.file.schedule","vega.uplink.planning.gui.ScheduleFile",Configuration.getProperty("vega.file.type.SCH"),IconResources.HUS_ICON_NOROOT));
@@ -177,9 +178,9 @@ toolRegistry = TaskToolRegistry.getInstance()
 from vega.uplink.commanding.task import SavePorTask
 from vega.uplink.commanding.task import SaveItlTask
 from vega.uplink.commanding.task import PorCheckTask
-from vega.uplink.commanding.task import CompareFecsTask
-from vega.uplink.commanding.task import FecsSummaryTask
-from vega.uplink.commanding.task import RosettaFecsSummaryTask
+from vega.uplink.track.task import CompareFecsTask
+from vega.uplink.track.task import FecsSummaryTask
+from vega.uplink.track.task import RosettaFecsSummaryTask
 from vega.uplink.commanding.task import CreateTimelineTask
 
 from vega.uplink.commanding.task import SavePorgTask

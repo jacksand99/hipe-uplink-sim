@@ -23,7 +23,6 @@ import javax.swing.JTextPane;
 
 import vega.uplink.DateUtil;
 import vega.uplink.commanding.AbstractSequence;
-import vega.uplink.commanding.GsPass;
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.PorChecker;
 //import vega.uplink.commanding.task.PorCheckTask.MessagesFrame;
@@ -32,6 +31,7 @@ import vega.uplink.commanding.Sequence;
 import vega.uplink.commanding.SequenceProfile;
 import vega.uplink.commanding.SimulationContext;
 import vega.uplink.commanding.SsmmSimulator;
+import vega.uplink.track.GsPass;
 
 public class CreateTimelineTask extends Task {
 	private static final Logger LOGGER = Logger.getLogger(CreateTimelineTask.class.getName());

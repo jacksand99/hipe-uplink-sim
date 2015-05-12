@@ -12,9 +12,9 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
 import vega.uplink.DateUtil;
 import vega.uplink.commanding.AbstractSequence;
-import vega.uplink.commanding.Fecs;
 import vega.uplink.commanding.Mib;
 import vega.uplink.commanding.Parameter;
 import vega.uplink.commanding.ParameterFloat;
@@ -27,6 +27,7 @@ import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationEvent;
 import vega.uplink.planning.ObservationPor;
 import vega.uplink.planning.ObservationSequence;
+import vega.uplink.track.Fecs;
 
 public class ItlParser {
 	public static String path="";

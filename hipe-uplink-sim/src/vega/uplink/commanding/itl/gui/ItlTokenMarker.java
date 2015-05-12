@@ -7,8 +7,8 @@ import java.util.logging.Logger;
 import javax.swing.text.Segment;
 
 import vega.uplink.Properties;
-import vega.uplink.commanding.Fecs;
 import vega.uplink.commanding.Mib;
+import vega.uplink.track.Fecs;
 
 public class ItlTokenMarker extends TokenMarker {
 	// ~ Static variables/initializers

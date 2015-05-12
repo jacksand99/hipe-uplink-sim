@@ -3,6 +3,7 @@ package vega.uplink.planning;
 
 import java.util.Date;
 import java.util.logging.Logger;
+
 import herschel.ia.dataset.ArrayDataset;
 
 //import javax.xml.parsers.DocumentBuilder;
@@ -14,7 +15,6 @@ import herschel.ia.dataset.ArrayDataset;
 
 
 
-import vega.uplink.commanding.Fecs;
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.SuperPor;
 import vega.uplink.planning.period.Plan;
@@ -24,6 +24,7 @@ import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
 import vega.uplink.pointing.exclusion.AbstractExclusion;
+import vega.uplink.track.Fecs;
 import herschel.ia.dataset.Dataset;
 import herschel.ia.dataset.DatasetEvent;
 import herschel.ia.dataset.StringParameter;

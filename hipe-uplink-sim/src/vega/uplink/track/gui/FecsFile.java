@@ -1,4 +1,4 @@
-package vega.uplink.commanding.gui;
+package vega.uplink.track.gui;
 
 import java.io.File;
 

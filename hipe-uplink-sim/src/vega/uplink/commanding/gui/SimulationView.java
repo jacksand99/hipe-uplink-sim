@@ -68,6 +68,8 @@ import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
 import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
+import vega.uplink.track.Fecs;
+import vega.uplink.track.FecsUtils;
 
 import java.lang.Runnable;
 import java.net.URL;
@@ -471,7 +473,7 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 			        			
 			        		}
 			        		if (fecsFile!=null){
-			        			Fecs fecs=PorUtils.readFecsFromFile(fecsFile.getAbsolutePath());
+			        			Fecs fecs=FecsUtils.readFecsFromFile(fecsFile.getAbsolutePath());
 			        			//SimulationContext.getInstance().ptr=ptr;
 			        			//PtrSegment segment=ptr.getSegment((String) ptrbox.getSelectedItem());
 			        			/*Iterator<GsPass> it = fecs.getPasses().iterator();

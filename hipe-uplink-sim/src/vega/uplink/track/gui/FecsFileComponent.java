@@ -1,4 +1,4 @@
-package vega.uplink.commanding.gui;
+package vega.uplink.track.gui;
 
 import herschel.ia.gui.kernel.VariableSelection;
 import herschel.ia.gui.kernel.parts.AbstractFileCommandComponent;
@@ -13,8 +13,9 @@ import java.io.IOException;
 
 import javax.swing.Icon;
 
-import vega.uplink.commanding.Fecs;
 import vega.uplink.commanding.PorUtils;
+import vega.uplink.track.Fecs;
+import vega.uplink.track.FecsUtils;
 
 /**
  * This is a class that provides means for opening an editor (view) for a
@@ -69,7 +70,7 @@ public class FecsFileComponent extends AbstractFileCommandComponent{
 	public String getCommandStatement() {
 		String path=getFile().getAbsolutePath();
 		path=path.replace("\\", "\\\\");
-        return PorUtils.class.getSimpleName()+".readFecsFromFile(\""+path+"\")";
+        return FecsUtils.class.getSimpleName()+".readFecsFromFile(\""+path+"\")";
 	}
 }
 

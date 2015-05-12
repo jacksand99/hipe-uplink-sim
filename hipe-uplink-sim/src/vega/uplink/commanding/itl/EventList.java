@@ -31,7 +31,7 @@ import org.jfree.util.Log;
 
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
-import vega.uplink.commanding.Fecs;
+import vega.uplink.track.Fecs;
 
 //public class EventList extends MapContext implements SortedMap<Date,String>{
 public class EventList extends MapContext {

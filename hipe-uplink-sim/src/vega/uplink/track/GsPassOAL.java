@@ -1,4 +1,4 @@
-package vega.uplink.commanding;
+package vega.uplink.track;
 
 import java.util.Date;
 

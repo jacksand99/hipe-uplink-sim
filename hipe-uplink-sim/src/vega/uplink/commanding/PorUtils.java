@@ -2,11 +2,8 @@ package vega.uplink.commanding;
 
 
 import herschel.ia.dataset.Product;
-
 import herschel.ia.dataset.TableDataset;
-
 import vega.hipe.FileUtil;
-
 import herschel.share.io.archive.ZipReader;
 
 import java.io.File;
@@ -15,7 +12,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
-
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -31,7 +27,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -54,7 +49,9 @@ import org.w3c.dom.NodeList;
 
 
 
+
 import vega.uplink.DateUtil;
+import vega.uplink.track.Fecs;
 
 
 /**
@@ -484,32 +481,6 @@ public class PorUtils {
 	}
 	
 
-	/**
-	 * Read FECS from XML file
-	 * @param file
-	 * @return
-	 * @throws Exception
-	 */
-	public static Fecs readFecsFromFile(String file) throws Exception{
-		Fecs result=new Fecs();
-		try {
-			File fXmlFile = new File(file);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(fXmlFile);
-			result=Fecs.readFromDoc(doc);
-			
-			result.setName(fXmlFile.getName());
-			result.setPath(fXmlFile.getParent());
-			
-		}catch (Exception e){
-			LOG.throwing("PORUtils", "readFecsFromFile", e);
-			e.printStackTrace();
-			throw(e);
-		}
-		
-		return result;
-	}
 
 	
 	

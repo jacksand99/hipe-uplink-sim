@@ -4,6 +4,7 @@ import herschel.share.interpreter.InterpreterNameSpaceUtil.Condition;
 import herschel.share.interpreter.InterpreterUtil;
 import vega.uplink.commanding.*;
 import vega.uplink.pointing.*;
+import vega.uplink.track.Fecs;
 
 public class CommandingCondition implements Condition {
 

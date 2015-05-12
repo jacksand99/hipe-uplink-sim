@@ -35,7 +35,7 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
 import vega.uplink.Properties;
-import vega.uplink.commanding.Fecs;
+import vega.uplink.track.Fecs;
 
 public class HipeGit {
     private String localPath;

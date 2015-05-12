@@ -1,4 +1,4 @@
-package vega.uplink.commanding.task;
+package vega.uplink.track.task;
 
 import herschel.ia.task.Task;
 import herschel.ia.task.TaskParameter;
@@ -8,10 +8,11 @@ import java.util.logging.Logger;
 
 import vega.hipe.gui.xmlutils.HtmlDocument;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
-import vega.uplink.commanding.Fecs;
+import vega.uplink.commanding.task.PorCheckTask;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
+import vega.uplink.track.Fecs;
 
 public class FecsSummaryTask extends Task {
 	private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());

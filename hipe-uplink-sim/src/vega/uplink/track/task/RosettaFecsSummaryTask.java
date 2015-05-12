@@ -1,4 +1,4 @@
-package vega.uplink.commanding.task;
+package vega.uplink.track.task;
 
 import herschel.ia.task.Task;
 import herschel.ia.task.TaskParameter;
@@ -8,11 +8,13 @@ import java.util.logging.Logger;
 
 import vega.hipe.gui.xmlutils.HtmlDocument;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
-import vega.uplink.commanding.Fecs;
 import vega.uplink.commanding.PorUtils;
+import vega.uplink.commanding.task.PorCheckTask;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
+import vega.uplink.track.Fecs;
+import vega.uplink.track.FecsUtils;
 
 public class RosettaFecsSummaryTask extends Task {
 	private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());
@@ -52,7 +54,7 @@ public class RosettaFecsSummaryTask extends Task {
 		}
 		Fecs fecs=null;
 		try {
-			fecs=PorUtils.readFecsFromFile(args[0]);
+			fecs=FecsUtils.readFecsFromFile(args[0]);
 		}catch (Exception e){
 			System.out.println("Could not read FECS");
 			e.printStackTrace();
