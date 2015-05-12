@@ -279,7 +279,8 @@ public class Schedule extends MapContext implements ObservationListener{
 		SuperPor result=new SuperPor();
 		for (int i=0;i<observations.length;i++){
 			//System.out.println(i);
-			result.addPor(observations[i].getCommanding(getCounter()*10000));
+			//result.addPor(observations[i].getCommanding(getCounter()*10000));
+			result.addPor(observations[i].getCommanding());
 			//LOG.info("Number of sequences in observation "+i+":"+observations[i].getCommanding().getSequences().length);
 			//System.out.println(observations[i].getCommanding().toXml());
 		}

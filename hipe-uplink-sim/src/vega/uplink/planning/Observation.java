@@ -118,29 +118,24 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 		listeners.remove(listener);
 	}
 	
+	/**
+	 * Add an ebent to the list of events that can be used in this observation. Only the events
+	 * START_OBS, END OBS and the ones added via this method can be used in the observation
+	 * @param event The event to be added
+	 * @param date The date co-related to this event
+	 */
 	public void addEvent(ObservationEvent event,Date date){
 		eventMap.put(event.getName(), date);
 	}
 	
+	/**
+	 * Remove an event from the list of events that can be used in this observation
+	 * @param event
+	 */
 	public void removeEvent(ObservationEvent event){
 		eventMap.remove(event.getName());
 	}
-	/*protected void fireCommandingChange(DatasetEvent<Product> source){
-		LOG.info("Firing Observation change");
-		ObservationChangeEvent ev = new ObservationChangeEvent(this);
-		Iterator<ObservationListener> it = new Vector<ObservationListener>(listeners).iterator();
-		while (it.hasNext()){
-			it.next().commandingChanged(ev);
-		}
-	}
-	protected void firePointingChange(DatasetEvent<Product> source){
-		LOG.info("Firing Observation change");
-		ObservationChangeEvent ev = new ObservationChangeEvent(this);
-		Iterator<ObservationListener> it = new Vector<ObservationListener>(listeners).iterator();
-		while (it.hasNext()){
-			it.next().pointingChanged(ev);
-		}
-	}*/
+
 
 	protected void fireChange(DatasetEvent<Product> source){
 		LOG.info("Firing Observation change");
@@ -300,22 +295,31 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 
 	}
 	
-	public Por getCommanding(int sed){
+
+	/*public Por getCommanding(){
 		ObservationPor result=(ObservationPor) getCommanding();
 		//result.sed(sed);
 		return result;
-	}
+	}*/
 	
+	/**
+	 * Set the pointing part of an Observation
+	 * @param slice The blocks defining the pointing for the observation
+	 */
 	public void setPointing(ObservationPointingSlice slice){
 		slice.setObservation(this);
 		this.setProduct("pointing", slice);
 		DatasetEvent<Product> event = new DatasetEvent<Product>(this,EventType.DATA_CHANGED,null,null);
 		this.pointingChange(null);
 	}
+	
+	/**
+	 * Set the commanding part of the observation
+	 * @param por The sequences defining the commanding part of the observation
+	 */
 	public void setCommanding(ObservationPor por){
 		por.setObservation(this);
 		this.setProduct("commanding", por);
-		//DatasetEvent<Product> event = new DatasetEvent<Product>(this,EventType.DATA_CHANGED,null,null);
 		this.commandingChange(null);
 	}
 	
@@ -484,6 +488,10 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 		return result;
 	}
 	
+	/**
+	 * Get a string with the commanding part of the observation in ITL format
+	 * @return
+	 */
 	public String toItl(){
 		Mib mib;
 			try {
@@ -594,6 +602,10 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 		//return null;
 	}
 	
+	/**
+	 * Get all the events defined for this observation
+	 * @return
+	 */
 	public ObservationEvent[] getDefinedEvents(){
 		ObservationEvent[] result=new ObservationEvent[eventMap.size()];
 		Iterator<String> it = eventMap.keySet().iterator();
@@ -622,6 +634,11 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 		return (String) getMeta().get("path").getValue();
 	}
 	
+	/**
+	 * Shift an event defined for this observation a number of milliseconds
+	 * @param event The event to be shifted
+	 * @param delta The number of milliseconds to shift
+	 */
 	public void shiftEvent(ObservationEvent event,long delta){
 		if (event.equals(ObservationEvent.START_OBS)){
 			Date oldStartDate = this.getStartDate().toDate();

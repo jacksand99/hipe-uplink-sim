@@ -10,23 +10,76 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class Properties {
+	/**
+	 * vega.instrument.names
+	 */
 	public static String INSTRUMENT_NAMES_PROPERTIES="vega.instrument.names";
+	/**
+	 * vega.instrument.subinstrument.start.
+	 */
 	public static String SUBINSTRUMENT_MODE_START_PROPERTY_PREFIX="vega.instrument.subinstrument.start.";
+	/**
+	 * vega.instrument.acronyms.
+	 */
 	public static String SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX="vega.instrument.acronyms.";
+	/**
+	 * vega.instrument.color.
+	 */
 	public static String SUBINSTRUMENT_COLOR_PROPERTY_PREFIX="vega.instrument.color.";
+	/**
+	 * vega.default.planningDirectory
+	 */
 	public static String DEFAULT_PLANNING_DIRECTORY="vega.default.planningDirectory";
+	/**
+	 * vega.default.observationsDirectory
+	 */
 	public static String DEFAULT_OBSERVATIONS_DIRECTORY="vega.default.observationsDirectory";
+	/**
+	 * vega.default.FECS.file
+	 */
 	public static String DEFAULT_FECS_FILE="vega.default.FECS.file";
+	/**
+	 * vega.default.evtDirectory
+	 */
 	public static String DEFAULT_EVT_DIRECTORY="vega.default.evtDirectory";
+	/**
+	 * vega.pwpl.file
+	 */
 	public static String PWPL_FILE="vega.pwpl.file";
+	/**
+	 * vega.orcd.file
+	 */
 	public static String ORCD_FILE="vega.orcd.file";
+	/**
+	 * vega.mib.location
+	 */
 	public static String MIB_LOCATION="vega.mib.location";
+	/**
+	 * vega.antenna.priorities.command
+	 */
 	public static String ANTENNA_PRIORITY_COMMAND="vega.antenna.priorities.command";
+	/**
+	 * vega.antenna.priorities.parameter.
+	 */
 	public static String ANTENNA_PRIORITY_PARAMETER_PREFIX="vega.antenna.priorities.parameter.";
+	/**
+	 * vega.packetstoresize.
+	 */
 	public static String SSMM_PACKETSTORE_PREFIX="vega.packetstoresize.";
+	/**
+	 * vega.default.initScript
+	 */
 	public static String DEFAULT_INIT_SCRIPT="vega.default.initScript";
+	/**
+	 * vega.default.postScript
+	 */
 	public static String DEFAULT_POST_SCRIPT="vega.default.postScript";
 	
+	/**
+	 * Get a property as a list. The property value must be defined as {val1,val2,val3}
+	 * @param property
+	 * @return
+	 */
 	public static List<String> getList(String property) {
 			StringTokenizer tokenizer=new StringTokenizer(property,".");
 			String path="";
@@ -49,6 +102,11 @@ public class Properties {
 		// TODO Auto-generated method stub
 		return value;
 	}
+	/**
+	 * Get the value of a property
+	 * @param property
+	 * @return
+	 */
 	public static String getProperty(String property) {
 		StringTokenizer tokenizer=new StringTokenizer(property,".");
 		String path="";
@@ -68,6 +126,11 @@ public class Properties {
 		return valueString;
 	}
 	
+	/**
+	 * Get the value of a property as a color. The value must be a integer like -16776961 having the RGB value
+	 * @param property
+	 * @return
+	 */
 	public static Color getColor(String property){
 		StringTokenizer tokenizer=new StringTokenizer(property,".");
 		String path="";
