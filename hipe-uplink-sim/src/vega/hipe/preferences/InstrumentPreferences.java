@@ -3,9 +3,7 @@ package vega.hipe.preferences;
 import static javax.swing.GroupLayout.Alignment.BASELINE;
 
 
-//import java.awt.Color;
 import java.awt.Dimension;
-//import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
@@ -16,17 +14,10 @@ import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JTextField;
 
 import vega.uplink.Properties;
-//import vega.uplink.planning.gui.ScheduleViewer;
 import herschel.ia.gui.kernel.prefs.PreferencesPanel;
-//import herschel.ia.gui.kernel.prefs.handler.LongPreferenceHandler;
 import herschel.ia.gui.kernel.prefs.handler.StringPreferenceHandler;
-//import herschel.ia.gui.kernel.prefs.handler.IntegerPreferenceHandler;
 import herschel.ia.gui.kernel.prefs.handler.ColorPreferenceHandler;
-//import herschel.ia.gui.kernel.util.component.FilePathPanel;
 import herschel.ia.gui.kernel.util.component.ColorButton;
-//import herschel.ia.gui.kernel.util.field.FileSelectionMode;
-//import herschel.ia.gui.kernel.util.field.LongField;
-//import herschel.share.swing.JIntegerField;
 import herschel.share.swing.JLongField;
 import herschel.share.util.Configuration;
 
@@ -39,19 +30,13 @@ public class InstrumentPreferences extends PreferencesPanel {
     private JLongField _fieldD;
     private JTextField _fieldE;
     private static final Logger LOG = Logger.getLogger(InstrumentPreferences.class.getName());
-    //private FilePathPanel _fieldF;
     public InstrumentPreferences(){
     	super();
-    	//Thread.dumpStack();
-		//LOG.info("Instrument Preferences constructor");
-		//System.out.println("Instrument Preferences constructor");
     }
 	@Override
 	protected void makeContent() {
 		LOG.info("Make content for config panel of instrument "+instrument);
 		System.out.println("Make content for config panel of instrument "+instrument);
-		// TODO Auto-generated method stub
-		//System.out.println("makeContent");
 		String categoryPath = this.getCategoryPath();
 		StringTokenizer tokenizer=new StringTokenizer(categoryPath,"/");
 		while (tokenizer.hasMoreTokens()){
@@ -110,8 +95,6 @@ public class InstrumentPreferences extends PreferencesPanel {
         hGroup.addGroup(hComboGroup);
         layout.setHorizontalGroup(hGroup);
         layout.setVerticalGroup(vGroup);
-
-		//System.out.println(instrument);
 		
 	}
 
@@ -123,16 +106,6 @@ public class InstrumentPreferences extends PreferencesPanel {
        	registerHandler(Properties.ANTENNA_PRIORITY_PARAMETER_PREFIX+instrument,new StringPreferenceHandler(Configuration.getProperty(Properties.ANTENNA_PRIORITY_PARAMETER_PREFIX+instrument, ""),_fieldE,Properties.ANTENNA_PRIORITY_PARAMETER_PREFIX+instrument));
       	registerHandler(Properties.SSMM_PACKETSTORE_PREFIX+instrument,new StringPreferenceHandler(Configuration.getProperty(Properties.SSMM_PACKETSTORE_PREFIX+instrument, ""),_fieldD,Properties.SSMM_PACKETSTORE_PREFIX+instrument));
     	registerHandler(Properties.SUBINSTRUMENT_COLOR_PROPERTY_PREFIX+instrument,new ColorPreferenceHandler(Properties.getColor(Properties.SUBINSTRUMENT_COLOR_PROPERTY_PREFIX+instrument),_fieldC,Properties.SUBINSTRUMENT_COLOR_PROPERTY_PREFIX+instrument));
-
-		//System.out.println("registerHandlers");
-		/*System.out.println(this.getCategoryPath());
-		String categoryPath = this.getCategoryPath();
-		StringTokenizer tokenizer=new StringTokenizer(categoryPath,"/");
-		while (tokenizer.hasMoreTokens()){
-			instrument=tokenizer.nextToken();
-		}
-		System.out.println(instrument);*/
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -140,18 +113,5 @@ public class InstrumentPreferences extends PreferencesPanel {
 		LOG.info("Setting instrument "+instrument);
 		this.instrument=instrument;
 	}
-	/*private int getColor(String preference){
-		List<String> rgb = Configuration.getList(preference);
-		//Color color = new Color(alignmentX, alignmentX, alignmentX);
-		//color.
-		Color color = new Color(Integer.parseInt(rgb.get(0)),Integer.parseInt(rgb.get(1)),Integer.parseInt(rgb.get(2)));
-		return ColorPreferenceHandler.color2int(color);
-	}*/
-	
-	/*class RGBColorPreferenceHandler extends ColorPreferenceHandler{
-		RGBColorPreferenceHandler(int defaultColor, ColorButton button, String property) {
-			super(defaultColor,button,property);
-		}
-	}*/
 
 }

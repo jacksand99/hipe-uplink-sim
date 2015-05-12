@@ -24,10 +24,7 @@ public class InstrumentsNamesPreferences extends PreferencesPanel{
 	private JTextField _fieldA;
 	public InstrumentsNamesPreferences(){
 		super();
-		//Thread.dumpStack();
-		//System.out.println("InstrumentsNamesPreferences constructor");
 	}
-	//TableScrollPane table;
 	@Override
 	protected void makeContent() {
         GroupLayout layout = new GroupLayout(this);
@@ -48,19 +45,11 @@ public class InstrumentsNamesPreferences extends PreferencesPanel{
         hLabelGroup.addComponent(labelA);
         hComboGroup.addComponent(_fieldA);
         
-        /*JLabel    labelb = new JLabel("Please, be aware that you will have to re-start hipe after you change this property.");
-        vPropsGroup = layout.createParallelGroup(BASELINE);
-        vGroup.addGroup(vPropsGroup.addComponent(labelb));
-        //hLabelGroup.addComponent(labelb);
-        //hComboGroup.addComponent(labelb);*/
         
         hGroup.addGroup(hLabelGroup);
         hGroup.addGroup(hComboGroup);
-        //hGroup.addComponent(hPropsGroup.addComponent(labelb));
         layout.setHorizontalGroup(hGroup);
         layout.setVerticalGroup(vGroup);
-
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -68,7 +57,6 @@ public class InstrumentsNamesPreferences extends PreferencesPanel{
 	protected void registerHandlers() {
     	registerHandler(Properties.INSTRUMENT_NAMES_PROPERTIES,new StringPreferenceHandler(Configuration.getProperty(Properties.INSTRUMENT_NAMES_PROPERTIES, ""),_fieldA,Properties.INSTRUMENT_NAMES_PROPERTIES));
 
-		// TODO Auto-generated method stub
 		
 	}
 

@@ -74,6 +74,66 @@ public class Properties {
 	 * vega.default.postScript
 	 */
 	public static String DEFAULT_POST_SCRIPT="vega.default.postScript";
+	/**
+	 * vega.file.type.POR
+	 */
+	public static String POR_FILE_PROPERTY="vega.file.type.POR";
+	/**
+	 * vega.file.type.PORG
+	 */
+	public static String PORG_FILE_PROPERTY="vega.file.type.PORG";
+	/**
+	 * vega.file.type.PTR
+	 */
+	public static String PTR_FILE_PROPERTY="vega.file.type.PTR";
+	/**
+	 * vega.file.type.PTSL
+	 */
+	public static String PTSL_FILE_PROPERTY="vega.file.type.PTSL";
+	/**
+	 * vega.file.type.PDFM
+	 */
+	public static String PDFM_FILE_PROPERTY="vega.file.type.PDFM";
+	/**
+	 * vega.file.type.EVTM
+	 */
+	public static String EVTM_FILE_PROPERTY="vega.file.type.EVTM";
+	/**
+	 * 
+	 */
+	public static String FECS_FILE_PROPERTY="vega.file.type.FECS";
+	/**
+	 * vega.file.type.FECS
+	 */
+	public static String OBS_FILE_PROPERTY="vega.file.type.OBS";
+	/**
+	 * vega.file.type.SCH
+	 */
+	public static String SCH_FILE_PROPERTY="vega.file.type.SCH";
+	/**
+	 * vega.file.type.PER
+	 */
+	public static String PER_FILE_PROPERTY="vega.file.type.PER";
+	/**
+	 * vega.file.type.PDOR
+	 */
+	public static String PDOR_FILE_PROPERTY="vega.file.type.PDOR";
+	/**
+	 * vega.file.type.EVF
+	 */
+	public static String EVF_FILE_PROPERTY="vega.file.type.EVF";
+	/**
+	 * vega.file.type.ITL
+	 */
+	public static String ITL_FILE_PROPERTY="vega.file.type.ITL";
+	/**
+	 * vega.file.type.PWPL
+	 */
+	public static String PWPL_FILE_PROPERTY="vega.file.type.PWPL";
+	/**
+	 * vega.file.type.PWTL
+	 */
+	public static String PWTL_FILE_PROPERTY="vega.file.type.PWTL";
 	
 	/**
 	 * Get a property as a list. The property value must be defined as {val1,val2,val3}

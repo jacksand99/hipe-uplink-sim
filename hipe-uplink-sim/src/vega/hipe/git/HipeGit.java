@@ -43,14 +43,22 @@ public class HipeGit {
     private String password;
     private Repository localRepo;
     protected Git git;
+    /**
+     * vega.hipe.git.localPath
+     */
     public static String LOCAL_PATH_PROPERTY="vega.hipe.git.localPath";
+    /**
+     * vega.hipe.git.remotePath
+     */
     public static String REMOTE_PATH_PROPERTY="vega.hipe.git.remotePath";
+    /**
+     * vega.hipe.git.password
+     */
     public static String PASSWORD_PROPERTY="vega.hipe.git.password";
     public static boolean TUNNEL=false;
 
     private static HipeGit instance;
     private static final Logger LOG = Logger.getLogger(Fecs.class.getName());
-    //public static String LOCAL_REPOSITORY_PROPERTY="vega.hipe.git.localPath";
     
     protected HipeGit(){
     	try {
@@ -86,7 +94,6 @@ public class HipeGit {
     		  localPath=popup.askForInput(null,"Local git path",System.getProperty("user.home")); 
     	  }
 
-    	//localPath=Properties.getProperty(LOCAL_PATH_PROPERTY);
 	      try{
 	    	  remotePath=Properties.getProperty(REMOTE_PATH_PROPERTY);
   	      }catch (Exception e){
@@ -97,10 +104,6 @@ public class HipeGit {
     		  remotePath=popup.askForInput(null,"Remote git path",System.getProperty("user.name")+"@localhost:"+System.getProperty("user.home")+"/GIT.git"); 
     	  }
 
-    	  //remotePath=Properties.getProperty(REMOTE_PATH_PROPERTY);
-    	//password=Properties.getProperty(PASSWORD_PROPERTY);
-        /*localPath = "/home/me/repos/mytest";
-        remotePath = "git@github.com:me/mytestrepo.git";*/
         localRepo = new FileRepository(localPath + "/.git");
         JschConfigSessionFactory sessionFactory = new JschConfigSessionFactory() {
         	@Override

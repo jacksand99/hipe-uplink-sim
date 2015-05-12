@@ -31,6 +31,8 @@ public class FileTypesPreferences extends PreferencesPanel {
     private JTextField _fieldN;
     private JTextField _fieldO;
     private JTextField _fieldP;
+
+
 	@Override
 	protected void makeContent() {
         GroupLayout layout = new GroupLayout(this);
@@ -169,24 +171,24 @@ public class FileTypesPreferences extends PreferencesPanel {
         layout.setVerticalGroup(vGroup);
 
 	}
-
+	
 	@Override
 	protected void registerHandlers() {
-    	registerHandler("vega.file.type.POR",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.POR", ""),_fieldA,"vega.file.type.POR"));
-    	registerHandler("vega.file.type.PORG",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.PORG", ""),_fieldB,"vega.file.type.PORG"));
-    	registerHandler("vega.file.type.PTR",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.PTR", ""),_fieldC,"vega.file.type.PTR"));
-    	registerHandler("vega.file.type.PTSL",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.PTSL", ""),_fieldD,"vega.file.type.PTSL"));
-    	registerHandler("vega.file.type.PDFM",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.PDFM", ""),_fieldE,"vega.file.type.PDFM"));
-    	registerHandler("vega.file.type.EVTM",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.EVTM", ""),_fieldF,"vega.file.type.EVTM"));
-    	registerHandler("vega.file.type.FECS",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.FECS", ""),_fieldG,"vega.file.type.FECS"));
-    	registerHandler("vega.file.type.OBS",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.OBS", ""),_fieldH,"vega.file.type.OBS"));
-    	registerHandler("vega.file.type.SCH",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.SCH", ""),_fieldI,"vega.file.type.SCH"));
-    	registerHandler("vega.file.type.PER",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.PER", ""),_fieldJ,"vega.file.type.PER"));
-    	registerHandler("vega.file.type.PDOR",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.PDOR", ""),_fieldK,"vega.file.type.PDOR"));
-    	registerHandler("vega.file.type.EVF",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.EVF", ""),_fieldM,"vega.file.type.EVF"));
-    	registerHandler("vega.file.type.ITL",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.ITL", ""),_fieldN,"vega.file.type.ITL"));
-    	registerHandler("vega.file.type.PWPL",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.PWPL", ""),_fieldO,"vega.file.type.PWPL"));
-    	registerHandler("vega.file.type.PWTL",new StringPreferenceHandler(Configuration.getProperty("vega.file.type.PWTL", ""),_fieldP,"vega.file.type.PWTL"));
+    	registerHandler(Properties.POR_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.POR_FILE_PROPERTY, ""),_fieldA,Properties.POR_FILE_PROPERTY));
+    	registerHandler(Properties.PORG_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.PORG_FILE_PROPERTY, ""),_fieldB,Properties.PORG_FILE_PROPERTY));
+    	registerHandler(Properties.PTR_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.PTR_FILE_PROPERTY, ""),_fieldC,Properties.PTR_FILE_PROPERTY));
+    	registerHandler(Properties.PTSL_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.PTSL_FILE_PROPERTY, ""),_fieldD,Properties.PTSL_FILE_PROPERTY));
+    	registerHandler(Properties.PDFM_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.PDFM_FILE_PROPERTY, ""),_fieldE,Properties.PDFM_FILE_PROPERTY));
+    	registerHandler(Properties.EVTM_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.EVTM_FILE_PROPERTY, ""),_fieldF,Properties.EVTM_FILE_PROPERTY));
+    	registerHandler(Properties.FECS_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.FECS_FILE_PROPERTY, ""),_fieldG,Properties.FECS_FILE_PROPERTY));
+    	registerHandler(Properties.OBS_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.OBS_FILE_PROPERTY, ""),_fieldH,Properties.OBS_FILE_PROPERTY));
+    	registerHandler(Properties.SCH_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.SCH_FILE_PROPERTY, ""),_fieldI,Properties.SCH_FILE_PROPERTY));
+    	registerHandler(Properties.PER_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.PER_FILE_PROPERTY, ""),_fieldJ,Properties.PER_FILE_PROPERTY));
+    	registerHandler(Properties.PDOR_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.PDOR_FILE_PROPERTY, ""),_fieldK,Properties.PDOR_FILE_PROPERTY));
+    	registerHandler(Properties.EVF_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.EVF_FILE_PROPERTY, ""),_fieldM,Properties.EVF_FILE_PROPERTY));
+    	registerHandler(Properties.ITL_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.ITL_FILE_PROPERTY, ""),_fieldN,Properties.ITL_FILE_PROPERTY));
+    	registerHandler(Properties.PWPL_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.PWPL_FILE_PROPERTY, ""),_fieldO,Properties.PWPL_FILE_PROPERTY));
+    	registerHandler(Properties.PWTL_FILE_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(Properties.PWTL_FILE_PROPERTY, ""),_fieldP,Properties.PWTL_FILE_PROPERTY));
 
 		
 	}

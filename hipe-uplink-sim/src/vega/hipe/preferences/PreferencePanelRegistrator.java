@@ -20,7 +20,7 @@ public class PreferencePanelRegistrator {
 		REGISTRY.register(UserPreferences.CATEGORY, new Extension("Mail","vega.hipe.mail.MailPreferencesPanel",null,null));
 
 		//List<String> instruments = Properties.getList("vega.instrument.names");
-		List<String> instruments = Configuration.getList("vega.instrument.names");
+		List<String> instruments = Configuration.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
 		Iterator<String> it = instruments.iterator();
 		String ins;
 		while(it.hasNext()){
