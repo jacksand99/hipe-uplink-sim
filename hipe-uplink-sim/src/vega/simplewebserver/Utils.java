@@ -4,8 +4,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
+import vega.uplink.Properties;
 import vega.uplink.commanding.Por;
 public class Utils {
+	/**
+	 * vega.simplewebserver.logfile
+	 */
+	public static String LOG_FILE_PROPERTY="vega.simplewebserver.logfile";
     static String[] rules={"body {color:#000; font-family:times; margin: 4px; }",
       		"h1 {color: blcak;}",
       		"h2 {color: black;}",
@@ -30,9 +35,17 @@ public class Utils {
 		return extension.toLowerCase();
 	}
 	
+
 	public static void log(String text){
+		String logfile="log.txt";
 		try{
-			FileWriter writer = new FileWriter("/home/jarenas/Rosetta/hus/log.txt", true);
+			logfile=Properties.getProperty(LOG_FILE_PROPERTY);
+		}catch (Exception e){
+			//Use default lof file
+		}
+		try{
+			
+			FileWriter writer = new FileWriter(logfile, true);
 			writer.write("\n"+text);
 			writer.close();
 		}catch (Exception e){

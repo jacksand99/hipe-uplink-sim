@@ -17,8 +17,21 @@ import javax.mail.internet.*;
 import vega.hipe.gui.xmlutils.HtmlDocument;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
 
+/**
+ * Class to send emails from hipe
+ * @author jarenas
+ *
+ */
 public class SendEmail
 {
+	/**
+	 * vega.hipe.mail.from
+	 */
+	public static String EMAIL_FROM_PROPERTY="vega.hipe.mail.from";
+	/**
+	 * vega.hipe.mail.smtp
+	 */
+	public static String EMAIL_SMTP_PROPERTY="vega.hipe.mail.smtp";
 
 /**
  * Send an HTML document via email
@@ -29,8 +42,8 @@ public static void sendHtmlDocument(String to,HtmlDocument doc) {
 	String from=null;
 	String server=null;
 	try{
-		from = vega.uplink.Properties.getProperty("vega.hipe.mail.from");
-		server=vega.uplink.Properties.getProperty("vega.hipe.mail.smtp");
+		from = vega.uplink.Properties.getProperty(EMAIL_FROM_PROPERTY);
+		server=vega.uplink.Properties.getProperty(EMAIL_SMTP_PROPERTY);
 	}catch (Exception e){
 		throw new IllegalArgumentException("Could not get send mail properties:"+e.getMessage());
 	}
@@ -66,8 +79,8 @@ public static void sendMessage(String to,String subject,String text){
 	String from=null;
 	String server=null;
 	try{
-		from = vega.uplink.Properties.getProperty("vega.hipe.mail.from");
-		server=vega.uplink.Properties.getProperty("vega.hipe.mail.smtp");
+		from = vega.uplink.Properties.getProperty(EMAIL_FROM_PROPERTY);
+		server=vega.uplink.Properties.getProperty(EMAIL_SMTP_PROPERTY);
 	}catch (Exception e){
 		throw new IllegalArgumentException("Could not get send mail properties:"+e.getMessage());
 	}

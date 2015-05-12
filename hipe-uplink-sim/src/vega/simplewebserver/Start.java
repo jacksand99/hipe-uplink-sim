@@ -18,7 +18,7 @@ public class Start {
     }
     
     public static void usage(){
-    	System.out.println("Usage: vega.simplewebserver.Start [root directory] [port number]");
+    	System.out.println("Usage: java -D"+Utils.LOG_FILE_PROPERTY+"=[logfilepath] vega.simplewebserver.Start [root directory] [port number]");
     }
 
 }

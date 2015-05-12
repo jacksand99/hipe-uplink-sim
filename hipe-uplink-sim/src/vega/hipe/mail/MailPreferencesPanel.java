@@ -21,7 +21,9 @@ import herschel.share.util.Configuration;
  *
  */
 public class MailPreferencesPanel extends PreferencesPanel {
-    private JTextField _fieldA;
+
+	private static final long serialVersionUID = 1L;
+	private JTextField _fieldA;
     private JTextField _fieldB;
 
 
@@ -64,8 +66,8 @@ public class MailPreferencesPanel extends PreferencesPanel {
 
 	@Override
 	protected void registerHandlers() {
-    	registerHandler("vega.hipe.mail.from",new StringPreferenceHandler(Configuration.getProperty("vega.hipe.mail.from", ""),_fieldA,"vega.hipe.mail.from"));
-    	registerHandler("vega.hipe.mail.smtp",new StringPreferenceHandler(Configuration.getProperty("vega.hipe.mail.smtp", ""),_fieldB,"vega.hipe.mail.smtp"));
+    	registerHandler(SendEmail.EMAIL_FROM_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(SendEmail.EMAIL_FROM_PROPERTY, ""),_fieldA,SendEmail.EMAIL_FROM_PROPERTY));
+    	registerHandler(SendEmail.EMAIL_SMTP_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(SendEmail.EMAIL_SMTP_PROPERTY, ""),_fieldB,SendEmail.EMAIL_SMTP_PROPERTY));
 
 		
 	}

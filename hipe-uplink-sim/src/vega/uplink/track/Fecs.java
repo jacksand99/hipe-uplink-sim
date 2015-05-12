@@ -59,19 +59,6 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Change</th>\n"
 			+ "</tr>\n";
 
-	/*private static String DUMP_TABLE_HEADER_DURATION=""
-			+ "<tr>\n"
-			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Dump is (s)</th><th>Dump was (s)</th>\n"
-			+ "</tr>\n";
-	private static String PASS_DURATION_TABLE_HEADER=""
-			+ "<tr>\n"
-			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Duration is (s)</th><th>Duration was (s)</th>\n"
-			+ "</tr>\n";
-	private static String BITRATE_CHANGE_TABLE_HEADER=""
-			+ "<tr>\n"
-			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th><th>Bitrate is </th><th>Bitrate was </th>\n"
-			+ "</tr>\n";*/
-
 
 	/**
 	 * Constructor of the Fecs class taking as parameters all the needed information, without taking any parameter with default value.
