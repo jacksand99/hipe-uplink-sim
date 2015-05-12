@@ -152,6 +152,7 @@ public class Properties {
 				//System.out.println("Color is a list");
 
 			}
+			
 		//if (valueString==null){
 			//return result;
 		}
