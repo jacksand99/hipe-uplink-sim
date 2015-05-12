@@ -1,9 +1,6 @@
 package vega.uplink.planning;
 
 
-//import java.io.ByteArrayInputStream;
-//import java.io.InputStream;
-//import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.logging.Logger;
 import herschel.ia.dataset.ArrayDataset;
@@ -22,9 +19,7 @@ import vega.uplink.commanding.Por;
 import vega.uplink.commanding.SuperPor;
 import vega.uplink.planning.period.Plan;
 import vega.uplink.pointing.Pdfm;
-//import vega.uplink.pointing.PointingBlockInterface;
 import vega.uplink.pointing.PointingBlocksSlice;
-//import vega.uplink.pointing.PointingMetadata;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
@@ -141,7 +136,6 @@ public class Schedule extends MapContext implements ObservationListener{
 	}
 	
 	public void setObservationsSchedule(ObservationsSchedule obs){
-		//System.out.println("setObservationSchedule");
 		ptrDirty=true;
 		porDirty=true;
 		this.setProduct("observationsSchedule", obs);
@@ -211,10 +205,6 @@ public class Schedule extends MapContext implements ObservationListener{
 		getObservationsSchedule().removeObs(obs);
 	}
 	
-	/*public void removeObservation(int index){
-		getObservationsSchedule().removeObs(index);
-	}*/
-	
 	public Observation[] getObservations(){
 		return getObservationsSchedule().getObservations();
 	}
@@ -229,7 +219,6 @@ public class Schedule extends MapContext implements ObservationListener{
 		Observation[] observations = getObservations();
 		for (int i=0;i<observations.length;i++){
 			Observation c = observations[i].copy();
-			//PointingBlockInterface[] b = c.getBlocks();			
 			sl.setSlice(c);
 		}
 		segment.setSlice(sl);
@@ -255,9 +244,6 @@ public class Schedule extends MapContext implements ObservationListener{
 	
 	public Por getPor(){
 		if (!porDirty){
-			//System.out.println("POR is not dirty, returnning cached por");
-			//Thread.dumpStack();
-			//LOG.info("Number of sequences (cached):"+cachedPor.getSequences().length);
 			return cachedPor;
 		}
 		Ptr ptr= new Ptr();
@@ -278,16 +264,10 @@ public class Schedule extends MapContext implements ObservationListener{
 		ptrDirty=false;
 		SuperPor result=new SuperPor();
 		for (int i=0;i<observations.length;i++){
-			//System.out.println(i);
-			//result.addPor(observations[i].getCommanding(getCounter()*10000));
 			result.addPor(observations[i].getCommanding());
-			//LOG.info("Number of sequences in observation "+i+":"+observations[i].getCommanding().getSequences().length);
-			//System.out.println(observations[i].getCommanding().toXml());
 		}
 		cachedPor=result;
 		porDirty=false;
-		//System.out.println(result.toXml());
-		//LOG.info("Number of sequences:"+result.getSequences().length);
 		return result;
 	}
 	

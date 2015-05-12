@@ -3,9 +3,7 @@ package vega.uplink.planning.gui;
 
 import herschel.ia.gui.apps.components.util.BottomPanel;
 import herschel.ia.gui.kernel.parts.AbstractVariableEditorComponent;
-import herschel.ia.jconsole.gui.JSearchDialog;
 import herschel.ia.jconsole.util.TextLineNumber;
-import herschel.share.interpreter.InterpreterUtil;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -20,8 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -43,16 +39,13 @@ import vega.uplink.planning.ObservationPointingSlice;
 import vega.uplink.planning.ObservationUtil;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingBlocksSlice;
-//import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
-import vega.uplink.pointing.PtrUtils;
 
 public class ObservationPointingSliceXmlEditor extends AbstractVariableEditorComponent<ObservationPointingSlice> implements ObservationListener{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	//PointingBlocksSlice slice;
 	XMLTextEditor editor;
 	Observation obs;
 	boolean initialized;
@@ -98,7 +91,6 @@ public class ObservationPointingSliceXmlEditor extends AbstractVariableEditorCom
 					
 						getSlice().regenerate(tempSlice);
 						String warnings = PtrChecker.checkSlice(tempSlice);
-						//slice=tempSlice;
 						
 						editor.setText(getSlice().toObsXml(0));
 						if (!warnings.equals("")) {
@@ -138,19 +130,11 @@ public class ObservationPointingSliceXmlEditor extends AbstractVariableEditorCom
 	}
 	
 	public void setSlice(ObservationPointingSlice slice){
-			/*boolean oldListen=Observation.LISTEN;
-			Observation.LISTEN=false;*/
 			if (obs!=null) obs.removeObservationListener(this);
 			obs=slice.getObservation();
 			obs.addObservationListener(this);
-			//this.slice=slice;
-			
 			if (!initialized) init();
 			editor.setText(getSlice().toObsXml(0));
-			//Observation.LISTEN=oldListen;
-
-			
-			//editor.setText(((ObservationPointingSlice) slice).toObsXml(0));
 		
 
 	}
@@ -175,12 +159,10 @@ public class ObservationPointingSliceXmlEditor extends AbstractVariableEditorCom
 	@Override
 	protected Class<? extends ObservationPointingSlice> getVariableType() {
 		return ObservationPointingSlice.class;
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void observationChanged(ObservationChangeEvent event) {
-		// TODO Auto-generated method stub
 		this.setSlice(getSlice());
 	}
 

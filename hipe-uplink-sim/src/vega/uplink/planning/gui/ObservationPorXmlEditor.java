@@ -2,9 +2,7 @@ package vega.uplink.planning.gui;
 
 import herschel.ia.gui.apps.components.util.BottomPanel;
 import herschel.ia.gui.kernel.parts.AbstractVariableEditorComponent;
-import herschel.ia.jconsole.gui.JSearchDialog;
 import herschel.ia.jconsole.util.TextLineNumber;
-import herschel.share.interpreter.InterpreterUtil;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -18,8 +16,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -37,14 +33,8 @@ import vega.hipe.gui.xmlutils.XMLTextEditor;
 import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationChangeEvent;
 import vega.uplink.planning.ObservationListener;
-import vega.uplink.planning.ObservationPointingSlice;
 import vega.uplink.planning.ObservationPor;
 import vega.uplink.planning.ObservationUtil;
-import vega.uplink.pointing.PointingBlock;
-import vega.uplink.pointing.PointingBlocksSlice;
-//import vega.uplink.pointing.Ptr;
-import vega.uplink.pointing.PtrChecker;
-import vega.uplink.pointing.PtrUtils;
 
 public class ObservationPorXmlEditor extends AbstractVariableEditorComponent<ObservationPor> implements ObservationListener{
 	/**
@@ -52,7 +42,6 @@ public class ObservationPorXmlEditor extends AbstractVariableEditorComponent<Obs
 	 */
 	private static final long serialVersionUID = 1L;
 	Observation obs;
-	//ObservationPor por;
 	XMLTextEditor editor;
 	boolean initialized;
 	public ObservationPorXmlEditor(){
@@ -89,8 +78,6 @@ public class ObservationPorXmlEditor extends AbstractVariableEditorComponent<Obs
 						ObservationPor temppor = ObservationUtil.readObsPorfromDoc(doc);
 						temppor.setObservation(obs.copy());
 						getPor().regenerate(temppor);
-						//por=temppor;
-						//obs.setCommanding(temppor);
 						editor.setText(getPor().toObsXml(0));
             		}catch(Exception e2){
 						JOptionPane.showMessageDialog(ObservationPorXmlEditor.this,
@@ -128,19 +115,14 @@ public class ObservationPorXmlEditor extends AbstractVariableEditorComponent<Obs
 	}
 	
 	public void setObsPor(ObservationPor por){
-		/*boolean oldListen=Observation.LISTEN;
-		Observation.LISTEN=false;*/
 		if (this.obs!=null) obs.removeObservationListener(this);
-		//this.por=por;
 		obs=por.getObservation();
 		if (!initialized){
 			init();
 		}
-			//this.por.getObservation().removeObservationListener(this);
 		
 		obs.addObservationListener(this);
 		editor.setText(getPor().toObsXml(0));
-		//Observation.LISTEN=oldListen;
 	}
     public boolean makeEditorContent() {
     	setObsPor(getValue());

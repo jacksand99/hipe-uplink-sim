@@ -48,10 +48,6 @@ import vega.uplink.pointing.gui.PointingBlocksSliceXmlEditor;
 import vega.uplink.pointing.gui.PtrXmlEditor;
 
 public class ObservationPanel extends JTabbedPane implements ObservationListener{
-//public class ObservationPanel{
-		/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 		Observation obs=null;
 		JTextField _fieldA;
@@ -63,52 +59,27 @@ public class ObservationPanel extends JTabbedPane implements ObservationListener
 		JButton saveButton;
 		JLabel    insLabel2;
 		JPanel metadataPanel;
-		//JPanel xmlPanel;
 		JPanel pointingPanel;
-		//JPanel sequencesPanel;
 		JPanel itlPanel;
-		//ObservationEditor xmlEditor;
 		ObservationPointingSliceXmlEditor pointingEditor;
-		//ObservationPorXmlEditor sequencesEditor;
 		ObservationItlEditor itlEditor;
 		boolean initialized=false;
 		boolean disableRefresh=false;
 		private final Logger LOG = Logger.getLogger(ObservationPanel.class.getName());
-		//JScrollPane sp;
-		//JScrollPane sp;
-		//JPanel commandingPanel = new JPanel();
 		
 		public ObservationPanel(){
 			super();
 			metadataPanel=new JPanel();
-			//xmlPanel=new JPanel();
 			pointingPanel=new JPanel();
-			//sequencesPanel=new JPanel();
 			itlPanel=new JPanel();
 
 			this.addTab("Metadata", metadataPanel);
-			//xmlEditor= new ObservationEditor();
-
-			//BoxLayout xmlLayout = new BoxLayout(xmlPanel,BoxLayout.PAGE_AXIS);
-			//xmlPanel.setLayout(xmlLayout);
-			
-
-			//xmlPanel.add(new BottomPanel(xmlPanel, xmlEditor));
-
-
-			//this.addTab("XML", new BottomPanel(this, xmlPanel));
 			
 			pointingEditor=new ObservationPointingSliceXmlEditor();
 			BoxLayout pointingLayout = new BoxLayout(pointingPanel,BoxLayout.PAGE_AXIS);
 			pointingPanel.setLayout(pointingLayout);			
 			pointingPanel.add(new BottomPanel(pointingPanel, pointingEditor));
 			this.addTab("Pointing", new BottomPanel(this, pointingPanel));
-
-			//sequencesEditor=new ObservationPorXmlEditor();
-			//BoxLayout sequencesLayout = new BoxLayout(sequencesPanel,BoxLayout.PAGE_AXIS);
-			//sequencesPanel.setLayout(sequencesLayout);			
-			//sequencesPanel.add(new BottomPanel(sequencesPanel, sequencesEditor));
-			//this.addTab("Commanding", new BottomPanel(this, sequencesPanel));
 			
 			itlEditor=new ObservationItlEditor();
 			BoxLayout itlLayout = new BoxLayout(itlPanel,BoxLayout.PAGE_AXIS);
@@ -157,12 +128,10 @@ public class ObservationPanel extends JTabbedPane implements ObservationListener
 	        
 	        ActionListener listener=new ActionListener() {
 		        public void actionPerformed(ActionEvent ae) {
-		        	System.out.println("action performed"+ae);
 		        	try {
 		        		disableRefresh=true;
 		        		final Logger LOG = Logger.getLogger(this.getClass().getName());
 		        		LOG.info("Setting new metadata");
-		        		//System.out.println("Setting new metadata");
 		        		boolean oldListen = Observation.LISTEN;
 		        		Observation.LISTEN=false;
 			        	obs.setName(_fieldA.getText());
@@ -181,10 +150,7 @@ public class ObservationPanel extends JTabbedPane implements ObservationListener
 						IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 						iae.initCause(e);
 						throw(iae);
-						// TODO Auto-generated catch block
-						//e.printStackTrace();
 					}
-		        	//insLabel2.setText(seq.getInstrument());
 		        }
 
 		      };
@@ -259,8 +225,6 @@ public class ObservationPanel extends JTabbedPane implements ObservationListener
 	        hGroup.addGroup(hComboGroup);
 	        layout.setHorizontalGroup(hGroup);
 	        layout.setVerticalGroup(vGroup);
-
-			//xmlEditor.setObservation(this.obs);
 	        saveButton.addActionListener(new ActionListener() {
 	        	 
 	            public void actionPerformed(ActionEvent e)
@@ -286,7 +250,6 @@ public class ObservationPanel extends JTabbedPane implements ObservationListener
 		          chooser.setMultiSelectionEnabled(false);
 		          
 		          int option = chooser.showSaveDialog(ObservationPanel.this);
-		          //File sf;
 		          if (option == JFileChooser.APPROVE_OPTION) {
 		            File sf = chooser.getSelectedFile();
 		            obs.setFileName(sf.getName());
@@ -306,7 +269,6 @@ public class ObservationPanel extends JTabbedPane implements ObservationListener
 							    "Error",
 							    JOptionPane.ERROR_MESSAGE);
 						e1.printStackTrace();
-						//editor.setText(ptr.toXml());
 					}	
 		}
 		
@@ -323,16 +285,13 @@ public class ObservationPanel extends JTabbedPane implements ObservationListener
 			if (!initialized) init();
 			else {
 				this.refreshMetadata();
-				//xmlEditor.setObservation(obs);
 				pointingEditor.setSlice((ObservationPointingSlice)obs.getPointing());
-				//sequencesEditor.setObsPor((ObservationPor)obs.getCommanding());
 				itlEditor.setObsPor((ObservationPor)obs.getCommanding());
 			}
 		}
 		@Override
 		public void observationChanged(ObservationChangeEvent event) {
 			this.refreshMetadata();
-			//xmlEditor.setObservation(obs);
 			
 		}
 		@Override
@@ -343,18 +302,14 @@ public class ObservationPanel extends JTabbedPane implements ObservationListener
 		@Override
 		public void metadataChanged(ObservationChangeEvent event) {
 			this.refreshMetadata();
-			//xmlEditor.setObservation(obs);
 			
 		}
 		@Override
 		public void pointingChanged(ObservationChangeEvent event) {
-			//xmlEditor.setObservation(obs);
-			//pointingEditor.setSlice(obs.getPointing());
 			
 		}
 		@Override
 		public void commandingChanged(ObservationChangeEvent event) {
-			//sequencesEditor.setObsPor((ObservationPor)obs.getCommanding());
 			
 		}
 }

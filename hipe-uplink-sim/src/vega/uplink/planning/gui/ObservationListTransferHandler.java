@@ -4,9 +4,6 @@ import javax.swing.*;
 
 import org.jfree.util.Log;
 
-import vega.uplink.planning.Observation;
-
-import java.awt.*;
 import java.awt.datatransfer.*;
 import java.util.logging.Logger;
  
@@ -20,8 +17,7 @@ public class ObservationListTransferHandler extends TransferHandler {
     private int addCount = 0;  //Number of items added.
     private final Logger LOG = Logger.getLogger(ObservationListTransferHandler.class.getName());        
     public boolean canImport(TransferHandler.TransferSupport info) {
-    	Log.info("canImport");
-        // Check for String flavor
+    	LOG.info("canImport");
         if (!info.isDataFlavorSupported(DataFlavor.stringFlavor)) {
             return false;
         }

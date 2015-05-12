@@ -27,8 +27,6 @@ public class ObservationListModel extends DefaultListModel<Observation> implemen
 	@Override
 	public void observationChanged(ObservationChangeEvent event) {
 		scheduleChanged();
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -39,7 +37,6 @@ public class ObservationListModel extends DefaultListModel<Observation> implemen
 		}
 		this.removeAllElements();
 		Observation[] obs = schedule.getObservations();
-		// TODO Auto-generated method stub
         for (int i=0;i<obs.length;i++){
         	this.addElement(obs[i]);
         	obs[i].addObservationListener(this);
@@ -47,7 +44,6 @@ public class ObservationListModel extends DefaultListModel<Observation> implemen
 	}
 	@Override
 	public void metadataChanged(ObservationChangeEvent event) {
-		// TODO Auto-generated method stub
 		scheduleChanged();
 	}
 	@Override

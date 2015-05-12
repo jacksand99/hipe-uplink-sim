@@ -28,9 +28,6 @@ public class ObservationSequence extends Sequence{
 		
 		
 	}
-	/*public String getUniqueID(){
-		//return thi
-	}*/
 	
 	
 	public ObservationSequence (Observation parent,ObservationEvent executionEvent,long executionDelta,String sequenceName,String sequenceID,String sequenceFlag,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles) throws ParseException{
@@ -46,9 +43,6 @@ public class ObservationSequence extends Sequence{
 		this(parent,executionEvent,executionDelta,sequenceName,sequenceID,INSERT_FLAG,'P','S',null,null);
 	
 	}
-	/*public ObservationSequence copy(){
-		ObservationSequence result=new ObservationSequence(parent,executionEvent
-	}*/
 	public ObservationSequence (Observation parent,ObservationEvent executionEvent,long executionDelta,Sequence seq){
 		this(parent,executionEvent,executionDelta,seq.getName(),seq.getUniqueID(),seq.getFlag(),seq.getSource(),seq.getDestination(),seq.getParameters(),seq.getProfiles());
 	}
@@ -86,8 +80,6 @@ public class ObservationSequence extends Sequence{
 	@Override
 	public Date getExecutionDate() {
 		return new Date(parent.getDateForEvent(executionTimeEvent).getTime()+executionTimeDelta);
-		// TODO Auto-generated method stub
-		//return null;
 	}
 
 

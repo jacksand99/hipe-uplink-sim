@@ -153,7 +153,6 @@ public class ObservationEditor extends AbstractVariableEditorComponent<Observati
 	          chooser.setMultiSelectionEnabled(false);
 	          
 	          int option = chooser.showSaveDialog(ObservationEditor.this);
-	          //File sf;
 	          if (option == JFileChooser.APPROVE_OPTION) {
 	            File sf = chooser.getSelectedFile();
 	            obs.setFileName(sf.getName());
@@ -173,7 +172,6 @@ public class ObservationEditor extends AbstractVariableEditorComponent<Observati
 						    "Error",
 						    JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
-					//editor.setText(ptr.toXml());
 				}	
 	}
 	

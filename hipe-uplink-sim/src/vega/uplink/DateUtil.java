@@ -207,26 +207,19 @@ public class DateUtil {
 			GregorianCalendar c=new GregorianCalendar(tz);
 			c.setTime(result);
 			int year = c.get(Calendar.YEAR);
-			//System.out.println(year);
 			if (year<100){
-				//System.out.println("Could not read "+zuluTime+" adding 20. Year is "+result.getYear());
 				result=DateUtil.DOYToDate("20"+zuluTime);
 			}
 			return result;
 		} catch (ParseException e) {
 			java.text.SimpleDateFormat dateFormat2=new java.text.SimpleDateFormat("yyyy-D'T'HH:mm:ss'Z'");
 			dateFormat2.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-			
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
 			Date result = dateFormat2.parse(zuluTime);
 			
 			GregorianCalendar c=new GregorianCalendar(tz);
 			c.setTime(result);
 			int year = c.get(Calendar.YEAR);
-			//System.out.println(year);
 			if (year<100){
-				//System.out.println("Could not read "+zuluTime+" adding 20. Year is "+result.getYear());
 				result=DateUtil.DOYToDate("20"+zuluTime);
 			}
 			return result;

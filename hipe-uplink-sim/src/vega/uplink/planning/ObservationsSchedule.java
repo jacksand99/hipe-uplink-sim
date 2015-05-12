@@ -67,29 +67,15 @@ public class ObservationsSchedule extends ListContext {
 		}
 		
 	}
-	/*public void removeObs(int index  ){
-
-		getRefs().remove(index);
-		Iterator<ObservationListener> it = listeners.iterator();
-		while (it.hasNext()){
-			ObservationListener listener = it.next();
-			listener.scheduleChanged();
-		}
-		
-	}*/
 	
 	public Observation[] getObservations(){
 		Set<ProductRef> allRefs = this.getAllRefs();
 		TreeSet<Observation> ordered=new TreeSet<Observation>();
-		//TreeSet<ProductRef> ordered=new TreeSet<ProductRef>(allRefs);
 		Observation[] result=new Observation[allRefs.size()];
 		Iterator<ProductRef> it = allRefs.iterator();
-		//int locator=0;
 		while (it.hasNext()){
 			try {
 				ordered.add((Observation) it.next().getProduct());
-				//result[locator]=(Observation) it.next().getProduct();
-				//locator++;
 				
 			} catch (Exception e) {
 				IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());

@@ -1,6 +1,5 @@
 package vega.uplink.planning.gui;
 
-import herschel.ia.gui.kernel.Selection;
 import herschel.ia.gui.kernel.VariableSelection;
 import herschel.ia.gui.kernel.dnd.DnDSelection;
 import herschel.ia.gui.kernel.dnd.DragSelection;
@@ -23,14 +22,11 @@ public class ObservationList extends JList<Observation> implements DropSelection
 	public ObservationList(ObservationListModel observationListModel) {
 		super(observationListModel);
 		model=observationListModel;
-		//this.setTransferHandler(SelectionTransferHandler());
 		SelectionTransferHandler.register(this);
-		// TODO Auto-generated constructor stub
 	}
 
 	///@Override
 	public Class<VariableSelection> getSelectionType() {
-		// TODO Auto-generated method stub
 		return VariableSelection.class;
 	}
 
@@ -44,7 +40,6 @@ public class ObservationList extends JList<Observation> implements DropSelection
 		}
 		
 		selection=arg0;
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -54,10 +49,5 @@ public class ObservationList extends JList<Observation> implements DropSelection
 		return selection;
 	}
 
-	//@Override
-	/*public Selection getSelection() {
-		// TODO Auto-generated method stub
-		return selection;
-	}*/
 
 }

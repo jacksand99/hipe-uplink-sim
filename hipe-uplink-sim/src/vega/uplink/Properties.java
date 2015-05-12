@@ -91,15 +91,11 @@ public class Properties {
 			List<String> value;
 			if (UserPreferences.hasKey(path, key)){
 				String valueString = UserPreferences.get(path, key);
-				//List<String> value;
-			//if (valueString!=null){
 				value = Validator.getList(valueString);
 			}else{
 				value=Configuration.getList(property);
-				//UserPreferences.
 			}
 		
-		// TODO Auto-generated method stub
 		return value;
 	}
 	/**
@@ -119,10 +115,8 @@ public class Properties {
 		if (UserPreferences.hasKey(path, key)){
 			valueString = UserPreferences.get(path, key);
 		}else{
-		//if (valueString==null){
 			valueString=Configuration.getProperty(property);
 		}
-		// TODO Auto-generated method stub
 		return valueString;
 	}
 	
@@ -145,27 +139,19 @@ public class Properties {
 		}else{
 			try{
 				result = new Color(Configuration.getInteger(property));
-				//System.out.println("Color is an integer");
 			}catch (herschel.share.util.ConfigurationException ce){
 				result= getColorFromList(property);
-				//result = new Color(getColorInt(property));
-				//System.out.println("Color is a list");
 
 			}
 			
-		//if (valueString==null){
-			//return result;
 		}
 		return result;
 	}
 	
 	private static Color getColorFromList(String preference){
 		List<String> rgb = Configuration.getList(preference);
-		//Color color = new Color(alignmentX, alignmentX, alignmentX);
-		//color.
 		Color color = new Color(Integer.parseInt(rgb.get(0)),Integer.parseInt(rgb.get(1)),Integer.parseInt(rgb.get(2)));
 		return color;
-		//return ColorPreferenceHandler.color2int(color);
 	}
 	
 

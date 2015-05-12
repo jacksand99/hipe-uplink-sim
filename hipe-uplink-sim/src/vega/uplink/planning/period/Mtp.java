@@ -2,16 +2,11 @@ package vega.uplink.planning.period;
 
 import java.util.Date;
 import java.util.Iterator;
-//import java.util.HashMap;
-import java.util.TreeMap;
 
 public class Mtp extends Period{
-	//private TreeMap<Integer,Stp> stps;
 	public static String TAG="MTP";
 	public Mtp(int number, Date startDate, Date endDate) {
 		super(number, startDate, endDate);
-		//stps=new TreeMap<Integer,Stp>();
-		// TODO Auto-generated constructor stub
 	}
 	public Mtp( int number){
 		this(number,new Date(2526802497000L), new Date(65277473000L));
@@ -19,29 +14,17 @@ public class Mtp extends Period{
 
 	
 	public void addStp(Stp stp){
-		//stps.put(stp.getNumber(), stp);
 		this.setProduct("STP-"+stp.getNumber(), stp);
 
 		if (this.getStartDate().after(stp.getStartDate())) this.setStartDate(stp.getStartDate());
 		if (this.getEndDate().before(stp.getEndDate())) this.setEndDate(stp.getEndDate());
 	}
-	/*public Stp getStp(int stpNumber){
-		return stps.get(stpNumber);
-	}*/
 	public Stp getStp(int stpNumber){
-		//return vstps.get(vstpNumber);
 		Stp result=null;
 		try {
 			result= (Stp) this.getProduct("STP-"+stpNumber);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			/*IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
-			iae.initCause(e);
-			e.printStackTrace();
-			throw(iae);*/
-			/*Stp result = new Stp(stpNumber);
-			this.addStp(result);
-			return result;*/
+
 		} 
 		if (result==null){
 			result = new Stp(stpNumber);
@@ -51,12 +34,6 @@ public class Mtp extends Period{
 		return result;
 	}
 
-	
-	/*public Stp[] getStps(){
-		Stp[] result=new Stp[stps.size()];
-		stps.values().toArray(result);
-		return result;
-	}*/
 	public String getTag(){
 		return Mtp.TAG;
 	}
@@ -77,7 +54,6 @@ public class Mtp extends Period{
 			} 
 			counter++;
 		}
-		//vstps.values().toArray(result);
 		return result;
 	}
 	

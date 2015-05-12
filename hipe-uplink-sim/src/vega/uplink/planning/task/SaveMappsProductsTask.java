@@ -1,8 +1,5 @@
 package vega.uplink.planning.task;
 
-/*public class SaveMappsProductsTask {
-
-}*/
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +17,6 @@ import herschel.ia.gui.apps.modifier.Modifier;
 import herschel.ia.gui.kernel.util.field.FileSelectionMode;
 import herschel.ia.task.Task;
 import herschel.ia.task.TaskParameter;
-/*import vega.uplink.commanding.Por;
-import vega.uplink.commanding.PorUtils;*/
 
 public class SaveMappsProductsTask extends Task {
 	public SaveMappsProductsTask(){
@@ -31,11 +26,6 @@ public class SaveMappsProductsTask extends Task {
         parameter.setType(TaskParameter.IN);
         parameter.setMandatory(true);
         parameter.setDescription("The schedule to be exported"); //6
-
-		/*TaskParameter pdfm = new TaskParameter("pdfm", Pdfm.class);
-        pdfm.setType(TaskParameter.IN);
-        pdfm.setMandatory(false);
-        pdfm.setDescription("The PDFM to be included unt the PTR"); //6*/
 
         TaskParameter plan = new TaskParameter("planning", Plan.class);
         plan.setType(TaskParameter.IN);
@@ -65,7 +55,6 @@ public class SaveMappsProductsTask extends Task {
 		Plan plan = (Plan) getParameter("planning").getValue();
 		Ptr ptr=schedule.getPtr();
 		Pdfm pdfm=schedule.getPdfm();
-		//Pdfm pdfm=(Pdfm) getParameter("pdfm").getValue();
         if (ptr == null) {
             throw (new NullPointerException("Missing ptr value"));
         }
@@ -102,15 +91,12 @@ public class SaveMappsProductsTask extends Task {
 			IllegalArgumentException ioe = new IllegalArgumentException(e.getMessage());
 			ioe.initCause(e);
 			throw(ioe);
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
 		}
 	}
 	public Map<String,Modifier> getCustomModifiers(){
 
 		HashMap<String,Modifier> result=new HashMap<String,Modifier>();
 		JFilePathModifier filePathModifier = new JFilePathModifier(FileSelectionMode.DIRECTORY);
-		//((Component) filePathModifier).
 		filePathModifier.setValue(Properties.getProperty(Properties.DEFAULT_PLANNING_DIRECTORY));
 		result.put("path", filePathModifier);
 		return result;

@@ -41,13 +41,6 @@ public class ObservationPor extends Por{
 		}
 		return result;
 	}
-	/*public void sed(int sed){
-		this.sed=sed;
-		SequenceInterface[] seqs=this.getSequences();
-		for (int i=0;i<seqs.length;i++){
-			seqs[i].setUniqueID("P"+this.sed++);
-		}
-	}*/
 	
 	public static String getUniqueID(){
 		counter++;

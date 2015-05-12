@@ -39,7 +39,6 @@ import de.jaret.util.misc.FormatHelper;
  * @version $Id: JaretDateFormatter.java 243 2007-02-11 22:08:49Z olk $
  */
 public class DateFormatter extends JaretDateFormatter implements IIteratorFormatter{
-	//private final Logger LOG = Logger.getLogger(DateFormatter.class.getName());
     Locale _locale;
     private DateFormat _df;
     private DateFormat _df2;
@@ -210,7 +209,6 @@ public class DateFormatter extends JaretDateFormatter implements IIteratorFormat
 
 	@Override
 	public String getLabel(JaretDate arg0, Format arg1) {
-		// TODO Auto-generated method stub
 		return DateUtil.dateToZulu(arg0.getDate());
 	}
 

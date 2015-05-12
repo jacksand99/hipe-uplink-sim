@@ -17,8 +17,6 @@ public class ObservationOffsetScan extends OffsetScan implements ObservationOffs
 	public ObservationOffsetScan copy(){
 		ObservationOffsetScan result = new ObservationOffsetScan(parent,startTimeEvent,startTimeDelta,super.copy());
 		return result;
-		/*ObservationOffsetScan result = new ObservationOffsetScan(super.copy());
-		return result;*/
 	}
 	
 	/**
@@ -29,7 +27,6 @@ public class ObservationOffsetScan extends OffsetScan implements ObservationOffs
 	 * @param org
 	 */
 	public ObservationOffsetScan (Observation parent,ObservationEvent startEvent,long startDelta,OffsetScan org){
-		//org.gets
 		super(org);
 		this.getChild("startTime").setValue(startEvent.getName()+ObservationUtil.getOffset(startDelta));
 
@@ -53,8 +50,6 @@ public class ObservationOffsetScan extends OffsetScan implements ObservationOffs
 	}
 	public String getStartTime() {
 		return DateUtil.dateToZulu(getStartDate());
-		// TODO Auto-generated method stub
-		//return null;
 	}
 
 
@@ -72,28 +67,22 @@ public class ObservationOffsetScan extends OffsetScan implements ObservationOffs
 		long newTime=time.getTime();
 		long delta = newTime-oldStartDate;
 		parent.shiftEvent(this.getStartEvent(), delta);
-		//throw new IllegalArgumentException("Can not set the start time to an ObservationPointingBlock");
-		// TODO Auto-generated method stub
 		
 	}
 
 	
 	public String toXml(int indent){
 		super.setStartTime(getStartTime());
-		//super.setEndTime(getEndTime());
 		return super.toXml(indent);
 	}
 	
 	public String toObsXml(int indent){
 		PointingElement tempElement=new PointingElement(this);
 		this.getChild("startTime").setValue(getStartEvent().getName()+ObservationUtil.getOffset(getStartDelta()));
-		//this.getChild("endTime").setValue(getEndEvent().getName()+ObservationUtil.getOffset(getEndDelta()));
-
 		return tempElement.toXml(indent);
 		
 	}
 	public void setParent(Observation obs) {
-		// TODO Auto-generated method stub
 		parent=obs;
 		
 	}

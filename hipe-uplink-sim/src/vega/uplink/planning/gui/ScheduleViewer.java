@@ -18,13 +18,10 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -45,17 +42,12 @@ import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
 
 import rosetta.uplink.pointing.RosettaPtrChecker;
 import de.jaret.util.date.JaretDate;
 import de.jaret.util.ui.timebars.swing.TimeBarViewer;
 import vega.IconResources;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
-import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.commanding.Fecs;
 import vega.uplink.commanding.Simulation;
@@ -73,7 +65,6 @@ import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
 import vega.uplink.pointing.exclusion.AbstractExclusion;
 import vega.uplink.pointing.gui.PtrXmlEditor;
-//import vega.uplink.pointing.gui.PtrXmlEditor.PrintAction;
 
 public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 	/**
@@ -253,9 +244,6 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
             {
  				try {
  					Observation obsToDel = list.getSelectedValue();
- 					//int index=list.getSelectedIndex();
- 					//LOG.info("Request to delete the observation index "+index);
- 					//schedule.removeObservation(index);
  					schedule.removeObservation(obsToDel);
 				}
 				catch (Exception e1) {
@@ -414,7 +402,6 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 		menus.retarget(Retarget.SAVE, save);
         menus.insert(new Insert(MENU, MAIN, FILE_ADDON), saveAsAspenSchedule);
 		
-        //menus.insert(new Insert(MENU, MAIN, FILE_ADDON), saveastxt);
 
         menus.insert(new Insert(MENU, MAIN, EDIT_ADDON), checkFD);
         menus.insert(new Insert(MENU, MAIN, EDIT_ADDON), checkSanity);
@@ -507,8 +494,6 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 	          //File sf;
 	          if (option == JFileChooser.APPROVE_OPTION) {
 	            File sf = chooser.getSelectedFile();
-	            //schedule.setFileName(sf.getName());
-	            //schedule.setPath(sf.getParent());
  
 	            AspenObservationSchedule.saveAspenScheduleToFile(sf.getAbsolutePath(), schedule);
 	            
@@ -685,9 +670,6 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 					    JOptionPane.ERROR_MESSAGE);
 				e2.printStackTrace();
 				return;
-
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
 		}
 	}
 	
@@ -843,7 +825,6 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 						    "Error",
 						    JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
-					//editor.setText(ptr.toXml());
 				}	
 	}
 }

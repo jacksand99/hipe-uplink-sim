@@ -17,9 +17,6 @@ public class ObservationOffsetFixed extends OffsetFixed implements ObservationOf
 	public ObservationOffsetFixed copy(){
 		ObservationOffsetFixed result = new ObservationOffsetFixed(parent,startTimeEvent,startTimeDelta,super.copy());
 		return result;
-
-		/*ObservationOffsetFixed result = new ObservationOffsetFixed(super.copy());
-		return result;*/
 	}
 
 	
@@ -52,8 +49,6 @@ public class ObservationOffsetFixed extends OffsetFixed implements ObservationOf
 	}
 	public String getStartTime() {
 		return DateUtil.dateToZulu(getStartDate());
-		// TODO Auto-generated method stub
-		//return null;
 	}
 
 
@@ -71,28 +66,22 @@ public class ObservationOffsetFixed extends OffsetFixed implements ObservationOf
 		long newTime=time.getTime();
 		long delta = newTime-oldStartDate;
 		parent.shiftEvent(this.getStartEvent(), delta);
-		//throw new IllegalArgumentException("Can not set the start time to an ObservationPointingBlock");
-		// TODO Auto-generated method stub
 		
 	}
 
 	
 	public String toXml(int indent){
 		super.setStartTime(getStartTime());
-		//super.setEndTime(getEndTime());
 		return super.toXml(indent);
 	}
 	
 	public String toObsXml(int indent){
 		PointingElement tempElement=new PointingElement(this);
 		this.getChild("startTime").setValue(getStartEvent().getName()+ObservationUtil.getOffset(getStartDelta()));
-		//this.getChild("endTime").setValue(getEndEvent().getName()+ObservationUtil.getOffset(getEndDelta()));
-
 		return tempElement.toXml(indent);
 		
 	}
 	public void setParent(Observation obs) {
-		// TODO Auto-generated method stub
 		parent=obs;
 		
 	}

@@ -17,9 +17,6 @@ public class ObservationOffsetRaster extends OffsetRaster implements Observation
 	public ObservationOffsetRaster copy(){
 		ObservationOffsetRaster result = new ObservationOffsetRaster(parent,startTimeEvent,startTimeDelta,super.copy());
 		return result;
-
-		/*ObservationOffsetRaster result = new ObservationOffsetRaster(super.copy());
-		return result;*/
 	}
 
 	/**
@@ -54,8 +51,6 @@ public class ObservationOffsetRaster extends OffsetRaster implements Observation
 	}
 	public String getStartTime() {
 		return DateUtil.dateToZulu(getStartDate());
-		// TODO Auto-generated method stub
-		//return null;
 	}
 
 
@@ -73,28 +68,21 @@ public class ObservationOffsetRaster extends OffsetRaster implements Observation
 		long newTime=time.getTime();
 		long delta = newTime-oldStartDate;
 		parent.shiftEvent(this.getStartEvent(), delta);
-		//throw new IllegalArgumentException("Can not set the start time to an ObservationPointingBlock");
-		// TODO Auto-generated method stub
-		
 	}
 
 	
 	public String toXml(int indent){
 		super.setStartTime(getStartTime());
-		//super.setEndTime(getEndTime());
 		return super.toXml(indent);
 	}
 	
 	public String toObsXml(int indent){
 		PointingElement tempElement=new PointingElement(this);
 		this.getChild("startTime").setValue(getStartEvent().getName()+ObservationUtil.getOffset(getStartDelta()));
-		//this.getChild("endTime").setValue(getEndEvent().getName()+ObservationUtil.getOffset(getEndDelta()));
-
 		return tempElement.toXml(indent);
 		
 	}
 	public void setParent(Observation obs) {
-		// TODO Auto-generated method stub
 		parent=obs;
 		
 	}

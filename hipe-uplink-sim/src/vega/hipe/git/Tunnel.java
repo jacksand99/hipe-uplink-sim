@@ -22,7 +22,7 @@ class Tunnel extends Thread{
 	Channel channel;
 	Session session;
 	private int LOCAL_PORT=1052;
-	private static final Logger LOG = Logger.getLogger(PorUtils.class.getName());
+	private static final Logger LOG = Logger.getLogger(Tunnel.class.getName());
 	boolean init=false;
 
 	
@@ -43,8 +43,6 @@ class Tunnel extends Thread{
 	    		  PopupMessageHandler popup = new PopupMessageHandler();
 	    		  remotePath=popup.askForInput(null,"Remote git path",System.getProperty("user.name")+"@localhost:"+System.getProperty("user.home")+"/GIT.git"); 
 	    	  }
-
-	    	//String remotePath=Properties.getProperty("vega.hipe.git.remotePath");
 	    	finalHost=remotePath.substring(remotePath.indexOf("@")+1,remotePath.indexOf(":"));
   	      String tunnelHost=null;
   	      PopupMessageHandler popup = new PopupMessageHandler();
@@ -59,26 +57,14 @@ class Tunnel extends Thread{
     	  }
 
   	      String tunnelUser=thost.substring(0, thost.indexOf('@'));
-  	      //System.out.println("*"+thost);
-  	      //System.out.println("**"+tunnelUser);
   	      tunnelHost=thost.substring(thost.indexOf('@')+1);
-  	      //System.out.println("****"+tunnelHost);
-  	      
-  	      
   	      JSch jsch=new JSch();
-  	      //System.out.println("Starting thread session:"+user+"@"+tunnelHost+" 22 ");
   	      Session session;
   	      session=jsch.getSession(tunnelUser, tunnelHost, 22);
   	      UserInfo ui=new MyUserInfo();
   	      session.setUserInfo(ui);
-
 	      session.connect();
-
-	      //channel=session.openChannel("shell");
-	      //channel.connect();
-	      
 	      int assinged_port=session.setPortForwardingL(LOCAL_PORT, this.finalHost, 22);
-	      //session.setPortForwardingR(22, lhost, lport);
 	      LOG.info("localhost:"+assinged_port+" -> "+finalHost+":"+22);
 	      init=true;
 	    }

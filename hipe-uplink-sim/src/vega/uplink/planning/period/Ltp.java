@@ -2,16 +2,11 @@ package vega.uplink.planning.period;
 
 import java.util.Date;
 import java.util.Iterator;
-//import java.util.HashMap;
-import java.util.TreeMap;
 
 public class Ltp extends Period{
 	public static String TAG="LTP";
-	//private TreeMap<Integer,Mtp> mtps;
 	public Ltp(int number, Date startDate, Date endDate) {
 		super(number, startDate, endDate);
-		//mtps=new TreeMap<Integer,Mtp>();
-		// TODO Auto-generated constructor stub
 	}
 	public Ltp( int number){
 		this(number,new Date(2526802497000L), new Date(65277473000L));
@@ -21,29 +16,17 @@ public class Ltp extends Period{
 		return Ltp.TAG;
 	}
 	public void addMtp(Mtp mtp){
-		//mtps.put(mtp.getNumber(), mtp);
 		this.setProduct("MTP-"+mtp.getNumber(), mtp);
 
 		if (this.getStartDate().after(mtp.getStartDate())) this.setStartDate(mtp.getStartDate());
 		if (this.getEndDate().before(mtp.getEndDate())) this.setEndDate(mtp.getEndDate());
 	}
-	/*public Mtp getMtp(int mtpNumber){
-		return mtps.get(mtpNumber);
-	}*/
 	public Mtp getMtp(int mtpNumber){
 		Mtp result=null;
-		//return vstps.get(vstpNumber);
 		try {
 			result= (Mtp) this.getProduct("MTP-"+mtpNumber);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			/*IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
-			iae.initCause(e);
-			e.printStackTrace();
-			throw(iae);*/
-			/*Mtp result = new Mtp(mtpNumber);
-			this.addMtp(result);
-			return result;*/
+
 		} 
 		if (result==null){
 			result = new Mtp(mtpNumber);
@@ -53,12 +36,6 @@ public class Ltp extends Period{
 		return result;
 	}
 
-	
-	/*public Mtp[] getMtps(){
-		Mtp[] result=new Mtp[mtps.size()];
-		mtps.values().toArray(result);
-		return result;
-	}*/
 	public Mtp[] getMtps(){
 		
 		Mtp[] result=new Mtp[this.getRefs().size()];
@@ -68,7 +45,6 @@ public class Ltp extends Period{
 			try {
 				result[counter]=(Mtp)this.getProduct(it.next());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 				iae.initCause(e);
 				e.printStackTrace();
@@ -76,7 +52,6 @@ public class Ltp extends Period{
 			} 
 			counter++;
 		}
-		//vstps.values().toArray(result);
 		return result;
 	}
 	public Stp[] getStps(){

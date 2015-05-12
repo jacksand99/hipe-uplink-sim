@@ -7,6 +7,7 @@ import herschel.share.interpreter.InterpreterUtil;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 
@@ -36,27 +37,19 @@ public class HipeGitSshTunnel extends HipeGit{
     public  static String TUNNEL_SERVER_PASSWORD="vega.hipe.git.tunnel.password";
 
     static Tunnel tunnel;
+	private static final Logger LOG = Logger.getLogger(HipeGitSshTunnel.class.getName());
 
 	public static void startTunnel(){
 		Tunnel tun=new Tunnel();
 		SwingUtilities.invokeLater(tun);
 		HipeGit.TUNNEL=true;
-		System.out.println("Tunnel started");
-		/*try {
-			Thread.sleep(10000);
-			HipeGit.getInstance().gitPull();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+		LOG.info("Tunnel started");
+		//System.out.println("Tunnel started");
 	}
 
 
  
     public void init() throws IOException {
-    	/*localPath=Properties.getProperty(LOCAL_PATH_PROPERTY);
-    	remotePath=Properties.getProperty(REMOTE_PATH_PROPERTY);
-    	password=Properties.getProperty(PASSWORD_PROPERTY);*/
 	      try{
 	    	  localPath=Properties.getProperty(LOCAL_PATH_PROPERTY);
   	      }catch (Exception e){
@@ -97,7 +90,8 @@ public class HipeGitSshTunnel extends HipeGit{
         	      return super.createSession(hs, user, "localhost", LOCAL_PORT, fs);
         	    }
         	    catch(Exception e){
-        	      System.out.println(e);
+        	      LOG.warning(e.getMessage());
+        	      //System.out.println(e);
         	      e.printStackTrace();
         	      IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
         	      iae.initCause(e);

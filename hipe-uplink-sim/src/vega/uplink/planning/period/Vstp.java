@@ -6,7 +6,6 @@ public class Vstp extends Period {
 	public static String TAG="VSTP";
 	public Vstp(int number, Date startDate, Date endDate) {
 		super(number, startDate, endDate);
-		// TODO Auto-generated constructor stub
 	}
 	public Vstp(int number,Date startDate){
 		this(number,startDate,new Date(65277473000L));

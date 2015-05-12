@@ -1,7 +1,5 @@
 package vega.uplink.planning.period;
 
-import herschel.ia.dataset.DateParameter;
-import herschel.ia.dataset.Product;
 import herschel.ia.dataset.StringParameter;
 import herschel.ia.pal.MapContext;
 import herschel.share.fltdyn.time.FineTime;
@@ -9,31 +7,18 @@ import herschel.share.fltdyn.time.FineTime;
 import java.util.Date;
 
 import vega.uplink.DateUtil;
-import vega.uplink.pointing.PointingBlock;
-
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public abstract class Period extends MapContext implements Comparable<Period>{
-	/*private Date startDate;
-	private Date endDate;
-	private int number;*/
 	public static String TAG="PERIOD";
 	public Period (int number,Date startDate,Date endDate){
 		super();
 		this.getMeta().set("number", new StringParameter(""+number));
 		this.setStartDate(new FineTime(startDate));
 		this.setEndDate(new FineTime(endDate));
-		//this.getMeta().set("startDate", new DateParameter(new FineTime(startDate)));
-		//this.getMeta().set("endDate", new DateParameter(new FineTime(endDate)));
-		
-		//this.number=number;
-		//this.startDate=startDate;
-		//this.endDate=endDate;
 	}
 	public void addSubPeriod(Period period){
-		//mtps.put(mtp.getNumber(), mtp);
 		this.setProduct(period.getTag()+"-"+period.getNumber(), period);
 
 		if (this.getStartDate().after(period.getStartDate())) this.setStartDate(period.getStartDate());
@@ -49,13 +34,6 @@ public abstract class Period extends MapContext implements Comparable<Period>{
 		
 	}
 	
-	/*public Date getStartDate(){
-		return ((FineTime)this.getMeta().get("startDate").getValue()).toDate();
-	}*/
-	
-	/*public Date getEndDate(){
-		return endDate;
-	}*/
 
 	//@Override
 	public int compareTo(Period o) {
@@ -148,32 +126,25 @@ public abstract class Period extends MapContext implements Comparable<Period>{
 
 			}
 			if (startTime==null || endTime==null) throw new IllegalArgumentException("Could not find startTime or endTime of the node");
-			//Date startTime = DateUtil.zuluToDate(((Element)node).getElementsByTagName("startTime").item(0).getNodeValue());
-			//Date endTime = DateUtil.zuluToDate(((Element)node).getElementsByTagName("endTime").item(0).getNodeValue());
 			if (node.getNodeName().equals("VSTP")) result=new Vstp(number,startTime,endTime);
 			if (node.getNodeName().equals("STP")) result=new Stp(number,startTime,endTime);
 			if (node.getNodeName().equals("MTP")) result=new Mtp(number,startTime,endTime);
 			if (node.getNodeName().equals("LTP")) result=new Ltp(number,startTime,endTime);
 			if (node.getNodeName().equals("PLAN")) result=new Plan(number,startTime,endTime);
-			//int nChilds = childs.getLength();
 			for (int i=0;i<nChilds;i++){
 				Node cNode = childs.item(i);
 				if (!cNode.getNodeName().equals("startTime") && !cNode.getNodeName().equals("endTime")){
 					Period tempPeriod = Period.readFromNode(cNode);
-					//System.out.println(tempPeriod.toXml());
 					if (tempPeriod!=null){
-						//System.out.println(tempPeriod.toXml());
 						result.addSubPeriod(tempPeriod);
 					}
 				}
 			}
 			if (result!=null){
-				//System.out.println(result.toXml());
 				return result;
 			}
 			else {
 				IllegalArgumentException iae = new IllegalArgumentException("Could not read period "+node.getNodeName());
-				//iae.initCause(e);
 				throw (iae);
 				
 			}
@@ -185,12 +156,5 @@ public abstract class Period extends MapContext implements Comparable<Period>{
 		}
 	}
 	
-	/*public void setStartDate(Date startDate){
-		this.startDate=startDate;
-	}
-	
-	public void setEndDate(Date endDate){
-		this.endDate=endDate;
-	}*/
 
 }

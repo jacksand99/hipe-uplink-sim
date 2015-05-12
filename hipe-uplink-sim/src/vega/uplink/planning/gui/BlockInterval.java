@@ -10,9 +10,6 @@ class BlockInterval extends IntervalImpl{
 	BlockInterval (PointingBlock block){
 		super();
 		this.block=block;
-		//JaretDate.setJaretDateFormatter(new DateFormatter());
-		//JaretDate jaretBegin = new JaretDate(block.getStartTime());
-		//jaretBegin.setJaretDateFormatter(new DateFormatter());
 		this.setBegin(new JaretDate(block.getStartTime()));
 		this.setEnd(new JaretDate(block.getEndTime()));
 		

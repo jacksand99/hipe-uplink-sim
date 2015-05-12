@@ -122,7 +122,6 @@ public class PlanningTimeBarRenderer implements TimeBarRenderer {
   		
   	    dragSource = new DragSource();
   	    dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
-  	    //this.setDragEnabled(true);
   	    
   	  }
 

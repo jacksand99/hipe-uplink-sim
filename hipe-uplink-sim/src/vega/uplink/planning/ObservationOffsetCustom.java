@@ -42,8 +42,6 @@ public class ObservationOffsetCustom extends OffsetCustom implements Observation
 	}
 	public String getStartTime() {
 		return DateUtil.dateToZulu(getStartDate());
-		// TODO Auto-generated method stub
-		//return null;
 	}
 
 
@@ -61,28 +59,20 @@ public class ObservationOffsetCustom extends OffsetCustom implements Observation
 		long newTime=time.getTime();
 		long delta = newTime-oldStartDate;
 		parent.shiftEvent(this.getStartEvent(), delta);
-		//throw new IllegalArgumentException("Can not set the start time to an ObservationPointingBlock");
-		// TODO Auto-generated method stub
 		
 	}
 
 	public void addChild(PointingElement element){
-		/*if (element.getName().equals("startTime")){
-			Thread.dumpStack();
-		}*/
 		super.addChild(element);
 	}
 	public String toXml(int indent){
 		super.setStartTime(getStartTime());
-		//super.setEndTime(getEndTime());
 		return super.toXml(indent);
 	}
 	
 	public String toObsXml(int indent){
 		PointingElement tempElement=new PointingElement(this);
 		this.getChild("startTime").setValue(getStartEvent().getName()+ObservationUtil.getOffset(getStartDelta()));
-		//this.getChild("endTime").setValue(getEndEvent().getName()+ObservationUtil.getOffset(getEndDelta()));
-
 		return tempElement.toXml(indent);
 		
 	}
@@ -94,13 +84,9 @@ public class ObservationOffsetCustom extends OffsetCustom implements Observation
 	public ObservationOffsetCustom copy(){
 		ObservationOffsetCustom result = new ObservationOffsetCustom(parent,startTimeEvent,startTimeDelta,super.copy());
 		return result;
-
-		/*ObservationOffsetCustom result = new ObservationOffsetCustom(super.copy());
-		return result;*/
 	}
 	@Override
 	public void setParent(Observation obs) {
-		// TODO Auto-generated method stub
 		parent=obs;
 		
 	}

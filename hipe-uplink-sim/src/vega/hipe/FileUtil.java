@@ -44,6 +44,11 @@ public class FileUtil {
         return file;
     }
     
+    /**
+     * Delete a file
+     * @param f file to delete
+     * @return true if successful. False otherwise.
+     */
     public static boolean delete(File f) {
         final String failedToDelete = "Failed to delete: ";
 

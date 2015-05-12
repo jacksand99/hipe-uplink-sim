@@ -66,7 +66,7 @@ public class AspenObservationSchedule {
 		
 	}
 	
-	public static void main (String[] args){
+/*	public static void main (String[] args){
 	   	herschel.share.util.Configuration.setProperty("var.hcss.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
     	herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
     	herschel.share.util.Configuration.setProperty("vega.mib.location", "/Users/jarenas 1/Downloads/MAPPS/MIB");
@@ -99,7 +99,7 @@ public class AspenObservationSchedule {
 
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
 	private static Observation populateObservation(Observation obs,boolean prime){
 		String obsdir=Properties.getProperty("vega.default.observationsDirectory");

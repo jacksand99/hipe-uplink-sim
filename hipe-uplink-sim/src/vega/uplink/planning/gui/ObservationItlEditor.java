@@ -2,25 +2,17 @@ package vega.uplink.planning.gui;
 
 import herschel.ia.gui.apps.components.util.BottomPanel;
 import herschel.ia.gui.kernel.parts.AbstractVariableEditorComponent;
-import herschel.ia.jconsole.gui.JSearchDialog;
 import herschel.ia.jconsole.util.TextLineNumber;
-import herschel.share.interpreter.InterpreterUtil;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -29,26 +21,15 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.Document;
 
 import vega.IconResources;
-import vega.hipe.gui.xmlutils.XMLTextEditor;
 import vega.uplink.commanding.itl.ItlParser;
 import vega.uplink.commanding.itl.gui.ITLEditorKit;
 import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationChangeEvent;
 import vega.uplink.planning.ObservationListener;
-import vega.uplink.planning.ObservationPointingSlice;
 import vega.uplink.planning.ObservationPor;
-import vega.uplink.planning.ObservationUtil;
-import vega.uplink.pointing.PointingBlock;
-import vega.uplink.pointing.PointingBlocksSlice;
-//import vega.uplink.pointing.Ptr;
-import vega.uplink.pointing.PtrChecker;
-import vega.uplink.pointing.PtrUtils;
 
 public class ObservationItlEditor extends AbstractVariableEditorComponent<ObservationPor> implements ObservationListener{
 	/**
@@ -56,7 +37,6 @@ public class ObservationItlEditor extends AbstractVariableEditorComponent<Observ
 	 */
 	private static final long serialVersionUID = 1L;
 	Observation obs;
-	//ObservationPor por;
 	JEditorPane editor;
 	boolean initialized;
 	public ObservationItlEditor(){
@@ -84,19 +64,8 @@ public class ObservationItlEditor extends AbstractVariableEditorComponent<Observ
             	
             		try{
             			ObservationPor temppor = (ObservationPor) (ItlParser.itlToObs(text, obs.getObsStartDate(), obs.getObsEndDate())).getCommanding();
-		    			/*DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		    			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		    			String tempText="<por>\n"+text+"</por>\n";
-		    			InputStream stream = new ByteArrayInputStream(tempText.getBytes(StandardCharsets.UTF_8));
-		    			Document doc;
-	
-						doc = dBuilder.parse(stream);
-						doc.getDocumentElement().normalize();
-						ObservationPor temppor = ObservationUtil.readObsPorfromDoc(doc);*/
 						temppor.setObservation(obs.copy());
 						getPor().regenerate(temppor);
-						//por=temppor;
-						//obs.setCommanding(temppor);
 						editor.setText(obs.toItl());
             		}catch(Exception e2){
 						JOptionPane.showMessageDialog(ObservationItlEditor.this,
@@ -135,19 +104,14 @@ public class ObservationItlEditor extends AbstractVariableEditorComponent<Observ
 	}
 	
 	public void setObsPor(ObservationPor por){
-		/*boolean oldListen=Observation.LISTEN;
-		Observation.LISTEN=false;*/
 		if (this.obs!=null) obs.removeObservationListener(this);
-		//this.por=por;
 		obs=por.getObservation();
 		if (!initialized){
 			init();
 		}
-			//this.por.getObservation().removeObservationListener(this);
 		
 		obs.addObservationListener(this);
 		editor.setText(obs.toItl());
-		//Observation.LISTEN=oldListen;
 	}
     public boolean makeEditorContent() {
     	setObsPor(getValue());
