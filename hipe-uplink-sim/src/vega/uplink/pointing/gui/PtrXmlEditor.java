@@ -64,6 +64,7 @@ import vega.hipe.gui.xmlutils.HtmlDocumentViewer;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
 import vega.hipe.gui.xmlutils.XMLEditorKit;
 import vega.hipe.gui.xmlutils.XMLTextEditor;
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.pointing.Pdfm;
@@ -101,7 +102,7 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final String NEWLINE = "\n";
-	private static final Logger LOG = Logger.getLogger(PtrXmlEditor.class.getName());
+	//private static final Logger LOG = Logger.getLogger(PtrXmlEditor.class.getName());
 	
 	Ptr ptr;
 	//JEditorPane editor;
@@ -775,7 +776,7 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
         String message="";
         int totalLoop=valuesEta.length*valuesZeta.length*valuesEpsilon.length;
         int loop=0;
-        			LOG.info(new Float(loop*100/totalLoop).intValue() + "% checks done");
+        VegaLog.info(new Float(loop*100/totalLoop).intValue() + "% checks done");
         			loop++;
         			Float currentEta=valuesEta[0];
         			Float currentZeta=valuesZeta[0];
@@ -789,7 +790,7 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
         	    		try {
         	    			ag = new AttitudeGeneratorFDImplMini(ptr,pdfm,currentEta,currentZeta,currentEpsilon);
         	    		} catch (AttitudeGeneratorException ex) {
-        	    			LOG.severe(ex.getMessage());
+        	    			VegaLog.severe(ex.getMessage());
         	    			IllegalArgumentException iae=new IllegalArgumentException(ex.getMessage());
         	    			iae.initCause(ex);
         	    			ex.printStackTrace();
@@ -802,7 +803,7 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
         	    		try {
         	    			ag = new AttitudeGeneratorFDImplMini(ptr,pdfm,AttitudeGeneratorFDImpl.getMtpNum(ptr),trajectory,currentEta,currentZeta,currentEpsilon);
         	    		} catch (AttitudeGeneratorException ex) {
-        	    			LOG.severe(ex.getMessage());
+        	    			VegaLog.severe(ex.getMessage());
         	    			IllegalArgumentException iae=new IllegalArgumentException(ex.getMessage());
         	    			iae.initCause(ex);
         	    			ex.printStackTrace();
@@ -840,7 +841,7 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
         	        }
 
         message="<html><body>"+message+"</body><html>";
-        LOG.info(message);
+        VegaLog.info(message);
         HtmlDocument result=new HtmlDocument("FD PTR check",message);
         
         HtmlEditorKit kit=new HtmlEditorKit(result);

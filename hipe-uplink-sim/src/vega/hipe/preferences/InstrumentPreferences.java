@@ -3,6 +3,7 @@ package vega.hipe.preferences;
 import static javax.swing.GroupLayout.Alignment.BASELINE;
 
 
+
 import java.awt.Dimension;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
@@ -13,6 +14,7 @@ import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JTextField;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.Properties;
 import herschel.ia.gui.kernel.prefs.PreferencesPanel;
 import herschel.ia.gui.kernel.prefs.handler.StringPreferenceHandler;
@@ -29,13 +31,13 @@ public class InstrumentPreferences extends PreferencesPanel {
     private ColorButton _fieldC;
     private JLongField _fieldD;
     private JTextField _fieldE;
-    private static final Logger LOG = Logger.getLogger(InstrumentPreferences.class.getName());
+    //private static final Logger LOG = Logger.getLogger(InstrumentPreferences.class.getName());
     public InstrumentPreferences(){
     	super();
     }
 	@Override
 	protected void makeContent() {
-		LOG.info("Make content for config panel of instrument "+instrument);
+		VegaLog.info("Make content for config panel of instrument "+instrument);
 		System.out.println("Make content for config panel of instrument "+instrument);
 		String categoryPath = this.getCategoryPath();
 		StringTokenizer tokenizer=new StringTokenizer(categoryPath,"/");
@@ -100,7 +102,7 @@ public class InstrumentPreferences extends PreferencesPanel {
 
 	@Override
 	protected void registerHandlers() {
-		LOG.info("registering handlers for "+instrument);
+		VegaLog.info("registering handlers for "+instrument);
     	registerHandler(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument,new StringPreferenceHandler(Configuration.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument, ""),_fieldA,Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument));
        	registerHandler(Properties.SUBINSTRUMENT_MODE_START_PROPERTY_PREFIX+instrument,new StringPreferenceHandler(Configuration.getProperty(Properties.SUBINSTRUMENT_MODE_START_PROPERTY_PREFIX+instrument, ""),_fieldB,Properties.SUBINSTRUMENT_MODE_START_PROPERTY_PREFIX+instrument));
        	registerHandler(Properties.ANTENNA_PRIORITY_PARAMETER_PREFIX+instrument,new StringPreferenceHandler(Configuration.getProperty(Properties.ANTENNA_PRIORITY_PARAMETER_PREFIX+instrument, ""),_fieldE,Properties.ANTENNA_PRIORITY_PARAMETER_PREFIX+instrument));
@@ -110,7 +112,7 @@ public class InstrumentPreferences extends PreferencesPanel {
 	}
 	
 	public void setInstrument(String instrument){
-		LOG.info("Setting instrument "+instrument);
+		VegaLog.info("Setting instrument "+instrument);
 		this.instrument=instrument;
 	}
 

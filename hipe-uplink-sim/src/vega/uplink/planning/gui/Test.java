@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationUtil;
@@ -35,7 +36,7 @@ import de.jaret.util.ui.timebars.swing.TimeBarViewer;
 
 public class Test {
     public static final List _headerList = new ArrayList();
-    private static final Logger LOG = Logger.getLogger(Test.class.getName());
+    //private static final Logger LOG = Logger.getLogger(Test.class.getName());
     public static void main(String[] args) {
     	herschel.share.util.Configuration.setProperty("var.hcss.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
     	herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
@@ -69,10 +70,10 @@ public class Test {
 			
 			ObservationUtil.saveScheduleToFile("/Users/jarenas 1/Rosetta/testing/SCH_example.ROS", sch);
 			//Schedule sch2=ObservationUtil.readScheduleFromFile("/Users/jarenas 1/Rosetta/testing/SCH_example_2.ROS");
-			LOG.info("Start reading schedule");
+			VegaLog.info("Start reading schedule");
 			Schedule sch2=ObservationUtil.readScheduleFromFile("/Users/jarenas 1/Rosetta/hack 11/SCH_MTP_11_H_4.ROS");
 			System.out.println(sch2.getPtr().toXml());
-			LOG.info("Finish reading schedule");
+			VegaLog.info("Finish reading schedule");
 			//System.out.println(ObservationUtil.scheduleToITL(sch2));
 			//System.out.println(ObservationUtil.scheduleToEVF(sch2));
 			//Pdfm pdfm = PtrUtils.readPdfmfromFile("/Users/jarenas 1/Rosetta/testing/PDFM_DM_010_01___A_ZZZZZ.ROS");

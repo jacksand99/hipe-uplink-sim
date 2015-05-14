@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.commanding.itl.ItlParser;
 import vega.uplink.planning.ObservationPor;
@@ -18,7 +19,7 @@ import vega.uplink.planning.ObservationPor;
  *
  */
 public class Pdor {
-	private static final Logger LOG = Logger.getLogger(Pdor.class.getName());
+	//private static final Logger LOG = Logger.getLogger(Pdor.class.getName());
 	protected static String[] readFile(BufferedReader br) throws IOException, ParseException{
 		String line = "";
 		String[] result;
@@ -132,14 +133,14 @@ public class Pdor {
 					long delta=readDelta(lines[i]);
 					if (seq!=null) seq.setExecutionDate(new Date(seq.getExecutionDate().getTime()+delta));
 				}catch (Exception e){
-					LOG.info("Could not parse delta");
+					VegaLog.info("Could not parse delta");
 				}
 			}
 			if (lines[i].startsWith("H4")){
 				try{
 					if (seq!=null) seq.setExecutionDate(readExDate(lines[i]));
 				}catch (Exception e){
-					LOG.info("Could not parse execution date");
+					VegaLog.info("Could not parse execution date");
 				}
 			}
 			if (lines[i].startsWith("H1")){
@@ -185,7 +186,7 @@ public class Pdor {
 		line=line.replace("H1", "");
 		String[] parts = line.split(" ");
 		if (!parts[1].equals("S")){
-			LOG.info("Only sequences are supported at the momment in the PDOR reader: "+line);
+			VegaLog.info("Only sequences are supported at the momment in the PDOR reader: "+line);
 			return null;
 		}
 		else {
@@ -256,7 +257,7 @@ public class Pdor {
 			}
 		}catch (Exception e){
 			String message = "Could not parse parameter "+line;
-			LOG.severe(message);
+			VegaLog.severe(message);
 			IllegalArgumentException iae = new IllegalArgumentException(message+" "+e.getMessage());
 			iae.initCause(e);
 			throw iae;

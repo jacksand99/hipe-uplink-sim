@@ -18,10 +18,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 
 public class Plan extends Period{
-	private static final Logger LOG = Logger.getLogger(Plan.class.getName());
+	//private static final Logger LOG = Logger.getLogger(Plan.class.getName());
 
 	public static String TAG="PLAN";
 	public Plan(int number, Date startDate, Date endDate) {
@@ -189,7 +190,7 @@ public class Plan extends Period{
 	        		for (int j=0;j<nv;j++){
 	        			try {
 							sDates[j]=DateUtil.zuluToDate(field[6+j]);
-							LOG.info(stp+" "+mtp+" "+vstpStart+" "+vstpEnd+" "+ltp+" "+sDates[j]);
+							VegaLog.info(stp+" "+mtp+" "+vstpStart+" "+vstpEnd+" "+ltp+" "+sDates[j]);
 							Vstp vstpP =new Vstp(vstpStart+j,sDates[j]);
 							Ltp ltpP=result.getLtp(ltp);
 							Mtp mtpP = ltpP.getMtp(mtp);
@@ -197,8 +198,8 @@ public class Plan extends Period{
 							stpP.addVstp(vstpP);
 							
 						} catch (Exception e) {
-							LOG.info("Error:"+line);
-							LOG.info(stp+" "+mtp+" "+vstpStart+" "+vstpEnd+" "+ltp+" ");
+							VegaLog.info("Error:"+line);
+							VegaLog.info(stp+" "+mtp+" "+vstpStart+" "+vstpEnd+" "+ltp+" ");
 							IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 							iae.initCause(e);
 							e.printStackTrace();

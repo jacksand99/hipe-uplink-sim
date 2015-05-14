@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import vega.hipe.gui.xmlutils.HtmlDocument;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
+import vega.hipe.logging.VegaLog;
 import vega.uplink.commanding.task.PorCheckTask;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.Ptr;
@@ -15,7 +16,7 @@ import vega.uplink.pointing.PtrSegment;
 import vega.uplink.track.Fecs;
 
 public class FecsSummaryTask extends Task {
-	private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());
+	//private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());
 
 	public FecsSummaryTask(){
 		super("fecsSummaryTask");
@@ -84,8 +85,8 @@ public class FecsSummaryTask extends Task {
         		message=message+newerFecs.getName()+" BSR (h):"+newerFecs.getBSRHours()+"\n";*/
          	}catch (Exception e){
     			message=message+e.getMessage();
-    			LOGGER.throwing(CompareFecsTask.class.getName(), "execute", e);
-    			LOGGER.severe(e.getMessage());
+    			VegaLog.throwing(CompareFecsTask.class, "execute", e);
+    			VegaLog.severe(e.getMessage());
     			// TODO Auto-generated catch block
     			e.printStackTrace();
         	}

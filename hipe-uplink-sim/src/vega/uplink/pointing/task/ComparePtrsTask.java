@@ -14,12 +14,13 @@ import javax.swing.JTextPane;
 import herschel.ia.task.Task;
 import herschel.ia.task.TaskParameter;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
+import vega.hipe.logging.VegaLog;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
 //import vega.uplink.pointing.PtrUtils;
 
 public class ComparePtrsTask extends Task {
-	private static final Logger LOGGER = Logger.getLogger(ComparePtrsTask.class.getName());
+	//private static final Logger LOGGER = Logger.getLogger(ComparePtrsTask.class.getName());
 
 	public ComparePtrsTask(){
 		super("comparePtrsTask");
@@ -49,7 +50,7 @@ public class ComparePtrsTask extends Task {
         }
         String result = PtrChecker.comparePtrsHTML(ptr1, ptr2);
         result="<html><body>"+result+"</body><html>";
-        LOGGER.warning(result);
+        VegaLog.warning(result);
         HtmlEditorKit kit=new HtmlEditorKit("PTR compare",result);
         //MessagesFrame frame = new MessagesFrame(result);
         //frame.setVisible(true);

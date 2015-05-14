@@ -35,6 +35,7 @@ import org.w3c.dom.Document;
 
 import vega.IconResources;
 import vega.hipe.gui.xmlutils.XMLEditorKit;
+import vega.hipe.logging.VegaLog;
 import vega.uplink.Properties;
 import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationChangeEvent;
@@ -51,7 +52,7 @@ public class ObservationEditor extends AbstractVariableEditorComponent<Observati
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private final Logger LOG = Logger.getLogger(ObservationEditor.class.getName());
+	//private final Logger LOG = Logger.getLogger(ObservationEditor.class.getName());
 
 	Observation obs;
 	
@@ -239,7 +240,7 @@ public class ObservationEditor extends AbstractVariableEditorComponent<Observati
 	}
 	@Override
 	public void pointingChanged(ObservationChangeEvent event) {
-		LOG.info("Listenerd change in pointing");
+		VegaLog.info("Listenerd change in pointing");
 		setObservation(obs);
 		
 	}

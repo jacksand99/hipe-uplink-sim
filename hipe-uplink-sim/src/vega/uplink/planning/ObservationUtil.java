@@ -25,6 +25,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.commanding.AbstractSequence;
@@ -54,7 +55,7 @@ import vega.uplink.pointing.PtrParameters.Offset.OffsetScan;
 import vega.uplink.pointing.exclusion.AbstractExclusion;
 
 public class ObservationUtil {
-	private static final Logger LOG = Logger.getLogger(ObservationUtil.class.getName());
+	//private static final Logger LOG = Logger.getLogger(ObservationUtil.class.getName());
 	
 	public static void saveObservation(Observation obs) throws IOException{
 		saveObservationToFile(obs.getFileName(),obs);
@@ -1015,7 +1016,7 @@ public class ObservationUtil {
 				l05=l05+itlEvent+" "+"(COUNT = 000001 ) "+ObservationUtil.getOffset(((ObservationSequence)tempSeq[i]).getExecutionTimeDelta())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\ #"+mib.getSequenceDescription(tempSeq[i].getName())+"\n";
 			}else{
 				l05=l05+DateUtil.dateToLiteral(tempSeq[i].getExecutionDate())+" "+ tempSeq[i].getInstrument()+"\t*\t"+tempSeq[i].getName()+" (\\ #"+mib.getSequenceDescription(tempSeq[i].getName())+"\n";
-				LOG.info("WARNING:"+DateUtil.dateToLiteral(tempSeq[i].getExecutionDate())+" "+ tempSeq[i].getInstrument()+" "+tempSeq[i].getName()+" is a literal sequence");
+				VegaLog.info("WARNING:"+DateUtil.dateToLiteral(tempSeq[i].getExecutionDate())+" "+ tempSeq[i].getInstrument()+" "+tempSeq[i].getName()+" is a literal sequence");
 			}
 			tempParam = tempSeq[i].getParameters();
 			for (int z=0;z<tempParam.length;z++){

@@ -7,6 +7,8 @@ import herschel.share.util.Configuration;
 import java.io.File;
 import java.util.logging.Logger;
 
+import vega.hipe.logging.VegaLog;
+
 /**
  * This class provides configuration info for paths in the system (the temp dir, the home dir, etc.).<p>
  *
@@ -17,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class PathConfiguration {
     
-    private static final Logger LOG = Logger.getLogger(PathConfiguration.class.getName());
+    //private static final Logger LOG = Logger.getLogger(PathConfiguration.class.getName());
     
     /**
      * Hide constructor.
@@ -66,21 +68,21 @@ public class PathConfiguration {
                  if (tmpDir.isDirectory() && tmpDir.canWrite()) {
                      return tmpDir;
                  } else {
-                     LOG.info("Temporary directory pointed to by " + prop + " (" + tmpDir
+                	 VegaLog.info("Temporary directory pointed to by " + prop + " (" + tmpDir
                              + ") is not a writable directory.");
                  }
              } else if (tmpDir.mkdirs()) {
                  return tmpDir;
              } else {
-                 LOG.info("Temporary direcotry pointed to by " + prop + " (" + tmpDir
+            	 VegaLog.info("Temporary direcotry pointed to by " + prop + " (" + tmpDir
                          + ") does not exist and could not be created.");
              }                 
              
         } else {
-            LOG.info("No property: " + prop);
+        	VegaLog.info("No property: " + prop);
         }
         
-        LOG.info("Using default temporary directory from JRE.");
+        VegaLog.info("Using default temporary directory from JRE.");
         return new File(Configuration.getProperty("java.io.tmpdir"));
     }
 

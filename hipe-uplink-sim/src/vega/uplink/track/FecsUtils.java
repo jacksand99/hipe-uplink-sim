@@ -18,7 +18,7 @@ import org.w3c.dom.Document;
  *
  */
 public class FecsUtils {
-	private static final Logger LOG = Logger.getLogger(FecsUtils.class.getName());
+	//private static final Logger LOG = Logger.getLogger(FecsUtils.class.getName());
 
 	/**
 	 * Read FECS from XML file

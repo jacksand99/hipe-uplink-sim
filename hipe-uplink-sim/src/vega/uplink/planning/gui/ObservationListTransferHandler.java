@@ -4,6 +4,8 @@ import javax.swing.*;
 
 import org.jfree.util.Log;
 
+import vega.hipe.logging.VegaLog;
+
 import java.awt.datatransfer.*;
 import java.util.logging.Logger;
  
@@ -15,9 +17,9 @@ public class ObservationListTransferHandler extends TransferHandler {
 	private int[] indices = null;
     private int addIndex = -1; //Location where items were added
     private int addCount = 0;  //Number of items added.
-    private final Logger LOG = Logger.getLogger(ObservationListTransferHandler.class.getName());        
+    //private final Logger LOG = Logger.getLogger(ObservationListTransferHandler.class.getName());        
     public boolean canImport(TransferHandler.TransferSupport info) {
-    	LOG.info("canImport");
+    	VegaLog.info("canImport");
         if (!info.isDataFlavorSupported(DataFlavor.stringFlavor)) {
             return false;
         }

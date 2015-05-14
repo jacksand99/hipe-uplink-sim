@@ -32,6 +32,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import vega.hipe.gui.xmlutils.XmlDataInterface;
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.pointing.EvtmEvent;
@@ -49,7 +50,7 @@ import org.w3c.dom.Document;
  */
 public class Fecs extends TableDataset implements XmlDataInterface{
 	private TreeSet<GsPass> passesSet;
-	private static final Logger LOG = Logger.getLogger(Fecs.class.getName());
+	//private static final Logger LOG = Logger.getLogger(Fecs.class.getName());
 	private static String PASS_TABLE_HEADER=""
 			+ "<tr>\n"
 			+ "	<th>Type</th><th>Station</th><th>Start Pass</th><th>End Pass</th><th>Start Dump</th><th>End Dump</th><th>Bitrate</th>\n"
@@ -1126,16 +1127,16 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 			Date passStart=it.next();
 			Date passEnd=eotNodes.ceilingKey(new Date(passStart.getTime()+1));
 			if (passEnd==null){
-				LOG.severe("Could not get pass end (EOT) for pass starting "+DateUtil.defaultDateToString(passStart));
+				VegaLog.severe("Could not get pass end (EOT) for pass starting "+DateUtil.defaultDateToString(passStart));
 			}else{
 				Node endNode = eotNodes.get(passEnd);
 				String stationEnd = endNode.getAttributes().getNamedItem("ems:station").getNodeValue();
 				Node startNode=botNodes.get(passStart);
 				String stationStart=startNode.getAttributes().getNamedItem("ems:station").getNodeValue();
 				if (!stationEnd.equals(stationStart)){
-					LOG.severe("Pass not included. Overlapping passes BOT station "+stationStart+" EOT station "+stationEnd);
-					LOG.severe("BOT count "+startNode.getAttributes().getNamedItem("count").getNodeValue());
-					LOG.severe("EOT count "+endNode.getAttributes().getNamedItem("count").getNodeValue());
+					VegaLog.severe("Pass not included. Overlapping passes BOT station "+stationStart+" EOT station "+stationEnd);
+					VegaLog.severe("BOT count "+startNode.getAttributes().getNamedItem("count").getNodeValue());
+					VegaLog.severe("EOT count "+endNode.getAttributes().getNamedItem("count").getNodeValue());
 					//throw new IllegalArgumentException("FECS format invalid. Overlapping passes BOT count "+countStart+" EOT count "+countEnd);
 				}
 				else{
@@ -1154,9 +1155,9 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 							GsPass pass=new GsPass(passStart,passEnd,dumpStart,dumpEnd,station,tmRate);
 							result.addPass(pass);
 						}else{
-							LOG.severe("Pass not included. Overlapping passes STAD station "+stadStation+" STOD station "+stodStation);
-							LOG.severe("STAD count "+stadNodes.get(dumpStart).getAttributes().getNamedItem("count").getTextContent());
-							LOG.severe("STOD count "+stodNodes.get(dumpEnd).getAttributes().getNamedItem("count").getTextContent());
+							VegaLog.severe("Pass not included. Overlapping passes STAD station "+stadStation+" STOD station "+stodStation);
+							VegaLog.severe("STAD count "+stadNodes.get(dumpStart).getAttributes().getNamedItem("count").getTextContent());
+							VegaLog.severe("STOD count "+stodNodes.get(dumpEnd).getAttributes().getNamedItem("count").getTextContent());
 	
 						}
 					}

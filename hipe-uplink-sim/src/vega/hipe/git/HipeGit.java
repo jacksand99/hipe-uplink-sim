@@ -34,6 +34,7 @@ import org.eclipse.jgit.transport.URIish;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.Properties;
 import vega.uplink.track.Fecs;
 
@@ -58,7 +59,7 @@ public class HipeGit {
     public static boolean TUNNEL=false;
 
     private static HipeGit instance;
-    private static final Logger LOG = Logger.getLogger(Fecs.class.getName());
+    //private static final Logger LOG = Logger.getLogger(Fecs.class.getName());
     
     protected HipeGit(){
     	try {
@@ -218,27 +219,27 @@ public class HipeGit {
 
         public void run() {
         	try{
-        		LOG.info("Starting Git Pull");
+        		VegaLog.info("Starting Git Pull");
         		PullResult pullResult = git.pull().call();
         		if (pullResult!=null){
-	        		LOG.info(pullResult.getFetchResult().getMessages());
+        			VegaLog.info(pullResult.getFetchResult().getMessages());
 	        		List<String> conflicst = pullResult.getMergeResult().getCheckoutConflicts();
 	        		if (conflicst!=null){
 		        		Iterator<String> it = conflicst.iterator();
 		        		while (it.hasNext()){
-		        			LOG.info("Checkout Conflicts:"+it.next());
+		        			VegaLog.info("Checkout Conflicts:"+it.next());
 		        		}
 	        		}
 	        		if (pullResult.isSuccessful()){
-	        			LOG.info("Git pull successful");
+	        			VegaLog.info("Git pull successful");
 	        		}else{
-	        			LOG.info("Git pull failed");
+	        			VegaLog.info("Git pull failed");
 	        		}
         		}
-        		LOG.info("Finished Git Pull");
+        		VegaLog.info("Finished Git Pull");
         	}catch (Exception e){
         		IllegalArgumentException iae=new IllegalArgumentException (e.getMessage());
-        		LOG.severe("Git pull error:"+e.getMessage());
+        		VegaLog.severe("Git pull error:"+e.getMessage());
         		iae.initCause(e);
         		throw(iae);
         	}
@@ -253,13 +254,13 @@ public class HipeGit {
 
         public void run() {
         	try{
-        		LOG.info("Starting Git Clone");
+        		VegaLog.info("Starting Git Clone");
         		Git.cloneRepository().setURI(remotePath)
                 .setDirectory(new File(localPath)).call();
-        		LOG.info("Finished Git Clone");
+        		VegaLog.info("Finished Git Clone");
         	}catch (Exception e){
         		IllegalArgumentException iae=new IllegalArgumentException (e.getMessage());
-        		LOG.severe("Git clone error:"+e.getMessage());
+        		VegaLog.severe("Git clone error:"+e.getMessage());
         		iae.initCause(e);
         		throw(iae);
         	}

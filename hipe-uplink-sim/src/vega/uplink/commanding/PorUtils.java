@@ -4,6 +4,7 @@ package vega.uplink.commanding;
 import herschel.ia.dataset.Product;
 import herschel.ia.dataset.TableDataset;
 import vega.hipe.FileUtil;
+import vega.hipe.logging.VegaLog;
 import herschel.share.io.archive.ZipReader;
 
 import java.io.File;
@@ -50,6 +51,7 @@ import org.w3c.dom.NodeList;
 
 
 
+
 import vega.uplink.DateUtil;
 import vega.uplink.track.Fecs;
 
@@ -60,7 +62,7 @@ import vega.uplink.track.Fecs;
  *
  */
 public class PorUtils {
-	private static final Logger LOG = Logger.getLogger(PorUtils.class.getName());
+	//private static final Logger LOG = Logger.getLogger(PorUtils.class.getName());
 	/**
 	 * Write a SuperPor as a PORG (zip file containing individual PORs)
 	 * @param file
@@ -76,16 +78,16 @@ public class PorUtils {
             	writePORtofile(tdir.getAbsolutePath()+"/"+pors[i].getName(),pors[i]);
             }
             zipIt(file,tdir.getAbsolutePath());
-            LOG.info("Deleting temp zip of " + file + " in " + tdir);
+            VegaLog.info("Deleting temp zip of " + file + " in " + tdir);
             FileUtil.delete(tdir);
 
 		}catch (Exception e){
-			LOG.throwing("PorUtils", "writePORGtofile", e);
+			VegaLog.throwing(PorUtils.class, "writePORGtofile", e);
 			e.printStackTrace();
 		}
 		finally {
         if (tdir != null) {
-            LOG.info("Deleting temp unzip of " + file + " in " + tdir);
+        	VegaLog.info("Deleting temp unzip of " + file + " in " + tdir);
             FileUtil.delete(tdir);
         }
     }
@@ -119,7 +121,7 @@ public class PorUtils {
                         result.addPor(por);
                     }
                 }
-                LOG.info("Deleting temp unzip of " + file + " in " + tdir);
+                VegaLog.info("Deleting temp unzip of " + file + " in " + tdir);
                 FileUtil.delete(tdir);
                 result.setType("PORG");
                 result.setCalculateValidity(true);
@@ -131,7 +133,7 @@ public class PorUtils {
             }
         } finally {
             if (error && tdir != null) {
-                LOG.info("Deleting temp unzip of " + file + " in " + tdir);
+            	VegaLog.info("Deleting temp unzip of " + file + " in " + tdir);
                 FileUtil.delete(tdir);
             }
         }
@@ -356,10 +358,10 @@ public class PorUtils {
 			DOMSource source = new DOMSource(POR.getXMLDocument());
 			StreamResult result = new StreamResult(new File(file));
 			transformer.transform(source, result);
-			LOG.info("Writted POR to file " + file );
+			VegaLog.info("Writted POR to file " + file );
 		}catch (Exception e){
-			LOG.severe(e.getMessage());
-			LOG.throwing("PorUtils", "writePORtofile", e);
+			VegaLog.severe(e.getMessage());
+			VegaLog.throwing(PorUtils.class, "writePORtofile", e);
 			e.printStackTrace();
 		}
 		
@@ -499,11 +501,11 @@ public class PorUtils {
        	FileOutputStream fos = new FileOutputStream(zipFile);
        	ZipOutputStream zos = new ZipOutputStream(fos);
     
-       	LOG.info("Output to Zip : " + zipFile);
+       	VegaLog.info("Output to Zip : " + zipFile);
        	String[] fileList=new File(sourceFolder).list();
        	for(String file : fileList){
     
-       		LOG.info("File Added : " + file);
+       		VegaLog.info("File Added : " + file);
        		ZipEntry ze= new ZipEntry(file);
            	zos.putNextEntry(ze);
     
@@ -522,9 +524,9 @@ public class PorUtils {
        	//remember close it
        	zos.close();
     
-       	LOG.info("Zip file Done");
+       	VegaLog.info("Zip file Done");
        }catch(IOException ex){
-    	   LOG.throwing("PorUtils", "zipIt", ex);
+    	   VegaLog.throwing(PorUtils.class, "zipIt", ex);
           ex.printStackTrace();   
        }
       }

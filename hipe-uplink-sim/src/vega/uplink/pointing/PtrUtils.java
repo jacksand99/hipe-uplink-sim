@@ -31,6 +31,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.planning.gui.ScheduleModel;
 import vega.uplink.pointing.EvtmEvents.EvtmEventAnt;
@@ -46,7 +47,7 @@ import vega.uplink.pointing.attitudes.*;
 
 
 public class PtrUtils {
-	private static final Logger LOG = Logger.getLogger(PtrUtils.class.getName());
+	//private static final Logger LOG = Logger.getLogger(PtrUtils.class.getName());
 
 	private static PointingElement recursiveTranslation(PointingElement item){
 		if (!item.hasChildren()) return translateChild(item);
@@ -543,7 +544,7 @@ public class PtrUtils {
 				else{
 					segment.hardRemoveBlock(blockBefore);
 					((PointingBlockSlew)blocks[j]).setBlockBefore(((PointingBlockSlew) blockBefore).getBlockBefore());
-					LOG.warning("unificated SLEW at "+DateUtil.defaultDateToString(blocks[j].getStartTime()));
+					VegaLog.warning("unificated SLEW at "+DateUtil.defaultDateToString(blocks[j].getStartTime()));
 				}
 			}
 		}
@@ -556,7 +557,7 @@ public class PtrUtils {
 				}else{
 					segment.hardRemoveBlock(blockAfter);
 					((PointingBlockSlew)blocks[j]).setBlockAfter(((PointingBlockSlew)blockAfter).getBlockAfter());
-					LOG.warning("unificated SLEW at "+DateUtil.defaultDateToString(blocks[j].getStartTime()));
+					VegaLog.warning("unificated SLEW at "+DateUtil.defaultDateToString(blocks[j].getStartTime()));
 				}
 				//((PointingBlockSlew) blockAfter).setBlockBefore(blocks[j]);
 			}
@@ -619,7 +620,7 @@ public class PtrUtils {
 	}*/
 	
 	public static Ptr rebasePtrPtsl(Ptr ptr,Ptr ptsl){
-		LOG.info("Starting rebase PTR");
+		VegaLog.info("Starting rebase PTR");
 		//Thread.dumpStack();
 		PtrSegment ptrSegment = ptr.getSegments()[0];
 		PtrSegment ptslSegment = ptsl.getSegment(ptrSegment.getName());
@@ -680,7 +681,7 @@ public class PtrUtils {
 		ptr.remove(ptrSegment.getName());
 		
 		ptr.addSegment(newSegment);
-		LOG.info("stop rebase PTR");
+		VegaLog.info("stop rebase PTR");
 		return ptr;
 	
 	}

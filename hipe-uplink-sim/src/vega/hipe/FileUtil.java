@@ -6,8 +6,10 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 
+import vega.hipe.logging.VegaLog;
+
 public class FileUtil {
-	private static final Logger LOG = Logger.getLogger(FileUtil.class.getName());
+	//private static final Logger LOG = Logger.getLogger(FileUtil.class.getName());
     /**
      * Create a temporary file in the application's working directory. The application's working directory is defined by
      * var.hcss.workdir if this property exists. If not, it's defined by the system property java.io.tmpdir (see
@@ -59,7 +61,7 @@ public class FileUtil {
                 FileUtils.deleteDirectory(f);
                 return true;
             } catch (IOException e) {
-                LOG.warning(failedToDelete + f);
+            	VegaLog.warning(failedToDelete + f);
                 return false;
             }
         } else {

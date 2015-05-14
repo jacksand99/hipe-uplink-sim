@@ -14,6 +14,7 @@ import javax.swing.JTextPane;
 
 import herschel.ia.task.Task;
 import herschel.ia.task.TaskParameter;
+import vega.hipe.logging.VegaLog;
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.PorChecker;
 //import vega.uplink.commanding.PorUtils;
@@ -21,7 +22,7 @@ import vega.uplink.commanding.PorChecker;
 //import vega.uplink.pointing.task.PtrSanityCheckTask.MessagesFrame;
 
 public class PorCheckTask extends Task {
-	private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());
+	//private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());
 
 	public PorCheckTask(){
 		super("porCheckTask");
@@ -45,8 +46,8 @@ public class PorCheckTask extends Task {
 			message=PorChecker.checkPor(por);
 		} catch (IOException e) {
 			message=e.getMessage();
-			LOGGER.throwing(PorCheckTask.class.getName(), "execute", e);
-			LOGGER.severe(e.getMessage());
+			VegaLog.throwing(PorCheckTask.class, "execute", e);
+			VegaLog.severe(e.getMessage());
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

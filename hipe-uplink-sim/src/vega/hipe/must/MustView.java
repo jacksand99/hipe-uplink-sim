@@ -39,9 +39,11 @@ import javax.swing.SwingWorker;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.Properties;
 //import must.vega.hipe.preferences.MustPreferences;
 //import must.vega.hipe.preferences.Preferences;
+
 
 import java.sql.*;
 import java.text.ParseException;
@@ -96,7 +98,7 @@ public class MustView extends JPanel implements Viewable,PreferenceListener {
     private String url = "jdbc:mysql://" + host + ":" + port + "/" + repository + "?user=" + user
     + "&password=" + password;
     
-    private static final Logger LOGGER = Logger.getLogger(MustView.class.getName());
+    //private static final Logger LOGGER = Logger.getLogger(MustView.class.getName());
 
     /**
      * The ID for this view
@@ -211,7 +213,7 @@ public class MustView extends JPanel implements Viewable,PreferenceListener {
 	    ObjectUtil.getClass(driverName);
 	} catch (Exception e1) {
 	    errorMessage(e1.getMessage());
-	    LOGGER.severe(e1.getMessage());
+	    VegaLog.severe(e1.getMessage());
 	    e1.printStackTrace();
 	}
 	Connection con = null;

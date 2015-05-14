@@ -28,6 +28,7 @@ import herschel.ia.io.ascii.CsvParser;
 import herschel.ia.io.ascii.TableTemplate;
 import herschel.ia.numeric.String1d;
 import vega.hipe.FileUtil;
+import vega.hipe.logging.VegaLog;
 import herschel.share.util.ObjectUtil;
 
 /**
@@ -38,7 +39,7 @@ import herschel.share.util.ObjectUtil;
  */
 public class Mib extends CompositeDataset{
 	static Mib MIB;
-	private static final Logger LOG = Logger.getLogger(Mib.class.getName());
+	//private static final Logger LOG = Logger.getLogger(Mib.class.getName());
 	static String[] sdf_columns={"SDF_SQNAME","SDF_ENTRY","SDF_ELEMID","SDF_POS","SDF_PNAME","SDF_FTYPE","SDF_VTYPE","SDF_VALUE","SDF_VALSET","SDF_REPPOS"};
 	static String[] sdf_types={"String","Integer","String","Integer","String","String","String","String","String","Integer"}; 
 	static String[] csp_columns={"CSP_SQNAME","CSP_FPNAME","CSP_FPNUM","CSP_DESCR","CSP_PTC","CSP_PFC","CSP_DISPFMT","CSP_RADIX","CSP_TYPE","CSP_VTYPE","CSP_DEFVAL","CSP_CATEG","CSP_PRFREF","CSP_CCAREF","CSP_PAFREF","CSP_UNIT"};
@@ -294,16 +295,16 @@ public class Mib extends CompositeDataset{
 		if (MIB==null){
 			try{
 				MIB=Mib.getMibFromFiles();
-				LOG.info("MIB read from files");
+				VegaLog.info("MIB read from files");
 			}
 			catch(Exception ioe){
-					LOG.info("MIB failed read from files:"+ioe.getMessage());
+				VegaLog.info("MIB failed read from files:"+ioe.getMessage());
 
 					try{
 						MIB=Mib.getMibFromJar();
-						LOG.info("MIB read from jar");
+						VegaLog.info("MIB read from jar");
 					}catch (Exception e){
-						LOG.info("MIB failed read from jar. Creatting an empty MIB."+e.getMessage());
+						VegaLog.info("MIB failed read from jar. Creatting an empty MIB."+e.getMessage());
 
 						MIB=new Mib();
 					}
@@ -313,7 +314,7 @@ public class Mib extends CompositeDataset{
 	}
 	private static List<File> unTar(final String inputFileName, final File outputDir) throws FileNotFoundException, IOException, ArchiveException {
 		File inputFile=new File(inputFileName);
-	    LOG.info(String.format("Untaring %s to dir %s.", inputFile.getAbsolutePath(), outputDir.getAbsolutePath()));
+		VegaLog.info(String.format("Untaring %s to dir %s.", inputFile.getAbsolutePath(), outputDir.getAbsolutePath()));
 
 	    final List<File> untaredFiles = new LinkedList<File>();
 	    final InputStream is = new FileInputStream(inputFile); 
@@ -322,15 +323,15 @@ public class Mib extends CompositeDataset{
 	    while ((entry = (TarArchiveEntry)debInputStream.getNextEntry()) != null) {
 	        final File outputFile = new File(outputDir, entry.getName());
 	        if (entry.isDirectory()) {
-	            LOG.info(String.format("Attempting to write output directory %s.", outputFile.getAbsolutePath()));
+	        	VegaLog.info(String.format("Attempting to write output directory %s.", outputFile.getAbsolutePath()));
 	            if (!outputFile.exists()) {
-	                LOG.info(String.format("Attempting to create output directory %s.", outputFile.getAbsolutePath()));
+	            	VegaLog.info(String.format("Attempting to create output directory %s.", outputFile.getAbsolutePath()));
 	                if (!outputFile.mkdirs()) {
 	                    throw new IllegalStateException(String.format("Couldn't create directory %s.", outputFile.getAbsolutePath()));
 	                }
 	            }
 	        } else {
-	            LOG.info(String.format("Creating output file %s.", outputFile.getAbsolutePath()));
+	        	VegaLog.info(String.format("Creating output file %s.", outputFile.getAbsolutePath()));
 	            final OutputStream outputFileStream = new FileOutputStream(outputFile); 
 	            IOUtils.copy(debInputStream, outputFileStream);
 	            outputFileStream.close();

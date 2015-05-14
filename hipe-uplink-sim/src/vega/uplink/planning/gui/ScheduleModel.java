@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.commanding.AbstractSequence;
@@ -31,7 +31,7 @@ import de.jaret.util.ui.timebars.model.TimeBarRow;
 public class ScheduleModel extends DefaultTimeBarModel implements ObservationListener{
 	Schedule schedule;
 	protected ScheduleViewer viewer;
-	private final Logger LOG = Logger.getLogger(ScheduleModel.class.getName());
+	//private final Logger LOG = Logger.getLogger(ScheduleModel.class.getName());
 	boolean initialized=false;
 	boolean recalculate=true;
 	public ScheduleModel(Schedule schedule){
@@ -109,7 +109,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 	}
 	public void recualculatePtr(){
 		if (!recalculate) return;
-		LOG.info("Start recalculating PTR");
+		VegaLog.info("Start recalculating PTR");
 		DefaultTimeBarRowModel ptrRow = ((DefaultTimeBarRowModel) this.getRow(2));
 		List<Interval> iv = ptrRow.getIntervals();
 		ptrRow.remIntervals(new java.util.Vector<Interval>(iv));
@@ -118,7 +118,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
     	for (int b=0;b<ptrBlocks.length;b++){
     		ptrRow.addInterval(new BlockInterval(ptrBlocks[b]));
     	}
-    	LOG.info("End recalculating PTR");
+    	VegaLog.info("End recalculating PTR");
 	}
 	@Override
 	public void scheduleChanged() {
@@ -137,7 +137,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 
 		}catch (Exception e){
 			e.printStackTrace();
-			LOG.throwing(ScheduleModel.class.getName(), "scheduleChanged", e);
+			VegaLog.throwing(ScheduleModel.class, "scheduleChanged", e);
 			throw e;
 		}
 		
@@ -152,7 +152,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 
 	@Override
 	public void pointingChanged(ObservationChangeEvent event) {
-		LOG.info("Observation pointing Changed");
+		VegaLog.info("Observation pointing Changed");
 		if (initialized){
 			try{
 				initialized=false;
@@ -169,7 +169,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 
 	@Override
 	public void commandingChanged(ObservationChangeEvent event) {
-		LOG.info("Listenerd change in pointing");
+		VegaLog.info("Listenerd change in pointing");
 		if (!recalculate) return;
 		if (initialized){
 			try{
@@ -218,7 +218,7 @@ public class ScheduleModel extends DefaultTimeBarModel implements ObservationLis
 			String newmode=result.get(j);
 			if (!orcd.checkTransion(oldmode, newmode)){
 				String mess="Forbidden transition "+oldmode+"--->"+newmode+" at "+DateUtil.dateToZulu(new Date(j))+" via "+result.getCommand(j)+" executed at "+DateUtil.dateToZulu(new Date(result.getOriginalTime(j)));
-				Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
+				VegaLog.severe(mess);
 			}
 			modelState.setState(newmode);
 			result.addStates(j,modelState.clone());

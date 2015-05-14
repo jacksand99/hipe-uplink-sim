@@ -7,6 +7,7 @@ import javax.swing.SwingUtilities;
 import herschel.ia.gui.apps.components.util.PopupMessageHandler;
 import herschel.share.util.Configuration;
 import vega.hipe.git.HipeGitSshTunnel.MyUserInfo;
+import vega.hipe.logging.VegaLog;
 import vega.uplink.Properties;
 import vega.uplink.commanding.PorUtils;
 
@@ -22,7 +23,7 @@ class Tunnel extends Thread{
 	Channel channel;
 	Session session;
 	private int LOCAL_PORT=1052;
-	private static final Logger LOG = Logger.getLogger(Tunnel.class.getName());
+	//private static final Logger LOG = Logger.getLogger(Tunnel.class.getName());
 	boolean init=false;
 
 	
@@ -65,11 +66,11 @@ class Tunnel extends Thread{
   	      session.setUserInfo(ui);
 	      session.connect();
 	      int assinged_port=session.setPortForwardingL(LOCAL_PORT, this.finalHost, 22);
-	      LOG.info("localhost:"+assinged_port+" -> "+finalHost+":"+22);
+	      VegaLog.info("localhost:"+assinged_port+" -> "+finalHost+":"+22);
 	      init=true;
 	    }
 	    catch(Exception e){
-	    	LOG.info(e.getMessage());
+	    	VegaLog.info(e.getMessage());
 	      e.printStackTrace();
 	      IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 	      iae.initCause(e);

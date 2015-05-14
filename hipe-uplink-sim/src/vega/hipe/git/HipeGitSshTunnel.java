@@ -25,6 +25,7 @@ import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.util.FS;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.Properties;
 
 public class HipeGitSshTunnel extends HipeGit{
@@ -37,13 +38,13 @@ public class HipeGitSshTunnel extends HipeGit{
     public  static String TUNNEL_SERVER_PASSWORD="vega.hipe.git.tunnel.password";
 
     static Tunnel tunnel;
-	private static final Logger LOG = Logger.getLogger(HipeGitSshTunnel.class.getName());
+	//private static final Logger LOG = Logger.getLogger(HipeGitSshTunnel.class.getName());
 
 	public static void startTunnel(){
 		Tunnel tun=new Tunnel();
 		SwingUtilities.invokeLater(tun);
 		HipeGit.TUNNEL=true;
-		LOG.info("Tunnel started");
+		VegaLog.info("Tunnel started");
 		//System.out.println("Tunnel started");
 	}
 
@@ -90,7 +91,7 @@ public class HipeGitSshTunnel extends HipeGit{
         	      return super.createSession(hs, user, "localhost", LOCAL_PORT, fs);
         	    }
         	    catch(Exception e){
-        	      LOG.warning(e.getMessage());
+        	    	VegaLog.warning(e.getMessage());
         	      //System.out.println(e);
         	      e.printStackTrace();
         	      IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());

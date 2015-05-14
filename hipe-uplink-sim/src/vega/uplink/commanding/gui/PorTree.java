@@ -21,7 +21,7 @@ public class PorTree extends ContextTree{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = Logger.getLogger(PorTree.class.getName());
+	//private static final Logger LOG = Logger.getLogger(PorTree.class.getName());
 
 	 public PorTree(){
 		 super();

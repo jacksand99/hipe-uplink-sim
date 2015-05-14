@@ -13,6 +13,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.planning.Observation;
@@ -24,7 +25,7 @@ import vega.uplink.planning.Schedule;
 import org.w3c.dom.Element;
 
 public class AspenObservationSchedule {
-	private static final Logger LOG = Logger.getLogger(AspenObservationSchedule.class.getName());
+	//private static final Logger LOG = Logger.getLogger(AspenObservationSchedule.class.getName());
 	public static Observation[] readObservations(String file) throws IOException{
 		java.util.Vector<Observation> vector =new java.util.Vector<Observation>();
 		try {
@@ -127,7 +128,7 @@ public class AspenObservationSchedule {
 			}else{
 				
 				try {
-					LOG.warning("Observation template for "+acro+" "+type+" not found. Using default");
+					VegaLog.warning("Observation template for "+acro+" "+type+" not found. Using default");
 					template=ObservationUtil.readObservationFromFile(obsdir+"/OBS_"+acro+"_DEFAULT.ROS");
 				} catch (IOException e2) {
 

@@ -39,6 +39,8 @@ import javax.swing.JFrame;
 
 import org.apache.commons.io.IOUtils;
 
+import vega.hipe.logging.VegaLog;
+
 /**
  * This is an example menu item.
  *
@@ -47,7 +49,7 @@ import org.apache.commons.io.IOUtils;
 public final class HelpAction extends AbstractSiteAction {
     
     private static final long serialVersionUID = 1L;
-    private static final Logger LOG = Logger.getLogger(HelpAction.class.getName());
+    //private static final Logger LOG = Logger.getLogger(HelpAction.class.getName());
     
     private static final String HELP_HOME = "http://www.google.com";
     private static final String MENU_ITEM_LABEL = "Help for Hipe Uplink Sim";
@@ -64,7 +66,7 @@ public final class HelpAction extends AbstractSiteAction {
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-	LOG.info("Opening " + HELP_HOME);
+    VegaLog.info("Opening " + HELP_HOME);
 	
 	String msg = null;
         if (Desktop.isDesktopSupported()) { 

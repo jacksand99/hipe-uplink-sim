@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.commanding.AbstractSequence;
 import vega.uplink.commanding.Mib;
@@ -32,7 +33,7 @@ import vega.uplink.track.Fecs;
 public class ItlParser {
 	public static String path="";
 	public static String dEvtPath="";
-	private static final Logger LOG = Logger.getLogger(Fecs.class.getName());
+	//private static final Logger LOG = Logger.getLogger(Fecs.class.getName());
 	public static Observation itlToObs(String st,Date startDate,Date endDate) throws ParseException{
 		String[] itllines;
 		try {
@@ -343,7 +344,7 @@ public class ItlParser {
 										exTimes[ae]=events.getDate(allEvents[ae], result.getValidityDates()[0], result.getValidityDates()[1]);
 									}
 									if (exTimes.length==0){
-										LOG.warning("Could not find any valid event "+commandTime+" between "+DateUtil.defaultDateToString(result.getStartDate().toDate())+" "+DateUtil.defaultDateToString(result.getEndDate().toDate()));
+										VegaLog.warning("Could not find any valid event "+commandTime+" between "+DateUtil.defaultDateToString(result.getStartDate().toDate())+" "+DateUtil.defaultDateToString(result.getEndDate().toDate()));
 									}
 								}
 							}else{

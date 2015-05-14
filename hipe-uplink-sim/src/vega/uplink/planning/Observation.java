@@ -18,6 +18,7 @@ import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.commanding.AbstractSequence;
@@ -43,7 +44,7 @@ import vega.uplink.pointing.attitudes.Track;
  */
 public class Observation extends MapContext implements PointingBlockSetInterface,SequenceTimelineInterface,java.lang.Comparable<Observation>{
 	private java.util.HashSet<ObservationListener> listeners;
-	private final Logger LOG = Logger.getLogger(Observation.class.getName());
+	//private final Logger LOG = Logger.getLogger(Observation.class.getName());
 	public static boolean LISTEN=true;
 	public java.util.SortedMap<String,Date> eventMap;
 
@@ -138,7 +139,7 @@ public class Observation extends MapContext implements PointingBlockSetInterface
 
 
 	protected void fireChange(DatasetEvent<Product> source){
-		LOG.info("Firing Observation change");
+		VegaLog.info("Firing Observation change");
 		ObservationChangeEvent ev = new ObservationChangeEvent(this);
 		Iterator<ObservationListener> it = new Vector<ObservationListener>(listeners).iterator();
 		while (it.hasNext()){

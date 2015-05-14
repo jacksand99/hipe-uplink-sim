@@ -35,6 +35,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.jfree.util.Log;
 import org.w3c.dom.Document;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.planning.Observation;
@@ -65,7 +66,7 @@ public class ObservationPanel extends JTabbedPane implements ObservationListener
 		ObservationItlEditor itlEditor;
 		boolean initialized=false;
 		boolean disableRefresh=false;
-		private final Logger LOG = Logger.getLogger(ObservationPanel.class.getName());
+		//private final Logger LOG = Logger.getLogger(ObservationPanel.class.getName());
 		
 		public ObservationPanel(){
 			super();
@@ -130,8 +131,8 @@ public class ObservationPanel extends JTabbedPane implements ObservationListener
 		        public void actionPerformed(ActionEvent ae) {
 		        	try {
 		        		disableRefresh=true;
-		        		final Logger LOG = Logger.getLogger(this.getClass().getName());
-		        		LOG.info("Setting new metadata");
+		        		//final Logger LOG = Logger.getLogger(this.getClass().getName());
+		        		VegaLog.info("Setting new metadata");
 		        		boolean oldListen = Observation.LISTEN;
 		        		Observation.LISTEN=false;
 			        	obs.setName(_fieldA.getText());

@@ -31,7 +31,7 @@ public class GitPreferences extends PreferencesPanel {
   private JTextField _fieldF;
   private JTextField _fieldG;
 
-  private static final Logger LOG = Logger.getLogger(GitPreferences.class.getName());
+  //private static final Logger LOG = Logger.getLogger(GitPreferences.class.getName());
   public GitPreferences(){
   	super();
   }

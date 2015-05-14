@@ -48,6 +48,7 @@ import de.jaret.util.date.JaretDate;
 import de.jaret.util.ui.timebars.swing.TimeBarViewer;
 import vega.IconResources;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
+import vega.hipe.logging.VegaLog;
 import vega.uplink.Properties;
 import vega.uplink.commanding.Simulation;
 import vega.uplink.commanding.SimulationContext;
@@ -71,7 +72,7 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = Logger.getLogger(ScheduleViewer.class.getName());
+	//private static final Logger LOG = Logger.getLogger(ScheduleViewer.class.getName());
 	ObservationPanel buttonPanel;
 	JList<Observation> list;
 	
@@ -535,7 +536,7 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 			context.setPlanningPeriod(segmentName);
 			PtrSegment segment=ptr.getSegments()[0];
 			PointingBlock[] blocks=segment.getBlocks();
-			if (blocks.length==0) LOG.info("PTR has no blocks");
+			if (blocks.length==0) VegaLog.info("PTR has no blocks");
 			for (int i=0;i<blocks.length;i++){
 					context.getHistoryModes().add(blocks[i].getStartTime().getTime(), "PTR_"+blocks[i].getType(), "PTR", blocks[i].getStartTime().getTime());
 			}
@@ -685,7 +686,7 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 			if (fecs!=null && exclusion==null) result = RosettaPtrChecker.checkPtrHTML(schedule.getPtr(), ptsl,pdfm,fecs);
 			if (fecs!=null && exclusion!=null) result = RosettaPtrChecker.checkPtrHTML(schedule.getPtr(), ptsl,pdfm,fecs,exclusion);
 	       	result="<html><body>"+result+"</body><html>";
-        	LOG.warning(result);
+	       	VegaLog.warning(result);
         	HtmlEditorKit htmlEditor=new HtmlEditorKit("PTR FD Check",result);
 
 		}
@@ -704,7 +705,7 @@ public class ScheduleViewer extends AbstractVariableEditorComponent<Schedule> {
 			ptsl.addSegment( schedule.getPtslSegment());
 	       	String result = PtrChecker.checkPtrHTML(schedule.getPtr(), ptsl);
 	       	result="<html><body>"+result+"</body><html>";
-        	LOG.warning(result);
+	       	VegaLog.warning(result);
         	HtmlEditorKit htmlEditor=new HtmlEditorKit("PTR sanity Check",result);
 
 		}

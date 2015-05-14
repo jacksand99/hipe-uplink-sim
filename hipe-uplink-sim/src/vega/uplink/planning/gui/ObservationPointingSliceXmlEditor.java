@@ -32,6 +32,7 @@ import org.w3c.dom.Document;
 
 import vega.IconResources;
 import vega.hipe.gui.xmlutils.XMLTextEditor;
+import vega.hipe.logging.VegaLog;
 import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationChangeEvent;
 import vega.uplink.planning.ObservationListener;
@@ -49,7 +50,7 @@ public class ObservationPointingSliceXmlEditor extends AbstractVariableEditorCom
 	XMLTextEditor editor;
 	Observation obs;
 	boolean initialized;
-	private final Logger LOG = Logger.getLogger(ObservationPointingSliceXmlEditor.class.getName());
+	//private final Logger LOG = Logger.getLogger(ObservationPointingSliceXmlEditor.class.getName());
 	public ObservationPointingSliceXmlEditor(){
 		super(new BorderLayout());
 		initialized=false;
@@ -180,7 +181,7 @@ public class ObservationPointingSliceXmlEditor extends AbstractVariableEditorCom
 
 	@Override
 	public void pointingChanged(ObservationChangeEvent event) {
-		LOG.info("Listenerd change in pointing");
+		VegaLog.info("Listenerd change in pointing");
 		this.setSlice(getSlice());
 		// TODO Auto-generated method stub
 		

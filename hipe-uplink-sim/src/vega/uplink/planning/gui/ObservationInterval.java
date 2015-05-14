@@ -2,6 +2,7 @@ package vega.uplink.planning.gui;
 
 import java.util.logging.Logger;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.planning.Observation;
 import vega.uplink.planning.ObservationChangeEvent;
@@ -11,7 +12,7 @@ import de.jaret.util.date.JaretDate;
 
 public class ObservationInterval extends IntervalImpl implements ObservationListener{
 	Observation observation;
-	private final Logger LOG = Logger.getLogger(ObservationInterval.class.getName());
+	//private final Logger LOG = Logger.getLogger(ObservationInterval.class.getName());
 	
 	public ObservationInterval(Observation obs){
 		super();
@@ -47,7 +48,7 @@ public class ObservationInterval extends IntervalImpl implements ObservationList
 
 	@Override
 	public void metadataChanged(ObservationChangeEvent event) {
-		LOG.info("Observation changed");
+		VegaLog.info("Observation changed");
 		this.setBegin(new JaretDate(observation.getObsStartDate()));
 		this.setEnd(new JaretDate(observation.getObsEndDate()));
 		this.firePropertyChange(IntervalImpl.PROP_BEGIN, null, null);

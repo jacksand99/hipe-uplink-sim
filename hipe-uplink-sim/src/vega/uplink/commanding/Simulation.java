@@ -15,6 +15,8 @@ import org.jfree.ui.RefineryUtilities;
 
 
 
+
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.commanding.gui.HistoryModesPlot;
@@ -30,6 +32,7 @@ import java.util.logging.Logger;
 
 
 
+
 import javax.swing.JFrame;
 /**
  * 
@@ -38,7 +41,7 @@ import javax.swing.JFrame;
  */
 public class Simulation {
 	SimulationContext context;
-	private static final Logger LOG = Logger.getLogger(Simulation.class.getName());
+	//private static final Logger LOG = Logger.getLogger(Simulation.class.getName());
 	private Simulation(){
 		context=new SimulationContext();
 	}
@@ -74,21 +77,21 @@ public class Simulation {
 	public SimulationContext run(boolean printStrategy,boolean onlyText){
 		if (!context.getInitScript().equals("")){
 			try{
-				LOG.info("Executing init script "+context.getInitScript());
+				VegaLog.info("Executing init script "+context.getInitScript());
 				herschel.ia.jconsole.jython.Interpreter.getInterpreter().set("simulationContext", context);
 				herschel.ia.jconsole.jython.Interpreter.getInterpreter().getPythonInterpreter().execfile(context.getInitScript());
 				context=herschel.ia.jconsole.jython.Interpreter.getInterpreter().getPythonInterpreter().get("simulationContext", SimulationContext.class);
 
 			}catch (Exception e){
 				e.printStackTrace();
-				LOG.throwing("Simulation", "run", e);
-				LOG.severe("Error executing init script:"+e.getMessage());
+				VegaLog.throwing(Simulation.class, "run", e);
+				VegaLog.severe("Error executing init script:"+e.getMessage());
 				context.log(e.getMessage());
 			}
 		}
 		AbstractSequence[] seqs=context.getPor().getOrderedSequences();
 		SequenceTimeline seqTimeline=context.getSequenceTimeline();
-		LOG.info("Inserting commands into the model");
+		VegaLog.info("Inserting commands into the model");
 		boolean osirisScience=true;
 		for (int i=0;i<seqs.length;i++){
 			seqTimeline.execute(seqs[i]);
@@ -126,7 +129,7 @@ public class Simulation {
 		context.log(seqTimeline.findAllOverlapping());
 		java.util.Date start=context.getPor().getValidityDates()[0];
 		java.util.Date end=context.getPor().getValidityDates()[1];
-		LOG.info("Inserting the GS passes from the FECS into the model");
+		VegaLog.info("Inserting the GS passes from the FECS into the model");
 		TreeSet<GsPass> passes=context.getFecs().getPasses();
 		Iterator<GsPass> it = passes.iterator();
 		String strategy="";
@@ -148,7 +151,7 @@ public class Simulation {
 		}
 		Long[] times=new Long[temp.size()];
 		temp.toArray(times);
-		LOG.info("Calculating mode transitions");
+		VegaLog.info("Calculating mode transitions");
 		for (int i=0;i<times.length;i++){
 			long j=times[i];
 			String oldmode=context.getModelState().getStateForMode(context.getHistoryModes().get(j));
@@ -156,7 +159,7 @@ public class Simulation {
 			if (!context.getOrcd().checkTransion(oldmode, newmode)){
 				String mess="Forbidden transition "+oldmode+"--->"+newmode+" at "+DateUtil.dateToZulu(new Date(j))+" via "+context.getHistoryModes().getCommand(j)+" executed at "+DateUtil.dateToZulu(new Date(context.getHistoryModes().getOriginalTime(j)));
 				context.log(mess);
-				Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
+				VegaLog.severe( mess);
 			}
 			context.getModelState().setState(newmode);
 			context.getHistoryModes().addStates(j,context.getModelState().clone());
@@ -168,13 +171,13 @@ public class Simulation {
 			if (modelPower>mPower){
 				String mess="ALARM: Power over due via sequence "+context.getHistoryModes().getCommand(j)+" executed at "+DateUtil.dateToZulu(new Date(context.getHistoryModes().getOriginalTime(j)));
 				context.log(mess);
-				Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
+				VegaLog.severe( mess);
 
 			}
 			
 		}
 
-		LOG.info("Simulating SSMM");
+		VegaLog.info("Simulating SSMM");
 		String[] instruments=context.getMemorySimulator().getAllInstruments();
 		PlotXY plot3=null;
 		PlotXY plot4=null;
@@ -218,7 +221,7 @@ public class Simulation {
 						if (!mess.equals(mess2)){
 							mess=mess2;
 							context.log(mess);
-							Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess);
+							VegaLog.severe( mess);
 
 						}
 						
@@ -232,7 +235,7 @@ public class Simulation {
 				
 			}
 			if (!onlyText){
-				LOG.info("Generating power plots");
+				VegaLog.info("Generating power plots");
 
 			
 				Color color=Color.BLACK;
@@ -264,7 +267,7 @@ public class Simulation {
 	
 			frame.setVisible(true);
 		}
-		LOG.info("Executing post script");
+		VegaLog.info("Executing post script");
 		if (!context.getPostScript().equals("")){
 			try{
 				herschel.ia.jconsole.jython.Interpreter.getInterpreter().set("simulationContext", context);

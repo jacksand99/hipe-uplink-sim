@@ -16,12 +16,13 @@ import javax.swing.JTextPane;
 
 import vega.hipe.gui.xmlutils.HtmlDocument;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
+import vega.hipe.logging.VegaLog;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
 //import vega.uplink.pointing.task.ComparePtrsTask.MessagesFrame;
 
 public class PtrSanityCheckTask extends Task {
-	private static final Logger LOGGER = Logger.getLogger(ComparePtrsTask.class.getName());
+	//private static final Logger LOGGER = Logger.getLogger(ComparePtrsTask.class.getName());
 
 	public PtrSanityCheckTask(){
 		super("ptrSanityCheckTask");
@@ -54,7 +55,7 @@ public class PtrSanityCheckTask extends Task {
         }
 		if (ptsl==null){
         	String result = PtrChecker.checkPtrHTML(ptr);
-        	LOGGER.warning(result);
+        	VegaLog.warning(result);
         	HtmlDocument re=new HtmlDocument("PTR sanity Check",result);
         	HtmlEditorKit htmlEditor=new HtmlEditorKit(re);
         	this.getParameter("ptrSanityReport").setValue(re);
@@ -63,7 +64,7 @@ public class PtrSanityCheckTask extends Task {
 		}else{
 	       	String result = PtrChecker.checkPtrHTML(ptr, ptsl);
 	       	result="<html><body>"+result+"</body><html>";
-        	LOGGER.warning(result);
+	       	VegaLog.warning(result);
         	//HtmlEditorKit htmlEditor=new HtmlEditorKit("PTR sanity Check",result);
            	HtmlDocument re=new HtmlDocument("PTR sanity Check",result);
         	HtmlEditorKit htmlEditor=new HtmlEditorKit(re);

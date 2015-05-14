@@ -19,7 +19,7 @@ public class ItlTokenMarker extends TokenMarker {
 	// ---------------------------------------------------------------
 	private KeywordMap keywords;
 	private boolean cpp;
-	private static final Logger LOG = Logger.getLogger(ItlTokenMarker.class.getName());
+	//private static final Logger LOG = Logger.getLogger(ItlTokenMarker.class.getName());
 
 	// ~ Constructors
 	// ---------------------------------------------------------------------

@@ -3,6 +3,8 @@ package vega.uplink.commanding;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import vega.hipe.logging.VegaLog;
+
 /**
  * Class that allows to init the status of a simulation using the ITL code that may be present in an ITL
  * The current implementation if fully Rosetta specific
@@ -11,7 +13,7 @@ import java.util.logging.Logger;
  */
 public class MappsModesOrcdMap {
 	private static HashMap<String,String> map;
-	private static final Logger LOG = Logger.getLogger(MappsModesOrcdMap.class.getName());
+	//private static final Logger LOG = Logger.getLogger(MappsModesOrcdMap.class.getName());
 	private static HashMap<String,String> getMap(){
 		if (map!=null) return map;
 		else{
@@ -59,7 +61,7 @@ public class MappsModesOrcdMap {
 		for (int i=0;i<initModes.length;i++){
 			String translation = getMap().get(initModes[i]);
 			if (translation==null){
-				LOG.info("Unknown mode "+initModes[i]);
+				VegaLog.info("Unknown mode "+initModes[i]);
 			}else{
 				sc.getModelState().setState(translation);
 			}
@@ -69,7 +71,7 @@ public class MappsModesOrcdMap {
 		for (int i=0;i<initMS.length;i++){
 			String translation = getMap().get(initMS[i]);
 			if (translation==null){
-				LOG.info("Unknown mode "+initMS[i]);
+				VegaLog.info("Unknown mode "+initMS[i]);
 			}else{
 				sc.getModelState().setState(translation);
 			}

@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.commanding.AbstractSequence;
 import vega.uplink.commanding.Por;
@@ -34,7 +35,7 @@ import vega.uplink.commanding.SsmmSimulator;
 import vega.uplink.track.GsPass;
 
 public class CreateTimelineTask extends Task {
-	private static final Logger LOGGER = Logger.getLogger(CreateTimelineTask.class.getName());
+	//private static final Logger LOGGER = Logger.getLogger(CreateTimelineTask.class.getName());
 
 	public CreateTimelineTask(){
 		super("createTimelineTask");
@@ -71,7 +72,7 @@ public class CreateTimelineTask extends Task {
         	AbstractSequence[] seqs=context.getPor().getOrderedSequences();
     		//SsmmSimulator memorySimulator=context.ssmm;
     		SsmmSimulator memorySimulator=new RosettaSsmmSimulator(context);
-    		LOGGER.info("Inserting commands into the model");
+    		VegaLog.info("Inserting commands into the model");
     		//String messages="";
     		for (int i=0;i<seqs.length;i++){
     			//if (seqs[i].getName())
@@ -98,7 +99,7 @@ public class CreateTimelineTask extends Task {
     		}
     		java.util.Date start=context.getPor().getValidityDates()[0];
     		java.util.Date end=context.getPor().getValidityDates()[1];
-    		LOGGER.info("Inserting the GS passes from the FECS into the model");
+    		VegaLog.info("Inserting the GS passes from the FECS into the model");
     		TreeSet<GsPass> passes=context.getFecs().getPasses();
     		Iterator<GsPass> it = passes.iterator();
     		String strategy="";
@@ -124,7 +125,7 @@ public class CreateTimelineTask extends Task {
     		}
     		Long[] times=new Long[temp.size()];
     		temp.toArray(times);
-    		LOGGER.info("Calculating mode transitions");
+    		VegaLog.info("Calculating mode transitions");
     		for (int i=0;i<times.length;i++){
     			long j=times[i];
     			String oldmode=context.getModelState().getStateForMode(context.getHistoryModes().get(j));
@@ -155,8 +156,8 @@ public class CreateTimelineTask extends Task {
     		this.setValue("context", context);
 		} catch (Exception e) {
 			message=e.getMessage();
-			LOGGER.throwing(PorCheckTask.class.getName(), "execute", e);
-			LOGGER.severe(e.getMessage());
+			VegaLog.throwing(PorCheckTask.class, "execute", e);
+			VegaLog.severe(e.getMessage());
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

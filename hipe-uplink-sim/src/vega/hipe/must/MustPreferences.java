@@ -13,6 +13,7 @@ import herschel.share.util.Configuration;
 
 import javax.swing.GroupLayout.*;
 
+import vega.hipe.logging.VegaLog;
 //import vega.uplink.Properties;
 //import vega.uplink.Properties;
 //import vega.uplink.commanding.task.PorCheckTask;
@@ -28,18 +29,18 @@ public class MustPreferences extends PreferencesPanel {
     private JTextField    _fieldC;  // text field associated to preference keyC
     private JTextField    _fieldD;  // text field associated to preference keyD
     private JTextField    _fieldE;  // text field associated to preference keyE
-    private static final Logger LOGGER = Logger.getLogger(MustPreferences.class.getName());
+    //private static final Logger LOGGER = Logger.getLogger(MustPreferences.class.getName());
    
     
     public MustPreferences(){
     	super();
-    	LOGGER.info("MustPreferences: Constructor called");
+    	VegaLog.info("MustPreferences: Constructor called");
     	//UserPreferences.
     	//registerHandlers();
     }
     @Override
     protected void registerHandlers() {
-    	LOGGER.info("Must Plugin: Registering Handlers");
+    	VegaLog.info("Must Plugin: Registering Handlers");
     	/*registerHandler("must.ip",new StringPreferenceHandler(Configuration.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument, ""),_fieldA,Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument));
 */
         // Preference IP with type String and default value "text"
@@ -80,7 +81,7 @@ public class MustPreferences extends PreferencesPanel {
 
     @Override
     protected void makeContent() {
-    	LOGGER.info("Must Plugin: make content");
+    	VegaLog.info("Must Plugin: make content");
         GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
         layout.setAutoCreateGaps(true);

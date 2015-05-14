@@ -15,6 +15,7 @@ import herschel.ia.dataset.ArrayDataset;
 
 
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.SuperPor;
 import vega.uplink.planning.period.Plan;
@@ -39,7 +40,7 @@ import herschel.share.fltdyn.time.FineTime;
  *
  */
 public class Schedule extends MapContext implements ObservationListener{
-	private final Logger LOG = Logger.getLogger(Schedule.class.getName());
+	//private final Logger LOG = Logger.getLogger(Schedule.class.getName());
 	private boolean ptrDirty;
 	private boolean porDirty;
 	private Por cachedPor;
@@ -312,7 +313,7 @@ public class Schedule extends MapContext implements ObservationListener{
 		return (String) getMeta().get("path").getValue();
 	}
 	public void targetChanged(DatasetEvent<Dataset> arg0) {
-		LOG.info("ObservationSchedule Changed");
+		VegaLog.info("ObservationSchedule Changed");
 		super.targetChanged(arg0);
 		
 	}
@@ -324,7 +325,7 @@ public class Schedule extends MapContext implements ObservationListener{
 
 	@Override
 	public void scheduleChanged() {
-		LOG.info("Both POR and PTR dirty");
+		VegaLog.info("Both POR and PTR dirty");
 		ptrDirty=true;
 		porDirty=true;
 	}
@@ -337,15 +338,15 @@ public class Schedule extends MapContext implements ObservationListener{
 
 	@Override
 	public void pointingChanged(ObservationChangeEvent event) {
-		LOG.info("Listenerd change in pointing");
-		LOG.info("PTR dirty");
+		VegaLog.info("Listenerd change in pointing");
+		VegaLog.info("PTR dirty");
 		ptrDirty=true;
 		
 	}
 
 	@Override
 	public void commandingChanged(ObservationChangeEvent event) {
-		LOG.info("POR dirty");
+		VegaLog.info("POR dirty");
 		porDirty=true;
 		
 	}

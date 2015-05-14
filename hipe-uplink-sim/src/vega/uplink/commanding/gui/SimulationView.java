@@ -55,6 +55,7 @@ import herschel.ia.gui.kernel.SiteEventListener;
 import herschel.share.interpreter.InterpreterFactory;
 import herschel.share.interpreter.InterpreterNameSpaceUtil;
 import vega.hipe.git.HipeGit;
+import vega.hipe.logging.VegaLog;
 //import herschel.share.util.Configuration;
 import vega.uplink.Properties;
 //import rosetta.uplink.commanding.Simulation;
@@ -543,14 +544,14 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 				        		//InterpreterFactory.getInterpreter().set(""+new Date().getTime()+"_simulationContext", resultContext);
 				        		//InterpreterNameSpaceUtil.getInstance().getInterpreter().set(""+new Date().getTime()+"_simulationContext", resultContext);
 				        	}catch (Exception e){
-				        		Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception:"+e.getMessage(),e);
+				        		VegaLog.severe("Exception:"+e.getMessage());
 				        		messages=messages+e.getMessage()+"\n";
 				        	}
 				        	messages=messages+resultContext.getLog();
 			        		//messages=messages+sim.run();
 			        	}
 			        	catch (Exception e){
-			        		Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception:"+e.getMessage(),e.getMessage());
+			        		VegaLog.severe("Exception:"+e.getMessage());
 			        		messages=messages+e.getMessage()+"\n";
 			        		e.printStackTrace();
 			        	}

@@ -18,6 +18,7 @@ import javax.swing.JTextPane;
 
 import vega.hipe.gui.xmlutils.HtmlDocument;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.commanding.PorUtils;
 import vega.uplink.commanding.task.PorCheckTask;
@@ -32,7 +33,7 @@ import vega.uplink.track.Fecs;
 import vega.uplink.track.FecsUtils;
 
 public class CompareFecsTask extends Task {
-	private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());
+	//private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());
 
 	public CompareFecsTask(){
 		super("compareFecsTask");
@@ -190,8 +191,8 @@ public class CompareFecsTask extends Task {
         		message=message+Fecs.compareFecsHTML(olderFecs, newerFecs);
         	}catch (Exception e){
     			message=message+e.getMessage();
-    			LOGGER.throwing(CompareFecsTask.class.getName(), "execute", e);
-    			LOGGER.severe(e.getMessage());
+    			VegaLog.throwing(CompareFecsTask.class, "execute", e);
+    			VegaLog.severe(e.getMessage());
     			// TODO Auto-generated catch block
     			e.printStackTrace();
         	}
@@ -253,8 +254,8 @@ public class CompareFecsTask extends Task {
 	            		message=message+Fecs.compareFecsHTML(oldFecs, newFecs);
 	            	}catch (Exception e){
 	        			message=message+e.getMessage();
-	        			LOGGER.throwing(CompareFecsTask.class.getName(), "execute", e);
-	        			LOGGER.severe(e.getMessage());
+	        			VegaLog.throwing(CompareFecsTask.class, "execute", e);
+	        			VegaLog.severe(e.getMessage());
 	        			// TODO Auto-generated catch block
 	        			e.printStackTrace();
 	            	}

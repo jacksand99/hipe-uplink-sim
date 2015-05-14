@@ -5,6 +5,7 @@ import herschel.ia.task.TaskParameter;
 
 import java.util.logging.Logger;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
@@ -13,7 +14,7 @@ import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
 
 public class MergePtrsTask extends Task {
-	private static final Logger LOGGER = Logger.getLogger(MergePtrsTask.class.getName());
+	//private static final Logger LOGGER = Logger.getLogger(MergePtrsTask.class.getName());
 
 	public MergePtrsTask(){
 		super("mergePtrsTask");
@@ -45,16 +46,16 @@ public class MergePtrsTask extends Task {
 		Ptr target = (Ptr) getParameter("targetPtr").getValue();
 
 		if (master == null) {
-			LOGGER.severe("Missing master value");
+			VegaLog.severe("Missing master value");
             throw (new NullPointerException("Missing master value"));
         }
 		if (ptr == null) {
-			LOGGER.severe("Missing ptr value");
+			VegaLog.severe("Missing ptr value");
 
             throw (new NullPointerException("Missing ptr value"));
         }
 		if (target == null) {
-			LOGGER.severe("Missing target value");
+			VegaLog.severe("Missing target value");
 
             throw (new NullPointerException("Missing target value"));
         }

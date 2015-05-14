@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 
 import org.jfree.util.Log;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.track.Fecs;
@@ -44,7 +45,7 @@ public class EventList extends MapContext {
 	public String version;
 	private static Date DEFAULT_START_DATE=new Date(65277473000L);
 	private static Date DEAFULT_END_DATE=new Date(2526802497000L);
-	private static final Logger LOG = Logger.getLogger(Fecs.class.getName());
+	//private static final Logger LOG = Logger.getLogger(Fecs.class.getName());
 	private TreeMap<Date,String> map;
 	
 	//private java.util.Vector<EventList> includes;
@@ -514,7 +515,7 @@ public void save() throws FileNotFoundException, UnsupportedEncodingException{
 					sSD=sSD.replace("Include_file:", "");
 					sSD=sSD.replace("\"", "");
 					if (sSD.startsWith("LOEV")){
-						LOG.warning("LOEV import still not implemented. Skipping LOEV.");
+						VegaLog.warning("LOEV import still not implemented. Skipping LOEV.");
 					}else{
 						try{
 							//LOG.info("Trying to parse "+sSD+" with root path "+path);
@@ -633,14 +634,14 @@ public void save() throws FileNotFoundException, UnsupportedEncodingException{
 		if (f.exists()){
 			return parseEvf(f,path);
 		}else{
-			LOG.info("Can reads file "+f.canRead());
-			LOG.info("\""+f.getAbsolutePath()+"\""+" does not exist 1 in "+f.getParent());
+			VegaLog.info("Can reads file "+f.canRead());
+			VegaLog.info("\""+f.getAbsolutePath()+"\""+" does not exist 1 in "+f.getParent());
 		}
 		f = new File(file);
 		if (f.exists()){
 			return parseEvf(f,path);
 		}else{
-			LOG.info(f.getAbsolutePath()+" does not exist 2");
+			VegaLog.info(f.getAbsolutePath()+" does not exist 2");
 		}
 		FileNotFoundException fnf = new FileNotFoundException("Neither "+path+"/"+file+" or "+file+" were found");
 		throw(fnf);

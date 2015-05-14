@@ -14,6 +14,7 @@ import herschel.share.fltdyn.time.FineTime;
 
 
 
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -35,6 +36,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.jfree.util.Log;
 import org.w3c.dom.Document;
 
+import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 
 /*import vega.uplink.planning.Observation;
@@ -62,7 +64,7 @@ public class PtrSegment extends PointingBlocksSlice{
 	public static String FRAME_TAG="frame";
 	private TreeMap<Date, PointingBlock> blMapCache;
 	private boolean cacheDirty;
-	private static final Logger LOG = Logger.getLogger(PtrUtils.class.getName());
+	//private static final Logger LOG = Logger.getLogger(PtrUtils.class.getName());
 	
 	
 	private String getBlockName(PointingBlock block){
@@ -708,7 +710,7 @@ public class PtrSegment extends PointingBlocksSlice{
 				try{
 					result.addBlock(block);
 				}catch (IllegalArgumentException e){
-					LOG.warning(e.getMessage());
+					VegaLog.warning(e.getMessage());
 				}
 			}
 		}
