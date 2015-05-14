@@ -6,6 +6,9 @@ vega.hipe.git
 vega.hipe.gui.xmlutils
 vega.hipe.logging
 vega.hipe.mail
+vega.hipe.must
+vega.hipe.pds
+vega.hipe.pds.gui
 vega.hipe.preferences
 vega.hipe.products
 vega.hipe.products.gui
@@ -30,3 +33,6 @@ vega.uplink.pointing.attitudes
 vega.uplink.pointing.exclusion
 vega.uplink.pointing.gui
 vega.uplink.pointing.task
+vega.uplink.track
+vega.uplink.track.gui
+vega.uplink.track.task
