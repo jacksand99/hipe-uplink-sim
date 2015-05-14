@@ -85,7 +85,7 @@ from vega.hipe.gui.xmlutils import HtmlDocument
 from vega.uplink.commanding.itl import ItlParser
 from vega.uplink.commanding.itl import EventList
 from vega.uplink.planning.aspen import AspenObservationSchedule
-
+from vega.hipe.pds import PDSImage
 
 PreferencePanelRegistrator.registerPanels();
 
@@ -173,6 +173,8 @@ REGISTRY.register(REGISTRY.COMPONENT,Extension("PDOR reader","vega.uplink.comman
 REGISTRY.register("site.fileType",Extension("site.file.pwpl","vega.uplink.commanding.gui.PwplFile",Configuration.getProperty("vega.file.type.PWPL"),IconResources.POR_ICON_NOROOT));
 REGISTRY.register("site.fileType",Extension("site.file.pwtl","vega.uplink.commanding.gui.PwplFile",Configuration.getProperty("vega.file.type.PWTL"),IconResources.POR_ICON_NOROOT));
 REGISTRY.register(REGISTRY.COMPONENT,Extension("PWPL reader","vega.uplink.commanding.gui.PwplFileComponent","factory.editor.file","vega.uplink.commanding.gui.PwplFile"))
+REGISTRY.register(REGISTRY.VIEWABLE, herschel.ia.gui.kernel.Extension("site.view.must","vega.hipe.must.MustView","Must","vega/vega.gif"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("PDS Navigator","vega.hipe.pds.gui.PDSNavigator","factory.editor.variable","vega.hipe.pds.PDSImage"))
 
 toolRegistry = TaskToolRegistry.getInstance()
 from vega.uplink.commanding.task import SavePorTask
@@ -213,6 +215,91 @@ toolRegistry.register(RebasePtslTask())
 toolRegistry.register(SaveMappsProductsTask())
 def tunnel():
 	HipeGitSshTunnel.startTunnel()
+from com.mysql.jdbc import Driver
+from java.lang import *
+from com.mysql.jdbc import *
+from java.sql import *
+from java.text import SimpleDateFormat
+from herschel.share.fltdyn.time import FineTime
+from com.mysql.jdbc import Driver
+
+def mustReader(paramMnemonics,startDate,endDate) :
+        #
+        driverName="com.mysql.jdbc.Driver"
+        #
+        #Class.forName(driverName)
+        #
+        url = "jdbc:mysql://"+Configuration.getProperty("vega.must.server.ip")+"/"+Configuration.getProperty("vega.must.server.repository")+"?user="+Configuration.getProperty("vega.must.server.user")+"&password="+Configuration.getProperty("vega.must.server.password")
+        #
+        loader = Thread.currentThread().getContextClassLoader()
+        c = loader.loadClass("com.mysql.jdbc.Driver")
+        #print c
+        driver = c.newInstance()
+        #print driver
+        con = driver.connect(url, java.util.Properties())
+        #con = DriverManager.getConnection(url)
+        
+        stmt = con.createStatement()
+        formatter = SimpleDateFormat ("yyyy-MM-dd HH:mm:ss")
+        
+        date1 =  formatter.parse(endDate)
+        date2 =  formatter.parse(startDate)
+        stringDate1 = formatter.format(date1)
+        stringDate2 = formatter.format(date2)
+        #
+        p = Product()
+        #ah=TableDataset()
+        
+        p.meta["type"]=StringParameter(value="MUST Parameter Product")
+        p.meta["creator"]=StringParameter(value="MustClient")
+        p.meta["description"]=StringParameter(value="MUST")
+        p.meta["startDate"]=DateParameter(value=FineTime(date2))
+        p.meta["endDate"]=DateParameter(value=FineTime(date1))
+        #
+        for pars in range(len(paramMnemonics)) :
+                #
+                ah=TableDataset()
+                parameterName = paramMnemonics[pars]
+                p.meta[parameterName]=BooleanParameter(value=Boolean(True))
+                #
+                sql = "select PID,DBTYPE from parameter where (PNAME='"+parameterName+"')"
+                rs = stmt.executeQuery(sql)
+                
+                while (rs.next()):
+                        pid=rs.getInt(1)
+                        tableName = rs.getString(2)+"paramvalues"
+                
+                sql = "select datetime,value from %s where (pid=%s and datetime<'%s' and datetime>'%s')"%(tableName,pid,date1.time,date2.time)
+                
+                rs = stmt.executeQuery(sql)
+                
+                list = []
+                dates=Long1d()
+                values=Float1d()
+                
+                while (rs.next()):
+                        dates.append(rs.getLong(1))
+                        values.append(rs.getFloat(2))
+                
+                print "Retrieved parameter from MUST: ", parameterName
+                
+                if (pars == 0) :
+                        #ah["Time"]=Column(data=dates,description="Time")
+                        ah.meta["creator"]=StringParameter(value="MustClient")
+                        ah.meta["description"]=StringParameter(value="MUST")
+                        ah.meta["startDate"]=DateParameter(value=FineTime(date2))
+                        ah.meta["endDate"]=DateParameter(value=FineTime(date1))
+                #
+                ah["Time"]=Column(data=dates,description="Time")
+                ah[parameterName]=Column(data=values,description=parameterName)
+                #
+                p[parameterName]=ah
+        rs.close()
+        stmt.close()
+        con.close()
+        #
+        return p
+#End on function definition
 
 
 #del(ins, instruments)

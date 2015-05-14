@@ -158,6 +158,13 @@ public class Properties {
 		
 		return value;
 	}
+	public static String getProperty(String property,String defaultvalue){
+		try{
+			return getProperty(property);
+		}catch (Exception e){
+			return defaultvalue;
+		}
+	}
 	/**
 	 * Get the value of a property
 	 * @param property

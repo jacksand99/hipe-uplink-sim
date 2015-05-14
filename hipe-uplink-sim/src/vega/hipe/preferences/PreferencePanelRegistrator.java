@@ -18,6 +18,7 @@ public class PreferencePanelRegistrator {
 		REGISTRY.register(UserPreferences.CATEGORY, new Extension("Mission Planning/Files","vega.hipe.preferences.FileTypesPreferences",null,null));
 		REGISTRY.register(UserPreferences.CATEGORY, new Extension("Git","vega.hipe.git.GitPreferences",null,null));
 		REGISTRY.register(UserPreferences.CATEGORY, new Extension("Mail","vega.hipe.mail.MailPreferencesPanel",null,null));
+		REGISTRY.register(UserPreferences.CATEGORY, new Extension("Must","vega.hipe.must.MustPreferences",null,null));
 
 		//List<String> instruments = Properties.getList("vega.instrument.names");
 		List<String> instruments = Configuration.getList(Properties.INSTRUMENT_NAMES_PROPERTIES);
