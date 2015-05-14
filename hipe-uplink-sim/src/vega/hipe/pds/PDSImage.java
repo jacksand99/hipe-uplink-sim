@@ -15,10 +15,11 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.Date;
+
 import java.util.HashMap;
 import java.util.Iterator;
+
+import vega.uplink.DateUtil;
 import herschel.ia.dataset.DoubleParameter;
 import herschel.ia.dataset.Parameter;
 import herschel.ia.dataset.StringParameter;
@@ -165,9 +166,9 @@ public class PDSImage extends SimpleImage {
 			vector.remove(IMAGE_HEADER);
 			result=result+"^IMAGE\t="+getStringMetadata(IMAGE)+"\n";
 			vector.remove(IMAGE);
-			result=result+"PRODUCT_CREATION_TIME\t="+dateToZulu(this.getCreationDate())+"\n";
-			result=result+"START_TIME\t="+dateToZulu(this.getStartDate())+"\n";
-			result=result+"STOP_TIME\t="+dateToZulu(this.getEndDate())+"\n";
+			result=result+"PRODUCT_CREATION_TIME\t="+DateUtil.dateToZulu(this.getCreationDate().toDate())+"\n";
+			result=result+"START_TIME\t="+DateUtil.dateToZulu(this.getStartDate().toDate())+"\n";
+			result=result+"STOP_TIME\t="+DateUtil.dateToZulu(this.getEndDate().toDate())+"\n";
 			result=result+"INSTRUMENT_ID\t="+this.getInstrument()+"\n";
 			Iterator<String> it2 = vector.iterator();
 			while (it2.hasNext()){
@@ -260,21 +261,7 @@ public class PDSImage extends SimpleImage {
 			}
 		}
 		
-		private static FineTime zuluToDate(String zuluTime){
-			java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-			dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-			try{
-				return new FineTime(dateFormat.parse(zuluTime));
-			}catch (ParseException e){
-				return new FineTime(new Date());
-			}
-		}
-		
-		private static String dateToZulu(FineTime zuluTime) {
-			java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");			
-			dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));			
-			return dateFormat.format(zuluTime.toDate());
-		}
+
 		
 		/**
 		 * Read a PDS image from a file. It has been only tested with MEX images, so it is improbable that can read universal PDS files.
@@ -330,7 +317,7 @@ public class PDSImage extends SimpleImage {
 			String creationTime=properties.get("PRODUCT_CREATION_TIME");
 			try{
 				if (creationTime!=null){
-					si.setCreationDate(zuluToDate(creationTime));
+					si.setCreationDate(new FineTime(DateUtil.zuluToDate(creationTime)));
 					properties.remove("PRODUCT_CREATION_TIME");
 				}
 				
@@ -340,7 +327,7 @@ public class PDSImage extends SimpleImage {
 			String startTime=properties.get("START_TIME");
 			try{
 				if (startTime!=null){
-					si.setStartDate(zuluToDate(startTime));
+					si.setStartDate(new FineTime(DateUtil.zuluToDate(startTime)));
 					properties.remove("START_TIME");
 				}
 				
@@ -350,7 +337,7 @@ public class PDSImage extends SimpleImage {
 			String stopTime=properties.get("STOP_TIME");
 			try{
 				if (stopTime!=null){
-					si.setEndDate(zuluToDate(stopTime));
+					si.setEndDate(new FineTime(DateUtil.zuluToDate(stopTime)));
 					properties.remove("STOP_TIME");
 				}
 				
