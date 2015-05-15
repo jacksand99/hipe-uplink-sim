@@ -55,7 +55,7 @@ import org.w3c.dom.Node;
 
 import rosetta.uplink.pointing.AttitudeGeneratorException;
 import rosetta.uplink.pointing.AttitudeGeneratorFDImpl;
-import rosetta.uplink.pointing.AttitudeGeneratorFDImplMini;
+//import rosetta.uplink.pointing.AttitudeGeneratorFDImplMini;
 import rosetta.uplink.pointing.ExclusionPeriod;
 import rosetta.uplink.pointing.RosettaPtrChecker;
 import vega.IconResources;
@@ -781,14 +781,14 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
         			Float currentEta=valuesEta[0];
         			Float currentZeta=valuesZeta[0];
         			Float currentEpsilon=valuesEpsilon[0];
-        	        AttitudeGeneratorFDImplMini ag;
+        	        AttitudeGeneratorFDImpl ag;
         	        String activityCase;
           	        String ptslName="";
         	        try{
         	        if (trajectory==null){
         	        	activityCase=Properties.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.activityCase");
         	    		try {
-        	    			ag = new AttitudeGeneratorFDImplMini(ptr,pdfm,currentEta,currentZeta,currentEpsilon);
+        	    			ag = new AttitudeGeneratorFDImpl(ptr,pdfm,currentEta,currentZeta,currentEpsilon);
         	    		} catch (AttitudeGeneratorException ex) {
         	    			VegaLog.severe(ex.getMessage());
         	    			IllegalArgumentException iae=new IllegalArgumentException(ex.getMessage());
@@ -801,7 +801,7 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
         	        }else{
         	        	activityCase=trajectory;
         	    		try {
-        	    			ag = new AttitudeGeneratorFDImplMini(ptr,pdfm,AttitudeGeneratorFDImpl.getMtpNum(ptr),trajectory,currentEta,currentZeta,currentEpsilon);
+        	    			ag = new AttitudeGeneratorFDImpl(ptr,pdfm,AttitudeGeneratorFDImpl.getMtpNum(ptr),trajectory,currentEta,currentZeta,currentEpsilon);
         	    		} catch (AttitudeGeneratorException ex) {
         	    			VegaLog.severe(ex.getMessage());
         	    			IllegalArgumentException iae=new IllegalArgumentException(ex.getMessage());
@@ -824,7 +824,7 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
         	        		"<tr><td>EPSILON</td><td>"+currentEpsilon+"</td></tr>";
 
 	        	        	message=message+"</table>";
-	        	        	message=message+RosettaPtrChecker.checkPtrHtmlMini(ptr, pdfm,ag);
+	        	        	message=message+RosettaPtrChecker.checkPtrHTML(ptr,null, pdfm,ag);
         	        }catch (Exception e2){
         	        	message=message+"<table class=\"gridtable\">";
             	        message=message+""+

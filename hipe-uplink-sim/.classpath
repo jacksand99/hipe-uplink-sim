@@ -39,11 +39,13 @@
 	<classpathentry kind="lib" path="jars/commons-lang3-3.3.2.jar"/>
 	<classpathentry kind="lib" path="jars/jaretutil-0.32.jar"/>
 	<classpathentry kind="lib" path="jars/timebars-1.49.jar"/>
-	<classpathentry kind="lib" path="/hus-ros-fd/bin"/>
 	<classpathentry kind="lib" path="jars/org.eclipse.jgit-3.5.2.201411120430-r.jar"/>
 	<classpathentry kind="lib" path="jars/jsch-0.1.51.jar"/>
 	<classpathentry kind="lib" path="/Users/jarenas 1/git/hipe-uplink-sim/hipe-uplink-sim/jars/javax.mail.jar"/>
 	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_dataset_image/13.8/ia_dataset_image_13.8.jar"/>
 	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/ia_numeric_toolbox_basic/0.150/ia_numeric_toolbox_basic_0.150.jar"/>
+	<classpathentry kind="lib" path="jars/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="jars/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="jars/commons-codec-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

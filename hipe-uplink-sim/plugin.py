@@ -306,6 +306,54 @@ def mustReader(paramMnemonics,startDate,endDate) :
 
 del(toolRegistry)
 
+from herschel.ia.gui.kernel import ExtensionRegistry
+from herschel.ia.gui.kernel import Extension
+from herschel.ia.gui.kernel.menus import ActionMaker
+#from sys import path
+from java.io import File
+from herschel.ia.gui.kernel.util import SiteFileUtil
+from herschel.share.util import FileNameExtensionFilter
+from herschel.ia.gui.kernel.prefs import UserPreferences
+from herschel.share.util import Configuration
+from rosetta.uplink.pointing import ExclusionPeriod
+from vega import IconResources
+
+
+#REGISTRY = ExtensionRegistry.getInstance();
+REGISTRY.register(UserPreferences.CATEGORY, Extension("Mission Planning/Pointing","rosetta.uplink.pointing.RosettaPointingFDPreferences",None,None))  # unused
+REGISTRY.register("site.fileType",Extension("site.file.exclusion","rosetta.uplink.pointing.ExclFile","regex:^EXCL_[a-zA-Z0-9_\-]*.evf",IconResources.FECS_ICON_NOROOT));
+REGISTRY.register(REGISTRY.COMPONENT,Extension("ExclusionPeriod Reader","rosetta.uplink.pointing.ExclFileComponent","factory.editor.file","rosetta.uplink.pointing.ExclFile"))
+
+
+#import rosetta
+from rosetta.uplink.pointing import AttitudeGeneratorFDImpl
+toolRegistry = TaskToolRegistry.getInstance()
+from rosetta.uplink.pointing import RosettaPtrCheckTask
+from rosetta.uplink.pointing import RosettaBackupPtrTask
+
+toolRegistry.register(RosettaPtrCheckTask())
+toolRegistry.register(RosettaBackupPtrTask())
+
+
+del(toolRegistry)
+
+del(REGISTRY)
+
+from vega.uplink import Properties
+from herschel.ia.gui.kernel.util import VariablesUtil
+directory=Configuration.getProperty(Properties.DEFAULT_OBSERVATIONS_DIRECTORY)+"/"
+#print directory
+files=java.io.File(directory).listFiles()
+if files!=None:
+	for i in files:
+		name=i.getName()
+		if (name[:4]=="OBS_"):
+			o=ObservationUtil.readObservationFromFile(directory+name)
+			variableName = o.getName()
+			variableName= String(variableName).replaceAll(" ", "_")
+			VariablesUtil.addVariable(variableName, o)
+del (directory,files,i,name,o,variableName)
+
 
 
 
