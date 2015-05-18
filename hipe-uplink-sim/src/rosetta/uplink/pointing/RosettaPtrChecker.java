@@ -3,11 +3,16 @@ package rosetta.uplink.pointing;
 import java.util.HashMap;
 
 import vega.uplink.pointing.net.AngularMomentum;
+import vega.uplink.pointing.net.AttitudeConstrainEvent;
+import vega.uplink.pointing.net.AttitudeGeneratorException;
+import vega.uplink.pointing.net.AttitudeGeneratorFDImpl;
+import vega.uplink.pointing.net.HgaOutages;
 import vega.uplink.pointing.net.AngularMomentum.AMInterval;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
 //import rosetta.uplink.pointing.ExclusionPeriod.Period;
 import vega.uplink.DateUtil;
 import vega.uplink.EvtmEvent;
+import vega.uplink.pointing.AttitudeGenerator;
 import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingBlocksSlice;
@@ -217,7 +222,7 @@ public class RosettaPtrChecker {
 	public static String checkPtrHTML(Ptr ptr,Ptr ptsl,Pdfm pdfm){
 		String result="";
 		try {
-			AttitudeGeneratorFDImpl ag = new AttitudeGeneratorFDImpl(ptr,pdfm);
+			AttitudeGeneratorFDImpl ag = new RosettaAttitudeGenerator(ptr,pdfm);
 			result=result+checkPtrHTML(ptr,ptsl,pdfm,ag);
 		} catch (AttitudeGeneratorException e) {
 			// TODO Auto-generated catch block
@@ -230,7 +235,7 @@ public class RosettaPtrChecker {
 	public static String checkPtr(Ptr ptr,Ptr ptsl,Pdfm pdfm){
 		String result="";
 		try {
-			AttitudeGeneratorFDImpl ag = new AttitudeGeneratorFDImpl(ptr,pdfm);
+			AttitudeGeneratorFDImpl ag = new RosettaAttitudeGenerator(ptr,pdfm);
 			result=result+checkPtr(ptr,ptsl,pdfm,ag);
 		} catch (AttitudeGeneratorException e) {
 			// TODO Auto-generated catch block
@@ -447,7 +452,7 @@ public class RosettaPtrChecker {
 		String result="";
 		result=result+PtrChecker.checkPtrHTML(ptr, ptsl);
 		try {
-			AttitudeGeneratorFDImpl ag = new AttitudeGeneratorFDImpl(ptr,pdfm);
+			AttitudeGeneratorFDImpl ag = new RosettaAttitudeGenerator(ptr,pdfm);
 			result=result+checkPtrHTML(ptr,ptsl,pdfm,fecs,ag);
 		} catch (AttitudeGeneratorException e) {
 			// TODO Auto-generated catch block
@@ -461,7 +466,7 @@ public class RosettaPtrChecker {
 		String result="";
 		result=result+PtrChecker.checkPtrHTML(ptr, ptsl);
 		try {
-			AttitudeGeneratorFDImpl ag = new AttitudeGeneratorFDImpl(ptr,pdfm);
+			AttitudeGeneratorFDImpl ag = new RosettaAttitudeGenerator(ptr,pdfm);
 			result=result+checkPtrHTML(ptr,ptsl,pdfm,fecs,ag,exclusion);
 		} catch (AttitudeGeneratorException e) {
 			// TODO Auto-generated catch block
@@ -476,7 +481,7 @@ public class RosettaPtrChecker {
 		String result="";
 		result=result+PtrChecker.checkPtr(ptr, ptsl);
 		try {
-			AttitudeGeneratorFDImpl ag = new AttitudeGeneratorFDImpl(ptr,pdfm);
+			AttitudeGeneratorFDImpl ag = new RosettaAttitudeGenerator(ptr,pdfm);
 			result=result+checkPtr(ptr,ptsl,pdfm,fecs,ag);
 		} catch (AttitudeGeneratorException e) {
 			// TODO Auto-generated catch block

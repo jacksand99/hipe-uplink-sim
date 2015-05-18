@@ -86,9 +86,9 @@ public class SequenceTimeline {
 				className=Properties.getProperty("vega.uplink.overlapChecker");
 			}
 			catch(Exception e){
-				className="vega.uplink.commanding.RosettaOverlapChecker";
+				className="rosetta.uplink.commanding.RosettaOverlapChecker";
 			}
-			if (className==null) className="vega.uplink.commanding.RosettaOverlapChecker";
+			if (className==null) className="rosetta.uplink.commanding.RosettaOverlapChecker";
 			try {
 				checker = (AbstractAllowOverlapChecker)Class.forName(className).newInstance();
 			} catch (InstantiationException | IllegalAccessException

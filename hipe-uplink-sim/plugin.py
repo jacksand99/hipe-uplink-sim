@@ -31,6 +31,7 @@ from vega.uplink.commanding import Simulation
 from vega.uplink.commanding import SimulationContext
 from vega.uplink.commanding import SuperPor
 from vega.uplink.commanding import MocPower
+from vega.uplink.commanding import SsmmSimulator
 from vega.uplink.pointing import Ptr
 from vega.uplink.pointing import PtrUtils
 from vega.uplink.pointing import PtrSegment
@@ -182,7 +183,7 @@ from vega.uplink.commanding.task import SaveItlTask
 from vega.uplink.commanding.task import PorCheckTask
 from vega.uplink.track.task import CompareFecsTask
 from vega.uplink.track.task import FecsSummaryTask
-from vega.uplink.track.task import RosettaFecsSummaryTask
+from rosetta.uplink.track.task import RosettaFecsSummaryTask
 from vega.uplink.commanding.task import CreateTimelineTask
 
 from vega.uplink.commanding.task import SavePorgTask
@@ -320,13 +321,12 @@ from vega import IconResources
 
 
 #REGISTRY = ExtensionRegistry.getInstance();
-REGISTRY.register(UserPreferences.CATEGORY, Extension("Mission Planning/Pointing","rosetta.uplink.pointing.RosettaPointingFDPreferences",None,None))  # unused
 REGISTRY.register("site.fileType",Extension("site.file.exclusion","rosetta.uplink.pointing.ExclFile","regex:^EXCL_[a-zA-Z0-9_\-]*.evf",IconResources.FECS_ICON_NOROOT));
 REGISTRY.register(REGISTRY.COMPONENT,Extension("ExclusionPeriod Reader","rosetta.uplink.pointing.ExclFileComponent","factory.editor.file","rosetta.uplink.pointing.ExclFile"))
 
 
 #import rosetta
-from rosetta.uplink.pointing import AttitudeGeneratorFDImpl
+from vega.uplink.pointing.net import AttitudeGeneratorFDImpl
 toolRegistry = TaskToolRegistry.getInstance()
 from rosetta.uplink.pointing import RosettaPtrCheckTask
 from rosetta.uplink.pointing import RosettaBackupPtrTask
@@ -334,6 +334,7 @@ from rosetta.uplink.pointing import RosettaBackupPtrTask
 toolRegistry.register(RosettaPtrCheckTask())
 toolRegistry.register(RosettaBackupPtrTask())
 
+SsmmSimulator.registerSsmmSimulatorInstance("rosetta.uplink.commanding.RosettaSsmmSimulator")
 
 del(toolRegistry)
 

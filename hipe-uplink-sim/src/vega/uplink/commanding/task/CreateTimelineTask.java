@@ -6,6 +6,7 @@ import herschel.ia.task.TaskParameter;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 //import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,13 +22,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
+
+//import rosetta.uplink.commanding.RosettaSsmmSimulator;
 import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
+import vega.uplink.Properties;
 import vega.uplink.commanding.AbstractSequence;
 import vega.uplink.commanding.Por;
 import vega.uplink.commanding.PorChecker;
 //import vega.uplink.commanding.task.PorCheckTask.MessagesFrame;
-import vega.uplink.commanding.RosettaSsmmSimulator;
 import vega.uplink.commanding.Sequence;
 import vega.uplink.commanding.SequenceProfile;
 import vega.uplink.commanding.SimulationContext;
@@ -71,7 +74,23 @@ public class CreateTimelineTask extends Task {
         	//this.setValue(arg0, arg1);
         	AbstractSequence[] seqs=context.getPor().getOrderedSequences();
     		//SsmmSimulator memorySimulator=context.ssmm;
-    		SsmmSimulator memorySimulator=new RosettaSsmmSimulator(context);
+    		//SsmmSimulator memorySimulator=new RosettaSsmmSimulator(context);
+        	SsmmSimulator memorySimulator;
+    		String memSimulatorClassName = Properties.getProperty("vega.uplink.ssmmSimulator");
+    		Constructor c;
+    		try {
+    			c = Class.forName(memSimulatorClassName).getConstructor(SimulationContext.class);
+    			//SsmmSimulator actualSimulator;
+    			memorySimulator = (SsmmSimulator) c.newInstance(this);
+
+    			
+
+    		} catch (Exception e) {
+    			IllegalArgumentException iae = new IllegalArgumentException("Could not get registered SSMM simulator: "+e.getMessage());
+    			iae.initCause(e);
+    			throw(iae);
+    		}
+    		//SsmmSimulator memorySimulator=SsmmSimulator.getRegisteredSsmmSimulator(context);
     		VegaLog.info("Inserting commands into the model");
     		//String messages="";
     		for (int i=0;i<seqs.length;i++){

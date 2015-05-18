@@ -1,4 +1,4 @@
-package vega.uplink.commanding;
+package rosetta.uplink.commanding;
 
 
 import java.util.Date;
@@ -11,6 +11,13 @@ import java.util.Vector;
 
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
+import vega.uplink.commanding.Parameter;
+import vega.uplink.commanding.ParameterFloat;
+import vega.uplink.commanding.PrioritySequence;
+import vega.uplink.commanding.Sequence;
+import vega.uplink.commanding.SimulationContext;
+import vega.uplink.commanding.SsmmSimulator;
+import vega.uplink.commanding.SsmmSimulator.InstrumentSimulator;
 import vega.uplink.track.GsPass;
 
 /**

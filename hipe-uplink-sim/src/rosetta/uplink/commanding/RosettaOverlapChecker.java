@@ -1,4 +1,8 @@
-package vega.uplink.commanding;
+package rosetta.uplink.commanding;
+
+import vega.uplink.commanding.AbstractAllowOverlapChecker;
+import vega.uplink.commanding.AbstractSequence;
+import vega.uplink.commanding.Mib;
 
 /**
  * Sequence overlap checker for Rosetta

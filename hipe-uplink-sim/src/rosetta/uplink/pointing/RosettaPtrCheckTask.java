@@ -43,6 +43,10 @@ import vega.uplink.Properties;
 import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrUtils;
+import vega.uplink.pointing.net.AttitudeGeneratorException;
+import vega.uplink.pointing.net.AttitudeGeneratorFDImpl;
+import vega.uplink.pointing.net.ErrorBoxPoint;
+import vega.uplink.pointing.net.FDClient;
 import vega.uplink.track.Fecs;
 import herschel.ia.gui.apps.modifier.AbstractModifier;
 //import herschel.ia.gui.apps.modifier.JFilePathModifier;
@@ -70,7 +74,7 @@ public class RosettaPtrCheckTask extends Task {
 	public RosettaPtrCheckTask(){
 		
 		super("rosettaPtrCheckTask");
-		List<String> trajectories = Properties.getList("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.trajectories");
+		List<String> trajectories = Properties.getList(FDClient.TREJECTORIES_PROPERTY);
 
 		setDescription("Check Rosetta PTR againts PTSL, PDFM and FD server ");
 		TaskParameter parameter = new TaskParameter("ptr", Ptr.class);
@@ -270,9 +274,9 @@ public class RosettaPtrCheckTask extends Task {
         	        if (ptsl!=null) ptslName=ptsl.getName();
         	        try{
         	        if (trajectory==null){
-        	        	activityCase=Properties.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.activityCase");
+        	        	activityCase=Properties.getProperty(FDClient.TRAJECTORY_PROPERTY);
         	    		try {
-        	    			ag = new AttitudeGeneratorFDImpl(ptr,pdfm,errorBoxPoints[eb]);
+        	    			ag = new RosettaAttitudeGenerator(ptr,pdfm,errorBoxPoints[eb]);
         	    		} catch (AttitudeGeneratorException ex) {
         	    			LOGGER.severe(ex.getMessage());
         	    			IllegalArgumentException iae=new IllegalArgumentException(ex.getMessage());
@@ -285,7 +289,7 @@ public class RosettaPtrCheckTask extends Task {
         	        }else{
         	        	activityCase=trajectory;
         	    		try {
-        	    			ag = new AttitudeGeneratorFDImpl(ptr,pdfm,AttitudeGeneratorFDImpl.getMtpNum(ptr),trajectory,errorBoxPoints[eb]);
+        	    			ag = new RosettaAttitudeGenerator(ptr,pdfm,AttitudeGeneratorFDImpl.getMtpNum(ptr),trajectory,errorBoxPoints[eb]);
         	    		} catch (AttitudeGeneratorException ex) {
         	    			LOGGER.severe(ex.getMessage());
         	    			IllegalArgumentException iae=new IllegalArgumentException(ex.getMessage());
@@ -425,7 +429,7 @@ public class RosettaPtrCheckTask extends Task {
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
             //model.addElement(PERCENT);
             //model.addElement("Median Filter");
-    		List<String> trajectories = Properties.getList("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.trajectories");
+    		List<String> trajectories = Properties.getList(FDClient.TREJECTORIES_PROPERTY);
     		Iterator<String> it = trajectories.iterator();
     		while (it.hasNext()){
     			model.addElement(it.next());
@@ -448,7 +452,7 @@ public class RosettaPtrCheckTask extends Task {
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
             //model.addElement(PERCENT);
             //model.addElement("Median Filter");
-    		List<String> trajectories = Properties.getList("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.trajectories");
+    		List<String> trajectories = Properties.getList(FDClient.TREJECTORIES_PROPERTY);
     		Iterator<String> it = trajectories.iterator();
     		while (it.hasNext()){
     			model.addElement(it.next());

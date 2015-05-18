@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -53,8 +54,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import rosetta.uplink.pointing.AttitudeGeneratorException;
-import rosetta.uplink.pointing.AttitudeGeneratorFDImpl;
+
+
+
 //import rosetta.uplink.pointing.AttitudeGeneratorFDImplMini;
 import rosetta.uplink.pointing.ExclusionPeriod;
 import rosetta.uplink.pointing.RosettaPtrChecker;
@@ -67,6 +69,7 @@ import vega.hipe.gui.xmlutils.XMLTextEditor;
 import vega.hipe.logging.VegaLog;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
+import vega.uplink.pointing.AttitudeGenerator;
 import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.PointingElement;
@@ -74,6 +77,9 @@ import vega.uplink.pointing.Ptr;
 import vega.uplink.pointing.PtrChecker;
 import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
+import vega.uplink.pointing.net.AttitudeGeneratorException;
+import vega.uplink.pointing.net.AttitudeGeneratorFDImpl;
+import vega.uplink.pointing.net.FDClient;
 import vega.uplink.track.Fecs;
 //import vega.uplink.pointing.PointingElement;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
@@ -772,7 +778,7 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
     		throw(iae);
     	}
     
-        String trajectory= Properties.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.activityCase");
+        String trajectory= Properties.getProperty(FDClient.TRAJECTORY_PROPERTY);
         String message="";
         int totalLoop=valuesEta.length*valuesZeta.length*valuesEpsilon.length;
         int loop=0;
@@ -781,28 +787,43 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
         			Float currentEta=valuesEta[0];
         			Float currentZeta=valuesZeta[0];
         			Float currentEpsilon=valuesEpsilon[0];
-        	        AttitudeGeneratorFDImpl ag;
+        	        AttitudeGenerator ag;
         	        String activityCase;
           	        String ptslName="";
         	        try{
         	        if (trajectory==null){
-        	        	activityCase=Properties.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.activityCase");
-        	    		try {
-        	    			ag = new AttitudeGeneratorFDImpl(ptr,pdfm,currentEta,currentZeta,currentEpsilon);
-        	    		} catch (AttitudeGeneratorException ex) {
-        	    			VegaLog.severe(ex.getMessage());
-        	    			IllegalArgumentException iae=new IllegalArgumentException(ex.getMessage());
-        	    			iae.initCause(ex);
-        	    			ex.printStackTrace();
-        	    			throw(iae);
-        	    			
-        	    		}
+        	        	    activityCase=Properties.getProperty(FDClient.TRAJECTORY_PROPERTY);
+        	    		
+        	    			String attitudeGeneratorClassName = Properties.getProperty("vega.uplink.attitudeGenerator");
+        	    			Constructor c;
+        	    			try {
+        	    				c = Class.forName(attitudeGeneratorClassName).getConstructor(Ptr.class,Pdfm.class,Float.class,Float.class,Float.class);
+        	    				
+        	    				ag = (AttitudeGeneratorFDImpl) c.newInstance(ptr,pdfm,currentEta,currentZeta,currentEpsilon);
+
+        	    				//return actualSimulator;
+
+        	    			} catch (Exception e) {
+        	    				IllegalArgumentException iae = new IllegalArgumentException("Could not get registered SSMM simulator: "+e.getMessage());
+        	    				iae.initCause(e);
+        	    				throw(iae);
+        	    			}
+
+        	    			//ag = new AttitudeGeneratorFDImpl(ptr,pdfm,currentEta,currentZeta,currentEpsilon);
+        	    		 
 
         	        }else{
         	        	activityCase=trajectory;
-        	    		try {
-        	    			ag = new AttitudeGeneratorFDImpl(ptr,pdfm,AttitudeGeneratorFDImpl.getMtpNum(ptr),trajectory,currentEta,currentZeta,currentEpsilon);
-        	    		} catch (AttitudeGeneratorException ex) {
+        	    		//try {
+        	    		//	ag = new AttitudeGeneratorFDImpl(ptr,pdfm,AttitudeGeneratorFDImpl.getMtpNum(ptr),trajectory,currentEta,currentZeta,currentEpsilon);
+    	    			String attitudeGeneratorClassName = Properties.getProperty("vega.uplink.attitudeGenerator");
+    	    			Constructor c;
+    	    			try {
+    	    				c = Class.forName(attitudeGeneratorClassName).getConstructor(Ptr.class,Pdfm.class,String.class,String.class,Float.class,Float.class,Float.class);
+    	    				
+    	    				ag = (AttitudeGeneratorFDImpl) c.newInstance(ptr,pdfm,AttitudeGeneratorFDImpl.getMtpNum(ptr),trajectory,currentEta,currentZeta,currentEpsilon);
+
+    	    			} catch (Exception ex) {
         	    			VegaLog.severe(ex.getMessage());
         	    			IllegalArgumentException iae=new IllegalArgumentException(ex.getMessage());
         	    			iae.initCause(ex);
@@ -824,7 +845,7 @@ public class PtrXmlEditor extends AbstractVariableEditorComponent<Ptr> {
         	        		"<tr><td>EPSILON</td><td>"+currentEpsilon+"</td></tr>";
 
 	        	        	message=message+"</table>";
-	        	        	message=message+RosettaPtrChecker.checkPtrHTML(ptr,null, pdfm,ag);
+	        	        	message=message+ag.checkPtrHTML(ptr,null, pdfm);
         	        }catch (Exception e2){
         	        	message=message+"<table class=\"gridtable\">";
             	        message=message+""+

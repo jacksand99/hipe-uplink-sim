@@ -3,6 +3,8 @@ package vega.uplink.pointing;
 import java.util.Date;
 
 
+
+import vega.uplink.track.Fecs;
 import herschel.share.fltdyn.math.Quaternion;
 import herschel.share.fltdyn.math.Attitude;
 
@@ -33,6 +35,16 @@ public interface AttitudeGenerator {
 	public SolarAspectAngle[] getSaa(PtrSegment segment);
 	
 	public SolarAspectAngle[] getSaa(Ptr ptr);
+	
+	public String checkPtr(Ptr ptr,Ptr ptsl,Pdfm pdfm);
+	
+	public String checkPtr(Ptr ptr,Ptr ptsl,Pdfm pdfm,Fecs fecs);
+
+	public String checkPtrHTML(Ptr ptr,Ptr ptsl,Pdfm pdfm);
+	
+	public String checkPtrHTML(Ptr ptr,Ptr ptsl,Pdfm pdfm,Fecs fecs);
+
+	 
 	
 	
 	

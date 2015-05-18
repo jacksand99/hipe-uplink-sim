@@ -1,4 +1,4 @@
-package vega.uplink.track.task;
+package rosetta.uplink.track.task;
 
 import herschel.ia.task.Task;
 import herschel.ia.task.TaskParameter;
@@ -16,6 +16,7 @@ import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.PtrUtils;
 import vega.uplink.track.Fecs;
 import vega.uplink.track.FecsUtils;
+import vega.uplink.track.task.CompareFecsTask;
 
 public class RosettaFecsSummaryTask extends Task {
 	//private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());

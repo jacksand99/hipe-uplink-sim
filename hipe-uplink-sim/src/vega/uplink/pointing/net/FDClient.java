@@ -4,26 +4,24 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-
+//import java.io.OutputStream;
+//import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-
 import java.util.HashMap;
-import java.util.Iterator;
+//import java.util.Iterator;
+
 
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+//import javax.xml.transform.OutputKeys;
+//import javax.xml.transform.Transformer;
+//import javax.xml.transform.TransformerException;
+//import javax.xml.transform.TransformerFactory;
+//import javax.xml.transform.dom.DOMSource;
+//import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -36,15 +34,18 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-
-
+//import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-
 import vega.hipe.logging.VegaLog;
+import vega.uplink.Properties;
 
+/**
+ * Class to connect to to Flight Dynamic web server following ROS-SGS-FD-SW-ICD (ROS-ESC-IF-5504)
+ * @author jarenas
+ *
+ */
 public class FDClient {
 	private static String OPPTR="OPPTR";
 	private static String OPPDFM="OPPDFM";
@@ -67,8 +68,56 @@ public class FDClient {
     private static final String STATUS_OK = "ok";   
 	private static final String STATUS_MAINTENANCE = "maintenance";    
 	private static final String NUMBER_VIOLATIONS = "numberOfViolations";
+	private static String latst_ptrId=null;
+	
+	/**
+	 * vega.uplink.pointing.net.serverUrl
+	 */
+	public static String FD_SERVER_URL_PROPERTY="vega.uplink.pointing.net.serverUrl";
+	/**
+	 * vega.uplink.pointing.net.mission
+	 */
+	public static String MISSION_ID_PROPERTY="vega.uplink.pointing.net.mission";
+	/**
+	 * vega.uplink.pointing.net.activityCase
+	 */
+	public static String TRAJECTORY_PROPERTY="vega.uplink.pointing.net.activityCase";
 
+	/**
+	 * vega.uplink.pointing.net.trajectories
+	 */
+	public static String TREJECTORIES_PROPERTY="vega.uplink.pointing.net.trajectories";
+	/**
+	 * Request the quaternion file from the FD server.
+	 * the URL of FD server, the mission identifier and the trajectory must be defined in the properties file
+	 * the scenario id to be used is the last one obtained from FD server
+	 * @return The URL of the quaternion file
+	 */
+	public static String Att2AscRequest(){
+		return Att2AscRequest(null,null,null,null);
+	}
+	/**
+	 * Request the quaternion file from the FD server
+	 * @param url URL of the FD server
+	 * @param ptrId The scenario id (as returned by Ptr2AttRequest method)
+	 * @param mission Mission identifier (ROS for Rosetta)
+	 * @param trajectory Trajectory to be used
+	 * @return The URL of the quaternion file
+	 */
 	public static String Att2AscRequest(String url,String ptrId,String mission,String trajectory){
+		if (url==null){
+			url=Properties.getProperty(FD_SERVER_URL_PROPERTY);
+
+		}
+		if (mission==null){
+			mission=Properties.getProperty(MISSION_ID_PROPERTY);
+		}
+		if (trajectory==null){
+			trajectory=Properties.getProperty(TRAJECTORY_PROPERTY);
+		}
+		if (ptrId==null){
+			ptrId=latst_ptrId;
+		}
 		Part[] parts = new Part[5];
         
 
@@ -93,7 +142,56 @@ public class FDClient {
         VegaLog.info("Success ATT2ASC: "+attitudeFileUrl);
         return attitudeFileUrl;
 	}
+	/**
+	 * Initialize service by submitting the PTR to FD server.
+	 * the URL of FD server, the mission identifier and the trajectory must be defined in the properties file.
+	 * epsilon,zeta, eta used is point 0.0,0.0,0.0
+	 * 
+	 * @param ptrFile The PTR file to init the service
+	 * @param pdfmFile The PDFM file to init the service
+	 * @param mtpNum The MTP number that is defined in the PTR
+	 * @return The scenario id to be used in the following requests
+	 * @throws FileNotFoundException
+	 */
+	public static String Ptr2AttRequest(File ptrFile,File pdfmFile,String mtpNum) throws FileNotFoundException{
+		return Ptr2AttRequest(null,ptrFile,pdfmFile,null,mtpNum,null,null,null,null);
+	}
+
+	/**
+	 * Initialize service by submitting the PTR to FD server
+	 * @param url URL of FD server
+	 * @param ptrFile The PTR file to init the service
+	 * @param pdfmFile The PDFM file to init the service
+	 * @param mission The mission identifier (ROS for Rosetta)
+	 * @param mtpNum The MTP number that is defined in the PTR
+	 * @param trajectory Trajectory to use
+	 * @param epsilon Epsilon error box point
+	 * @param zeta Zeta error box point
+	 * @param eta Eta error box point
+	 * @return The scenario id to be used in the following requests
+	 * @throws FileNotFoundException If either the PTR or or the PDFM were not found
+	 */
 	public static String Ptr2AttRequest(String url,File ptrFile,File pdfmFile,String mission,String mtpNum,String trajectory,String epsilon,String zeta,String eta) throws FileNotFoundException{
+		if (url==null){
+			url=Properties.getProperty(FD_SERVER_URL_PROPERTY);
+
+		}
+		if (mission==null){
+			mission=Properties.getProperty(MISSION_ID_PROPERTY);
+		}
+		if (trajectory==null){
+			trajectory=Properties.getProperty(TRAJECTORY_PROPERTY);
+		}
+		if (epsilon==null){
+			epsilon="0.0";
+		}
+		if (zeta==null){
+			zeta="0.0";
+		}
+		if (eta==null){
+			eta="0.0";
+		}
+
 		Part[] parts=new Part[12];
 		parts[0]=new StringPart(OPS,trajectory);
 		
@@ -110,8 +208,8 @@ public class FDClient {
 		parts[11]=new StringPart(MTP_NUM,mtpNum);
 		HashMap<String, String> map = doRequest(url,parts);
 		//Iterator<String> it = map.keySet().iterator();
-		
-		return map.get(SCENARIO_ID);
+		latst_ptrId=map.get(SCENARIO_ID);
+		return latst_ptrId;
 
 	}
 	public static void main(String[] args){
@@ -151,9 +249,42 @@ public class FDClient {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * Get the attitude constrains check file from FD server
+	 * the URL of FD server, the mission identifier and the trajectory must be defined in the properties file.
+	 * the scenario id to be used is the last one obtained from FD server
+	 * 
+	 * @return The URL of the attitude constrains check file file
+	 */
+	public static String conChkAttRequest(){
+		return conChkAttRequest(null,null,null,null);
+	}
 	
+	/**
+	 * Get the attitude constrains check file from FD server
+	 * @param url FD server url
+	 * @param ptrId The scenario id (as returned by Ptr2AttRequest method)
+	 * @param mission Mission identifier (ROS for Rosetta)
+	 * @param trajectory Trajectory to be used
+	 * @return The URL of the attitude constrains check file file
+	 */
 	public static String conChkAttRequest(String url,String ptrId,String mission,String trajectory){
-		 Part[] parts = new Part[5];
+		if (url==null){
+			url=Properties.getProperty(FD_SERVER_URL_PROPERTY);
+
+		}
+		if (mission==null){
+			mission=Properties.getProperty(MISSION_ID_PROPERTY);
+		}
+		if (trajectory==null){
+			trajectory=Properties.getProperty(TRAJECTORY_PROPERTY);
+		}
+		if (ptrId==null){
+			ptrId=latst_ptrId;
+		}
+
+
+		Part[] parts = new Part[5];
 
 	                parts[0]=new StringPart("mission", mission);
 	                parts[1]=new StringPart(SCENARIO_ID, ptrId);
@@ -173,8 +304,42 @@ public class FDClient {
 	        VegaLog.info("Success CONCHK_ATT: "+fileUrl);
 	        return fileUrl;
 	}
+	/**
+	 * Get the High Gain Antenna coverage file
+	 * the URL of FD server, the mission identifier and the trajectory must be defined in the properties file.
+	 * the scenario id to be used is the last one obtained from FD server
+	 * 
+	 * @return The URL of the HGA coverage file
+	 */
+	public static String hgaCovRequest(){
+		return hgaCovRequest(null,null,null,null);
+	}
+
+	/**
+	 * Get the High Gain Antenna coverage file
+	 * @param url URL of the FD server
+	 * @param ptrId The scenario id (as returned by Ptr2AttRequest method)
+	 * @param mission Mission identifier (ROS for Rosetta)
+	 * @param trajectory Trajectory to be used
+	 * @return The URL of the HGA coverage file
+	 */
 	public static String hgaCovRequest(String url,String ptrId,String mission,String trajectory){
-		 Part[] parts = new Part[5];
+		if (url==null){
+			url=Properties.getProperty(FD_SERVER_URL_PROPERTY);
+
+		}
+		if (mission==null){
+			mission=Properties.getProperty(MISSION_ID_PROPERTY);
+		}
+		if (trajectory==null){
+			trajectory=Properties.getProperty(TRAJECTORY_PROPERTY);
+		}
+		if (ptrId==null){
+			ptrId=latst_ptrId;
+		}
+
+
+		Part[] parts = new Part[5];
 
 	                parts[0]=new StringPart("mission", mission);
 	                parts[1]=new StringPart(SCENARIO_ID, ptrId);
@@ -195,10 +360,44 @@ public class FDClient {
 	        return fileUrl;
 	}
 	
+	/**
+	 * Get the Solar Aspect Angle file form FD server
+	 * the URL of FD server, the mission identifier and the trajectory must be defined in the properties file.
+	 * the scenario id to be used is the last one obtained from FD server
+	 * 
+	 * @return The URL of the SAA file
+	 */
+	public static String saaRequest(){
+		return saaRequest(null,null,null,null);
+	}
 
+		
 	
+	/**
+	 * Get the Solar Aspect Angle file form FD server
+	 * @param url URL of the FD server
+	 * @param ptrId The scenario id (as returned by Ptr2AttRequest method)
+	 * @param mission Mission identifier (ROS for Rosetta)
+	 * @param trajectory Trajectory to be used
+	 * @return The URL of the SAA file
+	 */
 	public static String saaRequest(String url,String ptrId,String mission,String trajectory){
-		 Part[] parts = new Part[5];
+		if (url==null){
+			url=Properties.getProperty(FD_SERVER_URL_PROPERTY);
+
+		}
+		if (mission==null){
+			mission=Properties.getProperty(MISSION_ID_PROPERTY);
+		}
+		if (trajectory==null){
+			trajectory=Properties.getProperty(TRAJECTORY_PROPERTY);
+		}
+		if (ptrId==null){
+			ptrId=latst_ptrId;
+		}
+
+
+		Part[] parts = new Part[5];
 
 	                parts[0]=new StringPart("mission", mission);
 	                parts[1]=new StringPart(SCENARIO_ID, ptrId);
@@ -218,8 +417,44 @@ public class FDClient {
 	        VegaLog.info("Success MAKE_SAA: "+fileUrl);
 	        return fileUrl;
 	}
+	
+	/**
+	 * Get the reaction wheels constrains file from FD server 
+	 * the URL of FD server, the mission identifier and the trajectory must be defined in the properties file.
+	 * the scenario id to be used is the last one obtained from FD server
+	 * 
+	 * @return The URL of the reaction wheels constrains file
+	 */
+	public static String conChkRwRequest(){
+		return conChkRwRequest(null,null,null,null);
+	}
+
+	
+	/**
+	 * Get the reaction wheels constrains file from FD server 
+	 * @param url URL of the FD server
+	 * @param ptrId The scenario id (as returned by Ptr2AttRequest method)
+	 * @param mission Mission identifier (ROS for Rosetta)
+	 * @param trajectory Trajectory to be used
+	 * @return The URL of the reaction wheels constrains file
+	 */
 	public static String conChkRwRequest(String url,String ptrId,String mission,String trajectory){
-		 Part[] parts = new Part[5];
+		if (url==null){
+			url=Properties.getProperty(FD_SERVER_URL_PROPERTY);
+
+		}
+		if (mission==null){
+			mission=Properties.getProperty(MISSION_ID_PROPERTY);
+		}
+		if (trajectory==null){
+			trajectory=Properties.getProperty(TRAJECTORY_PROPERTY);
+		}
+		if (ptrId==null){
+			ptrId=latst_ptrId;
+		}
+
+
+		Part[] parts = new Part[5];
 
 	                parts[0]=new StringPart("mission", mission);
 	                parts[1]=new StringPart(SCENARIO_ID, ptrId);
@@ -239,9 +474,44 @@ public class FDClient {
 	        VegaLog.info("Success CONCHK_RW: "+fileUrl);
 	        return fileUrl;
 	}
-	
+
+	/**
+	 * Get the angular momentum from FD server
+	 * the URL of FD server, the mission identifier and the trajectory must be defined in the properties file.
+	 * the scenario id to be used is the last one obtained from FD server
+	 * 
+	 * @return
+	 */
+	public static AngularMomentum angMomentumRequest(){
+		return angMomentumRequest(null,null,null,null);
+	}
+
+		
+	/**
+	 * Get the angular momentum from FD server
+	 * @param url URL of the FD server
+	 * @param ptrId The scenario id (as returned by Ptr2AttRequest method)
+	 * @param mission Mission identifier (ROS for Rosetta)
+	 * @param trajectory Trajectory to be used
+	 * @return Angular Momentum
+	 */
 	public static AngularMomentum angMomentumRequest(String url,String ptrId,String mission,String trajectory){
-		 Part[] parts = new Part[5];
+		if (url==null){
+			url=Properties.getProperty(FD_SERVER_URL_PROPERTY);
+
+		}
+		if (mission==null){
+			mission=Properties.getProperty(MISSION_ID_PROPERTY);
+		}
+		if (trajectory==null){
+			trajectory=Properties.getProperty(TRAJECTORY_PROPERTY);
+		}
+		if (ptrId==null){
+			ptrId=latst_ptrId;
+		}
+
+
+		Part[] parts = new Part[5];
 
 	                parts[0]=new StringPart("mission", mission);
 	                parts[1]=new StringPart(SCENARIO_ID, ptrId);
@@ -256,7 +526,7 @@ public class FDClient {
 	        return result;
 	}
 
-    public static HashMap<String,String> doRequest( String url,  final Part[] parts) {
+    private static HashMap<String,String> doRequest( String url,  final Part[] parts) {
 
     	HttpClient client=new HttpClient();
         //Properties props = new Properties();
@@ -267,7 +537,7 @@ public class FDClient {
                     new MultipartRequestEntity(parts, filePost.getParams())
                     );
             //VegaLog.info(new MultipartRequestEntity(parts, filePost.getParams()).toString());
-            HttpMethodParams par = filePost.getParams();
+            //HttpMethodParams par = filePost.getParams();
             
             int statusCode = client.executeMethod(filePost);
             if (statusCode == HttpStatus.SC_OK) {
@@ -318,7 +588,7 @@ public class FDClient {
         return result;
     } 
     
-    public static AngularMomentum doRequestAngMom( String url,  final Part[] parts) {
+    private static AngularMomentum doRequestAngMom( String url,  final Part[] parts) {
     	
     	HttpClient client=new HttpClient();
         //Properties props = new Properties();
@@ -329,7 +599,7 @@ public class FDClient {
                     new MultipartRequestEntity(parts, filePost.getParams())
                     );
             //VegaLog.info(new MultipartRequestEntity(parts, filePost.getParams()).toString());
-            HttpMethodParams par = filePost.getParams();
+            //HttpMethodParams par = filePost.getParams();
             
             int statusCode = client.executeMethod(filePost);
             if (statusCode == HttpStatus.SC_OK) {
@@ -365,14 +635,21 @@ public class FDClient {
     
 
     
+    /**
+     * Download a file from a URL
+     * @param url URl of the file to be downloaded
+     * @param file The full path where the file will be saved
+     * @throws IOException
+     */
     public static void downloadFile(String url,String file) throws IOException{
     	URL website = new URL(url);
     	ReadableByteChannel rbc = Channels.newChannel(website.openStream());
     	FileOutputStream fos = new FileOutputStream(file);
     	fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+    	fos.close();
     }
     
-    private static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
+    /*private static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
@@ -383,7 +660,7 @@ public class FDClient {
 
         transformer.transform(new DOMSource(doc), 
              new StreamResult(new OutputStreamWriter(out, "UTF-8")));
-    }
+    }*/
     
     
     private static String getValueOf(Document doc, String field) {

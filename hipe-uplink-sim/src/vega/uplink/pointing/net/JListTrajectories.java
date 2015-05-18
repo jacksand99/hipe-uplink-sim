@@ -1,4 +1,4 @@
-package rosetta.uplink.pointing;
+package vega.uplink.pointing.net;
 
 import java.util.Arrays;
 import java.util.List;

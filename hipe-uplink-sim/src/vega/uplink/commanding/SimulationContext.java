@@ -2,9 +2,11 @@ package vega.uplink.commanding;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.security.GeneralSecurityException;
 import java.util.Date;
 
+import rosetta.uplink.commanding.RosettaSsmmSimulator;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.pointing.Pdfm;
@@ -59,8 +61,22 @@ public class SimulationContext extends MapContext{
 		setProduct("ptr",new Ptr());
 		setProduct("pdfm",new Pdfm());
 		set("log",new ArrayDataset(new String1d()));
-		memorySimulator=new RosettaSsmmSimulator(this);
+		//memorySimulator=new RosettaSsmmSimulator(this);
+		String memSimulatorClassName = Properties.getProperty("vega.uplink.ssmmSimulator");
+		Constructor c;
+		try {
+			c = Class.forName(memSimulatorClassName).getConstructor(SimulationContext.class);
+			//SsmmSimulator actualSimulator;
+			memorySimulator = (SsmmSimulator) c.newInstance(this);
 
+			
+
+		} catch (Exception e) {
+			IllegalArgumentException iae = new IllegalArgumentException("Could not get registered SSMM simulator: "+e.getMessage());
+			iae.initCause(e);
+			throw(iae);
+		}
+		//memorySimulator=SsmmSimulator.getRegisteredSsmmSimulator(this);
 	}
 	
 	public SsmmSimulator getMemorySimulator(){

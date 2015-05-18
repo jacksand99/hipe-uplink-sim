@@ -1,4 +1,4 @@
-package rosetta.uplink.pointing;
+package vega.uplink.pointing.net;
 import herschel.ia.dataset.TableDataset;
 
 import java.text.SimpleDateFormat;

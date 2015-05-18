@@ -1,4 +1,4 @@
-package rosetta.uplink.pointing;
+package vega.uplink.pointing.net;
 
 import static javax.swing.GroupLayout.Alignment.BASELINE;
 
@@ -19,7 +19,7 @@ import herschel.ia.gui.kernel.util.component.FilePathPanel;
 import herschel.ia.gui.kernel.util.field.FileSelectionMode;
 import herschel.share.util.Configuration;
 
-public class RosettaPointingFDPreferences extends PreferencesPanel{
+public class PointingFDPreferences extends PreferencesPanel{
     /**
 	 * 
 	 */
@@ -94,11 +94,11 @@ public class RosettaPointingFDPreferences extends PreferencesPanel{
 
 	@Override
 	protected void registerHandlers() {
-    	registerHandler("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.mission",new StringPreferenceHandler(Configuration.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.mission", ""),_fieldE,"rosetta.uplink.pointing.AttitudeGeneratorFdImpl.mission"));
+    	registerHandler(FDClient.MISSION_ID_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(FDClient.MISSION_ID_PROPERTY, ""),_fieldE,FDClient.MISSION_ID_PROPERTY));
 
-		registerHandler("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.serverUrl",new StringPreferenceHandler(Configuration.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.serverUrl", ""),_fieldA,"rosetta.uplink.pointing.AttitudeGeneratorFdImpl.serverUrl"));
-     	registerHandler("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.activityCase",new StringPreferenceHandler(Configuration.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.activityCase", ""),_fieldB,"rosetta.uplink.pointing.AttitudeGeneratorFdImpl.activityCase"));
-     	registerHandler("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.trajectories",new StringPreferenceHandler(Configuration.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.trajectories", ""),_fieldC,"rosetta.uplink.pointing.AttitudeGeneratorFdImpl.trajectories"));
+		registerHandler(FDClient.FD_SERVER_URL_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(FDClient.FD_SERVER_URL_PROPERTY, ""),_fieldA,FDClient.FD_SERVER_URL_PROPERTY));
+     	registerHandler(FDClient.TRAJECTORY_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(FDClient.TRAJECTORY_PROPERTY, ""),_fieldB,FDClient.TRAJECTORY_PROPERTY));
+     	registerHandler(FDClient.TREJECTORIES_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(FDClient.TREJECTORIES_PROPERTY, ""),_fieldC,FDClient.TREJECTORIES_PROPERTY));
         
     	//registerHandler("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.tempDir",new FilePreferenceHandler(Configuration.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.tempDir", Configuration.getProperty("user.home")),_fieldD,"rosetta.uplink.pointing.AttitudeGeneratorFdImpl.tempDir"));
 

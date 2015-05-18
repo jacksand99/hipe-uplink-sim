@@ -1,4 +1,4 @@
-package rosetta.uplink.pointing;
+package vega.uplink.pointing.net;
 
 public class AttitudeGeneratorException extends Exception {
 	String message;
