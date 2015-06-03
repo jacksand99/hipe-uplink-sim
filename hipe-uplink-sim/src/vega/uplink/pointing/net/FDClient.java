@@ -4,17 +4,39 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 //import java.io.OutputStream;
 //import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 //import java.util.Iterator;
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 //import javax.xml.transform.OutputKeys;
@@ -221,7 +243,7 @@ public class FDClient {
 
 	}
 	public static void main(String[] args){
-			String url="http://www.fd-tasc.info/roscmd-cgi-bin/seqgen.pl";
+			String url="http://rostasc01.n1data.lan/roscmd-cgi-bin/seqgen.pl";
 			String ptr="/Users/jarenas 1/Rosetta/mike/PTRM_PL_M016______05_P_RSM2PIM0.ROS";
 			String pdfm="/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP005/LTP005P/MTP016P/PTR/PDFM_DM_016_01____P__00057.ROS";
 			String mission="ROS";
@@ -655,16 +677,19 @@ public class FDClient {
     		downloadFileRaw(url,file);
     	}catch (Exception e){
     		
-				
+    			vega.hipe.logging.VegaLog.info("Could not get "+url+" "+e.getMessage());
 				try{
+					vega.hipe.logging.VegaLog.info("waiting  "+TIMEOUT_1+" ms");
 					Thread.sleep(TIMEOUT_1);
 					downloadFileRaw(url,file);
 				}catch (Exception e2){
 					try{
+						vega.hipe.logging.VegaLog.info("waiting  "+TIMEOUT_2+" ms");
 						Thread.sleep(TIMEOUT_2);
 						downloadFileRaw(url,file);
 					}catch (Exception e3){
 						try{
+							vega.hipe.logging.VegaLog.info("waiting  "+TIMEOUT_3+" ms");
 							Thread.sleep(TIMEOUT_3);
 							downloadFileRaw(url,file);
 						}catch (Exception e4){
@@ -685,12 +710,106 @@ public class FDClient {
      * @throws IOException
      */
     public static void downloadFileRaw(String url,String file) throws IOException{
-    	URL website = new URL(url);
+    	disableSslVerification();
+    	String newurl=url;
+    	try{
+    		newurl=checkURL(url);
+    	}catch (Exception e){
+    		IOException ioe = new IOException(e.getMessage());
+    		ioe.initCause(e);
+    		throw(ioe);
+    	}
+    	URL website = new URL(newurl);
     	ReadableByteChannel rbc = Channels.newChannel(website.openStream());
     	FileOutputStream fos = new FileOutputStream(file);
     	fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
     	fos.close();
     }
+    
+    private static String checkURL(String url) throws IOException{
+    	URL obj = new URL(url);
+    	HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+    	conn.setReadTimeout(5000);
+    	conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
+    	conn.addRequestProperty("User-Agent", "Mozilla");
+    	conn.addRequestProperty("Referer", "esa.int");
+     
+    	vega.hipe.logging.VegaLog.info("Request URL ... " + url);
+     
+    	boolean redirect = false;
+     
+    	// normally, 3xx is redirect
+    	int status = conn.getResponseCode();
+    	if (status != HttpURLConnection.HTTP_OK) {
+    		if (status == HttpURLConnection.HTTP_MOVED_TEMP
+    			|| status == HttpURLConnection.HTTP_MOVED_PERM
+    				|| status == HttpURLConnection.HTTP_SEE_OTHER)
+    		redirect = true;
+    	}
+     
+    	vega.hipe.logging.VegaLog.info("Response Code ... " + status);
+     
+    	if (redirect) {
+     
+    		// get redirect url from "location" header field
+    		String newUrl = conn.getHeaderField("Location");
+     
+    		// get the cookie if need, for login
+    		String cookies = conn.getHeaderField("Set-Cookie");
+     
+    		// open the new connnection again
+    		conn = (HttpURLConnection) new URL(newUrl).openConnection();
+    		conn.setRequestProperty("Cookie", cookies);
+    		conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
+    		conn.addRequestProperty("User-Agent", "Mozilla");
+    		conn.addRequestProperty("Referer", "google.com");
+     
+    		vega.hipe.logging.VegaLog.info("Redirect to URL : " + newUrl);
+    		return newUrl;
+    	}else{
+    		return url;
+    	}
+    }
+    
+    private static void disableSslVerification() {
+        try
+        {
+            // Create a trust manager that does not validate certificate chains
+            TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+            }
+            };
+
+            // Install the all-trusting trust manager
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Create all-trusting host name verifier
+            HostnameVerifier allHostsValid = new HostnameVerifier() {
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+
+				
+            };
+
+            // Install the all-trusting host verifier
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     
     /*private static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
         TransformerFactory tf = TransformerFactory.newInstance();
