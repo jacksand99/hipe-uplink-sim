@@ -28,6 +28,9 @@ public class PointingFDPreferences extends PreferencesPanel{
     private JTextField _fieldB;
     private JTextField _fieldE;
     private JTextField _fieldC;
+    private JTextField _fieldF;
+    private JTextField _fieldG;
+    private JTextField _fieldH;
 
     //private FilePathPanel _fieldD;
 
@@ -76,6 +79,30 @@ public class PointingFDPreferences extends PreferencesPanel{
         hLabelGroup.addComponent(labelC);
         hComboGroup.addComponent(_fieldC);
 
+        JLabel    labelF = new JLabel("Time out 1 (ms):");
+        _fieldF = new JTextField();
+        _fieldF.setMaximumSize(new Dimension(400,20));
+        vPropsGroup = layout.createParallelGroup(BASELINE);
+        vGroup.addGroup(vPropsGroup.addComponent(labelF).addComponent(_fieldF));
+        hLabelGroup.addComponent(labelF);
+        hComboGroup.addComponent(_fieldF);
+
+        JLabel    labelG = new JLabel("Time out 2 (ms):");
+        _fieldG = new JTextField();
+        _fieldG.setMaximumSize(new Dimension(400,20));
+        vPropsGroup = layout.createParallelGroup(BASELINE);
+        vGroup.addGroup(vPropsGroup.addComponent(labelG).addComponent(_fieldG));
+        hLabelGroup.addComponent(labelG);
+        hComboGroup.addComponent(_fieldG);
+
+        JLabel    labelH = new JLabel("Time out 2 (ms):");
+        _fieldH = new JTextField();
+        _fieldH.setMaximumSize(new Dimension(400,20));
+        vPropsGroup = layout.createParallelGroup(BASELINE);
+        vGroup.addGroup(vPropsGroup.addComponent(labelH).addComponent(_fieldH));
+        hLabelGroup.addComponent(labelH);
+        hComboGroup.addComponent(_fieldH);
+
         /*JLabel    labelC = new JLabel("Temp Directory:");
         _fieldD = new FilePathPanel(FileSelectionMode.DIRECTORY);
         _fieldD.setMaximumSize(new Dimension(400,20));
@@ -99,6 +126,9 @@ public class PointingFDPreferences extends PreferencesPanel{
 		registerHandler(FDClient.FD_SERVER_URL_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(FDClient.FD_SERVER_URL_PROPERTY, ""),_fieldA,FDClient.FD_SERVER_URL_PROPERTY));
      	registerHandler(FDClient.TRAJECTORY_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(FDClient.TRAJECTORY_PROPERTY, ""),_fieldB,FDClient.TRAJECTORY_PROPERTY));
      	registerHandler(FDClient.TREJECTORIES_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(FDClient.TREJECTORIES_PROPERTY, ""),_fieldC,FDClient.TREJECTORIES_PROPERTY));
+     	registerHandler(FDClient.TIMEOUT_1_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(FDClient.TIMEOUT_1_PROPERTY, ""),_fieldF,FDClient.TIMEOUT_1_PROPERTY));
+     	registerHandler(FDClient.TIMEOUT_2_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(FDClient.TIMEOUT_2_PROPERTY, ""),_fieldG,FDClient.TIMEOUT_2_PROPERTY));
+     	registerHandler(FDClient.TIMEOUT_3_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(FDClient.TIMEOUT_3_PROPERTY, ""),_fieldH,FDClient.TIMEOUT_3_PROPERTY));
         
     	//registerHandler("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.tempDir",new FilePreferenceHandler(Configuration.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.tempDir", Configuration.getProperty("user.home")),_fieldD,"rosetta.uplink.pointing.AttitudeGeneratorFdImpl.tempDir"));
 

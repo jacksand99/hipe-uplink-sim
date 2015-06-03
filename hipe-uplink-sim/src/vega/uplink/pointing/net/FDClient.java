@@ -14,6 +14,7 @@ import java.util.HashMap;
 
 
 
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 //import javax.xml.transform.OutputKeys;
@@ -69,6 +70,13 @@ public class FDClient {
 	private static final String STATUS_MAINTENANCE = "maintenance";    
 	private static final String NUMBER_VIOLATIONS = "numberOfViolations";
 	private static String latst_ptrId=null;
+	private static long TIMEOUT_1=60000;
+	private static long TIMEOUT_2=300000;
+	private static long TIMEOUT_3=900000;
+	public static String TIMEOUT_1_PROPERTY="vega.uplink.pointing.net.timeout_1";
+	public static String TIMEOUT_2_PROPERTY="vega.uplink.pointing.net.timeout_2";
+	public static String TIMEOUT_3_PROPERTY="vega.uplink.pointing.net.timeout_3";
+	 
 	
 	/**
 	 * vega.uplink.pointing.net.serverUrl
@@ -633,7 +641,42 @@ public class FDClient {
         
     } 
     
+    public static void downloadFile(String url,String file) throws IOException{
+    	try{
+    		TIMEOUT_1=Long.parseLong(Properties.getProperty(TIMEOUT_1_PROPERTY));
+    		TIMEOUT_2=Long.parseLong(Properties.getProperty(TIMEOUT_1_PROPERTY));
+    		TIMEOUT_3=Long.parseLong(Properties.getProperty(TIMEOUT_1_PROPERTY));
 
+    		
+    	}catch (Exception e){
+    		vega.hipe.logging.VegaLog.info("Could not get time out for fd connection from preferences. Using default.");
+    	}
+    	try{
+    		downloadFileRaw(url,file);
+    	}catch (Exception e){
+    		
+				
+				try{
+					Thread.sleep(TIMEOUT_1);
+					downloadFileRaw(url,file);
+				}catch (Exception e2){
+					try{
+						Thread.sleep(TIMEOUT_2);
+						downloadFileRaw(url,file);
+					}catch (Exception e3){
+						try{
+							Thread.sleep(TIMEOUT_3);
+							downloadFileRaw(url,file);
+						}catch (Exception e4){
+							IOException ioe = new IOException(e4.getMessage());
+							ioe.initCause(e4);
+						}
+					}
+				}
+			
+    		
+    	}
+    }
     
     /**
      * Download a file from a URL
@@ -641,7 +684,7 @@ public class FDClient {
      * @param file The full path where the file will be saved
      * @throws IOException
      */
-    public static void downloadFile(String url,String file) throws IOException{
+    public static void downloadFileRaw(String url,String file) throws IOException{
     	URL website = new URL(url);
     	ReadableByteChannel rbc = Channels.newChannel(website.openStream());
     	FileOutputStream fos = new FileOutputStream(file);
