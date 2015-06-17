@@ -10,11 +10,11 @@ import herschel.share.fltdyn.math.Attitude;
 
 public interface AttitudeGenerator {
 	
-	public java.util.Map<Long, Quaternion> getQuaternions(PointingBlock block);
+	public AttitudeMap getQuaternions(PointingBlock block);
 	
-	public java.util.Map<Long, Quaternion> getQuaternions(PtrSegment segment);
+	public AttitudeMap getQuaternions(PtrSegment segment);
 
-	public java.util.Map<Long, Quaternion> getQuaternions(Ptr ptr);
+	public AttitudeMap getQuaternions(Ptr ptr);
 	
 	public Attitude getAttitude(java.util.Date date);
 

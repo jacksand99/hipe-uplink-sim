@@ -41,6 +41,7 @@ from vega.uplink.pointing import PtrChecker
 from vega.uplink.pointing import PointingElement
 from vega.uplink.pointing import PointingMetadata
 from vega.uplink.pointing import Pdfm
+from vega.uplink.pointing import AttitudeUtils
 from vega.uplink.pointing import PointingBlockGSEP
 from vega.uplink.pointing.attitudes import Inertial
 from vega.uplink.pointing.attitudes import Track

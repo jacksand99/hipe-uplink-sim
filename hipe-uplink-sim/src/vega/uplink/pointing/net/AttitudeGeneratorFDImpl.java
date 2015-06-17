@@ -1,5 +1,6 @@
 package vega.uplink.pointing.net;
 
+import herschel.ia.numeric.Long1d;
 import herschel.share.fltdyn.math.Attitude;
 import herschel.share.fltdyn.math.Quaternion;
 import herschel.share.fltdyn.time.*;
@@ -29,6 +30,8 @@ import vega.uplink.Properties;
 import vega.uplink.pointing.AttitudeGenerator;
 import vega.uplink.pointing.Evtm;
 import vega.uplink.pointing.EvtmEvents.*;
+import vega.uplink.pointing.AttitudeMap;
+import vega.uplink.pointing.AttitudeUtils;
 import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.Ptr;
@@ -39,7 +42,7 @@ import vega.uplink.track.Fecs;
 
 
 public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
-	HashMap<Long, Quaternion> quaternions;
+	AttitudeMap quaternions;
 	Long[] times;
 	HashMap<Date,AttitudeConstrainEvent> eventsMap;
 	TreeMap<Date,SolarAspectAngle> saaTree;
@@ -73,6 +76,24 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 			LOG.throwing("AttitudeGeneratorFDImpl", "getMtpNum", newExp);
 			throw(newExp);
 		}
+	}
+	public static AttitudeMap getAttitudeMap(Ptr ptr,Pdfm pdfm,String mtpNum,String trajectory) throws AttitudeGeneratorException{
+		File directory=null;
+		String dir=null;
+		try {
+			directory = FileUtil.createTempDir("fd_temp_", "fd");
+			dir=directory.getAbsolutePath()+"/";
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			AttitudeGeneratorException age = new AttitudeGeneratorException("Can not create temp dir to download the fd files",e1);
+			LOG.throwing("AttitudeGeneratorFDImpl", "constructor", age);
+			throw(age);
+			//e1.printStackTrace();
+		}
+		String name=""+new java.util.Date().getTime();
+		File out = new File(dir+name+"_att.txt");
+		getAttitudeFile(ptr,pdfm,mtpNum,out.getAbsolutePath(),trajectory);
+		return readAttFile(out.getAbsolutePath());
 	}
 
 	public static void getAttitudeFile(Ptr ptr,Pdfm pdfm,String mtpNum,String file,String trajectory) throws AttitudeGeneratorException{
@@ -126,7 +147,9 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 	}
 
 	public AttitudeGeneratorFDImpl(Ptr ptr,Pdfm pdfm,String mtpNum,String activityCase) throws AttitudeGeneratorException{
-		this(ptr,pdfm,mtpNum,activityCase,null,null,null);
+		//ErrorBoxPoint box=new ErrorBoxPoint(0.0f,0.0f,0.0f);
+		this(ptr,pdfm,mtpNum,activityCase,new ErrorBoxPoint(0.0f,0.0f,0.0f));
+		//this(ptr,pdfm,mtpNum,activityCase,null,null,null);
 		//init(ptr,pdfm,mtpNum,activityCase);
 	}
 	public void init(Ptr ptr,Pdfm pdfm,String mtpNum,String activityCase) throws AttitudeGeneratorException{
@@ -485,13 +508,17 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 		}
 		
 	}
-	
 	protected void init(String file) throws AttitudeGeneratorException{
+		quaternions=readAttFile(file);
+		times=new Long[quaternions.size()];
+		quaternions.keySet().toArray(times);	
+	}
+	protected static AttitudeMap  readAttFile(String file) throws AttitudeGeneratorException{
 		BufferedReader br = null;
 		String line = "";
 		/*java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));*/
-		quaternions=new HashMap<Long, Quaternion>();
+		AttitudeMap result = new AttitudeMap();
 	 
 		try {
 	 
@@ -508,8 +535,8 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 					float ax2=Float.parseFloat(line.substring(54, 74)+"E"+line.substring(75, 78));
 					float ax3=Float.parseFloat(line.substring(79, 99)+"E"+line.substring(100, 103));
 					float ag=Float.parseFloat(line.substring(104, 124)+"E"+line.substring(125, 128));
-					Quaternion q=new Quaternion(ax1,ax2,ax3,ag);
-					quaternions.put(new Long(dt.getTime()), q);
+					Quaternion q=new Quaternion(ax1,ax2,ax3,ag).normalizeSign();
+					result.put(dt, q);
 					
 				}
 				
@@ -519,7 +546,7 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 			AttitudeGeneratorException newExp = new AttitudeGeneratorException ("Error parsing the attitude file from FD",e);
 			LOG.throwing("AttitudeGeneratorFDImpl", "init", newExp);
 			try {
-				br.close();
+				if (br!=null) br.close();
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				AttitudeGeneratorException newExp2 = new AttitudeGeneratorException ("Error closing file",e);
@@ -529,30 +556,12 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 			throw(newExp);
 
 		}
-		times=new Long[quaternions.size()];
-		quaternions.keySet().toArray(times);
+		return result;
+		//times=new Long[quaternions.size()];
+		//quaternions.keySet().toArray(times);
 	}
 	
-	private int[] find(Long[] array,int loc1,int loc2,Long nToFind){
-		int[] result=new int[2];
-		result[0]=0;
-		result[1]=0;
-		if (nToFind>=array[loc1]){
-			if (nToFind<=array[loc2]){
-				if (loc2==loc1+1){
-					result[0]=loc1;
-					result[1]=loc2;
-					return result;
-				}
-				result=find(array,loc1,loc1+((loc2-loc1)/2),nToFind);
-				if (result[0]==0){
-					return find(array,loc1+((loc2-loc1)/2),loc2,nToFind);
-				}
-				else return result;
-			}
-		}
-		return result;
-	}
+
 	
 	private double compare(Quaternion q1,Quaternion q2){
 		return q1.normalizeSign().conjugate().multiply(q2.normalizeSign()).angle();
@@ -575,46 +584,31 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 	}
 	
 	public Quaternion getQuaternion(java.util.Date date){
-		long time=date.getTime();
-		if (time>times[times.length-1]) return quaternions.get(times[times.length-1]);
-		int[] r=find(times,0,times.length-1,time);
-		return interpolate(quaternions.get(times[r[0]]),new java.util.Date(times[r[0]]),quaternions.get(times[r[1]]),new java.util.Date(times[r[1]]),date);
-		
+		return quaternions.get(date);
 	}
 
 	@Override
-	public HashMap<Long, Quaternion> getQuaternions(PointingBlock block) {
-		HashMap<Long, Quaternion> result=new HashMap<Long, Quaternion>();
-		long time1=block.getStartTime().getTime();
-		long time2=block.getEndTime().getTime();
-		for (long i=time1;i<time2;i=i+STEP){
-			result.put(i, getQuaternion(new java.util.Date(i)));
-		}
-		
-		return result;
+	public AttitudeMap getQuaternions(PointingBlock block) {
+		return quaternions.subMap(block.getStartTime(), block.getEndTime());
 	}
 
 	@Override
-	public HashMap<Long, Quaternion> getQuaternions(PtrSegment segment) {
-		HashMap<Long, Quaternion> result=new HashMap<Long, Quaternion>();
-		PointingBlock[] blocks=segment.getBlocks();
-		for (int i=0;i<blocks.length;i++){
-			result.putAll(getQuaternions(blocks[i]));
-		}
-		return result;
+	public AttitudeMap getQuaternions(PtrSegment segment) {
+		return quaternions.subMap(segment.getSegmentStartDate(), segment.getSegmentEndDate());
 	}
-	public HashMap<Long, Quaternion> getAllQuaternions(){
+	public AttitudeMap getAllQuaternions(){
 		return quaternions;
 	}
 	@Override
-	public HashMap<Long, Quaternion> getQuaternions(Ptr ptr) {
-		HashMap<Long, Quaternion> result=new HashMap<Long, Quaternion>();
+	public AttitudeMap getQuaternions(Ptr ptr) {
+		return quaternions.subMap(ptr.getStartDate().toDate(), ptr.getEndDate().toDate());
+		/*HashMap<Long, Quaternion> result=new HashMap<Long, Quaternion>();
 		PtrSegment[] segments=ptr.getSegments();
 		for (int i=0;i<segments.length;i++){
 			result.putAll(getQuaternions(segments[i]));
 		}
-		
-		return result;
+		//result.k
+		return result;*/
 	}
 	
 	public SolarAspectAngle[] getSaa(Date fromTime, Date toTime){

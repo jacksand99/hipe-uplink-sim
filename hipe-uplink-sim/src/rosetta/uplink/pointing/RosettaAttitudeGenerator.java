@@ -43,6 +43,7 @@ public class RosettaAttitudeGenerator extends AttitudeGeneratorFDImpl{
 	}
 	
 	public Evtm getEvtm(){
+		
 		RosettaDistance distance=RosettaDistance.getInstance();
 		Evtm result=new Evtm();
 		EvtmEventBdi ALIS=null;
