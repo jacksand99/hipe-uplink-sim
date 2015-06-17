@@ -1,0 +1,1 @@
+print "Executed vega.hipe init.py"

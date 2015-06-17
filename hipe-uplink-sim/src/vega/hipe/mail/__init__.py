@@ -1,0 +1,1 @@
+print "Executed init.py"
