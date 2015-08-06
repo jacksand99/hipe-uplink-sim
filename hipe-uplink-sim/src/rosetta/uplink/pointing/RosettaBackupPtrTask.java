@@ -17,7 +17,6 @@ import vega.uplink.pointing.PtrSegment;
 import vega.uplink.pointing.exclusion.Period;
 
 public class RosettaBackupPtrTask extends Task{
-	private static final Logger LOGGER = Logger.getLogger(RosettaPtrCheckTask.class.getName());
 
 	public RosettaBackupPtrTask(){
 		
@@ -38,8 +37,7 @@ public class RosettaBackupPtrTask extends Task{
 		excl.setDescription("The Exclusion Periods file used"); //6
 		TaskParameter bkPtr = new TaskParameter("backupPtr", Ptr.class);
 		bkPtr.setType(TaskParameter.OUT);
-        //parameter.setMandatory(true);
-		bkPtr.setDescription("The Backup PTR "); //6
+ 		bkPtr.setDescription("The Backup PTR "); //6
 		
         addTaskParameter(parameter);
         addTaskParameter(ptsl);

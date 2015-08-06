@@ -48,7 +48,6 @@ public class XMLDocument extends PlainDocument {
      * @param context XMLContext
      */
     public XMLDocument(XMLContext context) {
-        //super(context);
         this.context = context;
         lexer = new XMLScanner();
     }

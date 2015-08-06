@@ -1,15 +1,9 @@
 package vega.hipe.git;
 
-import java.util.logging.Logger;
-
-import javax.swing.SwingUtilities;
-
 import herschel.ia.gui.apps.components.util.PopupMessageHandler;
-import herschel.share.util.Configuration;
 import vega.hipe.git.HipeGitSshTunnel.MyUserInfo;
 import vega.hipe.logging.VegaLog;
 import vega.uplink.Properties;
-import vega.uplink.commanding.PorUtils;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
@@ -23,7 +17,6 @@ class Tunnel extends Thread{
 	Channel channel;
 	Session session;
 	private int LOCAL_PORT=1052;
-	//private static final Logger LOG = Logger.getLogger(Tunnel.class.getName());
 	boolean init=false;
 
 	

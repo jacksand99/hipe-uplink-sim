@@ -211,6 +211,7 @@ public class ItlParser {
 
 		result.setStartDate(new FineTime(validityStart));
 		result.setEndDate(new FineTime(validityEnd));
+		Date refDate=new Date();
 		for (int i=0;i<itllines.length;i++){
 			
 			if(itllines[i].startsWith("Comment") || itllines[i].startsWith("comment")){
@@ -245,15 +246,26 @@ public class ItlParser {
 					result.getInitDataStore().append(sSD);
 				}
 
+				if (itllines[i].startsWith("Ref_date:")){
+					String sSD=itllines[i].replace("Ref_date:", "");
+					refDate=DateUtil.literalToDateNoTime(sSD);
+				}
 
 				if (itllines[i].startsWith("Start")){
 					String sSD=itllines[i].replace("Start_time:", "");
-					result.setStartDate(new FineTime(DateUtil.literalToDate(sSD)));
+					try{
+						result.setStartDate(new FineTime(DateUtil.literalToDate(sSD)));
+					}catch (ParseException pe){
+						result.setStartDate(new FineTime(addDelta(refDate,sSD)));
+					}
 				}
 				if (itllines[i].startsWith("End")){
 					String sSD=itllines[i].replace("End_time:", "");
-					result.setEndDate(new FineTime(DateUtil.literalToDate(sSD)));
-
+					try{
+						result.setEndDate(new FineTime(DateUtil.literalToDate(sSD)));
+					}catch (ParseException pe){
+						result.setEndDate(new FineTime(addDelta(refDate,sSD)));
+					}
 				}
 				if (itllines[i].startsWith("Include")){
 					String sSD=itllines[i].replace("Include: ", "");
@@ -429,6 +441,7 @@ public class ItlParser {
 		return result;
 	}
 	
+	
 	protected static SequenceProfile[] parseProfile(String profile){
 		SequenceProfile[] result;
 		java.util.Vector<SequenceProfile> proVector=new java.util.Vector<SequenceProfile>();
@@ -520,11 +533,15 @@ public class ItlParser {
 		if (delta.startsWith("-")) symbol=false;
 		delta=delta.replace("+", "");
 		delta=delta.replace("-", "");
-		if (delta.contains("_")){
-			String sDays=delta.substring(0,3);
+		int index = delta.indexOf("_");
+		if (index>0){
+			String sDays=delta.substring(0,index);
 			days=Integer.parseInt(sDays);
 			delta=delta.replace(sDays+"_","");
+			
 		}
+		
+		
 		String[] sTimes=delta.split(":");
 		hours=Integer.parseInt(sTimes[0]);
 		minutes=Integer.parseInt(sTimes[1]);

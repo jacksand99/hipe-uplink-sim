@@ -10,13 +10,8 @@ import javax.swing.JTextField;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 
-//import vega.uplink.Properties;
 import herschel.ia.gui.kernel.prefs.PreferencesPanel;
-import herschel.ia.gui.kernel.prefs.handler.FilePreferenceHandler;
 import herschel.ia.gui.kernel.prefs.handler.StringPreferenceHandler;
-//import herschel.ia.gui.kernel.util.component.ColorButton;
-import herschel.ia.gui.kernel.util.component.FilePathPanel;
-import herschel.ia.gui.kernel.util.field.FileSelectionMode;
 import herschel.share.util.Configuration;
 
 public class PointingFDPreferences extends PreferencesPanel{
@@ -31,8 +26,6 @@ public class PointingFDPreferences extends PreferencesPanel{
     private JTextField _fieldF;
     private JTextField _fieldG;
     private JTextField _fieldH;
-
-    //private FilePathPanel _fieldD;
 
 
 	@Override
@@ -103,19 +96,10 @@ public class PointingFDPreferences extends PreferencesPanel{
         hLabelGroup.addComponent(labelH);
         hComboGroup.addComponent(_fieldH);
 
-        /*JLabel    labelC = new JLabel("Temp Directory:");
-        _fieldD = new FilePathPanel(FileSelectionMode.DIRECTORY);
-        _fieldD.setMaximumSize(new Dimension(400,20));
-        vPropsGroup = layout.createParallelGroup(BASELINE);
-        vGroup.addGroup(vPropsGroup.addComponent(labelC).addComponent(_fieldD));
-        hLabelGroup.addComponent(labelC);
-        hComboGroup.addComponent(_fieldD);*/
         hGroup.addGroup(hLabelGroup);
         hGroup.addGroup(hComboGroup);
         layout.setHorizontalGroup(hGroup);
         layout.setVerticalGroup(vGroup);
-
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -129,10 +113,6 @@ public class PointingFDPreferences extends PreferencesPanel{
      	registerHandler(FDClient.TIMEOUT_1_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(FDClient.TIMEOUT_1_PROPERTY, ""),_fieldF,FDClient.TIMEOUT_1_PROPERTY));
      	registerHandler(FDClient.TIMEOUT_2_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(FDClient.TIMEOUT_2_PROPERTY, ""),_fieldG,FDClient.TIMEOUT_2_PROPERTY));
      	registerHandler(FDClient.TIMEOUT_3_PROPERTY,new StringPreferenceHandler(Configuration.getProperty(FDClient.TIMEOUT_3_PROPERTY, ""),_fieldH,FDClient.TIMEOUT_3_PROPERTY));
-        
-    	//registerHandler("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.tempDir",new FilePreferenceHandler(Configuration.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.tempDir", Configuration.getProperty("user.home")),_fieldD,"rosetta.uplink.pointing.AttitudeGeneratorFdImpl.tempDir"));
-
-		// TODO Auto-generated method stub
 		
 	}
 

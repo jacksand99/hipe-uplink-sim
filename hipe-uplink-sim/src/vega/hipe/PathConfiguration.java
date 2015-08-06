@@ -5,7 +5,6 @@ package vega.hipe;
 import herschel.share.util.Configuration;
 
 import java.io.File;
-import java.util.logging.Logger;
 
 import vega.hipe.logging.VegaLog;
 
@@ -19,7 +18,6 @@ import vega.hipe.logging.VegaLog;
  */
 public class PathConfiguration {
     
-    //private static final Logger LOG = Logger.getLogger(PathConfiguration.class.getName());
     
     /**
      * Hide constructor.

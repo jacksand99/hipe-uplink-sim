@@ -39,7 +39,6 @@ import herschel.share.util.ObjectUtil;
  */
 public class Mib extends CompositeDataset{
 	static Mib MIB;
-	//private static final Logger LOG = Logger.getLogger(Mib.class.getName());
 	static String[] sdf_columns={"SDF_SQNAME","SDF_ENTRY","SDF_ELEMID","SDF_POS","SDF_PNAME","SDF_FTYPE","SDF_VTYPE","SDF_VALUE","SDF_VALSET","SDF_REPPOS"};
 	static String[] sdf_types={"String","Integer","String","Integer","String","String","String","String","String","Integer"}; 
 	static String[] csp_columns={"CSP_SQNAME","CSP_FPNAME","CSP_FPNUM","CSP_DESCR","CSP_PTC","CSP_PFC","CSP_DISPFMT","CSP_RADIX","CSP_TYPE","CSP_VTYPE","CSP_DEFVAL","CSP_CATEG","CSP_PRFREF","CSP_CCAREF","CSP_PAFREF","CSP_UNIT"};
@@ -64,28 +63,6 @@ public class Mib extends CompositeDataset{
 		cacheSeqDescription=new HashMap<String,String>();
 		cacheParamDescription=new HashMap<String,String>();
 	}
-	/*public static Mib getMibFromTarFile(String tarFile) throws IOException {
-		File tdir=null;
-		
-		try{
-			tdir = FileUtil.createTempDir(tarFile+"_temp_tar", "untar");
-			unTar(tarFile,tdir);
-			FileInputStream sdf_data=new FileInputStream(tdir.getAbsolutePath()+"/"+"sdf.dat");
-			FileInputStream csp_data=new FileInputStream(tdir.getAbsolutePath()+"/"+"csp.dat");
-			FileInputStream cdf_data=new FileInputStream(tdir.getAbsolutePath()+"/"+"cdf.dat");
-			FileInputStream cpc_data=new FileInputStream(tdir.getAbsolutePath()+"/"+"cdf.dat");
-			FileInputStream css_data=new FileInputStream(tdir.getAbsolutePath()+"/"+"css.dat");
-			return readMib(sdf_data,csp_data,cdf_data,cpc_data,css_data);
-		}catch (ArchiveException aex){
-			IOException ioe = new IOException(aex.getMessage());
-			ioe.initCause(aex);
-			throw ioe;
-			
-		}
-		finally{
-			if (tdir!=null) tdir.delete();
-		}
-	}*/
 	
 	/**
 	 * Read the MIB from files. The location will be read from the properties

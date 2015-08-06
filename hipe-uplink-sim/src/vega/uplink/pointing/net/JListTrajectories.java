@@ -3,7 +3,6 @@ package vega.uplink.pointing.net;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Logger;
 
 import javax.swing.JList;
 import javax.swing.ListModel;
@@ -19,8 +18,6 @@ import herschel.ia.gui.kernel.parts.Disposable;
 import herschel.share.util.ObjectUtil;
 
 public class JListTrajectories implements Modifier, ModifierEditorListener, SiteEventListener, Disposable {
-    private static final long serialVersionUID = 1L;
-    private static final Logger LOG = Logger.getLogger(JListTrajectories.class.getName());
     private static final int MAX_VALUES = 32;
     private ListEditor editor;
     private JList<?> list;
@@ -158,13 +155,5 @@ public class JListTrajectories implements Modifier, ModifierEditorListener, Site
         return list;
     }
 
-    private static Object[] values(Class<? extends Enum<?>> enumType) {
-        try {
-            return (Object[])enumType.getMethod("values").invoke(null);
-        } catch (Exception e) {
-            LOG.warning("Error building JListModifier: " + e);
-            return new Object[0];
-        }
-    }
 
 }

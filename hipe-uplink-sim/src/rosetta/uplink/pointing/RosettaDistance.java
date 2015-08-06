@@ -52,8 +52,6 @@ public class RosettaDistance extends TableDataset{
 		this.setColumnName(1, "Distance to Sun");
 		this.setColumnName(2, "Distance to Earth");
 		this.setColumnName(3, "Distance to Comet");
-		
-		//readDataFromURL();
 	}
 	
 	private void populateTable(){
@@ -88,7 +86,6 @@ public class RosettaDistance extends TableDataset{
 		Float value1 = distanceCG.get(date1);
 		Float value2 = distanceCG.get(date2);
 		return interpolate(date1,value1,date2,value2,date);
-		//return distanceCG.floorEntry(date).getValue();
 	}
 	
 	
@@ -101,7 +98,6 @@ public class RosettaDistance extends TableDataset{
 		Float value1 = distanceSun.get(date1);
 		Float value2 = distanceSun.get(date2);
 		return interpolate(date1,value1,date2,value2,date);
-		//return distanceSun.floorEntry(date).getValue();
 	}
 	public Float getDistanceEarth(Date date){
 		if (distanceEarth.containsKey(date)) return distanceEarth.get(date);
@@ -111,7 +107,6 @@ public class RosettaDistance extends TableDataset{
 		Float value1 = distanceEarth.get(date1);
 		Float value2 = distanceEarth.get(date2);
 		return interpolate(date1,value1,date2,value2,date);
-		//return distanceEarth.floorEntry(date).getValue();
 	}
 	
 	public void saveToFile(String file){
@@ -129,10 +124,6 @@ public class RosettaDistance extends TableDataset{
 			}catch (Exception e){
 				e.printStackTrace();
 			}
-			
-		
-
-		//return result;
 	}
 	public static RosettaDistance readFromFile(String file){
 		try {
@@ -167,7 +158,6 @@ public class RosettaDistance extends TableDataset{
 			}
 			br.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 			iae.initCause(e);
 			throw(iae);
@@ -198,7 +188,6 @@ public class RosettaDistance extends TableDataset{
 				String earthurl=leadingURL+year+"-"+String.format("%02d", month)+"/earthdist"+String.format("%02d", day)+".js";
 				String cometurl=leadingURL+year+"-"+String.format("%02d", month)+"/distance"+String.format("%02d", day)+".js";
 
-				//System.out.println(url);
 				URL stockURL = new URL(url);
 				BufferedReader in = new BufferedReader(new InputStreamReader(stockURL.openStream()));
 				BufferedReader earth = new BufferedReader(new InputStreamReader(new URL(earthurl).openStream()));
@@ -237,7 +226,6 @@ public class RosettaDistance extends TableDataset{
 				while ((line = comet.readLine()) != null) {
 					if (line.startsWith("var") || line.startsWith("]")){
 					}else{
-						//System.out.println(line);
 						line=line.replace(",", "");
 						result.addDistanceCG(new Date(d), Float.parseFloat(line));
 						d=d+5000;
@@ -246,16 +234,12 @@ public class RosettaDistance extends TableDataset{
 					
 				}
 				comet.close();
-
-				//System.out.println(url);
 				
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 			iae.initCause(e);
 			throw(iae);
-			//e.printStackTrace();
 		}
 		result.populateTable();
 		return result;
@@ -279,14 +263,10 @@ public class RosettaDistance extends TableDataset{
 		return interpolate(time1.getTime(),distance1,time2.getTime(),distance2,desiredTime.getTime());
 	}
 	Float interpolate(long time1,float distance1,long time2,float distance2, long desiredTime) {
-		 //Pre conditions
 		assert time1<desiredTime;
 		assert desiredTime<time2;
-		//Calculate slope from p1 to p2
 		float m = (distance2-distance1)/(time2-time1);
-		//Calculate y position of x
 		float y = ((desiredTime-time1)*m)+distance1;
-		//create new point
 		return y;
 	}
 	

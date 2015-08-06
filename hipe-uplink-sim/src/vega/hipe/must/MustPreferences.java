@@ -1,6 +1,5 @@
 package vega.hipe.must;
 
-import java.util.logging.Logger;
 
 import javax.swing.*;
 
@@ -8,15 +7,11 @@ import herschel.ia.gui.kernel.prefs.*;
 import herschel.ia.gui.kernel.prefs.handler.IntegerPreferenceHandler;
 import herschel.ia.gui.kernel.prefs.handler.StringPreferenceHandler;
 import herschel.ia.gui.kernel.util.field.IntegerField;
-import herschel.share.swing.*;
 import herschel.share.util.Configuration;
 
 import javax.swing.GroupLayout.*;
 
 import vega.hipe.logging.VegaLog;
-//import vega.uplink.Properties;
-//import vega.uplink.Properties;
-//import vega.uplink.commanding.task.PorCheckTask;
 import static javax.swing.GroupLayout.Alignment.BASELINE;
 
 
@@ -29,53 +24,31 @@ public class MustPreferences extends PreferencesPanel {
     private JTextField    _fieldC;  // text field associated to preference keyC
     private JTextField    _fieldD;  // text field associated to preference keyD
     private JTextField    _fieldE;  // text field associated to preference keyE
-    //private static final Logger LOGGER = Logger.getLogger(MustPreferences.class.getName());
-   
     
     public MustPreferences(){
     	super();
     	VegaLog.info("MustPreferences: Constructor called");
-    	//UserPreferences.
-    	//registerHandlers();
     }
     @Override
     protected void registerHandlers() {
     	VegaLog.info("Must Plugin: Registering Handlers");
-    	/*registerHandler("must.ip",new StringPreferenceHandler(Configuration.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument, ""),_fieldA,Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+instrument));
-*/
         // Preference IP with type String and default value "text"
         registerHandler("must.ip", new StringPreferenceHandler(Configuration.getProperty("vega.must.server.ip", "195.74.166.61"),_fieldA,"vega.must.server.ip"));
         registerHandler("must.port", new IntegerPreferenceHandler(new Integer(Integer.parseInt(Configuration.getProperty("vega.must.server.port", "3306"))),_fieldB,"vega.must.server.port"));
 
         // Preference port with type Integer and default value 3
-        /*registerHandler("must.port", new AbstractPreferenceHandler<Integer>(Integer.parseInt(Preferences.getProperty("must.port"))) {
-            public Integer getValue() { return _fieldB.getValue(); }
-            public void setValue(Integer value) { _fieldB.setValue(value); }
-        });*/
 
         // Preference repository with type Integer and default value 3
         registerHandler("must.repository", new StringPreferenceHandler(Configuration.getProperty("vega.must.server.repository", "rep_flight_herschel_v3_0"),_fieldC,"vega.must.server.repository"));
 
-        /*registerHandler("must.repository", new AbstractPreferenceHandler<String>("rep_flight_herschel_v3_0") {
-            public String getValue() { return _fieldC.getText(); }
-            public void setValue(String value) { _fieldC.setText(value); }
-        });*/
 
         // Preference user with type Integer and default value 3
         registerHandler("must.user", new StringPreferenceHandler(Configuration.getProperty("vega.must.server.user", ""),_fieldD,"vega.must.server.user"));
 
-        /*registerHandler("must.user", new AbstractPreferenceHandler<String>("user") {
-            public String getValue() { return _fieldD.getText(); }
-            public void setValue(String value) { _fieldD.setText(value); }
-        });*/
 
         // Preference password with type Integer and default value 3
         registerHandler("must.password", new StringPreferenceHandler(Configuration.getProperty("vega.must.server.password", ""),_fieldE,"vega.must.server.password"));
 
-        /*registerHandler("must.password", new AbstractPreferenceHandler<String>("password") {
-            public String getValue() { return _fieldE.getText(); }
-            public void setValue(String value) { _fieldE.setText(value); }
-        });*/
 
     }
 

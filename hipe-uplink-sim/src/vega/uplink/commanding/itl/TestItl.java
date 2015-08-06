@@ -27,7 +27,7 @@ public class TestItl {
 		herschel.share.util.Configuration.setProperty(Properties.PWPL_FILE, "C:\\ROS_SGS\\PLANNING\\RMOC\\FCT\\PWPL_14_001_14_365__OPT_01.ROS");
 		herschel.share.util.Configuration.setProperty(Properties.ORCD_FILE, "Z:\\MAPPS\\MIB\\orcd.csv");
 		
-
+		System.out.println(ItlParser.addDelta(new Date(),"6_15:15:00"));
     	//ItlParser.parseItl("C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP005A\\STP007\\ITLS_GD_M005_S007_01_A_RSM0PIM0.itl", null);
 		/*String dir="/Users/jarenas 1/OPS/ROS_SGS/PLANNING/OBS_LIB/ITL_LIB/";
 		String detDir="/Users/jarenas 1/Rosetta/ITL_LIB/";

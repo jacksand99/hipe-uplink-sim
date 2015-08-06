@@ -10,7 +10,6 @@ import javax.swing.JTextField;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 
-import vega.uplink.Properties;
 import herschel.ia.gui.kernel.prefs.PreferencesPanel;
 import herschel.ia.gui.kernel.prefs.handler.StringPreferenceHandler;
 import herschel.share.util.Configuration;

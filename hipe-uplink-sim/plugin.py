@@ -176,7 +176,12 @@ REGISTRY.register("site.fileType",Extension("site.file.pwpl","vega.uplink.comman
 REGISTRY.register("site.fileType",Extension("site.file.pwtl","vega.uplink.commanding.gui.PwplFile",Configuration.getProperty("vega.file.type.PWTL"),IconResources.POR_ICON_NOROOT));
 REGISTRY.register(REGISTRY.COMPONENT,Extension("PWPL reader","vega.uplink.commanding.gui.PwplFileComponent","factory.editor.file","vega.uplink.commanding.gui.PwplFile"))
 REGISTRY.register(REGISTRY.VIEWABLE, herschel.ia.gui.kernel.Extension("site.view.must","vega.hipe.must.MustView","Must","vega/vega.gif"))
-REGISTRY.register(REGISTRY.COMPONENT,Extension("PDS Navigator","vega.hipe.pds.gui.PDSNavigator","factory.editor.variable","vega.hipe.pds.PDSImage"))
+#REGISTRY.register(REGISTRY.COMPONENT,Extension("PDS Navigator","vega.hipe.pds.gui.PDSNavigator","factory.editor.variable","vega.hipe.pds.PDSImage"))
+
+REGISTRY.register("site.fileType",Extension("site.file.img","vega.hipe.pds.ImgFile",Configuration.getProperty("vega.file.type.IMG"),IconResources.HUS_ICON_NOROOT));
+REGISTRY.register("site.fileType",Extension("site.file.lbl","vega.hipe.pds.LblFile",Configuration.getProperty("vega.file.type.LBL"),IconResources.HUS_ICON_NOROOT));
+REGISTRY.register(REGISTRY.COMPONENT,Extension("IMG reader","vega.hipe.pds.ImgFileComponent","factory.editor.file","vega.hipe.pds.ImgFile"))
+REGISTRY.register(REGISTRY.COMPONENT,Extension("LBL reader","vega.hipe.pds.LblFileComponent","factory.editor.file","vega.hipe.pds.LblFile"))
 
 toolRegistry = TaskToolRegistry.getInstance()
 from vega.uplink.commanding.task import SavePorTask
@@ -318,12 +323,15 @@ from herschel.share.util import FileNameExtensionFilter
 from herschel.ia.gui.kernel.prefs import UserPreferences
 from herschel.share.util import Configuration
 from rosetta.uplink.pointing import ExclusionPeriod
+from rosetta.uplink.pointing import LanderVisibility
 from vega import IconResources
 
 
 #REGISTRY = ExtensionRegistry.getInstance();
 REGISTRY.register("site.fileType",Extension("site.file.exclusion","rosetta.uplink.pointing.ExclFile","regex:^EXCL_[a-zA-Z0-9_\-]*.evf",IconResources.FECS_ICON_NOROOT));
 REGISTRY.register(REGISTRY.COMPONENT,Extension("ExclusionPeriod Reader","rosetta.uplink.pointing.ExclFileComponent","factory.editor.file","rosetta.uplink.pointing.ExclFile"))
+REGISTRY.register("site.fileType",Extension("site.file.exclusion","rosetta.uplink.pointing.LanderFile","regex:^OEF_[a-zA-Z0-9_\-]*.evf",IconResources.FECS_ICON_NOROOT));
+REGISTRY.register(REGISTRY.COMPONENT,Extension("LanderPeriod Reader","rosetta.uplink.pointing.LanderFileComponent","factory.editor.file","rosetta.uplink.pointing.LanderFile"))
 
 
 #import rosetta

@@ -11,7 +11,7 @@ import java.text.DecimalFormat;
 
 import javax.swing.JLabel;
 
-class GraphicImagePanel extends JLabel
+public class GraphicImagePanel extends JLabel
 {  
     /**
 	 * 

@@ -21,7 +21,6 @@ public class VegaLog {
 	}
 	public static void finer(String log){
 		LOG.finer(log);
-		//LOG.throwing(sourceClass, sourceMethod, thrown);
 	}
 	public static void throwing(Class sourceClass,String method,Exception thrown){
 		LOG.info("Class "+sourceClass.getName()+" on method "+method+" throwing "+thrown.getClass().getName()+" with message "+thrown.getMessage());

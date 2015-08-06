@@ -19,7 +19,6 @@ import vega.uplink.track.FecsUtils;
 import vega.uplink.track.task.CompareFecsTask;
 
 public class RosettaFecsSummaryTask extends Task {
-	//private static final Logger LOGGER = Logger.getLogger(PorCheckTask.class.getName());
 
 	public RosettaFecsSummaryTask(){
 		super("rosettaFecsSummaryTask");
@@ -87,9 +86,6 @@ public class RosettaFecsSummaryTask extends Task {
 	}
 	public static HtmlDocument produceReport(Fecs fecs,Ptr ptsl,boolean show){
 		
-	//}
-	//public void execute() { 
-		//Fecs fecs = (Fecs) getParameter("fecs").getValue();
 		Fecs fecsESA;
 		Fecs fecsDSN;
         if (fecs == null) {
@@ -100,44 +96,23 @@ public class RosettaFecsSummaryTask extends Task {
 
 
             	fecsESA = fecs.getSubFecsESA();
-            	//newerFecs = ((Fecs) getParameter("newerFecs").getValue()).getSubFecsESA();
-
-
             	fecsDSN = fecs.getSubFecsDSN();
-            	//newerFecs = ((Fecs) getParameter("newerFecs").getValue()).getSubFecsDSN();
-
 
 
         String message="";
         
-        //Ptr ptsl=(Ptr) getParameter("ptsl").getValue();
         if (ptsl==null){
         	try{
         		message=fecs.getFecsSummaryTableHTML();
-        		/*message=message+olderFecs.getName()+" 34 m (h/day):"+olderFecs.getHoursDay35m()+"\n";
-        		message=message+newerFecs.getName()+" 34 m (h/day):"+newerFecs.getHoursDay35m()+"\n";
-        		message=message+olderFecs.getName()+" 70 m (h/day):"+olderFecs.getHoursDay70m()+"\n";
-        		message=message+newerFecs.getName()+" 70 m (h/day):"+newerFecs.getHoursDay70m()+"\n";
-        		message=message+olderFecs.getName()+" BSR (h):"+olderFecs.getBSRHours()+"\n";
-        		message=message+newerFecs.getName()+" BSR (h):"+newerFecs.getBSRHours()+"\n";*/
          	}catch (Exception e){
     			message=message+e.getMessage();
     			VegaLog.throwing(CompareFecsTask.class, "execute", e);
     			VegaLog.severe(e.getMessage());
-    			// TODO Auto-generated catch block
     			e.printStackTrace();
         	}
         }else{
         	PtrSegment[] segments = ptsl.getSegments();
         	message=message+"<h1>Global</h1>";
-    		/*message=message+ "<table class=\"gridtable\">\n"
-    				+ "<tr>\n"
-       				+ "	<th>Name</th><th>34 m pass duration (h/day)</th><th>34 m dump duration (h/day)</th><th>70 m pass duration (h/day)</th><th>70 m dump duration (h/day)</th><th>BSR duration (h/day)</th><th>Total data dump (bits)</th>\n"       			 
-    				+ "</tr>\n";*/
-       		/*message=message+ "<table class=\"gridtable\">\n"
-    				+ "<tr>\n"
-    				+ "	<th>MTP</th><th>34 m pass (h/day)</th><th>34 m dump (h/day)</th><th>70 m pass (h/day)</th><th>70 m dump (h/day)</th><th>BSR (h/day)</th><th>Total data dump</th>\n"
-    				+ "</tr>\n";*/
         	message=message+ "<table class=\"gridtable\">\n"
     				+ "<tr>\n"
     				+ "	<th>FECS</th><th>ESA pass duration (h/day)</th><th>ESA dump duration (h/day)</th><th>DSN 34m pass duration (h/day)</th><th>DSN 34m dump duration (h/day)</th><th>DSN 70m pass duration (h/day)</th><th>DSN 70m dump duration (h/day)</th><th>BSR/LBS/USO passes (h/day)</th><th>Total data dump (bits)</th>\n"
@@ -160,22 +135,6 @@ public class RosettaFecsSummaryTask extends Task {
         	message=message+"</table>";
         	
            	message=message+"<h1>DSN</h1>";
-        		/*message=message+ "<table class=\"gridtable\">\n"
-        				+ "<tr>\n"
-           				+ "	<th>Name</th><th>34 m pass duration (h/day)</th><th>34 m dump duration (h/day)</th><th>70 m pass duration (h/day)</th><th>70 m dump duration (h/day)</th><th>BSR duration (h/day)</th><th>Total data dump (bits)</th>\n"
-           			    + "</tr>\n";
-
-            	for (int i=0;i<segments.length;i++){
-            		String name=segments[i].getName();
-            		Date start=segments[i].getSegmentStartDate();
-            		Date end=segments[i].getSegmentEndDate();
-            		String fecsName=fecsDSN.getName()+"_"+name;
-            		Fecs oldFecs = fecsDSN.getSubFecs(start, end);
-            		oldFecs.setName(fecsName);
-            		message=message+oldFecs.getFecsSummaryRowHTML(name);
-     
-            	}
-            	message=message+"</table>";*/
         	message=message+ "<table class=\"gridtable\">\n"
     				+ "<tr>\n"
     				+ "	<th>FECS</th><th>DSN 34m pass duration (h/day)</th><th>DSN 34m dump duration (h/day)</th><th>DSN 70m pass duration (h/day)</th><th>DSN 70m dump duration (h/day)</th><th>BSR/LBS/USO passes (h/day)</th><th>Total data dump (bits)</th>\n"
@@ -199,22 +158,6 @@ public class RosettaFecsSummaryTask extends Task {
 
 
                	message=message+"<h1>ESA</h1>";
-        		/*message=message+ "<table class=\"gridtable\">\n"
-        				+ "<tr>\n"
-        				+ "	<th>Name</th><th>34 m pass duration (h/day)</th><th>34 m dump duration (h/day)</th><th>70 m pass duration (h/day)</th><th>70 m dump duration (h/day)</th><th>BSR duration (h/day)</th><th>Total data dump (bits)</th>\n"
-        				+ "</tr>\n";
-
-            	for (int i=0;i<segments.length;i++){
-            		String name=segments[i].getName();
-            		Date start=segments[i].getSegmentStartDate();
-            		Date end=segments[i].getSegmentEndDate();
-            		String fecsName=fecsESA.getName()+"_"+name;
-            		Fecs oldFecs = fecsESA.getSubFecs(start, end);
-            		oldFecs.setName(fecsName);
-            		message=message+oldFecs.getFecsSummaryRowHTML(name);
-     
-            	}
-            	message=message+"</table>";*/
             	message=message+ "<table class=\"gridtable\">\n"
         				+ "<tr>\n"
         				+ "	<th>FECS</th><th>ESA pass duration (h/day)</th><th>ESA dump duration (h/day)</th><th>BSR/LBS/USO passes (h/day)</th><th>Total data dump (bits)</th>\n"
@@ -244,12 +187,8 @@ public class RosettaFecsSummaryTask extends Task {
         	HtmlEditorKit frame = new HtmlEditorKit(result);
         }
         return result;
-        //this.getParameter("fecsRosettaSummaryReport").setValue(result);
-       	//MessagesFrame frame = new MessagesFrame(message);
-    	//frame.setVisible(true);
 		
 	}
 	
-	//private String reportPerSegment
 
 }

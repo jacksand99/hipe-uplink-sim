@@ -7,12 +7,10 @@ import herschel.share.interpreter.InterpreterUtil;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.swing.*;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.UnsupportedCredentialItem;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Repository;
@@ -38,14 +36,12 @@ public class HipeGitSshTunnel extends HipeGit{
     public  static String TUNNEL_SERVER_PASSWORD="vega.hipe.git.tunnel.password";
 
     static Tunnel tunnel;
-	//private static final Logger LOG = Logger.getLogger(HipeGitSshTunnel.class.getName());
 
 	public static void startTunnel(){
 		Tunnel tun=new Tunnel();
 		SwingUtilities.invokeLater(tun);
 		HipeGit.TUNNEL=true;
 		VegaLog.info("Tunnel started");
-		//System.out.println("Tunnel started");
 	}
 
 
@@ -92,7 +88,6 @@ public class HipeGitSshTunnel extends HipeGit{
         	    }
         	    catch(Exception e){
         	    	VegaLog.warning(e.getMessage());
-        	      //System.out.println(e);
         	      e.printStackTrace();
         	      IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
         	      iae.initCause(e);
@@ -126,7 +121,6 @@ public class HipeGitSshTunnel extends HipeGit{
           	    	      int result=popup.showConfirm(null, passwordField,JOptionPane.OK_CANCEL_OPTION,"Password for "+uri.getHost());
           	    	      if(result==JOptionPane.OK_OPTION){
           	    	    	  password=passwordField.getText();
-          	    	    	  //return true;
           	    	      }
           	    	      else{
           	    	    	  return false;
@@ -183,7 +177,6 @@ public class HipeGitSshTunnel extends HipeGit{
     	}
     	if (password==null || passwd.equals("")){
 	    	PopupMessageHandler popup = new PopupMessageHandler();
-	      //Object[] ob={passwordField}; 
 	      int result=popup.showConfirm(null, passwordField,JOptionPane.OK_CANCEL_OPTION,message);
 	      if(result==JOptionPane.OK_OPTION){
 	    	  passwd=passwordField.getText();
@@ -197,7 +190,6 @@ public class HipeGitSshTunnel extends HipeGit{
     	}
     }
     public void showMessage(String message){
-      //JOptionPane.showMessageDialog(null, message);
     	PopupMessageHandler popup = new PopupMessageHandler();
     	popup.showInfo(null,message);
     }

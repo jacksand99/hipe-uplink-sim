@@ -6,14 +6,11 @@ import herschel.ia.dataset.DateParameter;
 import herschel.ia.dataset.StringParameter;
 import herschel.ia.dataset.TableDataset;
 import herschel.ia.dataset.MetaData;
-//import herschel.ia.gui.explorer.table.TablePlotter;
 import herschel.ia.gui.kernel.Extension;
 import herschel.ia.gui.kernel.parts.ViewPart;
 import herschel.ia.gui.kernel.parts.Viewable;
 import herschel.ia.numeric.Long1d;
-import herschel.share.component.WindowManager;
 import herschel.share.fltdyn.time.FineTime;
-import herschel.share.util.Configuration;
 import herschel.ia.gui.kernel.prefs.UserPreferences;
 import herschel.ia.gui.kernel.prefs.PreferenceListener;
 import herschel.ia.gui.kernel.prefs.PreferenceChangedEvent;
@@ -35,22 +32,16 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingWorker;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import vega.hipe.logging.VegaLog;
 import vega.uplink.Properties;
-//import must.vega.hipe.preferences.MustPreferences;
-//import must.vega.hipe.preferences.Preferences;
 
 
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
 
 /**
  * Shows the log of actions in this session.
@@ -76,7 +67,7 @@ public class MustView extends JPanel implements Viewable,PreferenceListener {
     private static final long serialVersionUID = 1L;
 
     // GUI elements
-    private JComboBox paramBox;
+    private JComboBox<String> paramBox;
     private JTextField date1;
     private JTextField date2;
     private JButton fetch;
@@ -86,19 +77,13 @@ public class MustView extends JPanel implements Viewable,PreferenceListener {
     
     private String host = Properties.getProperty("vega.must.server.ip");
     private int portInt = Integer.parseInt(Properties.getProperty("vega.must.server.port"));
-    //private String host = UserPreferences.get("Must", "ip");
-    //private int portInt = UserPreferences.getInt("Must", "port");
     private String port = (new Integer(portInt)).toString();
     private String repository = Properties.getProperty("vega.must.server.repository");
-    //private String repository = UserPreferences.get("Must", "repository");
     private String user = Properties.getProperty("vega.must.server.user");
-    //private String user = UserPreferences.get("Must", "user");
     private String password = Properties.getProperty("vega.must.server.password");
-    //private String password = UserPreferences.get("Must", "password");
     private String url = "jdbc:mysql://" + host + ":" + port + "/" + repository + "?user=" + user
     + "&password=" + password;
     
-    //private static final Logger LOGGER = Logger.getLogger(MustView.class.getName());
 
     /**
      * The ID for this view
@@ -140,7 +125,7 @@ public class MustView extends JPanel implements Viewable,PreferenceListener {
 	JLabel paramLabel = new JLabel("Parameter name:");
 	paramLabel.setMaximumSize(labelDim);
 	paramLabel.setMinimumSize(labelDim);
-	paramBox = new JComboBox();
+	paramBox = new JComboBox<String>();
 	paramBox.setEditable(true);
 	paramBox.setMaximumSize(boxDim);
 	paramBox.setMinimumSize(boxDim);
@@ -419,24 +404,12 @@ public class MustView extends JPanel implements Viewable,PreferenceListener {
     public void preferenceChanged(PreferenceChangedEvent event){
         host = Properties.getProperty("must.ip");
         portInt = Integer.parseInt(Properties.getProperty("must.port"));
-        //private String host = UserPreferences.get("Must", "ip");
-        //private int portInt = UserPreferences.getInt("Must", "port");
         port = (new Integer(portInt)).toString();
         repository = Properties.getProperty("must.repository");
-        //private String repository = UserPreferences.get("Must", "repository");
         user = Properties.getProperty("must.user");
-        //private String user = UserPreferences.get("Must", "user");
         password = Properties.getProperty("must.password");
-        //private String password = UserPreferences.get("Must", "password");
         url = "jdbc:mysql://" + host + ":" + port + "/" + repository + "?user=" + user
         + "&password=" + password;
 
-    	/*host = UserPreferences.get("Must", "ip");
-    	portInt = UserPreferences.getInt("Must", "port");
-    	port = (new Integer(portInt)).toString();
-    	repository = UserPreferences.get("Must", "repository");
-    	user = UserPreferences.get("Must", "user");
-    	password = UserPreferences.get("Must", "password");
-    	url = "jdbc:mysql://" + host + ":" + port + "/" + repository + "?user=" + user+ "&password=" + password;*/
     }
 }

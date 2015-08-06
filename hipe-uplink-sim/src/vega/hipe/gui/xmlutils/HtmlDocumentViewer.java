@@ -60,7 +60,6 @@ public class HtmlDocumentViewer extends AbstractVariableEditorComponent<HtmlDocu
 		init();
 	}
 	public void init(){
-        // create jeditorpane
         JEditorPane jEditorPane = new JEditorPane();
         
         // make it read-only
@@ -101,7 +100,7 @@ public class HtmlDocumentViewer extends AbstractVariableEditorComponent<HtmlDocu
 	            }
 	          }
 	          else {
-	            //itlbar.setText("You canceled.");
+
 	          }
 	        }
 
@@ -120,7 +119,6 @@ public class HtmlDocumentViewer extends AbstractVariableEditorComponent<HtmlDocu
     }
 	
 	public Icon getComponentIcon() {
-		// TODO Auto-generated method stub
         try {
             URL resource = PtrXmlEditor.class.getResource(IconResources.HUS_ICON);
             BufferedImage imageIcon = ImageIO.read(resource);

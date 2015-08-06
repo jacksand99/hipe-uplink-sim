@@ -1,22 +1,3 @@
-/*
- * This file is part of Herschel Common Science System (HCSS).
- * Copyright 2001-2011 Herschel Science Ground Segment Consortium
- *
- * HCSS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- *
- * HCSS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General
- * Public License along with HCSS.
- * If not, see <http://www.gnu.org/licenses/>.
- */
-/* pbalm - Mar 25, 2011 */
 package vega.help;
 
 import herschel.ia.gui.kernel.AbstractSiteAction;
@@ -49,7 +30,6 @@ import vega.hipe.logging.VegaLog;
 public final class HelpAction extends AbstractSiteAction {
     
     private static final long serialVersionUID = 1L;
-    //private static final Logger LOG = Logger.getLogger(HelpAction.class.getName());
     
     private static final String HELP_HOME = "http://www.google.com";
     private static final String MENU_ITEM_LABEL = "Help for Hipe Uplink Sim";
@@ -70,18 +50,11 @@ public final class HelpAction extends AbstractSiteAction {
 	
 	String msg = null;
         if (Desktop.isDesktopSupported()) { 
-        	//HelpViewer hv = new HelpViewer();
-        	//URI uri = HelpAction.getHelpUri();
-        	/*if (uri!=null){
-        		Desktop.getDesktop().browse(uri);
-        	}*/
             try {
             	URL helpurl = ObjectUtil.getClass("vega.uplink.commanding.Por").getResource("/doc/index.html");
             	SimpleSwingBrowser browser=new SimpleSwingBrowser();
         		browser.run();
         		browser.loadURL(helpurl.toString());
-                //Desktop.getDesktop().browse(URI.create(HELP_HOME));
-                //Desktop.getDesktop().browse(uri);
             } catch (Exception e) {
                 msg = "Could not open doc/index.html:\n" + e.getMessage();
             }
@@ -100,11 +73,8 @@ public final class HelpAction extends AbstractSiteAction {
     		SimpleSwingBrowser browser=new SimpleSwingBrowser();
     		browser.run();
     		browser.loadURL(ObjectUtil.getClass("vega.help.HelpAction").getResource("/vega/doc/index.html").toString());
-    		//browser.run();
 			System.out.println(ObjectUtil.getClass("vega.help.HelpAction").getResource("/vega/doc/index.html").toURI());
-			//HelpViewer hv = new HelpViewer();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }

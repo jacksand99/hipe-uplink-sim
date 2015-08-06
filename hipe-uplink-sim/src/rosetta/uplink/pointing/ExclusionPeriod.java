@@ -1,11 +1,6 @@
 package rosetta.uplink.pointing;
 
-import herschel.ia.dataset.Column;
 import vega.uplink.pointing.exclusion.AbstractExclusion;
-import vega.uplink.pointing.exclusion.Period;
-import herschel.ia.dataset.StringParameter;
-import herschel.ia.dataset.TableDataset;
-import herschel.ia.numeric.String1d;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +9,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Vector;
 import java.util.regex.Pattern;
 
 
@@ -24,11 +18,6 @@ import java.util.regex.Pattern;
 
 
 import vega.uplink.DateUtil;
-//import vega.uplink.planning.period.Period;
-//import vega.uplink.commanding.GsPass;
-import vega.uplink.pointing.PointingBlock;
-
-//import vega.uplink.commanding.GsPass;
 
 public class ExclusionPeriod extends AbstractExclusion{
 	public static void main(String args[]){
@@ -36,7 +25,6 @@ public class ExclusionPeriod extends AbstractExclusion{
 			ExclusionPeriod periods = readFromFile("/Users/jarenas 1/Rosetta/hack 11/EXCL_DL_004_01____H__00076.evf");
 			System.out.println(periods);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}	
@@ -84,7 +72,7 @@ public class ExclusionPeriod extends AbstractExclusion{
 		
 	}
 	
-	private static String[] readFile(String file) throws IOException, ParseException{
+	protected static String[] readFile(String file) throws IOException, ParseException{
 		BufferedReader br = null;
 		String line = "";
 		String[] result;
@@ -120,7 +108,7 @@ public class ExclusionPeriod extends AbstractExclusion{
 		return result;
 	}
 	
-	private static String[] removeComments(String[] sourceLines){
+	protected static String[] removeComments(String[] sourceLines){
 		java.util.Vector<String> lines=new java.util.Vector<String>();
 		String[] result;
 		
@@ -141,7 +129,7 @@ public class ExclusionPeriod extends AbstractExclusion{
 	}
 
 	
-	private static String[] removeBreaks(String[] sourceLines){
+	protected static String[] removeBreaks(String[] sourceLines){
 		java.util.Vector<String> lines=new java.util.Vector<String>();
 		String[] result;
 		for (int i=0;i<sourceLines.length;i++){
@@ -161,7 +149,7 @@ public class ExclusionPeriod extends AbstractExclusion{
 		return result;
 	}
 	
-	private static String[] removeSpaces(String[] sourceLines){
+	protected static String[] removeSpaces(String[] sourceLines){
 		java.util.Vector<String> lines=new java.util.Vector<String>();
 		String[] result;
 		for (int i=0;i<sourceLines.length;i++){
@@ -236,55 +224,6 @@ public class ExclusionPeriod extends AbstractExclusion{
 
 
 	
-	/*class Period{
-		Date start;
-		Date end;
-		String type;
-		
-		public Date getStartDate(){
-			return start;
-		}
-		
-		public Date getEndDate(){
-			return end;
-		}
-		
-		public Period(Date start, Date end,String type){
-			this.start=start;
-			this.end=end;
-			this.type=type;
-		}
-		
-		public String toString(){
-			return type+": "+DateUtil.dateToZulu(start)+" - "+DateUtil.dateToZulu(end);
-		}
-		
-		public String toHtmlRow(){
-			return "<tr><td>"+type+"</td><td>"+DateUtil.dateToZulu(start)+"</td><td>"+DateUtil.dateToZulu(end)+"</td></tr>";
-			
-		}
-		
-		public String toXml(){
-			return toXml(0);
-		}
-		
-		public String toXml(int indent){
-			String tag="exclusion";
-			String iS="";
-			for (int i=0;i<indent;i++){
-				iS=iS+"\t";
-			}
-			String result="";
-			result = result+iS+"<"+tag+" type='"+type+"'>\n";
-			
-			result=result+iS+"\t<startTime>"+DateUtil.dateToZulu(this.getStartDate())+"</startTime>\n";
-			result=result+iS+"\t<endTime>"+DateUtil.dateToZulu(this.getEndDate())+"</endTime>\n";
-
-			result = result+iS+"</"+tag+">\n";
-			return result;
-		}
-		
-	}*/
 }
 
 

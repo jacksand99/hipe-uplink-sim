@@ -18,7 +18,6 @@ public class RosettaAttitudeGenerator extends AttitudeGeneratorFDImpl{
 		super( ptr, pdfm, eta, zeta, epsilon);
 	}
 	public RosettaAttitudeGenerator(Ptr ptr,Pdfm pdfm) throws AttitudeGeneratorException{
-			//this(ptr,pdfm,getMtpNum(ptr));
 		super(ptr,pdfm);
 	}
 	public RosettaAttitudeGenerator(Ptr ptr,Pdfm pdfm,String mtpNum,ErrorBoxPoint point) throws AttitudeGeneratorException{

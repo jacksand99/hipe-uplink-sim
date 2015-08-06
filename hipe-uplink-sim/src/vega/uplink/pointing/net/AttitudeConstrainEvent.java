@@ -2,7 +2,6 @@ package vega.uplink.pointing.net;
 
 import java.util.Date;
 
-import vega.uplink.pointing.EvtmEvent;
 
 public class AttitudeConstrainEvent implements Comparable<AttitudeConstrainEvent> {
 	public String type;
@@ -30,7 +29,6 @@ public class AttitudeConstrainEvent implements Comparable<AttitudeConstrainEvent
 	}
 	public int compareTo(AttitudeConstrainEvent o) {
 		return this.start.compareTo(o.start);
-		//return 0;
 	}
 
 }

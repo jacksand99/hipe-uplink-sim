@@ -30,8 +30,6 @@ import javax.swing.text.html.StyleSheet;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-//import vega.uplink.commanding.gui.SimulationView;
-//import vega.uplink.pointing.gui.PtrXmlEditor;
 
 /**
  * A complete Java class that demonstrates how to create an HTML viewer with styles,
@@ -98,13 +96,9 @@ public class HtmlEditorKit extends JFrame
   public void saveReportToFile(String fileName) throws FileNotFoundException, UnsupportedEncodingException{
 	  String text=new String(htmlString);
 	  text=text.replace("<html>", "<html>\n"+getRulesHTML());
-		//try{
-			PrintWriter writer = new PrintWriter(fileName, "UTF-8");
-			writer.print(text);
-			writer.close();
-		//}catch (Exception e){
-			//e.printStackTrace();
-		//}
+	  PrintWriter writer = new PrintWriter(fileName, "UTF-8");
+	  writer.print(text);
+	  writer.close();
   }
   public HtmlEditorKit(HtmlDocument doc){
 	  this(doc.getTitle(),doc.getHtmlString());
@@ -140,18 +134,6 @@ public class HtmlEditorKit extends JFrame
         for (int i=0;i<rules.length;i++){
         	styleSheet.addRule(rules[i]);
         }
-        /*styleSheet.addRule("body {color:#000; font-family:times; margin: 4px; }");
-        styleSheet.addRule("h1 {color: blcak;}");
-        styleSheet.addRule("h2 {color: black;}");
-        styleSheet.addRule("pre {font : 10px monaco; color : black; background-color : #fafafa; }");
-        styleSheet.addRule("table.gridtable {font-family: verdana,arial,sans-serif; font-size:11px; color:#333333; border-width: 1px; border-color: #666666; border-collapse: collapse;}");
-        styleSheet.addRule("table.gridtable th {border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #dedede;}");
-        styleSheet.addRule("table.gridtable td {border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;}");
-*/
-        // create some simple html as a string
- 
-        
-        // create a document, set it on the jeditorpane, then add the html
         Document doc = kit.createDefaultDocument();
         jEditorPane.setDocument(doc);
         jEditorPane.setText(htmlString);
@@ -162,7 +144,6 @@ public class HtmlEditorKit extends JFrame
 	        public void actionPerformed(ActionEvent ae) {
 	          JFileChooser chooser = new JFileChooser();
 	          chooser.setMultiSelectionEnabled(false);
-	          //chooser.setCurrentDirectory(new File(defaultDirectory));
 	          int option = chooser.showSaveDialog(HtmlEditorKit.this);
 	          if (option == JFileChooser.APPROVE_OPTION) {
 	            File sf = chooser.getSelectedFile();
@@ -173,19 +154,12 @@ public class HtmlEditorKit extends JFrame
 						    e.getMessage(),
 						    "Error",
 						    JOptionPane.ERROR_MESSAGE);
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 
 	            }
-	            //ptrFile=sf;
-	            //defaultDirectory=ptrFile.getParent();
-	            //refreshLabels();
-	            //String filelist="Nothing";
-	            //filelist=sf.getName();
-	            //itlbar.setText("ITL file: " + filelist);
 	          }
 	          else {
-	            //itlbar.setText("You canceled.");
+
 	          }
 	        }
 
@@ -195,18 +169,12 @@ public class HtmlEditorKit extends JFrame
         buttonsPanel.add(Box.createHorizontalGlue());
         HtmlEditorKit.this.setTitle(title);
         // now add it all to a frame
-        //JFrame j = new JFrame(title);
         HtmlEditorKit.this.getContentPane().add(buttonsPanel, BorderLayout.NORTH);
         HtmlEditorKit.this.getContentPane().add(scrollPane, BorderLayout.CENTER);
-
-        // make it easy to close the application
-        //j.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         // display the frame
         HtmlEditorKit.this.setSize(new Dimension(600,600));
         
-        // pack it, if you prefer
-        //j.pack();
         
         // center the jframe, then make it visible
         HtmlEditorKit.this.setLocationRelativeTo(null);

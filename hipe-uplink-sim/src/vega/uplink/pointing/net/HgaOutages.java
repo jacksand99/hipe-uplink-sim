@@ -1,11 +1,10 @@
 package vega.uplink.pointing.net;
-import herschel.ia.dataset.TableDataset;
+
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import vega.uplink.DateUtil;
-import vega.uplink.pointing.PointingBlock;
 public class HgaOutages {
 	private Date startDate;
 	private Date endDate;

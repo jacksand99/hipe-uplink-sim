@@ -272,28 +272,6 @@ public class Orcd extends TableDataset{
 		array[5]=notAllowed;
 		this.addRow(array);
 	}
-	/*public void writeToFile(String file){
-		try{
-			PrintWriter writer = new PrintWriter(file, "UTF-8");
-			writer.print("#Mode,Cons,transition via,allowed,not allowed\n");
-			int size=this.getRowCount();
-			for (int i=0;i<size;i++){
-				List<Object> row = this.getRow(i);
-				String mode = (String) row.get(INDEX_MODE);
-				String power = (String) row.get(INDEX_POWER);
-				String sequence = (String) row.get(INDEX_SEQUENCE);
-				String offset = (String) row.get(INDEX_OFFSET);
-				String allowed = (String) row.get(INDEX_ALLOWED);
-				String notAllowed = (String) row.get(INDEX_NOT_ALLOWED);
-				writer.print(mode+","+power+","+sequence+"+"+offset+","+allowed+","+notAllowed+"\n");
-
-			}
-			//writer.print(PORtoITL(POR));
-			writer.close();
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-	}*/
 	/**
 	 * Write the ORCD representation to a XML file
 	 * @param file full path of the target XML file
@@ -411,75 +389,6 @@ public class Orcd extends TableDataset{
 	}
 
 	
-	/*private static Orcd readORCDBuffer(BufferedReader br){
-		Orcd result= new Orcd();
-		String line = "";
-		String cvsSplitBy = ",";
-		try {
-			 
-			while ((line = br.readLine()) != null) {
-				if (!line.startsWith("#")){
-					String[] fields = line.split(cvsSplitBy);
-					String[] cArray=fields[2].split(" ");
-					for (int i=0;i<cArray.length;i++){
-						String seq="";
-						String off="00:00:00";
-						try{
-							String[] temp=cArray[i].split("\\+");
-							seq=temp[0];
-							if (temp.length==2){
-								off=temp[1];
-							}
-						}catch (Exception e){
-								e.printStackTrace();
-								seq=cArray[i];
-								off="00:00:00";
-						}
-		
-						result.addRow(fields[0], fields[1], seq, off, fields[3], fields[4]);
-					}
-				}
-			}
-	 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	 
-		System.out.println(result);
-		return result;
-
-
-	}*/
-	/*private static Orcd readORCDfromJar(){
-		
-		InputStream is = ObjectUtil.getClass("vega.uplink.commanding.Por").getResourceAsStream("/mib/orcd.csv");
-		InputStreamReader isr = new InputStreamReader(is);
-		BufferedReader br = new BufferedReader(isr);
-		return readORCDBuffer(br);
-	}
-	
-	private static Orcd readORCDfile(String csvFile){
-		try{
-			return readORCDBuffer(new BufferedReader(new FileReader(csvFile)));
-		}catch(Exception e){
-			IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
-			e.initCause(e);
-			throw(iae);
-			//e.printStackTrace();
-			//return new Orcd();
-		}
-	  
-	}*/
 	
 	private long getOffsetSeconds(String sOffset){
 		long offset=0;

@@ -73,12 +73,4 @@ public class SimpleWebServer extends Thread {
 			}
 		}
 	}
-	/*public static void main(String[] args) {
-		try {
-			new SimpleWebServer(new File("./"), 80);
-		}
-		catch (Exception e) {
-			System.out.println(e);
-		}
-	}*/
 }

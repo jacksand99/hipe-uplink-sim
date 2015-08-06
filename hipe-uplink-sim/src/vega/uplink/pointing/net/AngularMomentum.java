@@ -57,11 +57,8 @@ public class AngularMomentum {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
 		 
-			//optional, but recommended
-			//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
 			doc.getDocumentElement().normalize();
 		 
-			//System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
 			NodeList nListHeader = doc.getElementsByTagName("ANGMOM");
 			Node nBody =nListHeader.item(0);
 			if (nBody==null){
@@ -89,21 +86,15 @@ public class AngularMomentum {
 					}
 				}
 				result.addInterval(interval);
-				//System.out.println(interval);
-				
-				//PdfmDirVector bore=PdfmDirVector.readFrom(nSegment);
-				//result.addChild(bore);
 			}
 
 			
 		    } catch (Exception e) {
 		    	e.printStackTrace();
 		    	LOGGER.severe("Could not read Angular Momentum:"+e.getMessage());
-		    	//return result;
 		    	IllegalArgumentException iae = new IllegalArgumentException("Colud not read Angular Momentum:"+e.getMessage());
 		    	iae.initCause(e);
 		    	throw(iae);
-		    	//throw(e);
 		    }
 		return result;
 	}
@@ -114,13 +105,8 @@ public class AngularMomentum {
 
 		try {
 			 
-			//Document doc = dBuilder.parse(fXmlFile);
-		 
-			//optional, but recommended
-			//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
 			doc.getDocumentElement().normalize();
 		 
-			//System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
 			NodeList nListHeader = doc.getElementsByTagName("ANGMOM");
 			Node nBody =nListHeader.item(0);
 			if (nBody==null){
@@ -148,28 +134,19 @@ public class AngularMomentum {
 					}
 				}
 				result.addInterval(interval);
-				//System.out.println(interval);
-				
-				//PdfmDirVector bore=PdfmDirVector.readFrom(nSegment);
-				//result.addChild(bore);
 			}
 
 			
 		    } catch (Exception e) {
 		    	e.printStackTrace();
 		    	LOGGER.severe("Could not read Angular Momentum:"+e.getMessage());
-		    	//return result;
 		    	IllegalArgumentException iae = new IllegalArgumentException("Colud not read Angular Momentum:"+e.getMessage());
 		    	iae.initCause(e);
 		    	throw(iae);
-		    	//throw(e);
 		    }
 		return result;
 	}
 	
-	/*public static void Main(String[] args){
-		readFromFile("/Users/jarenas 1/Downloads/hcss.dp.core-13.0.2361/fddata/1407222816165_agm.txt");
-	}*/
 
 	public class AMInterval implements Comparable<AMInterval>{
 		TreeSet<AMIntervalLevel> levels;
@@ -212,8 +189,6 @@ public class AngularMomentum {
 		@Override
 		public int compareTo(AMInterval o) {
 			return this.startTime.compareTo(o.getStartTime());
-			// TODO Auto-generated method stub
-			//return 0;
 		}
 		
 		public String toString(){
@@ -246,7 +221,6 @@ public class AngularMomentum {
 		
 		public int compareTo(AMIntervalLevel o) {
 			return this.time.compareTo(o.getTime());
-			//return 0;
 		}
 		
 		public String toString(){

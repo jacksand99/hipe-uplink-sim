@@ -1,7 +1,6 @@
 package vega.hipe.preferences;
 
 import java.awt.Dimension;
-import java.util.ArrayList;
 
 import javax.swing.*;
 
@@ -11,7 +10,6 @@ import herschel.ia.gui.kernel.prefs.handler.FilePreferenceHandler;
 import herschel.ia.gui.kernel.prefs.handler.OptionPreferenceHandler;
 import herschel.ia.gui.kernel.prefs.handler.StringPreferenceHandler;
 import herschel.ia.gui.kernel.util.component.FilePathPanel;
-import herschel.share.swing.*;
 import herschel.share.util.Configuration;
 
 import javax.swing.GroupLayout.*;

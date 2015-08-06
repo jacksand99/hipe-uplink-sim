@@ -68,7 +68,6 @@ public class XMLView extends PlainView {
         lexer.setString(str);
         lexer.reset();
         
-        // read until p0
         int pos = token.getStartOffset();
         int ctx = token.getContext();
         int lastCtx = ctx;

@@ -5,9 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-//import java.io.OutputStream;
-//import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -15,21 +12,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
-//import java.util.Iterator;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -39,12 +21,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-//import javax.xml.transform.OutputKeys;
-//import javax.xml.transform.Transformer;
-//import javax.xml.transform.TransformerException;
-//import javax.xml.transform.TransformerFactory;
-//import javax.xml.transform.dom.DOMSource;
-//import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -57,7 +33,6 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
-//import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 

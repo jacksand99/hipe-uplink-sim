@@ -6,7 +6,6 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -20,22 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
-//import org.esa.rsgs.fdsw.net.FDSWHttpClient;
-
-
-
-
-
-
-
-
-
-
-
-
-
-import javax.swing.ListModel;
-
 import vega.hipe.gui.xmlutils.HtmlDocument;
 import vega.hipe.gui.xmlutils.HtmlEditorKit;
 import vega.hipe.mail.SendEmail;
@@ -48,23 +31,11 @@ import vega.uplink.pointing.net.AttitudeGeneratorFDImpl;
 import vega.uplink.pointing.net.ErrorBoxPoint;
 import vega.uplink.pointing.net.FDClient;
 import vega.uplink.track.Fecs;
-import herschel.ia.gui.apps.modifier.AbstractModifier;
-//import herschel.ia.gui.apps.modifier.JFilePathModifier;
-import herschel.ia.gui.apps.modifier.JListModifier;
-import herschel.ia.gui.apps.modifier.ListEditor;
 import herschel.ia.gui.apps.modifier.Modifier;
 import herschel.ia.gui.kernel.ParameterValidator;
 import herschel.ia.gui.kernel.VariableSelection;
-//import herschel.ia.gui.kernel.util.field.FileSelectionMode;
 import herschel.ia.task.Task;
 import herschel.ia.task.TaskParameter;
-//import vega.uplink.commanding.Fecs;
-//import vega.uplink.commanding.Por;
-//import vega.uplink.commanding.Simulation;
-//import vega.uplink.commanding.SimulationContext;
-//import vega.uplink.pointing.Pdfm;
-//import vega.uplink.pointing.Ptr;
-import herschel.share.util.ObjectUtil;
 
 
 
@@ -74,7 +45,7 @@ public class RosettaPtrCheckTask extends Task {
 	public RosettaPtrCheckTask(){
 		
 		super("rosettaPtrCheckTask");
-		List<String> trajectories = Properties.getList(FDClient.TREJECTORIES_PROPERTY);
+		//List<String> trajectories = Properties.getList(FDClient.TREJECTORIES_PROPERTY);
 
 		setDescription("Check Rosetta PTR againts PTSL, PDFM and FD server ");
 		TaskParameter parameter = new TaskParameter("ptr", Ptr.class);
@@ -98,6 +69,11 @@ public class RosettaPtrCheckTask extends Task {
 		excl.setType(TaskParameter.IN);
 		excl.setMandatory(false);
 		excl.setDescription("The Exclusion Periods file used"); //6
+
+		TaskParameter lander = new TaskParameter("landerVis", LanderVisibility.class);
+		lander.setType(TaskParameter.IN);
+		lander.setMandatory(false);
+		lander.setDescription("The Lander Visibility Periods file used"); //6
 
 		//TaskParameter trajectory = new TaskParameter("trajectory", String.class);
         TaskParameter trajectory = new TaskParameter("trajectory", String.class);
@@ -146,7 +122,7 @@ public class RosettaPtrCheckTask extends Task {
         addTaskParameter(pdfm);
         addTaskParameter(fecs);
         addTaskParameter(excl);
-
+        addTaskParameter(lander);
         addTaskParameter(trajectory);
         addTaskParameter(eta);
         addTaskParameter(zeta);
@@ -170,6 +146,8 @@ public class RosettaPtrCheckTask extends Task {
 		String epsilon=(String) getParameter("epsilon").getValue();
 		ExclusionPeriod excl = (ExclusionPeriod) getParameter("excl").getValue();
 		if (excl==null) excl=new ExclusionPeriod();
+		LanderVisibility lander=(LanderVisibility) getParameter("landerVis").getValue();
+		if (lander==null) lander=new LanderVisibility();
 		ErrorBoxPoint[] errorBoxPoints;
 		boolean useDefaultPoints=(Boolean) getParameter("defaultPoints").getValue();
 		if (!useDefaultPoints){
@@ -311,9 +289,10 @@ public class RosettaPtrCheckTask extends Task {
 
 	        	        if (fecs==null){
 	        	        	message=message+"</table>";
-	        	        	message=message+RosettaPtrChecker.checkPtrHTML(ptr, ptsl, pdfm,ag,excl);
+	        	        	//message=message+RosettaPtrChecker.checkPtrHTML(ptr, ptsl, pdfm,ag,excl);
+	        	        	message=message+RosettaPtrChecker.checkPtrHTML(ptr, ptsl, pdfm,null,ag,excl,lander);
 	        	        }
-	        	        else message=message+"<tr><td>FECS</td><td>"+fecs.getName()+"</td></tr></table>"+RosettaPtrChecker.checkPtrHTML(ptr, ptsl, pdfm,fecs,ag,excl);
+	        	        else message=message+"<tr><td>FECS</td><td>"+fecs.getName()+"</td></tr></table>"+RosettaPtrChecker.checkPtrHTML(ptr, ptsl, pdfm,fecs,ag,excl,lander);
         	        }catch (Exception e2){
         	        	message=message+"<table class=\"gridtable\">";
             	        message=message+""+
@@ -345,26 +324,6 @@ public class RosettaPtrCheckTask extends Task {
  	}
 	
 	public Map<String,Modifier> getCustomModifiers(){
-		/*DefaultComboBoxModel model = new DefaultComboBoxModel();
-            model.addElement("PERCENT");
-            model.addElement("Median Filter");
-		System.out.println(Properties.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.trajectories"));
-		List<String> trajectories = Properties.getList("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.trajectories");
-		Iterator<String> it = trajectories.iterator();
-		while (it.hasNext()){
-			model.addElement(it.next());
-		}
-		//String[] tra=new String[trajectories.size()];
-		//tra=trajectories.toArray(tra);
-		//java.util.Vector<String> vector=new java.util.Vector<String>(trajectories);
-		//if (trajectories!=null) System.out.println(trajectories.size());
-		//if (trajectories==null) System.out.println("Trajectory is null");
-		HashMap<String,Modifier> result=new HashMap<String,Modifier>();
-		//JListTrajectories listModifier=new JListTrajectories(tra);
-		JListModifier listModifier = new JListModifier(new LinkedHashSet<String>(trajectories));
-		//filePathModifier.setValue(Properties.getProperty(Properties.DEFAULT_PLANNING_DIRECTORY));
-		result.put("trajectory", listModifier);
-		return result;*/
 		JComboModifier modifier = new JComboModifier();
 		HashMap<String,Modifier> result=new HashMap<String,Modifier>();
 		result.put("trajectory", modifier);
@@ -400,7 +359,6 @@ public class RosettaPtrCheckTask extends Task {
             }), BorderLayout.SOUTH);
             this.setContentPane(pnl);
             this.setTitle("PTR Errors");
-    		//this.add(new JLabel(messages));
     		this.pack();
     	}
     }

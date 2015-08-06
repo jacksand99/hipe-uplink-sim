@@ -1,7 +1,5 @@
 package vega.hipe.git;
 
-import static herschel.ia.gui.kernel.menus.Insert.MAIN;
-import static herschel.ia.gui.kernel.menus.Insert.Scheme.MENU;
 import herschel.ia.gui.kernel.AbstractSiteAction;
 import herschel.ia.gui.kernel.SiteAction;
 import herschel.ia.gui.kernel.menus.AbstractActionMaker;
@@ -21,7 +19,6 @@ import javax.swing.ImageIcon;
 
 
 import vega.IconResources;
-//import vega.help.HelpAction;
 import vega.uplink.commanding.gui.SequenceEditor;
 
 public class GitMenuFactory extends AbstractActionMaker {
@@ -61,11 +58,9 @@ public class GitMenuFactory extends AbstractActionMaker {
 			try {
 				HipeGit.getInstance().gitPull();
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				IllegalArgumentException iae = new IllegalArgumentException(e1.getMessage());
 				iae.initCause(e1);
 				throw(iae);
-				//e1.printStackTrace();
 			} 
 	    }
 	};
@@ -81,11 +76,9 @@ public class GitMenuFactory extends AbstractActionMaker {
 		try {
 			HipeGit.getInstance().gitPush();
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			IllegalArgumentException iae = new IllegalArgumentException(e1.getMessage());
 			iae.initCause(e1);
 			throw(iae);
-			//e1.printStackTrace();
 		} 
     }
 };
@@ -101,11 +94,9 @@ public void actionPerformed(ActionEvent e) {
 	try {
 		HipeGit.getInstance().gitClone();
 	} catch (Exception e1) {
-		// TODO Auto-generated catch block
 		IllegalArgumentException iae = new IllegalArgumentException(e1.getMessage());
 		iae.initCause(e1);
 		throw(iae);
-		//e1.printStackTrace();
 	} 
 }
 };
@@ -120,13 +111,10 @@ AbstractSiteAction gitTunnel = new AbstractSiteAction(SiteAction.Style.AS_PUSH, 
 public void actionPerformed(ActionEvent e) {
 	try {
 		HipeGitSshTunnel.startTunnel();
-		//HipeGit.getInstance().gitClone();
 	} catch (Exception e1) {
-		// TODO Auto-generated catch block
 		IllegalArgumentException iae = new IllegalArgumentException(e1.getMessage());
 		iae.initCause(e1);
 		throw(iae);
-		//e1.printStackTrace();
 	} 
 }
 };

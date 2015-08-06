@@ -2,7 +2,6 @@ package vega.uplink.commanding;
 
 import herschel.ia.numeric.Float1d;
 import herschel.ia.numeric.Long1d;
-import java.lang.reflect.Constructor;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
@@ -17,25 +16,7 @@ import vega.uplink.track.GsPass;
 public class SsmmSimulator {
 	java.util.HashMap<String,InstrumentSimulator> instrumentSimulators;
 	SimulationContext simulationContext;
-	private static String instance;
-	/*public static void registerSsmmSimulatorInstance(String impl){
-		instance=impl;
-	}
-	public static SsmmSimulator getRegisteredSsmmSimulator(SimulationContext context){
-		Constructor c;
-		try {
-			c = Class.forName(instance).getConstructor(SimulationContext.class);
-			SsmmSimulator actualSimulator;
-			actualSimulator = (SsmmSimulator) c.newInstance(context);
 
-			return actualSimulator;
-
-		} catch (Exception e) {
-			IllegalArgumentException iae = new IllegalArgumentException("Could not get registered SSMM simulator: "+e.getMessage());
-			iae.initCause(e);
-			throw(iae);
-		} 
-	}*/
 	private void init(){
 		instrumentSimulators=new java.util.HashMap<String,InstrumentSimulator>();
 		

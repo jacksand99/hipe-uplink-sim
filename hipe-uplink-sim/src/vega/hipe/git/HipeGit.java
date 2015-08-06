@@ -1,14 +1,11 @@
 package vega.hipe.git;
 import herschel.ia.gui.apps.components.util.PopupMessageHandler;
-import herschel.ia.gui.kernel.menus.ActionBars;
 import herschel.share.interpreter.InterpreterUtil;
-import herschel.share.util.Configuration;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -25,9 +22,6 @@ import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.CredentialsProviderUserInfo;
 import org.eclipse.jgit.transport.JschConfigSessionFactory;
 import org.eclipse.jgit.transport.OpenSshConfig;
-import org.eclipse.jgit.transport.OpenSshConfig.Host;
-import org.eclipse.jgit.transport.PushResult;
-//import org.eclipse.jgit.transport.
 import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.transport.URIish;
 
@@ -36,7 +30,6 @@ import com.jcraft.jsch.UserInfo;
 
 import vega.hipe.logging.VegaLog;
 import vega.uplink.Properties;
-import vega.uplink.track.Fecs;
 
 public class HipeGit {
     private String localPath;
@@ -59,17 +52,14 @@ public class HipeGit {
     public static boolean TUNNEL=false;
 
     private static HipeGit instance;
-    //private static final Logger LOG = Logger.getLogger(Fecs.class.getName());
     
     protected HipeGit(){
     	try {
 			init();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			IllegalArgumentException iae = new IllegalArgumentException("Could not init git:"+e.getMessage());
 			iae.initCause(e);
 			throw iae;
-			//e.printStackTrace();
 		}
     }
     
@@ -122,7 +112,6 @@ public class HipeGit {
 
         	        @Override
         	        public boolean get(URIish uri, CredentialItem... items) throws UnsupportedCredentialItem {
-        	        	//uri.setPort(n)
         	  	      try{
         		    	  password=Properties.getProperty(PASSWORD_PROPERTY);
         	  	      }catch (Exception e){
@@ -176,8 +165,6 @@ public class HipeGit {
 
     
     public void gitClone() throws IOException, GitAPIException {
-        /*Git.cloneRepository().setURI(remotePath)
-                .setDirectory(new File(localPath)).call();*/
     	(new Thread(new GitCloneRunnable())).start();
     }
 
@@ -210,7 +197,6 @@ public class HipeGit {
 
     
     public void gitPull() throws IOException, GitAPIException {
-        //git.pull().call();
     	(new Thread(new GitPullRunnable())).start();
     }
     

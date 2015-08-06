@@ -5,17 +5,14 @@
  */
 package vega.hipe.gui.xmlutils;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
 public class HtmlDocument extends XmlData{
-	//String htmlString;
 	String title;
     String[] rules={"body {color:#000; font-family:times; margin: 4px; }",
       		"h1 {color: blcak;}",
@@ -50,13 +47,9 @@ public class HtmlDocument extends XmlData{
   public void saveReportToFile(String fileName) throws FileNotFoundException, UnsupportedEncodingException{
 	  String text=new String(getXmlData());
 	  text=text.replace("<html>", "<html>\n"+getRulesHTML());
-		//try{
 			PrintWriter writer = new PrintWriter(fileName, "UTF-8");
 			writer.print(text);
 			writer.close();
-		//}catch (Exception e){
-			//e.printStackTrace();
-		//}
   }
   
   public void setHtmlString(String htmlString){

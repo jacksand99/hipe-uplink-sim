@@ -1,17 +1,11 @@
 package vega.uplink.pointing.net;
 
-import herschel.ia.numeric.Long1d;
-import herschel.share.fltdyn.math.Attitude;
-import herschel.share.fltdyn.math.Quaternion;
-import herschel.share.fltdyn.time.*;
-import vega.hipe.FileUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,16 +16,16 @@ import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
-import org.apache.commons.httpclient.HttpClient;
+import herschel.share.fltdyn.math.Attitude;
+import herschel.share.fltdyn.math.Quaternion;
+import herschel.share.fltdyn.time.*;
 
-import rosetta.uplink.pointing.RosettaDistance;
+import vega.hipe.FileUtil;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.pointing.AttitudeGenerator;
 import vega.uplink.pointing.Evtm;
-import vega.uplink.pointing.EvtmEvents.*;
 import vega.uplink.pointing.AttitudeMap;
-import vega.uplink.pointing.AttitudeUtils;
 import vega.uplink.pointing.Pdfm;
 import vega.uplink.pointing.PointingBlock;
 import vega.uplink.pointing.Ptr;
@@ -51,8 +45,11 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 	public static long STEP=10000;
 	public static boolean DELETE_TEMP_FILES=true;
 	private static final Logger LOG = Logger.getLogger(AttitudeGeneratorFDImpl.class.getName());
-	
-	//Evtm evtm;
+	private String trajectory;
+
+	public String getTrajectory(){
+		return trajectory;
+	}
 	public AttitudeGeneratorFDImpl(Ptr ptr,Pdfm pdfm,ErrorBoxPoint point) throws AttitudeGeneratorException{
 		this(ptr,pdfm,point.getEta(),point.getZeta(),point.getEpsilon());
 	}
@@ -60,7 +57,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 		this(ptr,pdfm,getMtpNum(ptr),eta,zeta,epsilon);
 	}
 	public AttitudeGeneratorFDImpl(Ptr ptr,Pdfm pdfm) throws AttitudeGeneratorException{
-			//this(ptr,pdfm,getMtpNum(ptr));
 		this(ptr,pdfm,getMtpNum(ptr),null,null,null);
 	}
 	public static String getMtpNum(Ptr ptr) throws AttitudeGeneratorException{
@@ -84,11 +80,9 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 			directory = FileUtil.createTempDir("fd_temp_", "fd");
 			dir=directory.getAbsolutePath()+"/";
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			AttitudeGeneratorException age = new AttitudeGeneratorException("Can not create temp dir to download the fd files",e1);
 			LOG.throwing("AttitudeGeneratorFDImpl", "constructor", age);
 			throw(age);
-			//e1.printStackTrace();
 		}
 		String name=""+new java.util.Date().getTime();
 		File out = new File(dir+name+"_att.txt");
@@ -97,7 +91,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 	}
 
 	public static void getAttitudeFile(Ptr ptr,Pdfm pdfm,String mtpNum,String file,String trajectory) throws AttitudeGeneratorException{
-		//String activityCase=trajectory;
 		String serverUrl=Properties.getProperty(FDClient.FD_SERVER_URL_PROPERTY);
 		PtrSegment seg = ptr.getSegment("MTP_"+mtpNum);
 		String[] includes={"FDDF.xml",pdfm.getName()};
@@ -135,8 +128,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 	}
 
 	public AttitudeGeneratorFDImpl(Ptr ptr,Pdfm pdfm,String mtpNum) throws AttitudeGeneratorException{
-		/*String activityCase=Properties.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.activityCase");
-		init(ptr,pdfm,mtpNum,activityCase);*/
 		this(ptr,pdfm,mtpNum,null,null,null);
 	}
 	public AttitudeGeneratorFDImpl(Ptr ptr,Pdfm pdfm,String mtpNum,String activityCase,ErrorBoxPoint point) throws AttitudeGeneratorException{
@@ -147,10 +138,7 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 	}
 
 	public AttitudeGeneratorFDImpl(Ptr ptr,Pdfm pdfm,String mtpNum,String activityCase) throws AttitudeGeneratorException{
-		//ErrorBoxPoint box=new ErrorBoxPoint(0.0f,0.0f,0.0f);
 		this(ptr,pdfm,mtpNum,activityCase,new ErrorBoxPoint(0.0f,0.0f,0.0f));
-		//this(ptr,pdfm,mtpNum,activityCase,null,null,null);
-		//init(ptr,pdfm,mtpNum,activityCase);
 	}
 	public void init(Ptr ptr,Pdfm pdfm,String mtpNum,String activityCase) throws AttitudeGeneratorException{
 		init (ptr,pdfm,mtpNum,activityCase,null,null,null);
@@ -159,30 +147,22 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 		init(ptr,pdfm,mtpNum,activityCase,point.getEta(),point.getZeta(),point.getEpsilon());
 	}
 	public void init(Ptr ptr,Pdfm pdfm,String mtpNum,String activityCase,Float eta,Float zeta,Float epsilon) throws AttitudeGeneratorException{
+		trajectory=activityCase;
 		eventsMap=new HashMap<Date,AttitudeConstrainEvent>();
 		saaTree=new TreeMap<Date,SolarAspectAngle>();
 		outagesTree=new TreeMap<Date,HgaOutages>();
-		//String dir = Properties.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.tempDir")+"/";
 		File directory=null;
 		String dir=null;
 		try {
 			directory = FileUtil.createTempDir("fd_temp_", "fd");
 			dir=directory.getAbsolutePath()+"/";
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			AttitudeGeneratorException age = new AttitudeGeneratorException("Can not create temp dir to download the fd files",e1);
 			LOG.throwing("AttitudeGeneratorFDImpl", "constructor", age);
 			throw(age);
-			//e1.printStackTrace();
 		}
 		LOG.info("Using temporal dir for FD files:"+dir);
 
-		//System.out.println(dir);
-		//File directory=new File(dir);
-		/*if (!directory.isDirectory()){
-			directory.mkdir();
-		}*/
-		//String activityCase=Properties.getProperty("rosetta.uplink.pointing.AttitudeGeneratorFdImpl.activityCase");
 		String serverUrl=Properties.getProperty(FDClient.FD_SERVER_URL_PROPERTY);
 		String name=""+new java.util.Date().getTime();
 		PtrSegment seg = ptr.getSegment("MTP_"+mtpNum);
@@ -196,7 +176,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 		try {
 			id = FDClient.Ptr2AttRequest(serverUrl, new File(dir+name+"_ptr.xml"), new File(dir+name+"_pdfm.xml"), mission, mtpNum, activityCase, ""+epsilon, ""+zeta, ""+eta);
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
 			AttitudeGeneratorException newExp = new AttitudeGeneratorException ("Error getting attitude from FD:"+e1.getMessage(),e1);
 			throw(newExp);
 		}
@@ -341,10 +320,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 		String line = "";
 		SimpleTimeFormat timeFormat = new SimpleTimeFormat(TimeScale.TDB);
 		timeFormat.setDecimals(3);
-		//java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy/MM/dd'T'HH:mm:ss.SSS");
-		//java.text.SimpleDateFormat dateFormat2=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-		//dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		boolean status = false;
 		try {
 			 
 			br = new BufferedReader(new FileReader(file));
@@ -370,7 +345,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 			try {
 				br.close();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				AttitudeGeneratorException newExp2 = new AttitudeGeneratorException ("Error closing file",e);
 				newExp.initCause(newExp2);
 				e1.printStackTrace();
@@ -385,9 +359,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 		String line = "";
 		SimpleTimeFormat timeFormat = new SimpleTimeFormat(TimeScale.TDB);
 		timeFormat.setDecimals(3);
-		//java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy/MM/dd' 'HH:mm:ss.SSS");
-		//dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-		boolean status = false;
 		try {
 			 
 			br = new BufferedReader(new FileReader(file));
@@ -395,7 +366,7 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 				StringTokenizer tokenizer =new StringTokenizer(line);
 				if (tokenizer.hasMoreTokens()){
 					try{
-						int i=Integer.parseInt(tokenizer.nextToken());
+						int number=Integer.parseInt(tokenizer.nextToken());
 						Date startDate=DateUtil.zuluToDateSlashSpace(tokenizer.nextToken()+" "+tokenizer.nextToken());
 						Date endDate=DateUtil.zuluToDateSlashSpace(tokenizer.nextToken()+" "+tokenizer.nextToken());
 						tokenizer.nextToken();
@@ -444,7 +415,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 			try {
 				br.close();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				AttitudeGeneratorException newExp2 = new AttitudeGeneratorException ("Error closing file",e);
 				newExp.initCause(newExp2);
 				e1.printStackTrace();
@@ -458,8 +428,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 	protected  void parseEvtm(String file) throws AttitudeGeneratorException{
 		BufferedReader br = null;
 		String line = "";
-		/*java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));*/
 		boolean status = false;
 		try {
 			 
@@ -481,7 +449,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 						}
 						AttitudeConstrainEvent event = new AttitudeConstrainEvent(con,Integer.parseInt(number),startTime,endTime,min,max,mess);
 						eventsMap.put(startTime, event);
-						//System.out.println(event);
 					}
 				}
 				if (line.startsWith("STATUS")){
@@ -498,7 +465,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 			try {
 				br.close();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				AttitudeGeneratorException newExp2 = new AttitudeGeneratorException ("Error closing file",e);
 				newExp.initCause(newExp2);
 				e1.printStackTrace();
@@ -516,8 +482,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 	protected static AttitudeMap  readAttFile(String file) throws AttitudeGeneratorException{
 		BufferedReader br = null;
 		String line = "";
-		/*java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));*/
 		AttitudeMap result = new AttitudeMap();
 	 
 		try {
@@ -526,10 +490,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 			while ((line = br.readLine()) != null) {
 				if (!line.startsWith("20")){
 				}else{
-					/*SimpleTimeFormat tdb = new SimpleTimeFormat(TimeScale.TDB);
-					tdb.setDecimals(6);
-					FineTime ftime = tdb.parse(line.substring(0, 26)+" TDB");
-					Date dt = ftime.toDate();*/
 					Date dt =DateUtil.TDBToDate(line.substring(0, 26));
 					float ax1=Float.parseFloat(line.substring(29, 49)+"E"+line.substring(50, 53));
 					float ax2=Float.parseFloat(line.substring(54, 74)+"E"+line.substring(75, 78));
@@ -548,7 +508,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 			try {
 				if (br!=null) br.close();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				AttitudeGeneratorException newExp2 = new AttitudeGeneratorException ("Error closing file",e);
 				newExp.initCause(newExp2);
 				e1.printStackTrace();
@@ -557,31 +516,10 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 
 		}
 		return result;
-		//times=new Long[quaternions.size()];
-		//quaternions.keySet().toArray(times);
 	}
 	
 
 	
-	private double compare(Quaternion q1,Quaternion q2){
-		return q1.normalizeSign().conjugate().multiply(q2.normalizeSign()).angle();
-	}
-	
-	private Quaternion interpolate(Quaternion q1,java.util.Date date1,Quaternion q2,java.util.Date date2,java.util.Date desiredDate){
-		if (date1.equals(date2)) return q1;
-		long time1=date1.getTime();
-		long time2=date2.getTime();
-		long time=desiredDate.getTime();
-		//long fac=1/(time2-time1);
-		//double delta=time*fac;
-		double delta=(time-time1)/(time2-time1);
-		if (compare(q1,q2)<compare(q1,q2.conjugate())){
-			return q1.slerp(q2, delta);
-		}
-		else{
-			return q1.conjugate().slerp(q2, delta);
-		}
-	}
 	
 	public Quaternion getQuaternion(java.util.Date date){
 		return quaternions.get(date);
@@ -602,13 +540,6 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 	@Override
 	public AttitudeMap getQuaternions(Ptr ptr) {
 		return quaternions.subMap(ptr.getStartDate().toDate(), ptr.getEndDate().toDate());
-		/*HashMap<Long, Quaternion> result=new HashMap<Long, Quaternion>();
-		PtrSegment[] segments=ptr.getSegments();
-		for (int i=0;i<segments.length;i++){
-			result.putAll(getQuaternions(segments[i]));
-		}
-		//result.k
-		return result;*/
 	}
 	
 	public SolarAspectAngle[] getSaa(Date fromTime, Date toTime){
@@ -625,12 +556,10 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 	}
 	@Override
 	public SolarAspectAngle[] getSaa(PtrSegment segment) {
-		// TODO Auto-generated method stub
 		return getSaa(segment.getStartDate().toDate(),segment.getEndDate().toDate());
 	}
 	@Override
 	public SolarAspectAngle[] getSaa(Ptr ptr) {
-		// TODO Auto-generated method stub
 		return getSaa(ptr.getStartDate().toDate(),ptr.getEndDate().toDate());
 	}
 	
@@ -668,22 +597,18 @@ public class AttitudeGeneratorFDImpl implements AttitudeGenerator {
 	}
 	@Override
 	public String checkPtr(Ptr ptr, Ptr ptsl, Pdfm pdfm) {
-		// TODO Auto-generated method stub
 		return "";
 	}
 	@Override
 	public String checkPtr(Ptr ptr, Ptr ptsl, Pdfm pdfm, Fecs fecs) {
-		// TODO Auto-generated method stub
 		return "";
 	}
 	@Override
 	public String checkPtrHTML(Ptr ptr, Ptr ptsl, Pdfm pdfm) {
-		// TODO Auto-generated method stub
 		return "";
 	}
 	@Override
 	public String checkPtrHTML(Ptr ptr, Ptr ptsl, Pdfm pdfm, Fecs fecs) {
-		// TODO Auto-generated method stub
 		return "";
 	}
 	

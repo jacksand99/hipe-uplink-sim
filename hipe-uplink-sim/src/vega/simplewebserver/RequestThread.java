@@ -70,7 +70,6 @@ public class RequestThread extends Thread {
 			File[] files = file.listFiles();
 			sendHeader(out, 200, "text/html", -1, System.currentTimeMillis());
 			String title = "Index of " + path;
-			//out.write(("<html><head><title>" + title + "</title></head><body><h3>Index of " + path + "</h3><p>\n").getBytes());
 			out.write(("<html>"+Utils.getHeaderHTML(title)+"<body><h3>Index of " + path + "</h3><p>\n").getBytes());
 
 			for (int i = 0; i < files.length; i++) {

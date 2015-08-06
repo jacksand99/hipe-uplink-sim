@@ -26,19 +26,6 @@ import herschel.ia.numeric.String1d;
  *
  */
 public class ModelState extends CompositeDataset{
-	/*static String ALICE ="ALICE";
-	static String CONSERT = "CONSERT";
-	static String COSIMA ="COSIMA";
-	static String GIADA="GIADA";
-	static String MIDAS="MIDAS";
-	static String MIRO="MIRO";
-	static String OSIRIS="OSIRIS";
-	static String ROSINA="ROSINA";
-	static String RPC="RPC";
-	static String RSI="RSI";
-	static String SREM="SREM";
-	static String VIRTIS="VIRTIS";
-	static String LANDER="LANDER";*/
 	static ModelState model;
 	
 	/**

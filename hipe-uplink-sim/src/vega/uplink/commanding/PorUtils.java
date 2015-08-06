@@ -1,8 +1,6 @@
 package vega.uplink.commanding;
 
 
-import herschel.ia.dataset.Product;
-import herschel.ia.dataset.TableDataset;
 import vega.hipe.FileUtil;
 import vega.hipe.logging.VegaLog;
 import herschel.share.io.archive.ZipReader;
@@ -13,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
@@ -31,33 +28,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import vega.uplink.DateUtil;
-import vega.uplink.track.Fecs;
 
 
 /**
- * Class to perform a set of utilty methods over PORs and other classes from this package
+ * Class to perform a set of utility methods over PORs and other classes from this package
  * @author jarenas
  *
  */

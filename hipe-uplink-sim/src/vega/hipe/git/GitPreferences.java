@@ -7,8 +7,6 @@ import static javax.swing.GroupLayout.Alignment.BASELINE;
 
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.util.logging.Logger;
 
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
@@ -17,8 +15,6 @@ import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import herschel.ia.gui.kernel.AbstractSiteAction;
-import herschel.ia.gui.kernel.SiteAction;
 import herschel.ia.gui.kernel.prefs.PreferencesPanel;
 import herschel.ia.gui.kernel.prefs.handler.StringPreferenceHandler;
 import herschel.share.util.Configuration;
@@ -31,14 +27,11 @@ public class GitPreferences extends PreferencesPanel {
   private JTextField _fieldF;
   private JTextField _fieldG;
 
-  //private static final Logger LOG = Logger.getLogger(GitPreferences.class.getName());
   public GitPreferences(){
   	super();
   }
 	@Override
 	protected void makeContent() {
-		// TODO Auto-generated method stub
-		//System.out.println("makeContent");
       GroupLayout layout = new GroupLayout(this);
       setLayout(layout);
       layout.setAutoCreateGaps(true);

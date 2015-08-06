@@ -12,13 +12,22 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import vega.hipe.logging.VegaLog;
+import vega.hipe.pds.vicar.PDSInputFile;
 import vega.uplink.DateUtil;
 import herschel.ia.dataset.DoubleParameter;
 import herschel.ia.dataset.Parameter;
@@ -26,8 +35,10 @@ import herschel.ia.dataset.StringParameter;
 import herschel.ia.dataset.image.Image;
 import herschel.ia.dataset.image.SimpleImage;
 import herschel.ia.numeric.AbstractOrdered2dData;
+import herschel.ia.numeric.Float2d;
 import herschel.ia.numeric.Int2d;
 import herschel.ia.numeric.Selection;
+import herschel.ia.numeric.Short2d;
 import herschel.ia.numeric.toolbox.basic.IsFinite;
 import herschel.ia.numeric.toolbox.basic.Max;
 import herschel.ia.numeric.toolbox.basic.Min;
@@ -260,61 +271,243 @@ public class PDSImage extends SimpleImage {
 				return null;
 			}
 		}
-		
-
-		
-		/**
-		 * Read a PDS image from a file. It has been only tested with MEX images, so it is improbable that can read universal PDS files.
-		 * @param file the full path to the file
-		 * @return
-		 * @throws IOException If it has problems opening the file
-		 */
-		public static PDSImage readPdsFile(String file) throws IOException{
-			BufferedReader f;
-			
-			f = new BufferedReader(new FileReader(file));
-			
-			String line="";
-			String keyword="";
-			String value="";
+		private static PDSImage readBinaryData(HashMap<String,String> properties,DataInputStream in,int offset) throws IOException{
 			int height=0;
 			int width=0;
-			HashMap<String,String> properties=new HashMap<String,String>();
-			while (!line.trim().equals("END")) {//read label until we get to the END statement
-				    
-				line = f.readLine();
-				if (line == null) break;
-				line = line.replace('"',' ');
-				if (line.trim().equals("")) continue;
-				if (line.indexOf("=") > 0) {
-					keyword = line.substring(0,line.indexOf("=")).trim();
-					value = line.substring(line.indexOf("=")+1,line.length()).trim().toUpperCase();
-					}
-				else continue;
-				if (value.length() == 0) continue;
-				if (keyword.length()>0 && value.length()>0) properties.put(keyword, value);
+			try{
+				height = Integer.parseInt(properties.get("IMAGE."+"LINES"));
+			}catch (Exception e){
+				IOException ioe = new IOException("Could not read number of lines in PDS file:"+e.getMessage());
+				ioe.initCause(e);
+				//f.close();
+				throw ioe;
 			}
-			height = Integer.parseInt(properties.get("LINES"));
-			width = Integer.parseInt(properties.get("LINE_SAMPLES"));
-			
-			f.close();
-			FileInputStream fin = new FileInputStream(file);
-			DataInputStream in = new DataInputStream(fin);
+			try{
+				width = Integer.parseInt(properties.get("IMAGE."+"LINE_SAMPLES"));
+			}catch (Exception e){
+				IOException ioe = new IOException("Could not read number of samples per line in PDS file:"+e.getMessage());
+				ioe.initCause(e);
+				//f.close();
+				throw ioe;
+			}
+
 			byte data[]=new byte[in.available()];
 			in.read(data);
-			int os = data.length-(height*width);
-			Int2d image2D=new Int2d(height,width);
-			int locator=0;
-	        for (int row = 0; row < height; row++) {
-	            for (int column = 0; column < width; column++) {
-	            	image2D.set(row,column,data[os+locator] & 0xFF);
-	            	locator++;
-	            }
-	        }
-	        PDSImage si = new PDSImage();
-	        si.setImage(image2D);
-	        fin.close();
-			String creationTime=properties.get("PRODUCT_CREATION_TIME");
+			int sample_bits=8;
+			String sample_type="LSB_UNSIGNED_INTEGER";
+			try{
+				sample_bits = Integer.parseInt(properties.get("IMAGE."+"SAMPLE_BITS"));
+			}catch (Exception e){
+				sample_bits=8;
+			}
+			try{
+				sample_type = properties.get("IMAGE."+"SAMPLE_TYPE");
+			}catch (Exception e){
+				sample_type="LSB_UNSIGNED_INTEGER";
+			}
+
+			PDSImage si = new PDSImage();
+			
+			if (sample_bits==8 && (sample_type.equals("LSB_UNSIGNED_INTEGER") || sample_type.equals("MSB_UNSIGNED_INTEGER") || sample_type.equals("UNSIGNED_INTEGER"))){
+				VegaLog.info("PDS image is LSB_UNSIGNED_INTEGER 8 bits");
+				Int2d image2D=null;
+				int os =0;
+				if (offset>0){
+					os=offset;
+				}else{
+					os = data.length-(height*width);
+				}
+				//System.out.println(os);
+				//System.out.println(properties.get("^IMAGE"));
+				//int os = data.length-(height*width);
+				//int os=0;
+				image2D=new Int2d(height,width);
+				int locator=0;
+		        for (int row = 0; row < height; row++) {
+		            for (int column = 0; column < width; column++) {
+		            	image2D.set(row,column,data[os+locator] & 0xFF);
+		            	locator++;
+		            }
+		        }
+		        si.setImage(image2D);
+			}
+			
+			/*if (sample_bits==8 && sample_type.equals("MSB_UNSIGNED_INTEGER")){
+				VegaLog.info("PDS image is MSB_UNSIGNED_INTEGER 8 bits");
+				Int2d image2D=null;
+				int os =0;
+				if (offset>0){
+					os=offset;
+				}else{
+					os = data.length-(height*width);
+				}
+				System.out.println(os);
+				System.out.println(properties.get("^IMAGE"));
+				//int os = data.length-(height*width);
+				//int os=0;
+				image2D=new Int2d(height,width);
+				int locator=0;
+		        for (int row = 0; row < height; row++) {
+		            for (int column = 0; column < width; column++) {
+		            	image2D.set(row,column,data[os+locator] & 0xFF);
+		            	locator++;
+		            }
+		        }
+		        si.setImage(image2D);
+			}*/
+
+			if (sample_bits==16 && sample_type.equals("LSB_UNSIGNED_INTEGER")){
+				VegaLog.info("PDS image is LSB_UNSIGNED_INTEGER 16 bits");
+				Short2d image2D=null;
+				int os =0;
+				if (offset>0){
+					os=offset;
+				}else{
+					os = data.length-(height*width*2);
+				}
+				//int os = data.length-(height*width*2);
+				System.out.println(os);
+				System.out.println(properties.get("^IMAGE"));
+				//int os=0;
+				image2D=new Short2d(height,width);
+				int locator=0;
+		        for (int row = 0; row < height; row++) {
+		            for (int column = 0; column < width*2; column=column+2) {
+		            	short val=(short)( ((data[os+locator+1]&0xFF)<<8) | (data[os+locator]&0xFF) );
+		            	image2D.set(row,column/2,val );
+		            	locator=locator+2;
+		            }
+		        }
+		        si.setImage(image2D);
+			}
+			if (sample_bits==8 && (sample_type.equals("MSB_INTEGER") || sample_type.equals("INTEGER") || sample_type.equals("MAC_INTEGER") || sample_type.equals("SUN_INTEGER"))){
+				VegaLog.info("PDS image is MSB_INTEGER 8 bits");
+				Int2d image2D=null;
+				int os =0;
+				if (offset>0){
+					os=offset;
+				}else{
+					os = data.length-(height*width);
+				}
+
+				image2D=new Int2d(height,width);
+				int locator=0;
+		        for (int row = 0; row < height; row++) {
+		            for (int column = 0; column < width; column++) {
+		            	
+		            	int val=data[os+locator] & 0xff;
+		            	image2D.set(row,column,val );
+		            	locator++;
+		            }
+		        }
+		        si.setImage(image2D);
+			}
+
+			if (sample_bits==16 && (sample_type.equals("MSB_INTEGER") || sample_type.equals("INTEGER") || sample_type.equals("MAC_INTEGER") || sample_type.equals("SUN_INTEGER"))){
+				VegaLog.info("PDS image is MSB_INTEGER 16 bits");
+				Int2d image2D=null;
+				int os =0;
+				if (offset>0){
+					os=offset;
+				}else{
+					os = data.length-(height*width*2);
+				}
+				//int os = data.length-(height*width*2);
+				//System.out.println(os);
+				//System.out.println(properties.get("^IMAGE"));
+				//int os=0;
+				image2D=new Int2d(height,width);
+				int locator=0;
+		        for (int row = 0; row < height; row++) {
+		            for (int column = 0; column < width*2; column=column+2) {
+		            	//short val=(short)( ((data[os+locator+1]&0xFF)<<8) | (data[os+locator]&0xFF) );
+		            	int val = ((data[os+locator] & 0xff) << 8) | (data[os+locator+1] & 0xff);
+		            	image2D.set(row,column/2,val );
+		            	locator=locator+2;
+		            }
+		        }
+		        si.setImage(image2D);
+			}
+
+			if (sample_bits==32 && sample_type.equals("LSB_UNSIGNED_INTEGER")){
+				VegaLog.info("PDS image is LSB_UNSIGNED_INTEGER 32 bits");
+				Int2d image2D=null;
+				int os =0;
+				if (offset>0){
+					os=offset;
+				}else{
+					os = data.length-(height*width*4);
+				}
+				//int os = data.length-(height*width*4);
+				System.out.println(os);
+				System.out.println(properties.get("^IMAGE"));
+				//int os=0;
+				image2D=new Int2d(height,width);
+				int locator=0;
+		        for (int row = 0; row < height; row++) {
+		            for (int column = 0; column < width*4; column=column+4) {
+		            	int val=(int)( ((data[os+locator+3]&0xFF)<<24) | ((data[os+locator+2]&0xFF)<<16) | ((data[os+locator+1]&0xFF)<<8) | (data[os+locator]&0xFF) );
+		            	image2D.set(row,column/4,val );
+		            	locator=locator+4;
+		            }
+		            	
+		            	//image2D.set(row,column/4,ret );
+		            	//locator=locator+4;
+		            //}
+		        }
+		        si.setImage(image2D);
+			}
+			
+			if (sample_bits==32 && sample_type.equals("PC_REAL")){
+				VegaLog.info("PDS image is PC_REAL 32 bits");
+				Float2d image2D=null;
+				int os =0;
+				if (offset>0){
+					os=offset;
+				}else{
+					os = data.length-(height*width*4);
+				}
+				//int os = data.length-(height*width*4);
+				System.out.println(os);
+				System.out.println(properties.get("^IMAGE"));
+				//int os=0;
+				//System.out.println(os);
+				image2D=new Float2d(height,width);
+				int locator=0;
+		        for (int row = 0; row < height; row++) {
+		            for (int column = 0; column < width*4; column=column+4) {
+		            	//bit[]
+		            	byte[] pcReal=new byte[4];
+		            	pcReal[3]=data[os+locator];
+		            	pcReal[2]=data[os+locator+1];
+		            	pcReal[1]=data[os+locator+2];
+		            	pcReal[0]=data[os+locator+3];
+		            	ByteBuffer buffer = ByteBuffer.wrap(pcReal);
+		            	float f = buffer.getFloat();
+		            	//float f = BinaryUtils.pcRealToFloat(pcReal);
+		            	
+		            	/*String bString = BinaryUtils.toBinary(pcReal);
+		            	System.out.println(bString.substring(0,7)+" "+bString.substring(8,15)+" "+bString.substring(16,23)+" "+bString.substring(24,31));
+		            	System.out.println(f);
+		            	System.out.println(Integer.toBinaryString(Float.floatToRawIntBits(f)));*/
+		            	//String bString = BinaryUtils.toBinary(pcReal);
+		            	//System.out.println(bString.substring(0,7)+" "+bString.substring(8,15)+" "+bString.substring(16,23)+" "+bString.substring(24,31));
+		            	//int val=(int)( ((data[os+locator+3]&0xFF)<<24) | ((data[os+locator+2]&0xFF)<<16) | ((data[os+locator+1]&0xFF)<<8) | (data[os+locator]&0xFF) );
+		            	image2D.set(row,column/4,f );
+		            	locator=locator+4;
+		            }
+		            	
+		            	//image2D.set(row,column/4,ret );
+		            	//locator=locator+4;
+		            //}
+		        }
+		        si.setImage(image2D);
+			}
+			
+	        //PDSImage si = new PDSImage();
+	        //si.setImage(image2D);
+	        //fin.close();
+			/*String creationTime=properties.get("PRODUCT_CREATION_TIME");
 			try{
 				if (creationTime!=null){
 					si.setCreationDate(new FineTime(DateUtil.zuluToDate(creationTime)));
@@ -360,26 +553,334 @@ public class PDSImage extends SimpleImage {
 				int unitE=val.indexOf(">");
 				String unit="";
 				String nValue="";
-				if (unitS>-1){
-					unit=val.substring(unitS+1, unitE);
-					nValue=val.substring(0,unitS-1);
-					DoubleParameter param = new DoubleParameter(Double.parseDouble(nValue));
-
-					try{
-						param.setUnit(herschel.share.unit.Unit.parse(unit));
-					
-						si.getMeta().set(name, param);
-					}catch (Exception e){
-						e.printStackTrace();
+				try{
+					if (unitS>-1){
+						unit=val.substring(unitS+1, unitE);
+						nValue=val.substring(0,unitS-1);
+						DoubleParameter param = new DoubleParameter(Double.parseDouble(nValue));
+	
+						try{
+							param.setUnit(herschel.share.unit.Unit.parse(unit));
+						
+							si.getMeta().set(name, param);
+						}catch (Exception e){
+							e.printStackTrace();
+							si.getMeta().set(name, new StringParameter(val));
+						}
+					}
+					else{
 						si.getMeta().set(name, new StringParameter(val));
 					}
+				}catch (Exception e){
+					VegaLog.warning("Could not read matadata "+name);
 				}
-				else{
-					si.getMeta().set(name, new StringParameter(val));
-				}
-			}
+			}*/
 
 	        return si;
+			
+		}
+		public static PDSImage readLBLFile(String file) throws IOException{
+			BufferedReader f;
+			
+			f = new BufferedReader(new FileReader(file));
+			
+				//HashMap<String, String> properties = readAsciiData(f);
+			HashMap<String, String> properties=null;
+			HashMap<String, String> units=null;
+			//fin.close();
+			//int os=-1;
+			try{
+				PDSInputFile pdsFile = new PDSInputFile(file);
+				Document doc = pdsFile.getPDSDocument();
+				
+				properties=new HashMap<String, String>();
+				units=new HashMap<String, String>();
+				listValues(doc,"","",properties,units);
+				//os = pdsFile.getImageStart(doc);
+			}catch (Exception e){
+				e.printStackTrace();
+				//os=-1;
+			}
+			f.close();
+			File tf=new File(file);
+			String path = tf.getParent();
+			String imageProperty=properties.get("^IMAGE");
+			if (imageProperty==null) imageProperty=properties.get("FILE_NAME");
+			System.out.println(properties.get(imageProperty));
+			String imgFile = imageProperty.replace("(", "").replace(")", "").split(",")[0].trim();
+
+			FileInputStream fin = new FileInputStream(path+"/"+imgFile);
+			DataInputStream in = new DataInputStream(fin);
+			PDSImage result = readBinaryData(properties,in,-1);
+			String creationTime=properties.get("PRODUCT_CREATION_TIME");
+			try{
+				if (creationTime!=null){
+					result.setCreationDate(new FineTime(DateUtil.parse(creationTime)));
+					properties.remove("PRODUCT_CREATION_TIME");
+				}
+				
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			String startTime=properties.get("START_TIME");
+			try{
+				if (startTime!=null){
+					
+					result.setStartDate(new FineTime(DateUtil.parse(startTime)));
+					properties.remove("START_TIME");
+				}
+				
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			String stopTime=properties.get("STOP_TIME");
+			try{
+				if (stopTime!=null){
+					result.setEndDate(new FineTime(DateUtil.parse(stopTime)));
+					properties.remove("STOP_TIME");
+				}
+				
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			
+			String instrument=properties.get("INSTRUMENT_ID");
+			if (instrument!=null){
+				result.setInstrument(instrument);
+				properties.remove("INSTRUMENT_ID");
+			}
+			result.setType("PDSImage");
+			result.setCreator("Vega PDS Hipe plugin");
+			Iterator<String> it2 = properties.keySet().iterator();
+			while (it2.hasNext()){
+				String name=it2.next();
+				String val=properties.get(name);
+				String unit="";
+				unit=units.get(name);
+				//String nValue="";
+				try{
+					if (unit!=null){
+
+						DoubleParameter param = new DoubleParameter(Double.parseDouble(val));
+	
+						try{
+							param.setUnit(herschel.share.unit.Unit.parse(unit));
+						
+							result.getMeta().set(name, param);
+						}catch (Exception e){
+							e.printStackTrace();
+							result.getMeta().set(name, new StringParameter(val));
+						}
+					}
+					else{
+						result.getMeta().set(name, new StringParameter(val));
+					}
+				}catch (Exception e){
+					//VegaLog.warning("Could not read matadata "+name);
+					//StringParameter param = new StringParameter(val);
+					if (unit!=null){
+						val=val+"["+unit+"]";
+						
+					}
+					result.getMeta().set(name, new StringParameter(val));
+				}
+			}
+			fin.close();
+			return result;
+
+	
+		}
+		private static HashMap<String,String> readAsciiData(BufferedReader f) throws IOException{
+			String line="";
+			String keyword="";
+			String value="";
+
+			HashMap<String,String> properties=new HashMap<String,String>();
+			String currentObject="";
+			while (!line.trim().equals("END")) {//read label until we get to the END statement
+				    
+				line = f.readLine();
+				if (line == null) break;
+				line = line.replace('"',' ');
+				if (line.trim().equals("")) continue;
+				if (line.indexOf("=") > 0) {
+					keyword = line.substring(0,line.indexOf("=")).trim();
+					value = line.substring(line.indexOf("=")+1,line.length()).trim().toUpperCase();
+					}
+				else continue;
+				if (value.length() == 0) continue;
+				if (keyword.length()>0 && value.length()>0){
+					if (keyword.equals("OBJECT")){
+						currentObject=value+".";
+					}else{
+						//VegaLog.info("Property read:"+keyword+"="+value);
+						properties.put(currentObject+keyword, value);
+					}
+				}
+			}
+			
+			return properties;
+		}
+		private static void listValues(Node node,String tabs,String name,HashMap<String,String> properties,HashMap<String,String> units){
+			if (node.getNodeName().equals("OBJECT")){
+				name=name+node.getAttributes().getNamedItem("name").getNodeValue()+".";
+			}
+			String key =null; 
+			String value=null;
+			String unit=null;
+			NamedNodeMap att = node.getAttributes();
+			if (att!=null){
+				for (int i=0;i<att.getLength();i++){
+					if (att.item(i).getNodeName().equals("key")) key=att.item(i).getNodeValue();
+					if (att.item(i).getNodeName().equals("units")) unit=att.item(i).getNodeValue();
+				}	
+			}
+			NodeList nl = node.getChildNodes();
+			for (int i=0;i<nl.getLength();i++){
+				if (nl.item(i).getNodeName().equals("#text")) value=nl.item(i).getNodeValue();
+				if (nl.item(i).getNodeName().equals("units")) unit=nl.item(i).getNodeValue();
+				listValues(nl.item(i),tabs+"\t",name,properties,units);
+			}
+			if (key!=null && value!=null){
+				String prev = properties.get(name+key);
+				if (prev!=null){
+					properties.put(name+key, prev+","+value);
+				}else{
+					properties.put(name+key, value);
+					System.out.println(name+key+"="+value);
+				}
+			}
+			if (key!=null && unit!=null){
+				units.put(name+key, unit);
+			}
+		}
+		
+		public static PDSImage readImgFile(String file) throws IOException{
+			try{
+				return readPdsFile(file);
+			}catch (Exception e){
+				String filename = file.replace(".IMG", ".LBL");
+				try{
+					return readLBLFile(filename);
+				}catch (Exception e2){
+					throw e;
+				}
+			}
+		}
+
+		/**
+		 * Read a PDS image from a file. It has been only tested with MEX images, so it is improbable that can read universal PDS files.
+		 * @param file the full path to the file
+		 * @return
+		 * @throws IOException If it has problems opening the file
+		 */
+		public static PDSImage readPdsFile(String file) throws IOException{
+			BufferedReader f;
+			FileInputStream fin ;
+			//f=new BufferedReader(new InputStreamReader(fin));
+			//f = new BufferedReader(new FileReader(file));
+			
+			//HashMap<String, String> properties = readAsciiData(f);
+			//f.mark(0);
+			//f.
+			HashMap<String, String> properties=null;
+			HashMap<String, String> units=null;
+			//fin.close();
+			int os=-1;
+			try{
+				PDSInputFile pdsFile = new PDSInputFile(file);
+				Document doc = pdsFile.getPDSDocument();
+				
+				properties=new HashMap<String, String>();
+				units=new HashMap<String, String>();
+				listValues(doc,"","",properties,units);
+				os = pdsFile.getImageStart(doc);
+			}catch (Exception e){
+				os=-1;
+			}
+
+			fin = new FileInputStream(file);
+			//FileInputStream fin = new FileInputStream(file);
+			DataInputStream in = new DataInputStream(fin);
+			//f.reset();
+			//f.
+			PDSImage result = readBinaryData(properties,in,os);
+			String creationTime=properties.get("PRODUCT_CREATION_TIME");
+			try{
+				if (creationTime!=null){
+					result.setCreationDate(new FineTime(DateUtil.zuluToDate(creationTime)));
+					properties.remove("PRODUCT_CREATION_TIME");
+				}
+				
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			String startTime=properties.get("START_TIME");
+			try{
+				if (startTime!=null){
+					result.setStartDate(new FineTime(DateUtil.zuluToDate(startTime)));
+					properties.remove("START_TIME");
+				}
+				
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			String stopTime=properties.get("STOP_TIME");
+			try{
+				if (stopTime!=null){
+					result.setEndDate(new FineTime(DateUtil.zuluToDate(stopTime)));
+					properties.remove("STOP_TIME");
+				}
+				
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			
+			String instrument=properties.get("INSTRUMENT_ID");
+			if (instrument!=null){
+				result.setInstrument(instrument);
+				properties.remove("INSTRUMENT_ID");
+			}
+			result.setType("PDSImage");
+			result.setCreator("Vega PDS Hipe plugin");
+			Iterator<String> it2 = properties.keySet().iterator();
+			while (it2.hasNext()){
+				String name=it2.next();
+				String val=properties.get(name);
+				String unit="";
+				unit=units.get(name);
+				//String nValue="";
+				try{
+					if (unit!=null){
+
+						DoubleParameter param = new DoubleParameter(Double.parseDouble(val));
+	
+						try{
+							param.setUnit(herschel.share.unit.Unit.parse(unit));
+						
+							result.getMeta().set(name, param);
+						}catch (Exception e){
+							e.printStackTrace();
+							result.getMeta().set(name, new StringParameter(val));
+						}
+					}
+					else{
+						result.getMeta().set(name, new StringParameter(val));
+					}
+				}catch (Exception e){
+					//e.printStackTrace();
+					//VegaLog.warning("Could not read matadata "+name);
+					if (unit!=null){
+						val=val+"["+unit+"]";
+						
+					}
+					result.getMeta().set(name, new StringParameter(val));
+					//result.getMeta().set(name, new StringParameter(val));
+				}
+			}
+			fin.close();
+			return result;
+
 
 			
 

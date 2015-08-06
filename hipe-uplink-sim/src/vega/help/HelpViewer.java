@@ -13,6 +13,11 @@ import javax.swing.text.html.HTMLDocument;
 import org.apache.commons.io.IOUtils;
 
 class HelpViewer extends JFrame{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	HelpViewer(){
 		super();
 		InputStream stream = getHelpStream();
@@ -21,15 +26,11 @@ class HelpViewer extends JFrame{
 		try {
 			IOUtils.copy(stream, writer, "UTF-8");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String theString = writer.toString();
-		//HTMLDocument doc=new HTMLDocument();
-		//doc.set
 		JEditorPane editor = new JEditorPane();
 
-		// Marcamos el editor para que use HTML
 		editor.setContentType("text/html");
 		editor.setText(theString);
 		HTMLDocument doc = (HTMLDocument) editor.getDocument();
@@ -38,13 +39,7 @@ class HelpViewer extends JFrame{
 	}
 	
     public static InputStream getHelpStream() {
-    	//try {
 			return ObjectUtil.getClass("vega.help.HelpAction").getResourceAsStream("/vega/doc/index.html");
-		//} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-			//return null;
-		//}
     }
 
 }

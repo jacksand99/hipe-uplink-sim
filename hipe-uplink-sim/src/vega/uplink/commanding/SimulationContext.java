@@ -6,7 +6,6 @@ import java.lang.reflect.Constructor;
 import java.security.GeneralSecurityException;
 import java.util.Date;
 
-import rosetta.uplink.commanding.RosettaSsmmSimulator;
 import vega.uplink.DateUtil;
 import vega.uplink.Properties;
 import vega.uplink.pointing.Pdfm;
@@ -21,7 +20,6 @@ import herschel.ia.pal.MapContext;
 import herschel.share.fltdyn.time.FineTime;
 
 public class SimulationContext extends MapContext{
-	private static SimulationContext context;
 	private SequenceTimeline sequenceTimeline;
 	private SsmmSimulator memorySimulator;
 	public SimulationContext(Date startDate,Date endDate){

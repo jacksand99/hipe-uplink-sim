@@ -6,7 +6,6 @@ import static javax.swing.GroupLayout.Alignment.BASELINE;
 
 import java.awt.Dimension;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
