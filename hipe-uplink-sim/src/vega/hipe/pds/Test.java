@@ -23,7 +23,7 @@ public class Test {
 	    	//PDSImage si4 = PDSImage.readImgFile("/Users/jarenas 1/Rosetta/NAC_WAC/1p129954668esf0352p2564l3c1.IMG");
 	    	//PDSImage MDIS_MD3_128PPD_H04NW0 = PDSImage.readLBLFile("/Users/jarenas 1/Rosetta/NAC_WAC/MDIS_MD3_128PPD_H04NW0.LBL");
 	    	//PDSImage lbl0487MR0019320020303007C00_DRXX = PDSImage.readLBLFile("/Users/jarenas 1/Rosetta/NAC_WAC/0487MR0019320020303007C00_DRXX.LBL");
-	    	PDSImage N1364287855_2_1 = PDSImage.readLBLFile("/Users/jarenas 1/Rosetta/NAC_WAC/N1364287855_2.LBL");
+	    	PDSImage N1364287855_2_1 = PDSImage.readLBLFile("/Users/jarenas 1/Rosetta/NAC_WAC/IMG_DISPLY_0002_000223_5790.LBL");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -47,5 +47,12 @@
 	<classpathentry kind="lib" path="jars/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="jars/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="jars/commons-codec-1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/hcss/share/1.432/share_1.432.jar"/>
+	<classpathentry kind="lib" path="/Users/jarenas 1/.hcss.d/repository/modules/ext/nom.tam.fits/1.6.0-1/fits.jar"/>
+	<classpathentry kind="lib" path="jars/serializer.jar"/>
+	<classpathentry kind="lib" path="jars/xalan.jar"/>
+	<classpathentry kind="lib" path="jars/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="jars/xml-apis.jar"/>
+	<classpathentry kind="lib" path="jars/jakarta-oro-2.0.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
