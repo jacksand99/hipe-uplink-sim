@@ -184,7 +184,12 @@ public class Simulation {
 			layer8.setName("Allowed power from moc");
 			plot3.getXaxis().setTitleText("Time");
 			plot3.getYaxis().setTitleText("Power (Watts)");
-			plot3.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
+			try {
+			    plot3.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
+			}catch (Exception e) {
+			    VegaLog.severe(e.getMessage());
+			    e.printStackTrace();
+			}
 			plot3.getLegend().setVisible(true);
 			plot4=new PlotXY();
 		}
@@ -237,15 +242,20 @@ public class Simulation {
 				if (instruments.length>0){
 					plot4.getXaxis().setTitleText("Time");
 					plot4.getYaxis().setTitleText("Data (bits)");
-					plot4.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
+					try {
+					    plot4.getLayer(0).setXAxisType(herschel.ia.gui.plot.renderer.axtype.AxisType.DATE);
+					}catch (Exception e) {
+					    VegaLog.severe(e.getMessage());
+					    e.printStackTrace();
+					}
 					plot4.getLegend().setVisible(true);
 				}
 
 			}
 		}
 		if (!onlyText){
-			HistoryModesPlot plot = new vega.uplink.commanding.gui.HistoryModesPlot("Time line",context.getHistoryModes());
-			JFrame frame=new JFrame("Time line");
+			HistoryModesPlot plot = new vega.uplink.commanding.gui.HistoryModesPlot("Timeline",context.getHistoryModes());
+			JFrame frame=new JFrame("Timeline");
 			frame.setContentPane(plot);
 			plot.setPreferredSize(new java.awt.Dimension(500, 270));
 			frame.pack();

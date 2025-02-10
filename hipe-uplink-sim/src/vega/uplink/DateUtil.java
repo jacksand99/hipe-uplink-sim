@@ -244,10 +244,21 @@ public class DateUtil {
 	 * @return a string representation of the date
 	 */
 	public static String dateToDOY(java.util.Date date){
-		java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-D'T'HH:mm:ss.SSS'Z'");
+		java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-DDD'T'HH:mm:ss.SSS'Z'");
 		dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
 		return dateFormat.format(date);
 	}
+	
+	   /**
+     * Transform a date into a string of the format yyyy-DTHH:mm:ss
+     * @param date date to be transformed
+     * @return a string representation of the date
+     */
+    public static String dateToDOYNoMilli(java.util.Date date){
+        java.text.SimpleDateFormat dateFormat=new java.text.SimpleDateFormat("yyyy-DDD'T'HH:mm:ss'Z'");
+        dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        return dateFormat.format(date);
+    }
 	/**
 	 * Transform a FineTime into a string of the format yyyy-DTHH:mm:ss
 	 * @param date date to be transformed

@@ -75,6 +75,10 @@ public class Properties {
 	 */
 	public static String DEFAULT_POST_SCRIPT="vega.default.postScript";
 	/**
+	 * vega.pointing.dateFormat
+	 */
+	public static String POINTING_DATE_FORMAT="vega.pointing.dateFormat";
+	/**
 	 * vega.file.type.POR
 	 */
 	public static String POR_FILE_PROPERTY="vega.file.type.POR";

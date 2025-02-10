@@ -436,7 +436,7 @@ public class RosettaSite extends AbstractSite {
 		
 		System.out.println(this.getPerspectiveManager().getDefault());
 		PluginRegistry plugins = PluginRegistry.getInstance();
-        final ClassLoader loader = plugins.getClassLoader();
+        final ClassLoader loader = plugins.getClass().getClassLoader();
         Thread.currentThread().setContextClassLoader(loader);
         if (requiresGui) {
             EDT.run(new Runnable() {
@@ -445,9 +445,9 @@ public class RosettaSite extends AbstractSite {
                 }
             });
         }
-        if (herschel.ia.gui.kernel.util.SiteUtil.getSite()==null) herschel.ia.gui.kernel.util.SiteUtil.setSite(this);
-        Site site = SiteUtil.getSite();
-        if (site != null) {
+        //if (herschel.ia.gui.kernel.util.SiteUtil.getSite()==null) herschel.ia.gui.kernel.util.SiteUtil.setSite(this);
+        //Site site = SiteUtil.getSite();
+        /*if (site != null) {
         	System.out.println("site is not null");
             ComponentFactoryManager manager = site.getComponentFactoryManager("site.statusbar");
             StatusBarComponentFactory instance = (StatusBarComponentFactory)manager.getComponentFactory(JComponent.class.getName());
@@ -455,7 +455,7 @@ public class RosettaSite extends AbstractSite {
             instance = (StatusBarComponentFactory)man.getComponentFactory(JComponent.class.getName());
             System.out.println(manager);
             if (instance==null) System.out.println("instance is null");
-        }
+        }*/
         
     }
 

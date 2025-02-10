@@ -24,15 +24,22 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 
 import herschel.ia.pal.MapContext;
+import vega.uplink.DateUtil;
 
 /*import org.apache.commons.httpclient.HttpClient;
 import org.esa.rsgs.fdsw.net.*;*/
 
 import vega.uplink.Properties;
+import vega.uplink.pointing.PtrParameters.Boresight;
+import vega.uplink.pointing.PtrParameters.InitTargetPoint;
+import vega.uplink.pointing.PtrParameters.RotRate;
+import vega.uplink.pointing.PtrParameters.TargetDir;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetAngles;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetCustom;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetRaster;
 import vega.uplink.pointing.PtrParameters.Offset.OffsetScan;
+import vega.uplink.pointing.attitudes.TrackDir;
+import vega.uplink.pointing.attitudes.TrackPointRot;
 
 
 public class TestPointing {
@@ -45,6 +52,7 @@ public class TestPointing {
 		herschel.share.util.Configuration.setProperty(Properties.PWPL_FILE, "C:\\ROS_SGS\\PLANNING\\RMOC\\FCT\\PWPL_14_001_14_365__OPT_01.ROS");
 		herschel.share.util.Configuration.setProperty(Properties.ORCD_FILE, "Z:\\MAPPS\\MIB\\orcd.csv");
 		herschel.share.util.Configuration.setProperty(Properties.DEFAULT_PLANNING_DIRECTORY, "C:\\ROS_SGS\\PLANNING\\");
+		herschel.share.util.Configuration.setProperty(Properties.POINTING_DATE_FORMAT, "DOY");
 		//Pdfm pdfm=PtrUtils.readPdfmfromFile("C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP004A\\PTR\\PDFM_DM_004_01____A__00005.ROS");
 		//Ptr ptr=PtrUtils.readPTRfromFile("C:\\ROS_SGS\\PLANNING\\LTP001\\LTP001A\\MTP004A\\PTR\\PTRM_DM_004_01____A__00005.ROS");
 		//Ptr ptr=PtrUtils.readPTRfromFile("Z:\\PTRM_DM_006_01____A__00008.ROS");
@@ -52,10 +60,47 @@ public class TestPointing {
 		//Ptr ptr=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP002/LTP002A/MTP007A/PTR/PTRM_DM_007_01____A__00013.ROS");
 		//try{
 		try {
-			Ptr ptr = PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP001/LTP001A/MTP005A/PTR/PTRM_DM_005_01____A__00007.ROS");
+		    /*Ptr ptr = PtrUtils.readPTRfromFile("/Users/jarenas/esa/solar-orbiter/planning/PTR__006_001_05_00014.SOL");
+		    PointingBlock[] blocks = ptr.getAllBlocks();
+		    for (int i=0;i<blocks.length;i++) {
+		        if (blocks[i].getAttitude()!=null) {
+		            System.out.println(blocks[i].getAttitude().toXml(0));
+		            System.out.println(blocks[i].getAttitude().getClass());
+		        }
+		    }*/
+		    //Evtm efecs = PtrUtils.readEvtmFromFile("/Users/jarenas/esa/solar-orbiter/planning/STP295/EFECS_M14_V01.xml");
+		    //System.out.println(efecs.toString());
+
+
+		    Ptr ptr = PtrUtils.readPTRfromFile("/Users/jarenas/esa/solar-orbiter/planning/PTR/PTR__015_022_00_00106.SOL");
+		    String warnings = PtrChecker.checkPtr(ptr);
+		    System.out.println(ptr.toXml());
+		    System.out.println(warnings);
+		    ptr.setName("Testptr.SOL");
+		    ptr.setPath("/Users/jarenas/Downloads/");
+		    PtrUtils.savePTR(ptr);
+		    //Boresight br=new Boresight("SC",new Float(0.9),new Float(-003),new Float(0.03));
+		    //System.out.println(br.toXml(0));
+		    //TargetDir td=new TargetDir("nadir");
+		    //System.out.println(td.toXml(0));
+		    //TrackDir tdir=new TrackDir(br,td);
+		    //System.out.println(tdir.toXml(0));
+		    //PointingBlock obs=new PointingBlock(PointingBlock.TYPE_OBS,DateUtil.parse("2022-03-07T09:01:00"),DateUtil.parse("2022-03-07T09:01:00"));
+		    //obs.setAttitude(tdir);
+		    //RotRate rotRate=new RotRate(Units.DEGREES_PER_DAY,new Float(14.077448));
+		    //System.out.println(rotRate.toXml(0));
+		    //InitTargetPoint point = new InitTargetPoint("heliocRot","spherical",new Float(45.63962),new Float(-17.65),new Float(695499.0));
+		    //System.out.println(point.toXml(0));
+		    /*TrackPointRot tpr=new TrackPointRot(br,point,rotRate);
+		    point.getR("km");
+		    tpr.getInitTargetPoint();
+		    System.out.println(tpr.toXml(0));*/
+		    //javax.measure.unit.SI.
+		    //System.out.println(obs.toXml(0));
+			//Ptr ptr = PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP001/LTP001A/MTP005A/PTR/PTRM_DM_005_01____A__00007.ROS");
 			//PtrSegment seg = ptr.getSegments()[0];
-			PointingBlocksSlice miroSlice = ptr.getAllBlocksOfInstrument("MIRO");
-			System.out.println(miroSlice.toXml(0));
+			//PointingBlocksSlice miroSlice = ptr.getAllBlocksOfInstrument("MIRO");
+			//System.out.println(miroSlice.toXml(0));
 			/*PointingBlock[] miroObs = seg.getAllBlocksOfInstrument("MIRO");
 			for (int i=0;i<miroObs.length;i++){
 				System.out.println(miroObs[i].toXml(0));

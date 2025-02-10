@@ -68,6 +68,7 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		 * Pointing block type for on-board implemented autonomous guidance attitude
 		 */
 		public static String TYPE_GSEP="GSEP";
+		public static String TYPE_SYNC="SYNC";
 		public static String BLOCK_TAG="block";
 		private java.util.HashMap<String, PointingElement> metadata;
 		
@@ -127,6 +128,10 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 				IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
 				iae.initCause(e);
 				throw(iae);
+			} catch (NullPointerException npe) {
+	             IllegalArgumentException iae = new IllegalArgumentException("No start time in PointingBlock "+this.toXml(0));
+	                iae.initCause(npe);
+	                throw(iae);
 			}
 		}
 		/**
@@ -329,7 +334,7 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		
 		public  boolean isSlew(){
 			boolean result=false;
-			if (getType().equals("SLEW") || getType().equals("MOCM") || getType().equals("MWOL") || getType().equals("MSLW")){
+			if (getType().equals("SLEW") || getType().equals("MOCM") || getType().equals("MWOL") || getType().equals("MSLW") || getType().equals("SYNC")){
 				result=true;
 			}
 			return result;

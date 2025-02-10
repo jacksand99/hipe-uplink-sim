@@ -49,6 +49,8 @@ public class PointingAttitude extends PointingElement{
 	 * Attitude type pointing the boresight along the velocity vector of the SC relative to CG
 	 */
 	public static String POINTING_ATTITUDE_TYPE_VELOCITY="velocity";
+	public static String POINTING_ATTITUDE_TYPE_TRACKPOINTROT="trackPointRot";
+	public static String POINTING_ATTITUDE_TYPE_TRACKDIR="trackDir";
 	
 	public static String ATTITUDE_TAG="attitude";
 	public static String REF_TAG="ref";

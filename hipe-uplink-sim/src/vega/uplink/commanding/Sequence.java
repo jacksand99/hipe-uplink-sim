@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,13 +46,14 @@ public class Sequence extends AbstractSequence {
 	public static String NAME_FIELD="name";
 	public static String PARAMETERS_FIELD="parameters";
 	public static String PROFILES_FIELD="profiles";
+	public static String DESCRIPTION_FIELD="description";
 	
 	
 	public Sequence(SequenceInterface seq){
 		this(seq.getName(),seq.getUniqueID(),seq.getFlag(),seq.getSource(),seq.getDestination(),seq.getExecutionDate(),seq.getParameters(),seq.getProfiles());
 	}
 	
-	public Sequence (String sequenceName,String sequenceID,String sequenceFlag,char sequenceSource,char sequenceDestination,java.util.Date sequenceExecutionTime,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles){
+	public Sequence (String sequenceName,String sequenceID,String sequenceFlag,String sequenceSource,char sequenceDestination,java.util.Date sequenceExecutionTime,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles){
 		super();
 		getMeta().set(NAME_FIELD, new StringParameter(sequenceName));
 		getMeta().set(UNIQUEID_FIELD, new StringParameter(sequenceID));
@@ -89,35 +91,35 @@ public class Sequence extends AbstractSequence {
 	}
 	
 	public Sequence(Sequence seq) throws ParseException{
-		this(new String(seq.getName()),new String(seq.getUniqueID()),new String(seq.getFlag()),new Character(seq.getSource()),new Character(seq.getDestination()),new String(seq.getExecutionTime()),seq.getParameters(),seq.getProfiles());
+		this(new String(seq.getName()),new String(seq.getUniqueID()),new String(seq.getFlag()),new String(seq.getSource()),new Character(seq.getDestination()),new String(seq.getExecutionTime()),seq.getParameters(),seq.getProfiles());
 	}
 	public Sequence copy(){
 		Sequence result;
 		try {
 			result=new Sequence(this);
 		} catch (ParseException e) {
-			result= new Sequence(new String(getName()),new String(getUniqueID()),new String(getFlag()),new Character(getSource()),new Character(getDestination()),new java.util.Date(),getParameters(),getProfiles().clone());
+			result= new Sequence(new String(getName()),new String(getUniqueID()),new String(getFlag()),new String(getSource()),new Character(getDestination()),new java.util.Date(),getParameters(),getProfiles().clone());
 
 			e.printStackTrace();
 		}
 		return result;
 	}
 	
-	public Sequence (String sequenceName,String sequenceID,String sequenceFlag,char sequenceSource,char sequenceDestination,String sequenceExecutionTime,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles) throws ParseException{
+	public Sequence (String sequenceName,String sequenceID,String sequenceFlag,String sequenceSource,char sequenceDestination,String sequenceExecutionTime,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles) throws ParseException{
 		this(sequenceName,sequenceID,sequenceFlag,sequenceSource,sequenceDestination,DateUtil.DOYToDate(sequenceExecutionTime),sequenceParamaters,sequenceProfiles);
 	}
 	
 	public Sequence (String sequenceName,String sequenceID,String sequenceFlag,String sequenceExecutionTime,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles) throws ParseException{
-		this(sequenceName,sequenceID,sequenceFlag,'P','S',DateUtil.DOYToDate(sequenceExecutionTime),sequenceParamaters,sequenceProfiles);
+		this(sequenceName,sequenceID,sequenceFlag,"P",'S',DateUtil.DOYToDate(sequenceExecutionTime),sequenceParamaters,sequenceProfiles);
 	}
 	
 	public Sequence (String sequenceName,String sequenceID,String sequenceExecutionTime,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles) throws ParseException{
-		this(sequenceName,sequenceID,INSERT_FLAG,'P','S',DateUtil.DOYToDate(sequenceExecutionTime),sequenceParamaters,sequenceProfiles);
+		this(sequenceName,sequenceID,INSERT_FLAG,"P",'S',DateUtil.DOYToDate(sequenceExecutionTime),sequenceParamaters,sequenceProfiles);
 	}
 	
 	public Sequence (String sequenceName,String sequenceID,String sequenceExecutionTime) throws ParseException{
 
-		this(sequenceName,sequenceID,INSERT_FLAG,'P','S',DateUtil.DOYToDate(sequenceExecutionTime),null,null);
+		this(sequenceName,sequenceID,INSERT_FLAG,"P",'S',DateUtil.DOYToDate(sequenceExecutionTime),null,null);
 	
 	}
 	@Deprecated
@@ -145,13 +147,14 @@ public class Sequence extends AbstractSequence {
 		return (String) getMeta().get(UNIQUEID_FIELD).getValue();
 
 	}
+
 	
 	public String getFlag(){
 		return (String) getMeta().get(FLAG_FLIED).getValue();
 	}
 	
-	public char getSource(){
-		return ((String) getMeta().get(SOURCE_FIELD).getValue()).charAt(0);
+	public String getSource(){
+		return ((String) getMeta().get(SOURCE_FIELD).getValue());
 
 	}
 	
@@ -213,6 +216,8 @@ public class Sequence extends AbstractSequence {
 
 	}
 	
+
+	
 	public void setFlag (String sequenceFlag){
 		getMeta().set(FLAG_FLIED, new StringParameter(sequenceFlag));
 
@@ -273,8 +278,10 @@ public class Sequence extends AbstractSequence {
 		Iterator<String> it = insList.iterator();
 		while(it.hasNext()){
 			String ins=it.next();
-			String acro=Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+ins);
-			acronyms.put(acro, ins);
+			String acros = Properties.getProperty(Properties.SUBINSTRUMENT_ACRONYM_PROPERTY_PREFIX+ins);
+			acronyms.put(acros, ins);
+
+			//acronyms.put(acro, ins);
 		}
 		char[] acro=new char[2];
 		char[] sName=getName().toCharArray();
@@ -287,7 +294,7 @@ public class Sequence extends AbstractSequence {
 		String result = acronyms.get(acronim);
 		if (result!=null) return acronyms.get(acronim);
 		else {
-			//System.out.println("Acronim for "+acronim+"in command "+getName()+" not known");
+			System.out.println("Acronim for "+acronim+"in command "+getName()+" not known");
 			return "UNKNOWN";
 		}
 
@@ -302,21 +309,24 @@ public class Sequence extends AbstractSequence {
 				eleSequence.setAttribute("name", getName());
 				Element eleUID=doc.createElement("uniqueID");
 				eleUID.setTextContent(getUniqueID());
-				Element eleFlag=doc.createElement("insertOrDeleteFlag");
-				eleFlag.setTextContent(getFlag());
+				//Element eleFlag=doc.createElement("insertOrDeleteFlag");
+				//eleFlag.setTextContent(getFlag());
 				Element eleSource=doc.createElement("source");
 				eleSource.setTextContent(""+getSource());
 				Element eleDestination=doc.createElement("destination");
 				eleDestination.setTextContent(""+getDestination());
+				Element eleDescription=doc.createElement("description");
+				eleDescription.setTextContent(""+getDescription());
 				Element eleExecution=doc.createElement("executionTime");
 				Element eleAction=doc.createElement("actionTime");
 				eleAction.setTextContent(getExecutionTime());
 				eleExecution.appendChild(eleAction);
 				eleSequence.appendChild(eleUID);
-				eleSequence.appendChild(eleFlag);
+				//eleSequence.appendChild(eleFlag);
 				eleSequence.appendChild(eleSource);
 				eleSequence.appendChild(eleDestination);
 				eleSequence.appendChild(eleExecution);
+				eleSequence.appendChild(eleDescription);
 				Parameter[] parameters = getParameters();
 				if (parameters!=null){
 					Element eleParameterList=doc.createElement("parameterList");
@@ -324,7 +334,7 @@ public class Sequence extends AbstractSequence {
 					for (int i=0;i<parameters.length;i++){
 						eleParameterList.appendChild(parameters[i].getXMLElement(i+1, doc));
 					}
-					eleSequence.appendChild(eleParameterList);
+					if (parameters.length>0) eleSequence.appendChild(eleParameterList);
 					
 				}
 				SequenceProfile[] profiles=getProfiles();
@@ -334,7 +344,7 @@ public class Sequence extends AbstractSequence {
 					for (int i=0;i<profiles.length;i++){
 						eleProfileList.appendChild(profiles[i].getXMLElement(doc));
 					}
-					eleSequence.appendChild(eleProfileList);
+					if (profiles.length>0) eleSequence.appendChild(eleProfileList);
 				}
 				
 				
@@ -355,7 +365,7 @@ public class Sequence extends AbstractSequence {
 		
 		String l1=indentString+"<sequence name=\""+getName()+"\">\n";
 		String l2=indentString+"\t<uniqueID>"+getUniqueID()+"</uniqueID>\n";
-		String l3=indentString+"\t<insertOrDeleteFlag>"+getFlag()+"</insertOrDeleteFlag>\n";
+		//String l3=indentString+"\t<insertOrDeleteFlag>"+getFlag()+"</insertOrDeleteFlag>\n";
 		String l4=indentString+"\t<source>"+getSource()+"</source>\n";
 		String l5=indentString+"\t<destination>"+getDestination()+"</destination>\n";
 		String l6=indentString+"\t<executionTime>\n";
@@ -406,7 +416,7 @@ public class Sequence extends AbstractSequence {
 		StringBuilder result=new StringBuilder();
 		result.append(l1);
 		result.append(l2);
-		result.append(l3);
+		//result.append(l3);
 		result.append(l4);
 		result.append(l5);
 		result.append(l6);

@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import vega.uplink.DateUtil;
+import vega.uplink.Properties;
 
 public class PrmTime extends PointingElement{
 	
@@ -18,9 +19,13 @@ public class PrmTime extends PointingElement{
 		try {
 			setDate(DateUtil.zuluToDate(date));
 		} catch (ParseException e) {
-			IllegalArgumentException iae = new IllegalArgumentException("Incorrect Date:"+e.getMessage());
-			iae.initCause(e);
-			throw(iae);
+		    try {
+		        setDate(DateUtil.DOYToDate(date));
+		    }catch (ParseException e2) {
+		        IllegalArgumentException iae = new IllegalArgumentException("Incorrect Date:"+e.getMessage());
+		        iae.initCause(e);
+		        throw(iae);
+		    }
 			// TODO Auto-generated catch block
 		}
 	}
@@ -46,4 +51,30 @@ public class PrmTime extends PointingElement{
 		}
 		return result;
 	}
+    public String toXml(int indent){
+        String format = herschel.share.util.Configuration.getProperty(Properties.POINTING_DATE_FORMAT);
+        StringBuilder result=new StringBuilder();
+        StringBuilder iString=new StringBuilder();
+        for (int i=0;i<indent;i++){
+            iString.append("\t");
+        }
+        if (format.equals("DOY")) {
+            result.append(iString+"<"+getName());
+            result.append(" format=\"DOY\">");
+            Date date;
+            try {
+                date = DateUtil.parse(getValue());
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                return super.toXml(indent);
+            }
+            result.append(DateUtil.dateToDOYNoMilli(date));
+            result.append("</"+getName()+">"+"\n");
+            return result.toString();
+        }
+        else {
+            return super.toXml(indent);
+        }
+   
+    }
 }

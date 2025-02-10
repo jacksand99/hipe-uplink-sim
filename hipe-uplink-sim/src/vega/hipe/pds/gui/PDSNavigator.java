@@ -1,6 +1,7 @@
 package vega.hipe.pds.gui;
 
 import herschel.ia.dataset.DoubleParameter;
+import herschel.ia.dataset.Parameter;
 import herschel.ia.gui.kernel.parts.AbstractVariableEditorComponent;
 
 import java.awt.Color;
@@ -29,6 +30,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import vega.hipe.logging.VegaLog;
 import vega.hipe.pds.InvalidValueException;
 import vega.hipe.pds.PDSImage;
 import vega.hipe.pds.gui.PDSNavigator;
@@ -61,7 +63,8 @@ public class PDSNavigator extends AbstractVariableEditorComponent<PDSImage>{
 			PDSNavigator navi=new PDSNavigator();
 			//navi.init(PDSImage.readPdsFile("Z:\\MEX\\mexhrsc_1001\\data\\0032\\h0032_0000_bl3.img"));
 			//navi.init(PDSImage.readPdsFile("Z:\\MEX\\mexhrsc_1001\\data\\2176\\h2176_0000_p13.img"));
-			navi.init(PDSImage.readPdsFile("Z:\\MEX\\mexhrsc_1001\\data\\0010\\h0010_0026_sr3.img"));
+			//navi.init(PDSImage.readPdsFile("/Users/jarenas 1/Downloads/MEX/mexhrsc_1001/data/0010/h0010_0026_sr3.img"));
+			navi.init(PDSImage.readPdsFile("/Users/jarenas 1/Rosetta/NAC_WAC/H0248_0000_S23.IMG"));
 			JFrame frame=new JFrame();
 			frame.add(navi);
 	        frame.setSize(455,750);
@@ -73,10 +76,23 @@ public class PDSNavigator extends AbstractVariableEditorComponent<PDSImage>{
 		}
 	}
 	public void init(PDSImage pdsImg) throws InvalidValueException{
+		if (pdsImg==null){
+			InvalidValueException iae = new InvalidValueException("Null image not allowed");
+			throw(iae);
+		}
 		pdsImage=pdsImg;
         latitude=pdsImage.getMinimumLatitude();
         longitude=pdsImage.getMinimumLongitude();
-        scale=pdsImage.getDoubleMetadata(PDSImage.MAP_SCALE);
+        try{
+        	scale=pdsImage.getDoubleMetadata("IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE);
+        }catch (Exception e){
+        	Object s = pdsImage.getMeta().get("IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE).getValue();
+        	String val=""+s;
+        	scale=Double.parseDouble(val.split("<")[0]);
+        	//VegaLog.severe(""+s);
+        	//VegaLog.severe("Could not get metadata "+"IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE);
+        	//throw e;
+        }
         end_latitude=latitude+(FACTOR_X*scale);
         end_longitude=longitude+(FACTOR_Y*1);
         frame=this;
@@ -120,8 +136,30 @@ public class PDSNavigator extends AbstractVariableEditorComponent<PDSImage>{
 	    
 	    System.out.println(scrollPane.getSize());
 	    System.out.println(scrollPane.getPreferredSize());
+/*
+ *         try{
+        	maps = pdsImage.getDoubleMetadata("IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE);
+        	if (maps==null) throw new NullPointerException();
+        }catch (Exception e){
+        	Object s = pdsImage.getMeta().get("IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE).getValue();
+        	String val=""+s;
+        	maps=Double.parseDouble(val.split("<")[0]);
+        	System.out.println("Scale "+maps);
+        	//VegaLog.severe(""+s);
+        	//VegaLog.severe("Could not get metadata "+"IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE);
+        	//throw e;
+        }
 
-        String unit=((DoubleParameter) pdsImage.getMeta().get(PDSImage.MAP_SCALE)).getUnit().toString();
+ */
+	    String unit=null;
+	    try{
+        unit=((DoubleParameter) pdsImage.getMeta().get("IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE)).getUnit().toString();
+	    }catch (Exception e){
+        	Object s = pdsImage.getMeta().get("IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE).getValue();
+        	String val=""+s;
+        	unit=val.split("<")[1].replace(">", "");
+	    	
+	    }
         JPanel scaleInputFieldLabel = new JPanel();
         scaleInputFieldLabel.add(new JLabel("Scale "));
         PasteField scaleInputField = new PasteField(""+scale, 12);
@@ -153,7 +191,26 @@ public class PDSNavigator extends AbstractVariableEditorComponent<PDSImage>{
         if (end_longitude>pdsImage.getMaximumLongitude()) end_latitude=pdsImage.getMaximumLongitude();
         //System.out.println("Down"+end_latitude+" "+end_longitude);
         //System.out.println(FACTOR_X*scale);
-		BufferedImage result = this.scalateBufferedImage(pdsImage.getSubImage(latitude, longitude, end_latitude, end_longitude).asBufferedImage(),pdsImage.getDoubleMetadata(PDSImage.MAP_SCALE),scale);
+        PDSImage subImage = pdsImage.getSubImage(latitude, longitude, end_latitude, end_longitude);
+        BufferedImage bi = subImage.asBufferedImage();
+        if (bi==null ) System.out.println("Buffered image is null");
+        Double maps ;
+        try{
+        	maps = pdsImage.getDoubleMetadata("IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE);
+        	if (maps==null) throw new NullPointerException();
+        }catch (Exception e){
+        	Object s = pdsImage.getMeta().get("IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE).getValue();
+        	String val=""+s;
+        	maps=Double.parseDouble(val.split("<")[0]);
+        	System.out.println("Scale "+maps);
+        	//VegaLog.severe(""+s);
+        	//VegaLog.severe("Could not get metadata "+"IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE);
+        	//throw e;
+        }
+        System.out.println("Scale "+maps);
+        System.out.println("Scale 2"+scale);
+        
+		BufferedImage result = this.scalateBufferedImage(bi,maps,scale);
 		System.out.println(result.getWidth());
 		System.out.println(result.getHeight());
 		setCoordinatesText();
@@ -162,8 +219,22 @@ public class PDSNavigator extends AbstractVariableEditorComponent<PDSImage>{
 	}
 	
 	public void changeScale(double newScale) throws InvalidValueException{
-		if (newScale<pdsImage.getDoubleMetadata(PDSImage.MAP_SCALE)){
-			throw new InvalidValueException("The minumum scale is "+pdsImage.getDoubleMetadata(PDSImage.MAP_SCALE));
+		Double maps ;
+        try{
+        	maps = pdsImage.getDoubleMetadata("IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE);
+        	if (maps==null) throw new NullPointerException();
+        }catch (Exception e){
+        	Object s = pdsImage.getMeta().get("IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE).getValue();
+        	String val=""+s;
+        	maps=Double.parseDouble(val.split("<")[0]);
+        	System.out.println("Scale "+maps);
+        	//VegaLog.severe(""+s);
+        	//VegaLog.severe("Could not get metadata "+"IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE);
+        	//throw e;
+        }
+
+		if (newScale<maps){
+			throw new InvalidValueException("The minumum scale is "+maps);
 		}
 		scale=newScale;
 		imagePanel.setImage(navigate(latitude,longitude));

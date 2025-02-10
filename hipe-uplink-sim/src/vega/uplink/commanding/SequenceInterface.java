@@ -32,7 +32,7 @@ public interface SequenceInterface {
 	 * Get the source of the sequence
 	 * @return
 	 */
-	public char getSource();
+	public String getSource();
 	
 	/**
 	 * Get the destination of the sequence

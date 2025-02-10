@@ -22,7 +22,7 @@ public class InstrumentSequence extends Sequence{
 		event=null;
 		delta=null;
 	}
-	InstrumentSequence(String commandName,String uid,String flag,char source,char destination,String exTime,Parameter[] param,SequenceProfile[] profiles,String instrument) throws ParseException{
+	InstrumentSequence(String commandName,String uid,String flag,String source,char destination,String exTime,Parameter[] param,SequenceProfile[] profiles,String instrument) throws ParseException{
 		super(commandName,uid,flag,source,destination,exTime,param,profiles);
 		//this.instrument=instrument;
 		setInstrument(instrument);

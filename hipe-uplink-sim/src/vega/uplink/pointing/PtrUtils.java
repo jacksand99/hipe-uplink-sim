@@ -41,6 +41,7 @@ import vega.uplink.pointing.EvtmEvents.EvtmEventCon;
 import vega.uplink.pointing.EvtmEvents.EvtmEventLos;
 import vega.uplink.pointing.EvtmEvents.EvtmEventOrb;
 import vega.uplink.pointing.EvtmEvents.EvtmEventVis;
+import vega.uplink.pointing.EvtmEvents.EvtmPower;
 import vega.uplink.pointing.PtrParameters.*;
 import vega.uplink.pointing.PtrParameters.Offset.*;
 import vega.uplink.pointing.attitudes.*;
@@ -67,6 +68,9 @@ public class PtrUtils {
 		//if (item.getName().equals(PointingMetadata.))
 		if (item.getName().equals(PointingBlock.BLOCK_TAG)) return new PointingBlock(item);
 		if (item.getName().equals(PointingAttitude.ATTITUDE_TAG)){
+		    System.out.println(item.getAttribute(PointingAttitude.REF_TAG).getValue());
+	        if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_TRACKDIR)) return new TrackDir(item);     
+	        if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_TRACKPOINTROT)) return new TrackPointRot(item); 
 			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_ILLUMINATEDPOINT)) return new IlluminatedPoint(item);
 			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_INERTIAL)) return new Inertial(item);
 			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_LIMB)) return new Limb(item);
@@ -75,11 +79,14 @@ public class PtrUtils {
 			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_TRACK)) return new Track(item);
 			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_VELOCITY)) return new Velocity(item);
 			if (item.getAttribute(PointingAttitude.REF_TAG).getValue().startsWith(PointingAttitude.POINTING_ATTITUDE_TYPE_CAPTURE)) return new Capture(item);
+
 			return new PointingAttitude(item);
 		}
+	    if (item.getName().equals(InitTargetPoint.INITTARGETPOINT_TAG)) return new InitTargetPoint(item);
 		if (item.getName().equals(Boresight.BORESIGHT_TAG)) return new Boresight(item);
 		if (item.getName().equals(Height.HEIGHT_TAG)) return new Height(item);
 		if (item.getName().equals(PhaseAngle.PHASEANGLE_TAG)) return new PhaseAngle(item);
+		if (item.getName().equals(RotRate.ROTRATE_TAG)) return new RotRate(item);
 		if (item.getName().equals(Surface.SURFACE_TAG)) return new Surface(item);
 		if (item.getName().equals(TargetTrack.TARGET_TAG)){
 			if (item.getChild(TargetTrack.POSITION_FIELD)!=null) return new TargetTrack(item);
@@ -215,6 +222,7 @@ public class PtrUtils {
 				}
 			}
 			if (block.getType().equals(PointingBlock.TYPE_SLEW)) block=new PointingBlockSlew();
+			if (block.getType().equals(PointingBlock.TYPE_SYNC)) block=new PointingBlockSync();
 			segment.addBlock(block);
 		}
 		return segment;
@@ -263,6 +271,8 @@ public class PtrUtils {
 						}
 					}
 					if (block.getType().equals(PointingBlock.TYPE_SLEW)) block=new PointingBlockSlew();
+					//if (block.getType().equals(PointingBlock.TYPE_SYNC)) block=new PointingBlockSync(block);
+					if (block.getType().equals(PointingBlock.TYPE_SYNC)) block=new PointingBlockSync(block);
 					//segment.addBlock(block);
 					blocks.add(block);
 				}
@@ -333,27 +343,43 @@ public class PtrUtils {
 			for (int i=0;i<eventNodes.getLength();i++){
 				if(eventNodes.item(i).hasAttributes()){
 					String eventType=eventNodes.item(i).getNodeName();
+
+
+
 					NamedNodeMap eventAttributes = eventNodes.item(i).getAttributes();
-					String eventId=eventAttributes.getNamedItem(EvtmEvent.ID_TAG).getTextContent().trim();
+
+					//String eventId=eventAttributes.getNamedItem(EvtmEvent.ID_TAG).getTextContent().trim();
+					String eventId=eventType;
+
 					java.util.Date eventTime=EvtmEvent.zuluToDate(eventAttributes.getNamedItem(EvtmEvent.TIME_TAG).getNodeValue());
-					long eventDuration=Long.parseLong(eventAttributes.getNamedItem(EvtmEvent.DURATION_TAG).getNodeValue().replace(" ", ""));
+
+
+					long eventDuration;
+					try {
+					    eventDuration=Long.parseLong(eventAttributes.getNamedItem(EvtmEvent.DURATION_TAG).getNodeValue().replace(" ", ""));
+					} catch (Exception e) {
+					    eventDuration=0;
+					}
 					boolean created=false;
+
 					if (eventType.equals(EvtmEvent.EVENT_TYPE_BDI)){
 						float eventSundistance=Float.parseFloat(eventAttributes.getNamedItem(EvtmEventBdi.SUNDISTANCE_TAG).getNodeValue().replace(" ", ""));
 						result.addEvent(new EvtmEventBdi(eventId,eventTime,eventDuration,eventSundistance));
 						created=true;
 					}
-					if (eventType.equals(EvtmEvent.EVENT_TYPE_CON)){
-						int eventAngle=Integer.parseInt(eventAttributes.getNamedItem(EvtmEventCon.ANGLE_TAG).getNodeValue().replace(" ", ""));
-						result.addEvent(new EvtmEventCon(eventId,eventTime,eventDuration,eventAngle));
-						created=true;
-					}
+
 
 					if (eventType.equals(EvtmEvent.EVENT_TYPE_ORB)){
 						float eventDistance=Float.parseFloat(eventAttributes.getNamedItem(EvtmEventOrb.DISTANCE_TAG).getNodeValue().replace(" ", ""));
 						result.addEvent(new EvtmEventOrb(eventId,eventTime,eventDuration,eventDistance));
 						created=true;
 					}
+	                   if (eventType.equals(EvtmEvent.EVENT_TYPE_POWER)){
+
+	                        float eventMax=Float.parseFloat(eventAttributes.getNamedItem(EvtmPower.MAX_TAG).getNodeValue().replace(" ", ""));
+	                        result.addEvent(new EvtmPower(eventId,eventTime,eventDuration,eventMax));
+	                        created=true;
+	                    }
 					if (eventType.equals(EvtmEvent.EVENT_TYPE_VIS)){
 						result.addEvent(new EvtmEventVis(eventId,eventTime,eventDuration));
 						created=true;
@@ -383,12 +409,16 @@ public class PtrUtils {
 						if (eventType.equals(EvtmEvent.EVENT_TYPE_LOS)){
 							result.addEvent(new EvtmEventLos(eventId,eventTime,eventDuration,eventStation,eventcriteria,eventElevation,eventRtlt));
 							created=true;
+							
 						}
 						
 						
 					}
 
-					if (!created) result.addEvent(new EvtmEvent(eventType,eventId,eventTime,eventDuration));
+					if (!created) {
+					    result.addEvent(new EvtmEvent(eventType,eventId,eventTime,eventDuration));
+					    //System.out.println("Another detected "+eventType+" "+eventId);
+					}
 				}
 			}
 			

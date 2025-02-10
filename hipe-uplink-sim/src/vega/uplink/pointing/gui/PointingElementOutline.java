@@ -45,7 +45,7 @@ import herschel.ia.gui.apps.components.outline.StringOutline;
 import herschel.ia.gui.apps.views.outline.OutlineComponent;
 import herschel.ia.gui.apps.views.outline.OutlineView;
 import herschel.ia.gui.kernel.Selection;
-import herschel.ia.gui.kernel.SelectionVisitor;
+//import herschel.ia.gui.kernel.SelectionVisitor;
 import herschel.ia.gui.kernel.VariableSelection;
 import herschel.ia.gui.kernel.util.TableUtil;
 import herschel.ia.pal.gui.components.ContextOutline;

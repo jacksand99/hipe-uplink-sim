@@ -1,12 +1,15 @@
 package vega.uplink.pointing;
 import herschel.ia.dataset.CompositeDataset;
+import herschel.ia.dataset.Dataset;
 import herschel.ia.dataset.Product;
 import herschel.ia.dataset.StringParameter;
 import herschel.share.fltdyn.time.FineTime;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Date;
 
+//import vega.uplink.EvtmEvent;
 import vega.uplink.Properties;
 
 public class Evtm extends Product{
@@ -31,7 +34,7 @@ public class Evtm extends Product{
 		setPath(Properties.getProperty("user.home"));
 		this.setType("EVTM");
 
-		//eventsMap=new HashMap<Date,EvtmEvent>();
+		eventsMap=new HashMap<Date,EvtmEvent>();
 		this.setCreationDate(new FineTime(evtmGenerationTime));
 		//generationTime=evtmGenerationTime;
 		this.setStartDate(new FineTime(evtmValidityStart));
@@ -131,10 +134,20 @@ public class Evtm extends Product{
 		//return icdVersion;
 	}
 	
-	public void addEvent(EvtmEvent event){
+	/*public void addEvent(EvtmEvent event){
 		this.set(EvtmEvent.dateToZulu(event.getTime()), event);
 		//eventsMap.put(event.getTime(), event);
-	}
+	}*/
+	   public void addEvent(EvtmEvent event){
+
+	        if (this.getEvent(event.getTime())!=null){
+	            EvtmEvent e = new EvtmEvent(event.getType(),event.getId(),new Date(event.getTime().getTime()+1),event.getDuration());
+	            this.addEvent(e);
+	            return;
+	        }
+	        //eventsMap.put(event.getTime(), event);
+	        this.set(EvtmEvent.dateToZulu(event.getTime()), event);
+	    }
 	
 	public EvtmEvent getEvent(Date time){
 		return (EvtmEvent)get(EvtmEvent.dateToZulu(time));
@@ -148,6 +161,21 @@ public class Evtm extends Product{
 		//eventsMap.values().toArray(result);
 		java.util.Arrays.sort(result);
 		return result;
+	}
+	public EvtmEvent[] getAllEventsBetween(Date start,Date end){
+	        java.util.Vector<EvtmEvent> vEvents= new java.util.Vector<EvtmEvent>();
+	        Iterator<Dataset> it = this.getSets().values().iterator();
+	        while (it.hasNext()) {
+	            EvtmEvent ev = (EvtmEvent) it.next();
+	            if (ev.getTime().after(start) && ev.getTime().before(end)) vEvents.add(ev);
+	        }
+	       EvtmEvent[] result=new EvtmEvent[vEvents.size()];
+	       vEvents.toArray(result);
+	        //this.getSets().values().toArray(result);
+	        //EvtmEvent[] result=new EvtmEvent[eventsMap.size()];
+	        //eventsMap.values().toArray(result);
+	        java.util.Arrays.sort(result);
+	        return result;
 	}
 	
 	public EvtmEvent[] getEventsByType(String type){

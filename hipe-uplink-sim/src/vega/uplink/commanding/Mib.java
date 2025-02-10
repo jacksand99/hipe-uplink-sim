@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -27,7 +27,7 @@ import herschel.ia.io.ascii.AsciiTableTool;
 import herschel.ia.io.ascii.CsvParser;
 import herschel.ia.io.ascii.TableTemplate;
 import herschel.ia.numeric.String1d;
-import vega.hipe.FileUtil;
+//import vega.hipe.FileUtil;
 import vega.hipe.logging.VegaLog;
 import herschel.share.util.ObjectUtil;
 
@@ -50,6 +50,7 @@ public class Mib extends CompositeDataset{
 	static String[] css_columns={"CSS_SQNAME","CSS_COMM","CSS_ENTRY","CSS_TYPE","CSS_ELEMID","CSS_NPARS","CSS_MANDISP","CPC_CATEG","CSS_RELTYPE","CSS_RELTIME","CSS_EXTIME","CSS_PREVREL","CSS_GROUPL","CSS_BLOCK","CSS_ILSCOPE","CSS_ILSTAGE","CSS_DYNPTV","CSS_STAPTV","CSS_CEV"};
 	static String[] css_types={"String","String","Integer","String","String","Integer","String","String","String","String","String","String","String","String","String","String","String","String","String"};
 	private HashMap<String,Long> cacheDuration;
+	private HashMap<String,Integer> cacheCommands;
 	private HashMap<String,String> cacheSeqDescription;
 	private HashMap<String,String> cacheParamDescription;
 
@@ -62,6 +63,7 @@ public class Mib extends CompositeDataset{
 		cacheDuration=new HashMap<String,Long>();
 		cacheSeqDescription=new HashMap<String,String>();
 		cacheParamDescription=new HashMap<String,String>();
+		cacheCommands=new HashMap<String,Integer>();
 	}
 	
 	/**
@@ -240,27 +242,36 @@ public class Mib extends CompositeDataset{
 	public Parameter getDefaultParameter(String parameterName){
 		Parameter result=new Parameter(parameterName,"Default","Default");
 		TableDataset resultTable=findInTable((TableDataset)this.get("csp_table"),"CSP_FPNAME",parameterName);
-		java.util.List<Object> row = resultTable.getRow(0);
-		String value_type=(String) row.get(9);
-		String value=(String) row.get(10);
-		String radix=(String) row.get(7);
-		String final_radix="";
-		if (radix.equals("D")) final_radix=Parameter.RADIX_DECIMAL;
-		if (radix.equals("H")) final_radix=Parameter.RADIX_HEX;
-		if (radix.equals("O")) final_radix=Parameter.RADIX_OCTAL;
-				
-		if (value_type.equals("R")){
-			
-			if (radix.equals("D") && value!=null) result=new ParameterFloat(parameterName,Parameter.REPRESENTATION_RAW,final_radix,new Float(value).floatValue());
-			if (radix.equals("H") && value!=null) result=new ParameterFloat(parameterName,Parameter.REPRESENTATION_RAW,final_radix,Long.parseLong(value, 16));
-
+		try {
+    		java.util.List<Object> row = resultTable.getRow(0);
+    		String value_type=(String) row.get(9);
+    		String value=(String) row.get(10);
+    		String radix=(String) row.get(7);
+    		String final_radix="";
+    		if (radix.equals("D")) final_radix=Parameter.RADIX_DECIMAL;
+    		if (radix.equals("H")) final_radix=Parameter.RADIX_HEX;
+    		if (radix.equals("O")) final_radix=Parameter.RADIX_OCTAL;
+    				
+    		if (value_type.equals("R")){
+    			
+    			if (radix.equals("D") && value!=null) result=new ParameterFloat(parameterName,Parameter.REPRESENTATION_RAW,final_radix,new Float(value).floatValue());
+    			if (radix.equals("H") && value!=null) result=new ParameterFloat(parameterName,Parameter.REPRESENTATION_RAW,final_radix,Long.parseLong(value, 16));
+    
+    		}
+    
+    		if (value_type.equals("E")){
+    			result=new ParameterString(parameterName,Parameter.REPRESENTATION_ENGINEERING,value);
+    		}
+    
+    		return result;
+		}catch (Exception e) {
+		    RuntimeException ef=new RuntimeException("Problems getting default parameter for parameter "+parameterName+" from MIB");
+		    ef.initCause(e);
+		    ef.printStackTrace();
+		    ParameterString p = new ParameterString(parameterName,Parameter.REPRESENTATION_ENGINEERING,"");
+		    return p;
+		    //throw ef;
 		}
-
-		if (value_type.equals("E")){
-			result=new ParameterString(parameterName,Parameter.REPRESENTATION_ENGINEERING,value);
-		}
-
-		return result;
 	}
 	
 	/**
@@ -394,6 +405,26 @@ public class Mib extends CompositeDataset{
 		}
 		
 	}
+	
+	   /**
+     * Get the total number of commands of a sequence as defined in the MIB
+     * @param sequenceName The sequence name
+     * @return Duration in seconds
+     */
+    public int getNumberCommandsPerSequence(String sequenceName){
+        Integer cCommands = cacheCommands.get(sequenceName);
+        if (cCommands!=null) return cCommands;
+        int result=0;
+        try{
+            TableDataset resultTable=findInTable((TableDataset)this.get("css_table"),"CSS_SQNAME",sequenceName);
+            result = resultTable.getRowCount();
+            cacheCommands.put(sequenceName, result);
+            return result;
+        }catch (Exception e){
+            return 0;
+        }
+        
+    }
 	
 	private static long mibTimeToSecs(String mibTime){
 		StringTokenizer items=new StringTokenizer(mibTime,".");

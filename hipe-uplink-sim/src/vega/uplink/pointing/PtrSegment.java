@@ -188,9 +188,10 @@ public class PtrSegment extends PointingBlocksSlice{
 		//System.out.println("inserted "+block.toXml(0));
 		cacheDirty=true;
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
-		if (!blMap.lastEntry().getValue().getType().equals(PointingBlock.TYPE_SLEW)){
+		if (!(blMap.lastEntry().getValue().getType().equals(PointingBlock.TYPE_SLEW) || blMap.lastEntry().getValue().getType().equals(PointingBlock.TYPE_SYNC))){
 			this.setValidityDates(blMap.firstKey(), blMap.lastEntry().getValue().getEndTime());
 		}
+
 		//cacheDirty=true;
 	}
 	protected void hardInsertBlocks(PointingBlock[] blocks){
@@ -202,6 +203,8 @@ public class PtrSegment extends PointingBlocksSlice{
 			PointingBlock block=blocks[i];
 			if (block.getType().equals("SLEW")) ((PointingBlockSlew) block).setBlockBefore(lastBlock);
 			if (lastBlock!=null && lastBlock.getType().equals("SLEW")) ((PointingBlockSlew) lastBlock).setBlockAfter(block);
+	         if (block.getType().equals("SYNC")) ((PointingBlockSync) block).setBlockBefore(lastBlock);
+	            if (lastBlock!=null && lastBlock.getType().equals("SYNC")) ((PointingBlockSync) lastBlock).setBlockAfter(block);
 			set(getBlockName(block),block);
 			lastBlock=block;
 
@@ -211,6 +214,9 @@ public class PtrSegment extends PointingBlocksSlice{
 		if (!blMap.lastEntry().getValue().getType().equals(PointingBlock.TYPE_SLEW)){
 			this.setValidityDates(blMap.firstKey(), blMap.lastEntry().getValue().getEndTime());
 		}
+	      if (!blMap.lastEntry().getValue().getType().equals(PointingBlock.TYPE_SYNC)){
+	            this.setValidityDates(blMap.firstKey(), blMap.lastEntry().getValue().getEndTime());
+	        }
 		
 		//set(getBlockName(block),block);
 		//blMap.put(block.getStartTime(), block);
@@ -232,7 +238,7 @@ public class PtrSegment extends PointingBlocksSlice{
 		PointingBlock after = blockAfter(block);
 		//cacheDirty=true;
 		if (before!=null && after!=null){
-			if (before.getType().equals(PointingBlock.TYPE_SLEW) && after.getType().equals(PointingBlock.TYPE_SLEW)){
+			if ((before.getType().equals(PointingBlock.TYPE_SLEW) || before.getType().equals(PointingBlock.TYPE_SYNC)) && (after.getType().equals(PointingBlock.TYPE_SLEW) || after.getType().equals(PointingBlock.TYPE_SYNC))){
 				PointingBlockSlew slewBefore=(PointingBlockSlew) before;
 				PointingBlockSlew slewAfter=(PointingBlockSlew) after;				
 				hardRemoveBlock(slewBefore);
@@ -242,23 +248,23 @@ public class PtrSegment extends PointingBlocksSlice{
 				newSlew.setBlockAfter(slewAfter.getBlockAfter());
 				hardInsertBlock(newSlew);				
 			}
-			if (before.getType().equals(PointingBlock.TYPE_SLEW) && !after.getType().equals(PointingBlock.TYPE_SLEW)){
+			if ((before.getType().equals(PointingBlock.TYPE_SLEW) || before.getType().equals(PointingBlock.TYPE_SYNC)) && !(after.getType().equals(PointingBlock.TYPE_SLEW) || after.getType().equals(PointingBlock.TYPE_SYNC))){
 				PointingBlockSlew slewBefore=(PointingBlockSlew) before;
 				slewBefore.setBlockAfter(after);				
 			}
-			if (!before.getType().equals(PointingBlock.TYPE_SLEW) && after.getType().equals(PointingBlock.TYPE_SLEW)){
+			if (!(before.getType().equals(PointingBlock.TYPE_SLEW) || before.getType().equals(PointingBlock.TYPE_SYNC)) && (after.getType().equals(PointingBlock.TYPE_SLEW) || after.getType().equals(PointingBlock.TYPE_SYNC))){
 				PointingBlockSlew slewAfter=(PointingBlockSlew) after;				
 				slewAfter.setBlockBefore(before);
 			}
 		}
 		if (before==null && after!=null){
-			if (after.getType().equals(PointingBlock.TYPE_SLEW)){
+			if (after.getType().equals(PointingBlock.TYPE_SLEW) || after.getType().equals(PointingBlock.TYPE_SYNC)){
 				PointingBlockSlew slewAfter=(PointingBlockSlew) after;				
 				hardRemoveBlock(slewAfter);
 			}
 		}
 		if (before!=null && after==null){
-			if (before.getType().equals(PointingBlock.TYPE_SLEW)){
+			if (before.getType().equals(PointingBlock.TYPE_SLEW) || before.getType().equals(PointingBlock.TYPE_SYNC)){
 				PointingBlockSlew slewBefore=(PointingBlockSlew) before;
 				slewBefore.setBlockAfter(null);
 			}
@@ -357,7 +363,7 @@ public class PtrSegment extends PointingBlocksSlice{
 			if (block.getType().equals(PointingBlock.TYPE_MOCM) || block.getType().equals(PointingBlock.TYPE_MWOL) || block.getType().equals(PointingBlock.TYPE_MSLW)){
 				PointingBlock before = blockBefore(block);
 				if (before!=null){
-					if (before.getType().equals(PointingBlock.TYPE_SLEW)){
+					if (before.getType().equals(PointingBlock.TYPE_SLEW) || before.getType().equals(PointingBlock.TYPE_SYNC)){
 						PointingBlock beforeSlew=blockBefore(before);
 						this.removeBlock(before);
 						//this.hardRemoveBlock(before);
@@ -382,7 +388,7 @@ public class PtrSegment extends PointingBlocksSlice{
 		for (int i=1;i<blocks.length;i++){
 			PointingBlock block = blocks[i];
 			PointingBlock before = blockBefore(block);
-			if (before.getType().equals(PointingBlock.TYPE_SLEW) && block.getType().equals(PointingBlock.TYPE_SLEW)){
+			if ((before.getType().equals(PointingBlock.TYPE_SLEW) || before.getType().equals(PointingBlock.TYPE_SYNC)) && (block.getType().equals(PointingBlock.TYPE_SLEW) || block.getType().equals(PointingBlock.TYPE_SYNC))){
 				//System.out.println("Duplicatr Slew detected");
 				hardRemoveBlock(block);
 			}
@@ -402,7 +408,7 @@ public class PtrSegment extends PointingBlocksSlice{
 			PointingBlock block = blocks[i];
 			PointingBlock before = blockBefore(block);
 			//PointingBlock after = blockAfter(block);
-			if (!block.getType().equals(PointingBlock.TYPE_SLEW) && before!=null && !before.getType().equals(PointingBlock.TYPE_SLEW) && !before.getEndTime().equals(block.getStartTime())){
+			if (!(block.getType().equals(PointingBlock.TYPE_SLEW) || block.getType().equals(PointingBlock.TYPE_SYNC)) && before!=null && !(before.getType().equals(PointingBlock.TYPE_SLEW) || before.getType().equals(PointingBlock.TYPE_SYNC))  && !before.getEndTime().equals(block.getStartTime())){
 				PointingBlockSlew newSlew=new PointingBlockSlew();
 				newSlew.setBlockBefore(before);
 				newSlew.setBlockAfter(block);
@@ -418,26 +424,70 @@ public class PtrSegment extends PointingBlocksSlice{
 	 * @param newBlock Block to be added
 	 */
 	public void addBlock(PointingBlock newBlock){
-		boolean new_is_slew = newBlock.getType().equals(PointingBlock.TYPE_SLEW);
+	    boolean new_is_slew = false;
+	    if (newBlock.getType().equals(PointingBlock.TYPE_SLEW) || newBlock.getType().equals(PointingBlock.TYPE_SYNC)){
+	        new_is_slew=true;
+	    }
+		//boolean new_is_slew = newBlock.getType().equals(PointingBlock.TYPE_SLEW);
+	    
 		TreeMap<Date, PointingBlock> blMap = this.getBlMap();
 		cacheDirty=true;
 		Entry<Date, PointingBlock> lastEntry = blMap.lastEntry();
-		PointingBlock before;
-		if (new_is_slew &&((PointingBlockSlew) newBlock).getBlockBefore()==null){
-			if (lastEntry==null){
-				throw (new IllegalArgumentException("Can not introduce a SLEW as first block of a segment"));
-				//before=null;
-			}
-			else before=lastEntry.getValue();
+		PointingBlock before=null;
+		if (newBlock.getClass().isInstance(PointingBlockSlew.class)){
+    		if (new_is_slew &&((PointingBlockSlew) newBlock).getBlockBefore()==null){
+    			if (lastEntry==null){
+    			    try {
+    			        newBlock.getStartTime();
+    			        before=null;
+    			        hardInsertBlock(newBlock);
+    			        return;
+    			    }catch (IllegalArgumentException iae) {
+    			        throw (new IllegalArgumentException("Can not introduce a SLEW as first block of a segment"));
+    			    }
+    				
+    				//before=null;
+    			}
+    			else before=lastEntry.getValue();
+    		}
 		}
-		else before= blockBefore(newBlock);
-		PointingBlock after;
-		if (new_is_slew &&((PointingBlockSlew) newBlock).getBlockAfter()==null){
-			after=null;
+		
+	      if (newBlock.getClass().isInstance(PointingBlockSync.class)){
+	            if (new_is_slew &&((PointingBlockSync) newBlock).getBlockBefore()==null){
+	                if (lastEntry==null){
+	                    try {
+	                        newBlock.getStartTime();
+	                        before=null;
+	                        hardInsertBlock(newBlock);
+	                        return;
+	                    }catch (IllegalArgumentException iae) {
+	                        throw (new IllegalArgumentException("Can not introduce a SLEW as first block of a segment"));
+	                    }
+	                    
+	                    //before=null;
+	                }
+	                else before=lastEntry.getValue();
+	            }
+	        }
+		
+		if (before==null) before= blockBefore(newBlock);
+		PointingBlock after=null;
+		if (newBlock.getClass().isInstance(PointingBlockSlew.class)){
+    		if (new_is_slew &&((PointingBlockSlew) newBlock).getBlockAfter()==null){
+    			after=null;
+    		}
+    		else after= blockAfter(newBlock);
 		}
-		else after= blockAfter(newBlock);
-		boolean before_is_slew=(before!=null && before.getType().equals(PointingBlock.TYPE_SLEW));
-		boolean after_is_slew=(after!=null && after.getType().equals(PointingBlock.TYPE_SLEW));
+        if (newBlock.getClass().isInstance(PointingBlockSync.class)){
+            if (new_is_slew &&((PointingBlockSync) newBlock).getBlockAfter()==null){
+                after=null;
+            }
+            else after= blockAfter(newBlock);
+            
+        }
+		
+		boolean before_is_slew=(before!=null && (before.getType().equals(PointingBlock.TYPE_SLEW) || before.getType().equals(PointingBlock.TYPE_SYNC)));
+		boolean after_is_slew=(after!=null && (after.getType().equals(PointingBlock.TYPE_SLEW) || after.getType().equals(PointingBlock.TYPE_SYNC)));
 		if (lastEntry==null){
 			//The block list empty
 			if (new_is_slew) return; //Can not insert slew in an empty list;

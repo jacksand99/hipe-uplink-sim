@@ -444,6 +444,8 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 			        public void run(){
 			        	String messages="";
 			        	SuperPor spor=new SuperPor();
+			        	Date simStartDate=new Date();
+			        	Date simEndDate=new Date();
 			        	//Simulation sim=new Simulation(por);
 			        	try{
 			        		if (initScript!=null){
@@ -466,10 +468,18 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 			        		
 			        		if (porFiles!=null){
 			        			for (int i=0;i<porFiles.length;i++){
-			        				Por por = PorUtils.readPORfromFile(porFiles[i].getAbsolutePath());
-			        				por.setName(porFiles[i].getName());
-			        				spor.addPor(por);
+			        			    try {
+			        			        Por por = PorUtils.readPORfromFile(porFiles[i].getAbsolutePath());
+			        			        por.setName(porFiles[i].getName());
+			        			        spor.addPor(por);
+			        			    } catch (Exception e) {
+	                                      Por por = PorUtils.readPORGfromFile(porFiles[i].getAbsolutePath());
+	                                        por.setName(porFiles[i].getName());
+	                                        spor.addPor(por);
+			        			    }
 			        			}
+			        			simStartDate=spor.getStartDate().toDate();
+			        			simEndDate=spor.getEndDate().toDate();
 			        			if (!((String)ptrbox.getSelectedItem()).equals("PTR_SEGMENT")) spor.setName((String)ptrbox.getSelectedItem());
 			        			
 			        		}
@@ -508,7 +518,9 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 
 			        		if (evtmFile!=null){
 			        			Evtm evtm = PtrUtils.readEvtmFromFile(evtmFile.getAbsolutePath());
-			        			EvtmEvent[] events = evtm.getEventsByType(EvtmEvent.EVENT_TYPE_BDI);
+			        			//EvtmEvent[] events = evtm.getEventsByType(EvtmEvent.EVENT_TYPE_BDI);
+			        			//EvtmEvent[] events = evtm.getAllEvents();
+			        			EvtmEvent[] events = evtm.getAllEventsBetween(simStartDate,simEndDate);
 			        			/*
 			        			 * for event in events:
 	newmodes=SimulationContext.getInstance().orcd.getModesAsHistory("EVTM_"+event.getId(),event.getTime().getTime())
@@ -517,8 +529,18 @@ public class SimulationView extends JPanel implements Viewable, ActionMaker, Sit
 			        			 */
 			        			for (int i=0;i<events.length;i++){
 			        				EvtmEvent event = events[i];
-			        				HashMap<Long, String> newmodes = context.getOrcd().getModesAsHistory("EVTM_"+event.getId(),event.getTime().getTime());
-			        				context.getHistoryModes().putAll(newmodes,"EVTM_"+event.getId(),event.getTime().getTime());
+			        				//ModelState ms=new ModelState();
+			        				//event.getDuration()*1000
+			        			     String[] arr=event.getId().split("_");
+			        			     String subSystem="";
+			        			     for (int j=0;j<arr.length-1;j++){
+			        			            subSystem=subSystem+arr[j]+"_";
+			        			     }
+			        			     VegaLog.info("Event for subsystem "+subSystem+" created "+event.getId());
+			        				context.getHistoryModes().add(event.getTime().getTime(), "EVTM_"+event.getId(), "EVTM", event.getTime().getTime());
+			        				context.getHistoryModes().add(event.getTime().getTime()+event.getDuration()*1000, "EVTM_"+subSystem+"IDLE", "EVTM", event.getTime().getTime()+event.getDuration()*1000);
+			        				//HashMap<Long, String> newmodes = context.getOrcd().getModesAsHistory("EVTM_"+event.getId(),event.getTime().getTime());
+			        				//context.getHistoryModes().putAll(newmodes,"EVTM_"+event.getId(),event.getTime().getTime());
 			        			}
 			        		}
 			        		if (ptr!=null){

@@ -1,7 +1,7 @@
 package vega.uplink.planning.gui;
 
 import herschel.ia.gui.kernel.Selection;
-import herschel.ia.gui.kernel.SelectionVisitor;
+//import herschel.ia.gui.kernel.SelectionVisitor;
 import herschel.ia.gui.kernel.VariableSelection;
 import herschel.ia.gui.kernel.dnd.DnDSelection;
 import herschel.ia.gui.kernel.dnd.DragSelection;
@@ -151,11 +151,11 @@ public class PlanningTimeBarRenderer implements TimeBarRenderer {
   	    System.out.println("finishes or cancels the drag operation");
   	  }
 
-	@Override
+	/*@Override
 	public void accept(SelectionVisitor arg0) {
 		// TODO Auto-generated method stub
 		
-	}
+	}*/
 
 	@Override
 	public Class<?> getType() {

@@ -1,6 +1,9 @@
 package vega.uplink.pointing;
 
+import java.util.Date;
+
 import vega.uplink.DateUtil;
+import vega.uplink.Properties;
 
 /**
  * An attitude slew is implemented by inserting a slew block in the PTR. A slew block must be
@@ -16,6 +19,12 @@ public class PointingBlockSlew extends PointingBlock {
 	
 	public PointingBlockSlew(){
 		super("SLEW",new java.util.Date(),new java.util.Date());
+	}
+	public PointingBlockSlew(String type,Date startTime,Date endTime) {
+	    super(type,startTime,endTime);
+	}
+	public PointingBlockSlew(PointingElement pb) {
+	    super(pb);
 	}
 	
 	/**
@@ -49,14 +58,37 @@ public class PointingBlockSlew extends PointingBlock {
 	}
 	
 	public java.util.Date getStartTime(){
-		if (blockBefore==null) throw new IllegalArgumentException("Trying to get the start time of slew with no block before");
+	    if (blockBefore!=null) {
+	        return blockBefore.getEndTime();
+	    }
+	    else {
 
-		return blockBefore.getEndTime();
+	            if (super.getStartTime()!=null) {
+	                return super.getStartTime();
+	            }else {
+	                throw new IllegalArgumentException("Trying to get the start time of slew with no block before");
+
+	            }
+	    }
+
+		
 	}
 	
 	public java.util.Date getEndTime(){
-		if (blockAfter==null) throw new IllegalArgumentException("Trying to get the end time of slew with no block after");
-		return blockAfter.getStartTime();
+	       if (blockAfter!=null) {
+	            return blockAfter.getEndTime();
+	        }
+	        else {
+
+	                if (super.getEndTime()!=null) {
+	                    return super.getEndTime();
+	                }else {
+	                    throw new IllegalArgumentException("Trying to get the start time of slew with no block before");
+
+	                }
+	        }
+
+	    
 	}
 	
 	/*public void setStartTime(java.util.Date time){
@@ -68,10 +100,23 @@ public class PointingBlockSlew extends PointingBlock {
 	}*/
 
 	public String toXml(int indent){
+	    String format = herschel.share.util.Configuration.getProperty(Properties.POINTING_DATE_FORMAT);
+	    String formatTag="";
+	    if (format.equals("DOY")) {
+	        formatTag=" format=\"DOY\"";
+	    }
 		String iString="";
 		for (int i=0;i<indent;i++){
 			iString=iString+"\t";
 		}
+	    if (blockBefore==null) {
+
+	        return iString+"<block ref='SLEW'>\n"+iString+"\t<startTime"+formatTag+">"+DateUtil.dateToDOYNoMilli(getStartTime())+"</startTime>\n"+iString+"</block>";
+	    }
+	       if (blockAfter==null) {
+	           PointingElement time = this.getChild("endTime");
+	            return iString+"<block ref='SLEW'>\n"+iString+"\t<endTime\"+formatTag+\">"+DateUtil.dateToDOYNoMilli(getEndTime())+"</endTime>\n"+iString+"</block>";
+	        }
 		return iString+"<block ref='SLEW'/>\n";
 	}
 	

@@ -54,23 +54,23 @@ import vega.uplink.pointing.PtrParameters.Offset.OffsetScan;
 public class TestPointing {
 
 	public static void main(String[] args) {
-		herschel.share.util.Configuration.setProperty("var.hcss.dir", "/Users/jarenas 1/Downloads/hcss.dp.core-13.0.2361");
-		herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas 1/Downloads/hcss.dp.core-13.0.2361");
-    	herschel.share.util.Configuration.setProperty("vega.default.evtDirectory", "/Users/jarenas 1/Downloads/MAPPS/RMOC/");
-    	herschel.share.util.Configuration.setProperty("vega.orcd.file","/Users/jarenas 1/Downloads/MAPPS/MIB/orcd.csv");
-    	herschel.share.util.Configuration.setProperty("vega.pwpl.file","/Users/jarenas 1/OPS/ROS_SGS/PLANNING/RMOC/FCT/PWPL_14_001_14_365__OPT_01.ROS");
-    	herschel.share.util.Configuration.setProperty("vega.mib.location","/Users/jarenas 1/Downloads/MAPPS/MIB");
-    	herschel.share.util.Configuration.setProperty("var.hcss.cfg.dir", "/Users/jarenas 1/.hcss");
+		herschel.share.util.Configuration.setProperty("var.hcss.dir", "/Users/jarenas/Downloads/hcss.dp.core-13.0.2361");
+		herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas/Downloads/hcss.dp.core-13.0.2361");
+    	herschel.share.util.Configuration.setProperty("vega.default.evtDirectory", "/Users/jarenas/Downloads/MAPPS/RMOC/");
+    	herschel.share.util.Configuration.setProperty("vega.orcd.file","/Users/jarenas/Downloads/MAPPS/MIB/orcd.csv");
+    	herschel.share.util.Configuration.setProperty("vega.pwpl.file","/Users/jarenas/OPS/ROS_SGS/PLANNING/RMOC/FCT/PWPL_14_001_14_365__OPT_01.ROS");
+    	herschel.share.util.Configuration.setProperty("vega.mib.location","/Users/jarenas/Downloads/MAPPS/MIB");
+    	herschel.share.util.Configuration.setProperty("var.hcss.cfg.dir", "/Users/jarenas/.hcss");
     	
     	//AngularMomentum agm = AngularMomentum.readFromFile("/Users/jarenas 1/Downloads/hcss.dp.core-13.0.2361/fddata/1407222816165_agm.txt");
     	//AngularMomentum agm = AngularMomentum.readFromFile("/Users/jarenas 1/Downloads/hcss.dp.core-13.0.2361/fddata/1407221834000_agm.txt");
     	//System.out.println(agm);
     	try{
-    		RosettaDistance dis = RosettaDistance.getInstance();
-    		System.out.println(dis.getDistanceSun(new Date()));
-    		RosettaPtrCheckTask task = new RosettaPtrCheckTask();
-    		Map<String, Modifier> map = task.getCustomModifiers();
-    	Ptr ptr=PtrUtils.readPTRfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP001/LTP001A/MTP005A/PTR/PTRM_DM_005_01____A__00007.ROS");
+    		//RosettaDistance dis = RosettaDistance.getInstance();
+    		//System.out.println(dis.getDistanceSun(new Date()));
+    		//RosettaPtrCheckTask task = new RosettaPtrCheckTask();
+    		//Map<String, Modifier> map = task.getCustomModifiers();
+    	Ptr ptr=PtrUtils.readPTRfromFile("/Users/jarenas/ptr-tool/tests/PTR__004_000_00_00001.SOL");
     	//Ptr ptr=PtrUtils.readPTRfromFile("/Users/jarenas 1/Rosetta/testing/MTP008val/PTRM_DM_008_01____A__00017.ROS.txt.new");
 		Pdfm pdfm=PtrUtils.readPdfmfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP001/LTP001A/MTP005A/PTR/PDFM_DM_005_01____A__00006.ROS");
 		//Ptsl 

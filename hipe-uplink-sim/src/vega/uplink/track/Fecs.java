@@ -1083,8 +1083,14 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 		for (int i=0;i<size;i++){
 			Node item = fcsNodeList.item(i);
 			NamedNodeMap attributes = item.getAttributes();
-			if (attributes!=null){
+			/*if (attributes!=null){
 				Date time=DateUtil.DOYToDate(item.getAttributes().getNamedItem("time").getTextContent());
+				NamedNodeMap att = item.getAttributes();
+				int attsize = att.getLength();
+				for (int u=0;u<attsize;u++) {
+				    System.out.println(att.item(u).getNodeName());
+				}
+				System.out.println(item.getAttributes().getNamedItem("id"));
 				if (item.getAttributes().getNamedItem("id").getNodeValue().equals("BOT_")){
 					botNodes.put(time,item);
 
@@ -1120,7 +1126,7 @@ public class Fecs extends TableDataset implements XmlDataInterface{
 
 
 
-			}
+			}*/
 		}
 		Iterator<Date> it = botNodes.keySet().iterator();
 		while (it.hasNext()){

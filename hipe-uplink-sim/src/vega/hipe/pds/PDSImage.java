@@ -46,7 +46,8 @@ import herschel.share.interpreter.InterpreterUtil;
 import herschel.share.unit.Unit;
 
 /**
- * Class that stores an image read in Planetary Data Science format. As it inherit from SimpleImage it can be handle by Hipe and save as FITS 
+ * Class that stores an image read in Planetary Data Science format. As it inherit from SimpleImage it can be handle by Hipe and save as FITS
+ * The PDS formats supported are LSB_UNSIGNED_INTEGER 8, 16 and 32 bits, MSB_UNSIGNED_INTEGER 8, 16 and 32 bits, MSB_INTEGER 8, 16 and 32 bits, PC_REAL 32 bits
  * @author jarenas
  *
  */
@@ -1147,179 +1148,241 @@ public class PDSImage extends SimpleImage {
 			}
 
 			PDSImage si = new PDSImage();
-			
-			if (sample_bits==8 && (sample_type.equals(LSB_UNSIGNED_INTEGER) || sample_type.equals(MSB_UNSIGNED_INTEGER) || sample_type.equals(UNSIGNED_INTEGER))){
-				VegaLog.info("PDS image is LSB_UNSIGNED_INTEGER 8 bits");
-				Int2d image2D=null;
-				int os =0;
-				if (offset>0){
-					os=offset;
-				}else{
-					os = data.length-(height*width);
-				}
-				image2D=new Int2d(height,width);
-				int locator=0;
-		        for (int row = 0; row < height; row++) {
-		            for (int column = 0; column < width; column++) {
-		            	image2D.set(row,column,data[os+locator] & 0xFF);
-		            	locator++;
-		            }
-		        }
-		        si.setImage(image2D);
-			}
-			
-			if (sample_bits==16 && (sample_type.equals(MSB_UNSIGNED_INTEGER) )){
-				VegaLog.info("PDS image is MSB_UNSIGNED_INTEGER 8 bits");
-				/*Short2d image2D=null;
-				int os =0;
-				if (offset>0){
-					os=offset;
-				}else{
-					os = data.length-(height*width*2);
-				}
-				image2D=new Short2d(height,width);
-				int locator=0;
-		        for (int row = 0; row < height; row++) {
-		            for (int column = 0; column < width*2; column=column+2) {
-		            	short val=(short)( ((data[os+locator]&0xFF)<<8) | (data[os+locator+1]&0xFF) );
-		            	image2D.set(row,column/2,val );
-		            	locator=locator+2;
-		            }
-		        }
-		        si.setImage(image2D);*/
-				Int2d image2D=null;
-				int os =0;
-				if (offset>0){
-					os=offset;
-				}else{
-					os = data.length-(height*width*2);
-				}
-				image2D=new Int2d(height,width);
-				int locator=0;
-		        for (int row = 0; row < height; row++) {
-		            for (int column = 0; column < width*2; column=column+2) {
-		            	int val = ((data[os+locator] & 0xff) << 8) | (data[os+locator+1] & 0xff);
-		            	image2D.set(row,column/2,val );
-		            	locator=locator+2;
-		            }
-		        }
-		        si.setImage(image2D);
-			}		
-			
+			if (sample_type.equals(LSB_UNSIGNED_INTEGER)  ){
+				if (sample_bits==8){
+					VegaLog.info("PDS image is LSB_UNSIGNED_INTEGER 8 bits");
+					Int2d image2D=null;
+					int os =0;
+					if (offset>0){
+						os=offset;
+					}else{
+						os = data.length-(height*width);
+					}
+					image2D=new Int2d(height,width);
+					int locator=0;
+			        for (int row = 0; row < height; row++) {
+			            for (int column = 0; column < width; column++) {
+			            	image2D.set(row,column,data[os+locator] & 0xFF);
+			            	locator++;
+			            }
+			        }
+			        si.setImage(image2D);
 
-			if (sample_bits==16 && sample_type.equals(LSB_UNSIGNED_INTEGER)){
-				VegaLog.info("PDS image is LSB_UNSIGNED_INTEGER 16 bits");
-				Short2d image2D=null;
-				int os =0;
-				if (offset>0){
-					os=offset;
-				}else{
-					os = data.length-(height*width*2);
 				}
-				image2D=new Short2d(height,width);
-				int locator=0;
-		        for (int row = 0; row < height; row++) {
-		            for (int column = 0; column < width*2; column=column+2) {
-		            	short val=(short)( ((data[os+locator+1]&0xFF)<<8) | (data[os+locator]&0xFF) );
-		            	image2D.set(row,column/2,val );
-		            	locator=locator+2;
-		            }
-		        }
-		        si.setImage(image2D);
-			}
-			if (sample_bits==8 && (sample_type.equals(MSB_INTEGER) || sample_type.equals(INTEGER) || sample_type.equals(MAC_INTEGER) || sample_type.equals(SUN_INTEGER))){
-				VegaLog.info("PDS image is MSB_INTEGER 8 bits");
-				Int2d image2D=null;
-				int os =0;
-				if (offset>0){
-					os=offset;
-				}else{
-					os = data.length-(height*width);
+				if (sample_bits==16){
+					VegaLog.info("PDS image is LSB_UNSIGNED_INTEGER 16 bits");
+					Short2d image2D=null;
+					int os =0;
+					if (offset>0){
+						os=offset;
+					}else{
+						os = data.length-(height*width*2);
+					}
+					image2D=new Short2d(height,width);
+					int locator=0;
+			        for (int row = 0; row < height; row++) {
+			            for (int column = 0; column < width*2; column=column+2) {
+			            	short val=(short)( ((data[os+locator+1]&0xFF)<<8) | (data[os+locator]&0xFF) );
+			            	image2D.set(row,column/2,val );
+			            	locator=locator+2;
+			            }
+			        }
+			        si.setImage(image2D);
+							
+				}
+				if (sample_bits==32 ){
+					VegaLog.info("PDS image is LSB_UNSIGNED_INTEGER 32 bits");
+					Int2d image2D=null;
+					int os =0;
+					if (offset>0){
+						os=offset;
+					}else{
+						os = data.length-(height*width*4);
+					}
+					image2D=new Int2d(height,width);
+					int locator=0;
+			        for (int row = 0; row < height; row++) {
+			            for (int column = 0; column < width*4; column=column+4) {
+			            	int val=(int)( ((data[os+locator+3]&0xFF)<<24) | ((data[os+locator+2]&0xFF)<<16) | ((data[os+locator+1]&0xFF)<<8) | (data[os+locator]&0xFF) );
+			            	image2D.set(row,column/4,val );
+			            	locator=locator+4;
+			            }
+			            	
+			        }
+			        si.setImage(image2D);
 				}
 
-				image2D=new Int2d(height,width);
-				int locator=0;
-		        for (int row = 0; row < height; row++) {
-		            for (int column = 0; column < width; column++) {
-		            	
-		            	int val=data[os+locator] & 0xff;
-		            	image2D.set(row,column,val );
-		            	locator++;
-		            }
-		        }
-		        si.setImage(image2D);
 			}
 
-			if (sample_bits==16 && (sample_type.equals(MSB_INTEGER) || sample_type.equals(INTEGER) || sample_type.equals(MAC_INTEGER) || sample_type.equals(SUN_INTEGER))){
-				VegaLog.info("PDS image is MSB_INTEGER 16 bits");
-				Int2d image2D=null;
-				int os =0;
-				if (offset>0){
-					os=offset;
-				}else{
-					os = data.length-(height*width*2);
+			//PDSImage si = new PDSImage();
+			if ( sample_type.equals(MSB_UNSIGNED_INTEGER) || sample_type.equals(UNSIGNED_INTEGER) || sample_type.equals("MAC_UNSIGNED_INTEGER") || sample_type.equals("SUN_UNSIGNED_INTEGER")){
+				if (sample_bits==8){
+					VegaLog.info("PDS image is MSB_UNSIGNED_INTEGER 8 bits");
+					Int2d image2D=null;
+					int os =0;
+					if (offset>0){
+						os=offset;
+					}else{
+						os = data.length-(height*width);
+					}
+					image2D=new Int2d(height,width);
+					int locator=0;
+			        for (int row = 0; row < height; row++) {
+			            for (int column = 0; column < width; column++) {
+			            	image2D.set(row,column,data[os+locator] & 0xFF);
+			            	locator++;
+			            }
+			        }
+			        si.setImage(image2D);
+
 				}
-				image2D=new Int2d(height,width);
-				int locator=0;
-		        for (int row = 0; row < height; row++) {
-		            for (int column = 0; column < width*2; column=column+2) {
-		            	int val = ((data[os+locator] & 0xff) << 8) | (data[os+locator+1] & 0xff);
-		            	image2D.set(row,column/2,val );
-		            	locator=locator+2;
-		            }
-		        }
-		        si.setImage(image2D);
+				if (sample_bits==16){
+					VegaLog.info("PDS image is MSB_UNSIGNED_INTEGER 16 bits");
+					Int2d image2D=null;
+					int os =0;
+					if (offset>0){
+						os=offset;
+					}else{
+						os = data.length-(height*width*2);
+					}
+					image2D=new Int2d(height,width);
+					int locator=0;
+			        for (int row = 0; row < height; row++) {
+			            for (int column = 0; column < width*2; column=column+2) {
+			            	int val = ((data[os+locator] & 0xff) << 8) | (data[os+locator+1] & 0xff);
+			            	image2D.set(row,column/2,val );
+			            	locator=locator+2;
+			            }
+			        }
+			        si.setImage(image2D);
+				
+				}
+				
+				if (sample_bits==32 ){
+					VegaLog.info("PDS image is MSB_UNSIGNED_INTEGER 32 bits");
+					Int2d image2D=null;
+					int os =0;
+					if (offset>0){
+						os=offset;
+					}else{
+						os = data.length-(height*width*4);
+					}
+					image2D=new Int2d(height,width);
+					int locator=0;
+			        for (int row = 0; row < height; row++) {
+			            for (int column = 0; column < width*4; column=column+4) {
+			            	int val=(int)( ((data[os+locator]&0xFF)<<24) | ((data[os+locator+1]&0xFF)<<16) | ((data[os+locator+2]&0xFF)<<8) | (data[os+locator+3]&0xFF) );
+			            	image2D.set(row,column/4,val );
+			            	locator=locator+4;
+			            }
+			            	
+			        }
+			        si.setImage(image2D);
+				}
+
+			}
+			if ((sample_type.equals(MSB_INTEGER) || sample_type.equals(INTEGER) || sample_type.equals(MAC_INTEGER) || sample_type.equals(SUN_INTEGER))){
+				if (sample_bits==8){
+					VegaLog.info("PDS image is MSB_INTEGER 8 bits");
+					Int2d image2D=null;
+					int os =0;
+					if (offset>0){
+						os=offset;
+					}else{
+						os = data.length-(height*width);
+					}
+	
+					image2D=new Int2d(height,width);
+					int locator=0;
+			        for (int row = 0; row < height; row++) {
+			            for (int column = 0; column < width; column++) {
+			            	
+			            	int val=data[os+locator] & 0xff;
+			            	image2D.set(row,column,val );
+			            	locator++;
+			            }
+			        }
+			        si.setImage(image2D);
+				}
+				if (sample_bits==16 ){
+					VegaLog.info("PDS image is MSB_INTEGER 16 bits");
+					Int2d image2D=null;
+					int os =0;
+					if (offset>0){
+						os=offset;
+					}else{
+						os = data.length-(height*width*2);
+					}
+					image2D=new Int2d(height,width);
+					int locator=0;
+			        for (int row = 0; row < height; row++) {
+			            for (int column = 0; column < width*2; column=column+2) {
+			            	int val = ((data[os+locator] & 0xff) << 8) | (data[os+locator+1] & 0xff);
+			            	image2D.set(row,column/2,val );
+			            	locator=locator+2;
+			            }
+			        }
+			        si.setImage(image2D);
+				}
+				
+				if (sample_bits==32 ){
+					VegaLog.info("PDS image is MSB_INTEGER 32 bits");
+					Int2d image2D=null;
+					int os =0;
+					if (offset>0){
+						os=offset;
+					}else{
+						os = data.length-(height*width*4);
+					}
+					image2D=new Int2d(height,width);
+					int locator=0;
+			        for (int row = 0; row < height; row++) {
+			            for (int column = 0; column < width*4; column=column+4) {
+			            	int val=(int)( ((data[os+locator]&0xFF)<<24) | ((data[os+locator+1]&0xFF)<<16) | ((data[os+locator+2]&0xFF)<<8) | (data[os+locator+3]&0xFF) );
+			            	image2D.set(row,column/4,val );
+			            	locator=locator+4;
+			            }
+			            	
+			        }
+			        si.setImage(image2D);
+				}
+
+			}
+			if (sample_type.equals(PC_REAL)){
+				if (sample_bits==32){
+					VegaLog.info("PDS image is PC_REAL 32 bits");
+					Float2d image2D=null;
+					int os =0;
+					if (offset>0){
+						os=offset;
+					}else{
+						os = data.length-(height*width*4);
+					}
+					image2D=new Float2d(height,width);
+					int locator=0;
+			        for (int row = 0; row < height; row++) {
+			            for (int column = 0; column < width*4; column=column+4) {
+			            	byte[] pcReal=new byte[4];
+			            	pcReal[3]=data[os+locator];
+			            	pcReal[2]=data[os+locator+1];
+			            	pcReal[1]=data[os+locator+2];
+			            	pcReal[0]=data[os+locator+3];
+			            	ByteBuffer buffer = ByteBuffer.wrap(pcReal);
+			            	float f = buffer.getFloat();
+			            	image2D.set(row,column/4,f );
+			            	locator=locator+4;
+			            }
+			            	
+			        }
+			        si.setImage(image2D);
+				}
+			}
+			if (si.getImage()==null){
+				VegaLog.severe("PDS image "+sample_type+" "+sample_bits+" bits not supported yet");
+				IOException ioe=new IOException("PDS image "+sample_type+" "+sample_bits+" bits not supported yet");
+				throw ioe;
 			}
 
-			if (sample_bits==32 && sample_type.equals(LSB_UNSIGNED_INTEGER)){
-				VegaLog.info("PDS image is LSB_UNSIGNED_INTEGER 32 bits");
-				Int2d image2D=null;
-				int os =0;
-				if (offset>0){
-					os=offset;
-				}else{
-					os = data.length-(height*width*4);
-				}
-				image2D=new Int2d(height,width);
-				int locator=0;
-		        for (int row = 0; row < height; row++) {
-		            for (int column = 0; column < width*4; column=column+4) {
-		            	int val=(int)( ((data[os+locator+3]&0xFF)<<24) | ((data[os+locator+2]&0xFF)<<16) | ((data[os+locator+1]&0xFF)<<8) | (data[os+locator]&0xFF) );
-		            	image2D.set(row,column/4,val );
-		            	locator=locator+4;
-		            }
-		            	
-		        }
-		        si.setImage(image2D);
-			}
-			
-			if (sample_bits==32 && sample_type.equals(PC_REAL)){
-				VegaLog.info("PDS image is PC_REAL 32 bits");
-				Float2d image2D=null;
-				int os =0;
-				if (offset>0){
-					os=offset;
-				}else{
-					os = data.length-(height*width*4);
-				}
-				image2D=new Float2d(height,width);
-				int locator=0;
-		        for (int row = 0; row < height; row++) {
-		            for (int column = 0; column < width*4; column=column+4) {
-		            	byte[] pcReal=new byte[4];
-		            	pcReal[3]=data[os+locator];
-		            	pcReal[2]=data[os+locator+1];
-		            	pcReal[1]=data[os+locator+2];
-		            	pcReal[0]=data[os+locator+3];
-		            	ByteBuffer buffer = ByteBuffer.wrap(pcReal);
-		            	float f = buffer.getFloat();
-		            	image2D.set(row,column/4,f );
-		            	locator=locator+4;
-		            }
-		            	
-		        }
-		        si.setImage(image2D);
-			}
 			
 
 	        return si;
@@ -1615,28 +1678,41 @@ public class PDSImage extends SimpleImage {
 		 * @return the maximum latitude of this image
 		 */
 		public double getMaximumLatitude(){
-			return this.getDoubleMetadata(MAXIMUM_LATITUDE);
+			return this.getDoubleMetadata("IMAGE_MAP_PROJECTION."+MAXIMUM_LATITUDE);
 		}
 		/**
 		 * Get the minimum latitude of this image. It reads the value form MINIMUM_LATITUDE metadata. If the metadata is not present, it will fail.
 		 * @return the maximum latitude of this image
 		 */
 		public double getMinimumLatitude(){
-			return this.getDoubleMetadata(MINIMUM_LATITUDE);
+			Double scale=null;
+	        try{
+	        	scale=this.getDoubleMetadata("IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE);
+	        	if (scale==null) throw new NullPointerException();
+	        }catch (Exception e){
+	        	Object s = this.getMeta().get("IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE).getValue();
+	        	String val=""+s;
+	        	scale=Double.parseDouble(val.split("<")[0]);
+	        	//VegaLog.severe(""+s);
+	        	//VegaLog.severe("Could not get metadata "+"IMAGE_MAP_PROJECTION."+PDSImage.MAP_SCALE);
+	        	//throw e;
+	        }
+	        return scale;
+			//return this.getDoubleMetadata("IMAGE_MAP_PROJECTION."+MINIMUM_LATITUDE);
 		}
 		/**
 		 * Get the minimum longitude of this image. It reads the value form WESTERNMOST_LONGITUDE metadata. If the metadata is not present, it will fail.
 		 * @return the maximum latitude of this image
 		 */
 		public double getMinimumLongitude(){
-			return this.getDoubleMetadata(WESTERNMOST_LONGITUDE);
+			return this.getDoubleMetadata("IMAGE_MAP_PROJECTION."+WESTERNMOST_LONGITUDE);
 		}
 		/**
 		 * Get the maximum longitude of this image. It reads the value form EASTERNMOST_LONGITUDE metadata. If the metadata is not present, it will fail.
 		 * @return the maximum latitude of this image
 		 */
 		public double getMaximumLongitude(){
-			return this.getDoubleMetadata(EASTERNMOST_LONGITUDE);
+			return this.getDoubleMetadata("IMAGE_MAP_PROJECTION."+EASTERNMOST_LONGITUDE);
 		}
 		
 		/**

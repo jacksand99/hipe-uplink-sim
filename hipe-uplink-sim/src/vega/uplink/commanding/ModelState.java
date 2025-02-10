@@ -86,7 +86,7 @@ public class ModelState extends CompositeDataset{
 	public String getState(String subSystem){
 		if (getMeta().containsKey("state_"+subSystem)){
 			return (String) getMeta().get("state_"+subSystem).getValue();
-		}else return subSystem+"Off";
+		}else return subSystem+"OFF";
 	}
 	
 	/**

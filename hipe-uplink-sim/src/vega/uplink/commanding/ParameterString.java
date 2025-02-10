@@ -46,6 +46,9 @@ public class ParameterString extends Parameter{
 				eleValue.setAttribute("representation", getRepresentation());
 				eleValue.setTextContent(this.getStringValue());
 				eleParameter.appendChild(eleValue);
+                Element eleDescription=doc.createElement("description");
+                eleDescription.setTextContent(""+getDescription());
+                if (getDescription()!=null) eleParameter.appendChild(eleDescription);
 				
 		  }catch (Exception e){
 			  e.printStackTrace();
@@ -63,8 +66,10 @@ public class ParameterString extends Parameter{
 		String pos=new Integer(position).toString();				
 		String l1= "<parameter name=\""+this.getName()+"\" position=\""+pos+"\">";
 		String l2= "<value representation=\""+getRepresentation()+"\">"+getStringValue()+"</value>";
-		String l3="</parameter>";
-		return indentString+l1+"\n\t"+indentString+l2+"\n"+indentString+l3;
+		String l4="";
+        if (this.getDescription()!=null) l4=indentString+indentString+"<description>"+this.getDescription()+"</description>\n";
+        String l3="</parameter>";
+        return indentString+l1+"\n\t"+indentString+l2+"\n"+l4+indentString+l3;
 	}
 	
 

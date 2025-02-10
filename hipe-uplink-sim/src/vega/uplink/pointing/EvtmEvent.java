@@ -20,6 +20,8 @@ public class EvtmEvent  extends CompositeDataset implements Comparable<EvtmEvent
 	public static String EVENT_TYPE_ORB="orb";
 	public static String EVENT_TYPE_CON="con";
 	public static String EVENT_TYPE_BDI="bdi";
+    public static String EVENT_TYPE_POWER="POWER";
+	
 	public static String ID_TAG="id";
 	public static String TIME_TAG="time";
 	public static String DURATION_TAG="duration";

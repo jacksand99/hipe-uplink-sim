@@ -4,6 +4,7 @@ import static javax.swing.GroupLayout.Alignment.BASELINE;
 
 
 
+
 import java.awt.Dimension;
 import java.util.StringTokenizer;
 
@@ -19,7 +20,8 @@ import herschel.ia.gui.kernel.prefs.PreferencesPanel;
 import herschel.ia.gui.kernel.prefs.handler.StringPreferenceHandler;
 import herschel.ia.gui.kernel.prefs.handler.ColorPreferenceHandler;
 import herschel.ia.gui.kernel.util.component.ColorButton;
-import herschel.share.swing.JLongField;
+import herschel.ia.gui.kernel.util.field.LongField;
+//import herschel.share.swing.JLongField;
 import herschel.share.util.Configuration;
 
 public class InstrumentPreferences extends PreferencesPanel {
@@ -28,7 +30,7 @@ public class InstrumentPreferences extends PreferencesPanel {
     private JTextField _fieldA;
     private JTextField _fieldB;
     private ColorButton _fieldC;
-    private JLongField _fieldD;
+    private LongField _fieldD;
     private JTextField _fieldE;
     //private static final Logger LOG = Logger.getLogger(InstrumentPreferences.class.getName());
     public InstrumentPreferences(){
@@ -78,7 +80,7 @@ public class InstrumentPreferences extends PreferencesPanel {
         hComboGroup.addComponent(_fieldC);
 
         JLabel    labelD = new JLabel("Packet Store Size:");
-        _fieldD = new JLongField();
+        _fieldD = new LongField();
         _fieldD.setMaximumSize(new Dimension(400,20));
         vPropsGroup = layout.createParallelGroup(BASELINE);
         vGroup.addGroup(vPropsGroup.addComponent(labelD).addComponent(_fieldD));

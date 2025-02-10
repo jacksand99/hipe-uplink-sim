@@ -203,13 +203,16 @@ public class Orcd extends TableDataset{
 		boolean result=false;
 		TableDataset tb=findInTable(this,INDEX_MODE,mode2);
 		if (tb.getRowCount()>0){
-			java.util.List<Object> row = tb.getRow(0);
-			result=isSequenceInList(mode1,(String) row.get(INDEX_ALLOWED));
-			
-			if (!isSequenceInList("null",(String) row.get(INDEX_NOT_ALLOWED))){
-				result=!isSequenceInList(mode1,(String) row.get(INDEX_NOT_ALLOWED));
-				
-			}
+		    int totalRows = tb.getRowCount();
+		    for (int i=0;i<totalRows;i++) {
+    			java.util.List<Object> row = tb.getRow(i);
+    			if (!result) result=isSequenceInList(mode1,(String) row.get(INDEX_ALLOWED));
+    			
+    			if (!isSequenceInList("null",(String) row.get(INDEX_NOT_ALLOWED))){
+    				result=!isSequenceInList(mode1,(String) row.get(INDEX_NOT_ALLOWED));
+    				
+    			}
+		    }
 			
 			
 		}
@@ -217,6 +220,7 @@ public class Orcd extends TableDataset{
 		
 		return result;
 	}
+
 	
 	
 	/**
@@ -382,7 +386,7 @@ public class Orcd extends TableDataset{
 			return readORCDXmlBuffer(new BufferedReader(new FileReader(xmlFile)));
 		}catch(Exception e){
 			IllegalArgumentException iae = new IllegalArgumentException(e.getMessage());
-			e.initCause(e);
+			iae.initCause(e);
 			throw(iae);
 		}
 	  

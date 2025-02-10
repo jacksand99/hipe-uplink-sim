@@ -26,6 +26,7 @@ public class Units {
 	public static String ARCSECONDS_PER_MINUTE="arcSec/min";
 
 	public static String DEGREES_PER_HOUR="deg/hour";
+	public static String DEGREES_PER_DAY="deg/day";
 	public static String RADIANS_PER_HOUR="rad/hour";
 	public static String ARCMINUTES_PER_HOUR="arcSec/hour";
 	public static String ARCSECONDS_PER_HOUR="arcSec/hour";

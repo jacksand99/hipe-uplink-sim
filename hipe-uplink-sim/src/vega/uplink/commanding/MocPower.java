@@ -16,8 +16,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Date;
 
 import vega.uplink.DateUtil;
+import vega.uplink.pointing.Evtm;
+import vega.uplink.pointing.EvtmEvent;
+import vega.uplink.Properties;
+import vega.uplink.pointing.PtrUtils;
 
 import com.kenai.jffi.Array;
 
@@ -78,7 +83,8 @@ public class MocPower extends TableDataset{
 	private float getPower(java.util.Date index){
 		long[] dates = ((Long1d) this.getColumn(0).getData()).toArray();
 		int ind=Arrays.binarySearch(dates, index.getTime());
-		return ((Float1d) this.getColumn(1).getData()).get(ind);
+		if (ind>=0) return ((Float1d) this.getColumn(1).getData()).get(ind);
+		else return ((Float1d) this.getColumn(1).getData()).get(0);
 	}
 	protected static String removeMultipleSpaces(String line){
 		line=line.replaceAll("\t", " ");
@@ -160,6 +166,22 @@ public class MocPower extends TableDataset{
 
 		
 		
+	}
+	
+	public static MocPower readFromDefaultFecs() {
+	    return readFromFecs(Properties.getProperty(Properties.DEFAULT_FECS_FILE));
+	}
+	
+	public static MocPower readFromFecs(String file) {
+	    MocPower result = new MocPower();
+	    Evtm evtm=PtrUtils.readEvtmFromFile(file);
+	    EvtmEvent[] pEvents = evtm.getEventsByType("POWER");
+	    for (int i=0;i<pEvents.length;i++) {
+	        Date time = pEvents[i].getTime();
+	        Float power = ((Double) pEvents[i].getMeta().get("max").getValue()).floatValue();
+	        result.addRecord(time.getTime(), power.floatValue());
+	    }
+	    return result;
 	}
 	
 	/**

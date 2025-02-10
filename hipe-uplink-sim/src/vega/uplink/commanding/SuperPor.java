@@ -5,11 +5,16 @@ import herschel.ia.pal.ProductRef;
 import herschel.share.fltdyn.time.FineTime;
 import herschel.share.interpreter.InterpreterUtil;
 
+import java.security.GeneralSecurityException;
 import java.util.Iterator;
 
 
 public class SuperPor extends Por {
-	
+	private boolean recalculateValidity=true;
+	   public SuperPor(boolean rValidity){
+	        super();
+	        recalculateValidity=false;
+	    }
 	public SuperPor(){
 		super();
 	}
@@ -40,6 +45,14 @@ public class SuperPor extends Por {
 		result.setSequences(this.getInternalSequences());
 		return result;
 		
+	}
+	public Por getPorByName(String Name) {
+	    try {
+	        return (Por) this.getRefs().get(Name).getProduct();
+	    }catch (Exception gse) {
+	        gse.printStackTrace();
+	        return null;
+	    }
 	}
 	
 	public Por[] getPors(){
@@ -112,6 +125,9 @@ public class SuperPor extends Por {
 		
 	}
 	protected void calculateValidity(){
+	    if (this.calculateValidity==false) {
+	        if (this.getStartDate()!=null && this.getEndDate()!=null) return;
+	    }
 		Por[] pors = getPors();
 		int size=pors.length;
 		java.util.Date lower=null;

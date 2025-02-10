@@ -9,7 +9,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.text.ParseException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -37,21 +42,37 @@ import vega.uplink.DateUtil;
  *
  */
 public class PorUtils {
+    public static void writePORGtofile(String file,SuperPor por){
+        File f = new File(file);
+        
+        String newName="MAN__"+f.getName();
+        if (file.contains("PORG_")) {
+            newName="MAN__"+f.getName().substring(5);
+        }
+        writePORGtofile(file,por,newName);
+    }
 	//private static final Logger LOG = Logger.getLogger(PorUtils.class.getName());
 	/**
 	 * Write a SuperPor as a PORG (zip file containing individual PORs)
 	 * @param file
 	 * @param por
 	 */
-	public static void writePORGtofile(String file,SuperPor por){
+	public static void writePORGtofile(String file,SuperPor por,String manifestFileName){
 		File porg = new File(file);
 		File tdir = null;
+		String manifest="";
+		
 		try {
             tdir = FileUtil.createTempDir(porg.getName()+"_temp_porg", "zip");
             Por[] pors = por.getPors();
+            manifest=new Integer(pors.length).toString()+"\n";
             for (int i=0;i<pors.length;i++){
             	writePORtofile(tdir.getAbsolutePath()+"/"+pors[i].getName(),pors[i]);
+            	manifest=manifest+calculateHash(tdir.getAbsolutePath()+"/"+pors[i].getName())+"  "+pors[i].getName()+"\n";
             }
+            PrintWriter writer = new PrintWriter(tdir.getAbsolutePath()+"/"+manifestFileName, "UTF-8");
+            writer.print(manifest);
+            writer.close();
             zipIt(file,tdir.getAbsolutePath());
             VegaLog.info("Deleting temp zip of " + file + " in " + tdir);
             FileUtil.delete(tdir);
@@ -66,14 +87,60 @@ public class PorUtils {
             FileUtil.delete(tdir);
         }
     }
+
 	}
+	   public static String calculateHash(String path) {
+	        String result=null;
+	        try {
+	            byte[] data = Files.readAllBytes(Paths.get(path));
+	            byte[] hash = MessageDigest.getInstance("MD5").digest(data);
+	            String checksum = new BigInteger(1, hash).toString(16);
+	            
+	            if (checksum.length()<32) {
+	                for (int i=0;i<32-checksum.length();i++) {
+	                    checksum="0"+checksum;
+	                }
+	            }
+	            result=checksum.toUpperCase();
+	        /*MessageDigest digest = MessageDigest.getInstance("md5Hex");
+	        InputStream fis = new FileInputStream(new File(path));
+	        int n = 0;
+	        byte[] buffer = new byte[8192];
+	        while (n != -1) {
+	            n = fis.read(buffer);
+	            if (n > 0) {
+	                digest.update(buffer, 0, n);
+	            }
+	        }
+	        byte[] hash = digest.digest();
+	        result = new String(hash);
+	        StringBuilder hexString = new StringBuilder(2 * hash.length);
+	        for (int i = 0; i < hash.length; i++) {
+	            String hex = Integer.toHexString(0xff & hash[i]);
+	            if(hex.length() == 1) {
+	                hexString.append('0');
+	            }
+	            hexString.append(hex);
+	        }
+	       result=hexString.toString();*/
+	        }catch (Exception e) {
+	            VegaLog.throwing(PorUtils.class, "calculateHash", e);
+	            e.printStackTrace();
+	        }
+	        
+	        return result;
+	    }
+	   public static SuperPor readPORGfromFile(String fileName) throws IOException{
+	       return readPORGfromFile(fileName, true);
+	       
+	   }
 	/**
 	 * Read a SuperPor from a PORG (zip file containing individual PORs)
 	 * @param fileName
 	 * @return
 	 * @throws IOException
 	 */
-	public static SuperPor readPORGfromFile(String fileName) throws IOException{
+	public static SuperPor readPORGfromFile(String fileName,boolean recalculateVaidity) throws IOException{
 		File file=new File(fileName);
         File tdir = null;
         boolean error = true;
@@ -87,10 +154,10 @@ public class PorUtils {
                 ZipReader ar= new ZipReader(file);
                 ar.extract(tdir);
                 for (String name : tdir.list()) {
-                    if (!name.startsWith("."))  {
+                    if (!name.startsWith(".") && !name.startsWith("MAN"))  {
                         error = false;
                         String porFile = new File(tdir, name).getAbsolutePath();
-                        Por por = readPORfromFile(porFile);
+                        Por por = readPORfromFile(porFile,recalculateVaidity);
                         por.setName(name);
                         
                         result.addPor(por);
@@ -99,7 +166,7 @@ public class PorUtils {
                 VegaLog.info("Deleting temp unzip of " + file + " in " + tdir);
                 FileUtil.delete(tdir);
                 result.setType("PORG");
-                result.setCalculateValidity(true);
+                result.setCalculateValidity(recalculateVaidity);
                 return result;
             } catch (ZipException e) {
                 throw new IOException("Could not unzip " + file + " in " + tdir, e);
@@ -113,12 +180,15 @@ public class PorUtils {
             }
         }
 	}
+	public static Por readPorfromDocument(Document doc) {
+	    return readPorfromDocument(doc,true);
+	}
 	/**
 	 * Read POR from a XML document
 	 * @param doc
 	 * @return
 	 */
-	public static Por readPorfromDocument(Document doc){
+	public static Por readPorfromDocument(Document doc,boolean calculateValidity){
 		Por result = new Por();
 		result.setCalculateValidity(false);
 		try {
@@ -134,7 +204,7 @@ public class PorUtils {
 			String pEndTime=el.getElementsByTagName("stopTime").item(0).getTextContent();
 		 
 			NodeList nListSequences = doc.getElementsByTagName("sequence");
-		 
+
 			Sequence[] seq=readSequences(nListSequences);
 			result.setSequences(seq);
 			result.setGenerationTime(pGenTime);
@@ -145,15 +215,19 @@ public class PorUtils {
 		    	iae.initCause(e);
 		    	throw(iae);
 		    }
-		result.setCalculateValidity(true);
+		result.setCalculateValidity(calculateValidity);
 		return result; 
+	}
+	public static Por readPORfromFile(String file){
+	    return readPORfromFile(file,true);
+	    
 	}
 	/**
 	 * read POR from a xml file
 	 * @param file
 	 * @return
 	 */
-	public static Por readPORfromFile(String file){
+	public static Por readPORfromFile(String file,boolean calculateValidity){
 
 		Por result = new Por();
 		try {
@@ -162,7 +236,7 @@ public class PorUtils {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
-			result=readPorfromDocument(doc);
+			result=readPorfromDocument(doc,calculateValidity);
 			result.setName(fXmlFile.getName());
 			result.setPath(fXmlFile.getParent());
 			
@@ -189,8 +263,19 @@ public class PorUtils {
 	 
 				String sName=eElement.getAttribute("name");
 				String sUniqueID=eElement.getElementsByTagName("uniqueID").item(0).getTextContent();
-				String sFlag=eElement.getElementsByTagName("insertOrDeleteFlag").item(0).getTextContent();
+				String sFlag=Sequence.INSERT_FLAG;
+				try {
+				    sFlag=eElement.getElementsByTagName("insertOrDeleteFlag").item(0).getTextContent();
+				}catch (Exception e) {
+				    e.printStackTrace();
+				}
 				String sSource=eElement.getElementsByTagName("source").item(0).getTextContent();
+				String sDescription="";
+				try {
+				    sDescription=eElement.getElementsByTagName("description").item(0).getTextContent();
+				}catch (Exception noDes) {
+				    vega.hipe.logging.VegaLog.info("Sequence without description");
+				}
 				String sDestination=eElement.getElementsByTagName("destination").item(0).getTextContent();
 				String sExecutionTime=eElement.getElementsByTagName("actionTime").item(0).getTextContent();
 				Node parList=eElement.getElementsByTagName("parameterList").item(0);
@@ -207,8 +292,8 @@ public class PorUtils {
 					NodeList profiles=el3.getElementsByTagName("profile");
 					sProfiles=readProfiles(profiles);	
 				}
-				result[temp]=new Sequence (sName,sUniqueID,sFlag,sSource.charAt(0),sDestination.charAt(0),DateUtil.DOYToDate(sExecutionTime),sParameters,sProfiles);
-				
+				result[temp]=new Sequence (sName,sUniqueID,sFlag,sSource,sDestination.charAt(0),DateUtil.DOYToDate(sExecutionTime),sParameters,sProfiles);
+				result[temp].setDescription(sDescription);
 			}
 		}
 		return result;
@@ -235,6 +320,7 @@ public class PorUtils {
 				Element eElement = (Element) nNode;
 				String name=eElement.getAttribute("name");
 
+
 				Node val=eElement.getElementsByTagName("value").item(0);
 				int nelements=eElement.getElementsByTagName("value").getLength();
 				if (nelements==0){
@@ -245,8 +331,16 @@ public class PorUtils {
 					Element el=(Element) val;
 					String representation=el.getAttribute("representation");
 					String radix=el.getAttribute("radix");
-	
 					String value=val.getTextContent();
+		               String elDescription="";
+		                try {
+		                    elDescription=eElement.getElementsByTagName("description").item(0).getTextContent();
+
+		                    //result[temp].setDescription(elDescription);
+		                }catch (Exception noDes) {
+		                    vega.hipe.logging.VegaLog.info("Parameter without description");
+		                }
+		                
 					
 					if (radix==""){
 						result[temp]=new ParameterString(name,representation,value);
@@ -254,7 +348,8 @@ public class PorUtils {
 					if (radix.equals(Parameter.RADIX_HEX)){
 						try{
 							String hexValue = value.replace("0x", "");
-							result[temp]=new ParameterFloat(name,representation,radix,new Integer(Integer.parseInt(hexValue, 16)).floatValue());
+							result[temp]=new ParameterFloat(name,representation,radix,new BigInteger(hexValue, 16).floatValue());
+							//result[temp]=new ParameterFloat(name,representation,radix,new Integer(Integer.parseInt(hexValue, 16)).floatValue());
 						}
 						catch (java.lang.NumberFormatException e){
 							try{
@@ -269,8 +364,15 @@ public class PorUtils {
 						
 					}
 					if (radix.equals(Parameter.RADIX_DECIMAL)) {
-						result[temp]=new ParameterFloat(name,representation,radix,new Float(value).floatValue());
+					    try {
+					        result[temp]=new ParameterFloat(name,representation,radix,new Float(value).floatValue());
+					    }
+					    catch (Exception e) {
+					        result[temp]=new ParameterFloat(name,representation,radix,new Float(0).floatValue());
+					        e.printStackTrace();
+					    }
 					}
+                    result[temp].setDescription(elDescription);
 				}
 				
 				

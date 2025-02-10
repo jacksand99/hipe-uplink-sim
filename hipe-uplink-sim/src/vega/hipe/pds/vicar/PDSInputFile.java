@@ -32,7 +32,7 @@ import com.sun.media.jai.codec.*;
 
 // import java.lang.reflect.*;
 // import java.beans.*;
-import java.awt.image.*;
+//import java.awt.image.*;
 // import javax.media.jai.*;
 // import java.util.Vector;
 import java.util.*;
@@ -42,17 +42,17 @@ import java.util.*;
 // import javax.media.imageio.stream.*; // EA1
 import javax.imageio.stream.*; 
 
-import org.apache.xpath.XPathAPI;
+//import org.apache.xpath.XPathAPI;
 import org.w3c.dom.*;
 import org.w3c.dom.traversal.NodeIterator;
 // import org.xml.sax.SAXException;
 
 
 
-import javax.media.jai.*;
-import javax.xml.transform.TransformerException;
+//import javax.media.jai.*;
+//import javax.xml.transform.TransformerException;
 
-import java.awt.Rectangle;
+//import java.awt.Rectangle;
 import java.nio.ByteOrder;
 
 

@@ -14,7 +14,7 @@ import herschel.ia.dataset.gui.views.CompositeDatasetOutline;
 import herschel.ia.gui.apps.views.outline.OutlineComponent;
 import herschel.ia.gui.apps.views.outline.OutlineView;
 import herschel.ia.gui.kernel.Selection;
-import herschel.ia.gui.kernel.SelectionVisitor;
+//import herschel.ia.gui.kernel.SelectionVisitor;
 import herschel.ia.gui.kernel.VariableSelection;
 import herschel.ia.pal.gui.components.ContextOutline;
 

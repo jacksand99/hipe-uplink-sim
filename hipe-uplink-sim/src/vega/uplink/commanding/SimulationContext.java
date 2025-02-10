@@ -49,8 +49,9 @@ public class SimulationContext extends MapContext{
 		setProduct("dl_por",new Por());		
 		set("orcd",Orcd.getOrcd());
 		try{
-			set("mocPower",MocPower.readFromFile(Properties.getProperty(Properties.PWPL_FILE)));
+		    set("mocPower",MocPower.readFromDefaultFecs());
 		}catch (Exception e){
+		    //set("mocPower",MocPower.readFromDefaultFecs());
 			set("mocPower",MocPower.readFromJar());
 
 		}
@@ -87,7 +88,8 @@ public class SimulationContext extends MapContext{
 		try{
 			PrintWriter writer = new PrintWriter(file, "UTF-8");
 			writer.print("#Status at "+DateUtil.defaultDateToString(endDate)+"\n");
-			String[] statesN=this.getModelState().getAllStates();
+			//String[] statesN=this.getModelState().getAllStates();
+			String[] statesN=this.getHistoryModes().getStatesAt(endDate.getTime()).getAllStates();
 			for (int i=0;i<statesN.length;i++){
 				if (!statesN[i].equals("nullOff"))
 					writer.print("simulationContext.getModelState().setState(\""+statesN[i]+"\")\n");

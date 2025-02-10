@@ -176,8 +176,13 @@ public class ObservationEditor extends AbstractVariableEditorComponent<Observati
 				}	
 	}
 	
-	public void save() throws IOException{
-		ObservationUtil.saveObservation(obs);
+	public void save() {
+	    try {
+	        ObservationUtil.saveObservation(obs);
+	    }
+	    catch (IOException ioe) {
+	        ioe.printStackTrace();
+	    }
 	}
 
 	

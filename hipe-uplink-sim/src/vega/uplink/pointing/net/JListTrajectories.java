@@ -14,10 +14,11 @@ import herschel.ia.gui.kernel.ParameterValidator;
 import herschel.ia.gui.kernel.SiteEvent;
 import herschel.ia.gui.kernel.SiteEventListener;
 import herschel.ia.gui.kernel.VariableSelection;
-import herschel.ia.gui.kernel.parts.Disposable;
+//import herschel.ia.gui.kernel.parts.Disposable;
 import herschel.share.util.ObjectUtil;
 
-public class JListTrajectories implements Modifier, ModifierEditorListener, SiteEventListener, Disposable {
+//public class JListTrajectories implements Modifier, ModifierEditorListener, SiteEventListener, Disposable {
+public class JListTrajectories implements Modifier, ModifierEditorListener, SiteEventListener{
     private static final int MAX_VALUES = 32;
     private ListEditor editor;
     private JList<?> list;
@@ -25,11 +26,11 @@ public class JListTrajectories implements Modifier, ModifierEditorListener, Site
 		list=new JList<String>(strings);
 		editor=createEditor((Object[])strings);
 	}
-	@Override
+	/*@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
 		
-	}
+	}*/
 
 	@Override
 	public void selectionChanged(SiteEvent arg0) {

@@ -418,7 +418,7 @@ public class ItlParser {
 								exTimes[l]=new Date(exTimes[l].getTime()+deltaToMilli(commandDelta));
 								seq.setExecutionDate(exTimes[l]);
 								for (int k=0;k<repeat;k++){
-									InstrumentSequence newSeq=new InstrumentSequence(new String(seq.getName()),new String(seq.getUniqueID()),new String(seq.getFlag()),new Character(seq.getSource()),new Character(seq.getDestination()),new String(seq.getExecutionTime()),seq.getParameters(),seq.getProfiles(),instrument);
+									InstrumentSequence newSeq=new InstrumentSequence(new String(seq.getName()),new String(seq.getUniqueID()),new String(seq.getFlag()),new String(seq.getSource()),new Character(seq.getDestination()),new String(seq.getExecutionTime()),seq.getParameters(),seq.getProfiles(),instrument);
 									newSeq.setExecutionDate(new java.util.Date(seq.getExecutionDate().getTime()+(separation*k)));
 									newSeq.setUniqueID(ObservationPor.getUniqueID());
 									if(k==0){

@@ -39,7 +39,7 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 	/**
 	 * Rosetta Testing Team
 	 */
-	static private String AUTHOR="Rosetta Testing Team";
+	static private String AUTHOR="SOL-SOC";
 	TreeMap<String,AbstractSequence> sequenceMap;
 	boolean calculateValidity;
 	String1d initModes;
@@ -337,7 +337,7 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 	 * @return
 	 */
 	public String getGenerationTime(){
-		return DateUtil.dateToDOY(getCreationDate().toDate());
+		return DateUtil.dateToDOYNoMilli(getCreationDate().toDate());
 	}
 	
 	/**
@@ -377,8 +377,8 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 	 */
 	public String[] getValidityTimes(){
 		String[] result=new String[2];
-		result[0]=DateUtil.dateToDOY(getStartDate().toDate());
-		result[1]=DateUtil.dateToDOY(getEndDate().toDate());
+		result[0]=DateUtil.dateToDOYNoMilli(getStartDate().toDate());
+		result[1]=DateUtil.dateToDOYNoMilli(getEndDate().toDate());
 		return result;
 	}
 	
@@ -405,8 +405,8 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		Document doc = docBuilder.newDocument();
 		Element rootElement = doc.createElement("planningData");
 		rootElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-		rootElement.setAttribute("xmlns:xs", "http://www.w3.org/2001/XMLSchema");
-		rootElement.setAttribute("xsi:noNamespaceSchemaLocation", "rosPlanningData.xsd");
+		//rootElement.setAttribute("xmlns:xs", "http://www.w3.org/2001/XMLSchema");
+		rootElement.setAttribute("xsi:noNamespaceSchemaLocation", "solPlanningData.xsd");
 		Element eleCommandRequest=doc.createElement("commandRequests");
 		Element eleHeader=doc.createElement("header");
 		eleHeader.setAttribute("type", "POR");
@@ -476,7 +476,7 @@ public class Por extends AbstractXmlMapContext implements SequenceTimelineInterf
 		addDefaultParameters();
 		AbstractSequence[] seqs=getOrderedSequences();
 		String l01="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-		String l02="<planningData xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n              xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\n              xsi:noNamespaceSchemaLocation=\"rosPlanningData.xsd\">\n";
+		String l02="<planningData xsi:noNamespaceSchemaLocation=\"solPlanningData.xsd\"\n              xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n";
 		String l03="\t<commandRequests>\n";
 		String l04="\t\t<header type=\"POR\" formatVersion=\"1\">\n";
 		String l05="\t\t\t<genTime>"+getGenerationTime()+"</genTime>\n";

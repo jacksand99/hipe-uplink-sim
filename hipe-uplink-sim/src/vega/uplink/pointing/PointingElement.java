@@ -403,6 +403,7 @@ public class PointingElement extends CompositeDataset  {
 		String name=node.getNodeName().trim();
 		if (name.equals("#text")) return null;
 		if (name.equals("#comment")) return null;
+ 
 		//String nodeValue = node.getNodeValue();
 		String value=null;
 		//if (!node.hasChildNodes()) value=node.getTextContent();
@@ -411,6 +412,7 @@ public class PointingElement extends CompositeDataset  {
 		if (value==null) value="";
 		else value=value.trim();
 		PointingElement result = new PointingElement(name,value);
+
 
 		if (node.hasAttributes()){
 			NamedNodeMap att = node.getAttributes();

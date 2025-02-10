@@ -8,7 +8,7 @@ import herschel.ia.gui.kernel.parts.AbstractVariableEditorComponent;
 
 
 import herschel.ia.gui.kernel.util.component.ColorButton;
-import herschel.share.swing.JLongField;
+//import herschel.share.swing.JLongField;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

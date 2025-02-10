@@ -76,6 +76,13 @@ public class Evtm {
 	}
 	
 	public void addEvent(EvtmEvent event){
+	    System.out.println("******");
+	    System.out.println(event);
+	    if (this.getEvent(event.getTime())!=null){
+	        EvtmEvent e = new EvtmEvent(event.getType(),event.getId(),new Date(event.getTime().getTime()+1),event.getDuration());
+	        this.addEvent(e);
+	        return;
+	    }
 		eventsMap.put(event.getTime(), event);
 	}
 	

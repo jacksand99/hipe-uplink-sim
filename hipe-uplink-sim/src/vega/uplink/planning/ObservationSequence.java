@@ -19,7 +19,7 @@ public class ObservationSequence extends Sequence{
 	private long executionTimeDelta;
 	private Observation parent;
 
-	public ObservationSequence (Observation parent,ObservationEvent executionEvent,long executionDelta,String sequenceName,String sequenceID,String sequenceFlag,char sequenceSource,char sequenceDestination,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles){
+	public ObservationSequence (Observation parent,ObservationEvent executionEvent,long executionDelta,String sequenceName,String sequenceID,String sequenceFlag,String sequenceSource,char sequenceDestination,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles){
 		super(sequenceName,sequenceID,sequenceFlag,sequenceSource,sequenceDestination,new Date(parent.getDateForEvent(executionEvent).getTime()+executionDelta),sequenceParamaters,sequenceProfiles);
 		executionTimeEvent=executionEvent;
 		executionTimeDelta=executionDelta;
@@ -31,16 +31,16 @@ public class ObservationSequence extends Sequence{
 	
 	
 	public ObservationSequence (Observation parent,ObservationEvent executionEvent,long executionDelta,String sequenceName,String sequenceID,String sequenceFlag,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles) throws ParseException{
-		this(parent,executionEvent,executionDelta,sequenceName,sequenceID,sequenceFlag,'P','S',sequenceParamaters,sequenceProfiles);
+		this(parent,executionEvent,executionDelta,sequenceName,sequenceID,sequenceFlag,"P",'S',sequenceParamaters,sequenceProfiles);
 	}
 	
 	public ObservationSequence (Observation parent,ObservationEvent executionEvent,long executionDelta,String sequenceName,String sequenceID,Parameter[] sequenceParamaters,SequenceProfile[] sequenceProfiles) throws ParseException{
-		this(parent,executionEvent,executionDelta,sequenceName,sequenceID,INSERT_FLAG,'P','S',sequenceParamaters,sequenceProfiles);
+		this(parent,executionEvent,executionDelta,sequenceName,sequenceID,INSERT_FLAG,"P",'S',sequenceParamaters,sequenceProfiles);
 	}
 	
 	public ObservationSequence (Observation parent,ObservationEvent executionEvent,long executionDelta,String sequenceName,String sequenceID) throws ParseException{
 
-		this(parent,executionEvent,executionDelta,sequenceName,sequenceID,INSERT_FLAG,'P','S',null,null);
+		this(parent,executionEvent,executionDelta,sequenceName,sequenceID,INSERT_FLAG,"P",'S',null,null);
 	
 	}
 	public ObservationSequence (Observation parent,ObservationEvent executionEvent,long executionDelta,Sequence seq){

@@ -146,10 +146,13 @@ public class HistoryModesPlot extends AbstractVariableEditorComponent<HistoryMod
         MyTipGenerator tips= new MyTipGenerator();
         renderer.setBaseToolTipGenerator(tips);
         tips.title=title;
-        chartPanel = new ChartPanel(chart);
+        chartPanel = new ChartPanel(chart,true);
+        JScrollPane jsp=new JScrollPane(chartPanel);
+        //jsp.add(chartPanel);
         //part.getArea().
         //if (part==null) chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-        add(chartPanel);
+        //add(chartPanel);
+        add(jsp);
         return this;
 	}
 	
@@ -589,7 +592,7 @@ public class HistoryModesPlot extends AbstractVariableEditorComponent<HistoryMod
 			System.out.println(hd.getAllStates()[i]);
 		}*/
 		;
-		HistoryModesPlot plot=makePlot("Time line",hd);
+		HistoryModesPlot plot=makePlot("Timeline",hd);
 		//this.add(plot);
 		//part=arg1;
 		//part.setTitle("Time line");

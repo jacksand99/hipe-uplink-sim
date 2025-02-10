@@ -42,6 +42,7 @@ public class Parameter extends TableDataset{
 	public static String COLUMN_NAME_REPRESENTATION="Representation";
 	public static String COLUMN_NAME_RADIX="Radix";
 	public static String COLUMN_NAME_VALUE="Value";
+	public static String COLUMN_NAME_DESCRIPTION="Description";
 	
 	
 	/**
@@ -56,14 +57,18 @@ public class Parameter extends TableDataset{
 		Column cRepresentation=new Column(new String1d().append(parameterRepresentation));
 		Column cRadix=new Column(new String1d().append(parameterRadix));
 		Column cValue=new Column(new String1d().append(""));
-		addColumn(cName);
-		addColumn(cRepresentation);
-		addColumn(cRadix);
-		addColumn(cValue);
+		Column cDescription=new Column(new String1d().append(""));
+		addColumn(COLUMN_NAME_NAME,cName);
+		addColumn(COLUMN_NAME_REPRESENTATION,cRepresentation);
+		addColumn(COLUMN_NAME_RADIX,cRadix);
+		addColumn(COLUMN_NAME_VALUE,cValue);
+		addColumn(COLUMN_NAME_DESCRIPTION,cDescription);
+		
+		/*System.out.println(getColumnCount());
 		setColumnName(0, COLUMN_NAME_NAME);
 		setColumnName(1, COLUMN_NAME_REPRESENTATION);
 		setColumnName(2, COLUMN_NAME_RADIX);
-		setColumnName(3, COLUMN_NAME_VALUE);
+		setColumnName(3, COLUMN_NAME_VALUE);*/
 
 	}
 
@@ -76,6 +81,13 @@ public class Parameter extends TableDataset{
 		return ((String1d) getColumn(COLUMN_NAME_NAME).getData()).get(0);
 		
 	}
+	   public String getDescription(){
+	       String result=null;
+	        result=((String1d) getColumn(COLUMN_NAME_DESCRIPTION).getData()).get(0);
+	        if (result=="") result =null;
+	        return result;
+	        
+	    }
 	
 	/**
 	 * Get the representation of the parameter. Either Raw or Engineering
@@ -108,6 +120,9 @@ public class Parameter extends TableDataset{
 	public void setName(String parameterName){
 		getColumn(COLUMN_NAME_NAME).setData(new String1d().append(parameterName));
 	}
+	   public void setDescription(String parameterDescription){
+	        getColumn(COLUMN_NAME_DESCRIPTION).setData(new String1d().append(parameterDescription));
+	    }
 	
 	/**
 	 * Set the representation of the parameter. Either Raw or Engineering.
@@ -148,12 +163,16 @@ public class Parameter extends TableDataset{
 				Element eleValue=doc.createElement("value");
 				eleValue.setAttribute("representation", getRepresentation());
 				eleValue.setAttribute("radix", getRadix());
+
 				String val = getStringValue();
 				if (getRadix().equals(RADIX_HEX)){
 					val.replace("0x", "");
 				}
 				eleValue.setTextContent(val);
 				eleParameter.appendChild(eleValue);
+                Element eleDescription=doc.createElement("description");
+                eleDescription.setTextContent(""+getDescription());
+                if (getDescription()!=null) eleParameter.appendChild(eleDescription);
 				
 		  }catch (Exception e){
 			  e.printStackTrace();
@@ -180,8 +199,10 @@ public class Parameter extends TableDataset{
 		}
 
 		String l2= "<value representation=\""+getRepresentation()+"\" radix=\""+getRadix()+"\">"+val+"</value>";
-		String l3="</parameter>";
-		return indentString+l1+"\n\t"+indentString+l2+"\n"+indentString+l3;
+        String l4="";
+        if (this.getDescription()!=null || this.getDescription()!="") l4=indentString+"\t"+"<description>"+this.getDescription()+"</description>\n";
+        String l3="</parameter>";
+        return indentString+l1+"\n\t"+indentString+l2+"\n"+l4+indentString+l3;
 	}
 
 	public int 	getRowCount() {
@@ -193,12 +214,13 @@ public class Parameter extends TableDataset{
 		if (index==1) return COLUMN_NAME_REPRESENTATION;
 		if (index==2) return COLUMN_NAME_RADIX;
 		if (index==3) return COLUMN_NAME_VALUE;
+		if (index==4) return COLUMN_NAME_DESCRIPTION;
 		return null;
 		
 	}
 	
 	public int 	getColumnCount() {
-		return 4;
+		return 5;
 	}
 	
 

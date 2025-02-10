@@ -3,6 +3,7 @@ package vega.uplink.commanding;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
@@ -11,33 +12,86 @@ import javax.swing.JFrame;
 
 import org.jfree.ui.RefineryUtilities;
 
+import vega.uplink.DateUtil;
 import vega.uplink.Properties;
+import vega.uplink.pointing.Evtm;
+import vega.uplink.pointing.EvtmEvent;
 import vega.uplink.pointing.PointingBlock;
+import vega.uplink.pointing.PtrUtils;
 import herschel.ia.dataset.Product;
+import vega.uplink.track.Fecs;
+import vega.uplink.track.FecsUtils;
 
 public class TestCommanding {
     public static void main(String[] args) {
-    	herschel.share.util.Configuration.setProperty("var.hcss.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
-    	herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas 1/Downloads/hcss-12.0.2524");
-    	herschel.share.util.Configuration.setProperty("vega.mib.location", "/Users/jarenas 1/Downloads/MAPPS/MIB");
-    	herschel.share.util.Configuration.setProperty("vega.instrument.names","{ALICE,CONSERT,COSIMA,GIADA,MIDAS,MIRO,ROSINA,RPC,RSI,OSIRIS,VIRTIS,SREM,LANDER,PTR,ANTENNA}");
-    	herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.ALICE","AL");
-    	herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.OSIRIS","SR");
+    	herschel.share.util.Configuration.setProperty("var.hcss.dir", "/Users/jarenas 1/Downloads/");
+    	herschel.share.util.Configuration.setProperty("var.hcsstest.dir", "/Users/jarenas/Downloads/");
+    	herschel.share.util.Configuration.setProperty("vega.mib.location", "/Users/jarenas/esa/solar-orbiter/MIB");
+    	herschel.share.util.Configuration.setProperty("vega.instrument.names","{SoloHI,EPD,MAG,SPICE,SWA,STIX,EUI,Metis,PHI,RPW}");
+    	herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.SoloHI","IH");
+    	herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.EPD","ID");
+        herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.MAG","IM");
+        herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.SPICE","IC");
+        herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.SWA","IA");
+        herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.STIX","IX");
+        herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.EUI","IU");
+        herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.Metis","IT");
+        herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.PHI","IP");
+        herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.RPW","IW");
+        herschel.share.util.Configuration.setProperty("vega.instrument.acronyms.PTR","PTR");
+        herschel.share.util.Configuration.setProperty("vega.file.type.POR","regex:^POR_[a-zA-Z0-9_\\-]*.SOL");
+        herschel.share.util.Configuration.setProperty("vega.default.FECS.file","/Users/jarenas/esa/solar-orbiter/planning/EFECS_M06_V02.xml");
 
     	
     	System.out.println(Properties.getProperty("vega.file.type.POR"));
 
     	try {
     		Mib mib=Mib.getMib();
+    		SuperPor porg_original = PorUtils.readPORGfromFile("/Users/jarenas/Downloads/PORG_SSGS_S200_E_00001.ZIP");
+    		PorUtils.writePORGtofile("/Users/jarenas/Downloads/PORG_example.ZIP", porg_original);
+    		
+    		Por por1 = PorUtils.readPORfromFile("/Users/jarenas/Downloads/PORG_SSGS_S345_E_00001-original/POR__SSGS_S_S345F15_SM_I00V1_2031345f.SOL");
+    		System.out.println(por1.toXml());
+    		System.out.println( por1.getSequences()[0].getParameters()[0].toXML(0));
+    		//PorUtils.writePORtofile("/Users/jarenas/example.SOL", por1);
     		Parameter[] dp = mib.getDefaultParameters("AMRF011A");
     		for (int i=0;i<dp.length;i++){
-    			System.out.println(dp[i].toXML(0));
+    		    //dp[i].setDescription("Test description");
+    		    System.out.println(dp[i].getDescription());
+    		    System.out.println(dp[i].toXML(0));
     		}
-    		//Por POR_DM_016_01_SR_P1_01242 = PorUtils.readPORfromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/LTP005/LTP005P/MTP016P/PORM/POR__DM_016_01_SR_P1_01242.ROS");
+    		//Por POR_DM_016_01_SR_P1_01242 = PorUtils.readPORfromFile("/Users/jarenas/Downloads/PORG_SSGS_S176_D_00001/POR__SEPD_S_S176F01_ID_I01V1_21011761.SOL");
+    		//SuperPor por2 = PorUtils.readPORGfromFile("/Users/jarenas/Downloads/PORG_SSGS_S175_D_00001.ZIP");
+    		//MocPower mocPower = MocPower.readFromFecs("/Users/jarenas/esa/solar-orbiter/planning/EFECS_M05_V02.xml");
+    		//MocPower mocPower = MocPower.readFromDefaultFecs();
+    		//System.out.println(mocPower.getRowCount());
+    		//Date d3 = DateUtil.parse("2022-72T02:13:00.000Z");
+    		//System.out.println(mocPower.getPowerAt(d3));
+    		//SimulationContext sc = new SimulationContext(new Date(),new Date());
+    		
+    		//System.out.println(por2.toXml());
     		//AbstractSequence seq1 = (AbstractSequence) POR_DM_016_01_SR_P1_01242.getProduct("P012420007");
     		//AbstractSequence seq2 = (AbstractSequence) POR_DM_016_01_SR_P1_01242.getProduct("P012420001");
     		//System.out.println(AllowOverlapChecker.allowOverlap(seq1, seq2));
-    		//Fecs FECS_XXXXX = PorUtils.readFecsFromFile("/Users/jarenas 1/OPS/ROS_SGS/PLANNING/RMOC/FCT/FECS_________________XXXXX.ROS");
+    		//Fecs FECS_XXXXX = PorUtils.readFecsFromFile("/Users/jarenas/ptr-tool/tests/EFECS_M05_V02.xml");
+    		//Orcd orcd = Orcd.readORCDXmlfile("/Users/jarenas/esa/solar-orbiter/ORCD.xml");
+    		//Fecs fecs = FecsUtils.readFecsFromFile("/Users/jarenas/esa/solar-orbiter/planning/Events_S109_V1_00036.SOL");
+    		//System.out.println(fecs.toString());
+    		//Evtm evtm = PtrUtils.readEvtmFromFile("/Users/jarenas/esa/solar-orbiter/planning/PTEL_L005_V1_00166.SOL");
+            //EvtmEvent[] events = evtm.getEventsByType(EvtmEvent.EVENT_TYPE_BDI);
+            //EvtmEvent[] events = evtm.getAllEvents();
+            /*
+             * for event in events:
+newmodes=SimulationContext.getInstance().orcd.getModesAsHistory("EVTM_"+event.getId(),event.getTime().getTime())
+SimulationContext.getInstance().historyModes.putAll(newmodes,"EVTM_"+event.getId(),event.getTime().getTime())
+
+             */
+            /*for (int i=0;i<events.length;i++){
+                EvtmEvent event = events[i];
+                HashMap<Long, String> newmodes = Orcd.getOrcd().getModesAsHistory("EVTM_"+event.getId(),event.getTime().getTime());
+                
+                //System.out.println(newmodes,"EVTM_"+event.getId(),event.getTime().getTime());
+            }*/
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
