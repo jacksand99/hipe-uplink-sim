@@ -1,9 +1,12 @@
 package vega.uplink;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.Date;
 
 public class Evtm {
-	private HashMap<Date,EvtmEvent> eventsMap;
+	//private HashMap<Date,EvtmEvent> eventsMap;
+    private HashMap<EvtmEvent,Date> eventsMap;
 	private Date generationTime;
 	private Date validityStart;
 	private Date validityEnd;
@@ -11,7 +14,8 @@ public class Evtm {
 	private String icdVersion;
 	
 	public Evtm(Date evtmGenerationTime,Date evtmValidityStart,Date evtmValidityEnd,String evtmSpacecraft,String evtmIcdVersion){
-		eventsMap=new HashMap<Date,EvtmEvent>();
+		//eventsMap=new HashMap<Date,EvtmEvent>();
+	    eventsMap=new HashMap<EvtmEvent,Date>();
 		generationTime=evtmGenerationTime;
 		validityStart=evtmValidityStart;
 		validityEnd=evtmValidityEnd;
@@ -20,19 +24,19 @@ public class Evtm {
 	}
 	
 	public Evtm(Date evtmGenerationTime,Date evtmValidityStart,Date evtmValidityEnd,String evtmIcdVersion){
-		this(evtmGenerationTime,evtmValidityStart,evtmValidityEnd,"ROS",evtmIcdVersion);
+		this(evtmGenerationTime,evtmValidityStart,evtmValidityEnd,"SOLO",evtmIcdVersion);
 	}
 	
 	public Evtm(Date evtmValidityStart,Date evtmValidityEnd,String evtmIcdVersion){
-		this(new java.util.Date(),evtmValidityStart,evtmValidityEnd,"ROS",evtmIcdVersion);
+		this(new java.util.Date(),evtmValidityStart,evtmValidityEnd,"SOLO",evtmIcdVersion);
 	}
 	
 	public Evtm(Date evtmValidityStart,Date evtmValidityEnd){
-		this(new java.util.Date(),evtmValidityStart,evtmValidityEnd,"ROS","PLID-0.0");
+		this(new java.util.Date(),evtmValidityStart,evtmValidityEnd,"SOLO","SGS-FD ICD 2.7");
 	}
 	
 	public Evtm(){
-		this(new java.util.Date(),new java.util.Date(),new java.util.Date(),"ROS","PLID-0.0");
+		this(new java.util.Date(),new java.util.Date(),new java.util.Date(),"SOLO","SGS-FD ICD 2.7");
 	}
 	
 	public Date getGenerationTime(){
@@ -76,25 +80,45 @@ public class Evtm {
 	}
 	
 	public void addEvent(EvtmEvent event){
-	    System.out.println("******");
-	    System.out.println(event);
-	    if (this.getEvent(event.getTime())!=null){
-	        EvtmEvent e = new EvtmEvent(event.getType(),event.getId(),new Date(event.getTime().getTime()+1),event.getDuration());
-	        this.addEvent(e);
-	        return;
-	    }
-		eventsMap.put(event.getTime(), event);
+
+		eventsMap.put(event, event.getTime());
 	}
 	
+	public EvtmEvent[] getAllEventsAt(Date time) {
+	    java.util.Vector<EvtmEvent> allEventsResult=new java.util.Vector<EvtmEvent>();
+	    Set<EvtmEvent> allEvents = eventsMap.keySet();
+	    Iterator<EvtmEvent> it = allEvents.iterator();
+	    while (it.hasNext()) {
+	            EvtmEvent e = it.next();
+	            if (e.getTime().equals(time)) allEventsResult.add(e);
+	    }
+	    return (EvtmEvent[]) allEventsResult.toArray();
+	        
+	    
+	}
 	public EvtmEvent getEvent(Date time){
-		return eventsMap.get(time);
+	    EvtmEvent result = null;
+	    Set<EvtmEvent> allEvents = eventsMap.keySet();
+	    Iterator<EvtmEvent> it = allEvents.iterator();
+	    while (it.hasNext()) {
+	        EvtmEvent e = it.next();
+	        if (e.getTime().equals(time)) result=e;
+	    }
+		return result;
 	}
 	
 	public EvtmEvent[] getAllEvents(){
+	    Set<EvtmEvent> allEvents = eventsMap.keySet();
+	    return (EvtmEvent[]) allEvents.toArray();
+	    /*
 		EvtmEvent[] result=new EvtmEvent[eventsMap.size()];
 		eventsMap.values().toArray(result);
 		java.util.Arrays.sort(result);
-		return result;
+		return result;*/
+	    
+	}
+	public boolean contains(EvtmEvent e) {
+	    return eventsMap.containsKey(e);
 	}
 	
 	public EvtmEvent[] getEventsByType(String type){

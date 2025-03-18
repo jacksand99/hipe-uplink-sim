@@ -33,7 +33,7 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 	public static String STARTTIME_TAG="startTime";
 	public static String ENDTIME_TAG="endTime";
 	
-
+	public static String TYPE_MAINT="MAINT";  
 	public static String TYPE_MWAC="MWAC";	
 		/**
 		 * PointingBlock type for performing a dV manoeuvre
@@ -341,7 +341,7 @@ public class PointingBlock extends PointingElement implements PointingBlockInter
 		}
 		public boolean isMaintenance(){
 			boolean result=false;
-			if (getType().equals(TYPE_MNAV) || getType().equals(TYPE_MOCM) || getType().equals(TYPE_MSLW) || getType().equals(TYPE_MWAC) || getType().equals(TYPE_MWNV) || getType().equals(TYPE_MWOL)){
+			if (getType().equals(TYPE_MNAV) || getType().equals(TYPE_MOCM) || getType().equals(TYPE_MAINT) || getType().equals(TYPE_MSLW) || getType().equals(TYPE_MWAC) || getType().equals(TYPE_MWNV) || getType().equals(TYPE_MWOL)){
 				result=true;
 			}
 			return result;

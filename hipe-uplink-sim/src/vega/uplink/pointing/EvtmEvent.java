@@ -99,6 +99,14 @@ public class EvtmEvent  extends CompositeDataset implements Comparable<EvtmEvent
 		return this.getTime().compareTo(o.getTime());
 		//return 0;
 	}
+	public boolean equals(EvtmEvent e) {
+	    boolean result=true;
+	    if (this.getId()!=e.getId()) result=false;
+	    if (this.getDuration()!=this.getDuration()) result=false;
+	    if (!this.getTime().equals(e.getTime())) result=false;
+	    return result;
+	    
+	}
 
 	
 	

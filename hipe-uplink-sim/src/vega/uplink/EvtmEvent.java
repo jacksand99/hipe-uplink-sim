@@ -65,8 +65,19 @@ public class EvtmEvent implements Comparable<EvtmEvent>{
 
 	@Override
 	public int compareTo(EvtmEvent o) {
+	   
 		return this.getTime().compareTo(o.getTime());
-		//return 0;
+		
+	}
+	public boolean equals(EvtmEvent event) {
+	    boolean result = true;
+	    if (this.type!=event.getType()) result=false;
+	    if (this.id!=event.getId()) result=false;
+	    if (this.duration!=event.getDuration()) result=false;
+	    if (!this.time.equals(event.getTime())) result=false;
+	    
+	    return result;
+	    
 	}
 
 	

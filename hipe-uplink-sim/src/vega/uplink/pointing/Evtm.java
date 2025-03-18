@@ -13,7 +13,8 @@ import java.util.Date;
 import vega.uplink.Properties;
 
 public class Evtm extends Product{
-	private HashMap<Date,EvtmEvent> eventsMap;
+	//private HashMap<Date,EvtmEvent> eventsMap;
+    //private HashMap<EvtmEvent,Date> eventsMap;
 	public static String EVENTFILE_TAG="eventfile";
 	public static String EVENTS_TAG="events";
 	public static String HEADER_TAG="header";
@@ -34,7 +35,7 @@ public class Evtm extends Product{
 		setPath(Properties.getProperty("user.home"));
 		this.setType("EVTM");
 
-		eventsMap=new HashMap<Date,EvtmEvent>();
+		//eventsMap=new HashMap<EvtmEvent,Date>();
 		this.setCreationDate(new FineTime(evtmGenerationTime));
 		//generationTime=evtmGenerationTime;
 		this.setStartDate(new FineTime(evtmValidityStart));
@@ -62,19 +63,19 @@ public class Evtm extends Product{
 	}
 	
 	public Evtm(Date evtmGenerationTime,Date evtmValidityStart,Date evtmValidityEnd,String evtmIcdVersion){
-		this(evtmGenerationTime,evtmValidityStart,evtmValidityEnd,"ROS",evtmIcdVersion);
+		this(evtmGenerationTime,evtmValidityStart,evtmValidityEnd,"SOLO",evtmIcdVersion);
 	}
 	
 	public Evtm(Date evtmValidityStart,Date evtmValidityEnd,String evtmIcdVersion){
-		this(new java.util.Date(),evtmValidityStart,evtmValidityEnd,"ROS",evtmIcdVersion);
+		this(new java.util.Date(),evtmValidityStart,evtmValidityEnd,"SOLO",evtmIcdVersion);
 	}
 	
 	public Evtm(Date evtmValidityStart,Date evtmValidityEnd){
-		this(new java.util.Date(),evtmValidityStart,evtmValidityEnd,"ROS","PLID-0.0");
+		this(new java.util.Date(),evtmValidityStart,evtmValidityEnd,"SOLO","SGS-FD ICD 2.7");
 	}
 	
 	public Evtm(){
-		this(new java.util.Date(),new java.util.Date(),new java.util.Date(),"ROS","PLID-0.0");
+		this(new java.util.Date(),new java.util.Date(),new java.util.Date(),"ROS","SGS-FD ICD 2.7");
 	}
 	
 	public Date getGenerationTime(){
@@ -140,19 +141,46 @@ public class Evtm extends Product{
 	}*/
 	   public void addEvent(EvtmEvent event){
 
-	        if (this.getEvent(event.getTime())!=null){
+	        /*if (this.getEvent(event.getTime())!=null){
 	            EvtmEvent e = new EvtmEvent(event.getType(),event.getId(),new Date(event.getTime().getTime()+1),event.getDuration());
 	            this.addEvent(e);
 	            return;
 	        }
 	        //eventsMap.put(event.getTime(), event);
 	        this.set(EvtmEvent.dateToZulu(event.getTime()), event);
-	    }
+	    */
+	       this.addEventInternal(event.getTime(), event);
+	   }
+	   private void addEventInternal(Date time,EvtmEvent event ) {
+	       if (this.getEvent(time)!=null){
+	           this.addEventInternal(new Date(time.getTime()+1),event);
+	           return;
+	       }
+	       this.set(EvtmEvent.dateToZulu(time), event);
+	   }
 	
 	public EvtmEvent getEvent(Date time){
 		return (EvtmEvent)get(EvtmEvent.dateToZulu(time));
 		//return eventsMap.get(time);
 	}
+	   public EvtmEvent[] getEvents(Date time){
+           java.util.Vector<EvtmEvent> vEvents= new java.util.Vector<EvtmEvent>();
+           Iterator<Dataset> it = this.getSets().values().iterator();
+           while (it.hasNext()) {
+               EvtmEvent ev = (EvtmEvent) it.next();
+               if (ev.getTime().equals(time)) vEvents.add(ev);
+           }
+          EvtmEvent[] result=new EvtmEvent[vEvents.size()];
+          vEvents.toArray(result);
+           //this.getSets().values().toArray(result);
+           //EvtmEvent[] result=new EvtmEvent[eventsMap.size()];
+           //eventsMap.values().toArray(result);
+           java.util.Arrays.sort(result);
+           return result;
+	       //return getAllEventsBetween(time,new Date(time.getTime()+999));
+
+	        //return eventsMap.get(time);
+	    }
 	
 	public EvtmEvent[] getAllEvents(){
 		EvtmEvent[] result=new EvtmEvent[this.getSets().size()];
@@ -176,6 +204,25 @@ public class Evtm extends Product{
 	        //eventsMap.values().toArray(result);
 	        java.util.Arrays.sort(result);
 	        return result;
+	}
+	public Evtm getSubEventsFile(Date startDate,Date endDate) {
+	    Evtm result=new Evtm(startDate,endDate);
+	    result.addEvents(this.getAllEventsBetween(startDate, endDate));	    
+	    return result;
+	}
+	public void addEvents(EvtmEvent[] events) {
+	    for (int i=0;i<events.length;i++) {
+	        this.addEvent(events[i]);
+	    }
+	}
+	public boolean contains(EvtmEvent e) {
+	    boolean result=false;
+	    EvtmEvent[] ae = this.getEvents(e.getTime());
+	    for (int i=0;i<ae.length;i++) {
+	        if (ae[i].equals(e)) result=true;
+	    }
+	    
+	    return result;
 	}
 	
 	public EvtmEvent[] getEventsByType(String type){
